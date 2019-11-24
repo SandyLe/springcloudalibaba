@@ -95,6 +95,11 @@ const duplicateCheck = (params)=>getAction("/sys/duplicate/check",params);
 // 加载分类字典
 const loadCategoryData = (params)=>getAction("/sys/category/loadAllData",params);
 
+// 销售订单
+const addSaleOrder = (params)=>postAction("/saleOrder/add",params);
+const addCustomerType = (params)=>postAction("/customerType/add",params)
+const editCustomerType = (params)=>postAction("/customerType/edit",params)
+
 export {
   // imgView,
   // doMian,
@@ -142,7 +147,10 @@ export {
   queryTreeListForRole,
   getSystemMenuList,
   getSystemSubmenu,
-  loadCategoryData
+  loadCategoryData,
+  addSaleOrder,
+  addCustomerType,
+  editCustomerType
 }
 
 
