@@ -49,9 +49,9 @@
 <script>
   import pick from 'lodash.pick'
   import AFormItem from "ant-design-vue/es/form/FormItem";
-  import {addCustomerSource,editCustomerSource,duplicateCheck } from '@/api/api'
+  import {addMaterialUnit,editMaterialUnit,duplicateCheck } from '@/api/api'
   export default {
-    name: "CustomerSourceModal",
+    name: "MaterialUnitModal",
     data() {
       return {
         title: "操作",
@@ -90,7 +90,7 @@
     },
     methods: {
       add () {
-        this.edit({priceFlag:'0'});
+        this.edit({});
       },
       edit (record) {
         this.form.resetFields();
@@ -105,7 +105,7 @@
         }
 
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'name', 'code','content','priceFlag'))
+          this.form.setFieldsValue(pick(this.model,'name', 'code','content'))
         });
       },
       close () {
@@ -122,9 +122,9 @@
             let obj;
             console.log(formData)
             if(!this.model.id){
-              obj=addCustomerSource(formData);
+              obj=addMaterialUnit(formData);
             }else{
-              obj=editCustomerSource(formData);
+              obj=editMaterialUnit(formData);
             }
             obj.then((res)=>{
               if(res.success){

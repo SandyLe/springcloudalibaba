@@ -31,7 +31,7 @@
 
     <!-- 操作按钮区域 -->
     <div class="table-operator" style="border-top: 5px">
-      <a-button @click="handleAdd" type="primary" icon="plus">添加客户来源</a-button>
+      <a-button @click="handleAdd" type="primary" icon="plus">添加产品品牌</a-button>
 
       <a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
@@ -94,21 +94,21 @@
     <!-- table区域-end -->
 
     <!-- 表单区域 -->
-    <customer-source-modal ref="modalForm" @ok="modalFormOk"></customer-source-modal>
+    <material-brand-modal ref="modalForm" @ok="modalFormOk"></material-brand-modal>
 
   </a-card>
 </template>
 
 <script>
-  import CustomerSourceModal from './CustomerSourceModal'
+  import MaterialBrandModal from './MaterialBrandModal'
   import JInput from '@/components/jeecg/JInput'
   import {JeecgListMixin} from '@/mixins/JeecgListMixin'
   export default {
-    name: "CustomerSource",
+    name: "MaterialBrand",
     mixins: [JeecgListMixin],
     components: {
       JInput,
-      CustomerSourceModal
+      MaterialBrandModal
     },
     data() {
       return {
@@ -126,12 +126,12 @@
             }
           },
           {
-            title: '来源名称',
+            title: '品牌名称',
             align:"center",
             dataIndex: 'name'
           },
           {
-            title: '来源编码',
+            title: '品牌编码',
             align:"center",
             dataIndex: 'code'
           },
@@ -139,6 +139,11 @@
             title: '备注',
             align:"center",
             dataIndex: 'content'
+          },
+          {
+            title: '官网',
+            align:"center",
+            dataIndex: 'webSite'
           },
           {
             title: '创建时间',
@@ -160,9 +165,9 @@
           }
         ],
         url: {
-          list: "/customerSource/getPage",
-          delete: "/customerSource/delete",
-          deleteBatch: "/customerSource/deleteBatch"
+          list: "/materialBrand/getPage",
+          delete: "/materialBrand/delete",
+          deleteBatch: "/materialBrand/deleteBatch"
         }
       }
     }

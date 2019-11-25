@@ -31,7 +31,7 @@
 
     <!-- 操作按钮区域 -->
     <div class="table-operator" style="border-top: 5px">
-      <a-button @click="handleAdd" type="primary" icon="plus">添加客户来源</a-button>
+      <a-button @click="handleAdd" type="primary" icon="plus">添加产品单位</a-button>
 
       <a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
@@ -94,21 +94,21 @@
     <!-- table区域-end -->
 
     <!-- 表单区域 -->
-    <customer-source-modal ref="modalForm" @ok="modalFormOk"></customer-source-modal>
+    <material-unit-modal ref="modalForm" @ok="modalFormOk"></material-unit-modal>
 
   </a-card>
 </template>
 
 <script>
-  import CustomerSourceModal from './CustomerSourceModal'
+  import MaterialUnitModal from './MaterialUnitModal'
   import JInput from '@/components/jeecg/JInput'
   import {JeecgListMixin} from '@/mixins/JeecgListMixin'
   export default {
-    name: "CustomerSource",
+    name: "MaterialUnit",
     mixins: [JeecgListMixin],
     components: {
       JInput,
-      CustomerSourceModal
+      MaterialUnitModal
     },
     data() {
       return {
@@ -126,12 +126,12 @@
             }
           },
           {
-            title: '来源名称',
+            title: '单位名称',
             align:"center",
             dataIndex: 'name'
           },
           {
-            title: '来源编码',
+            title: '单位编码',
             align:"center",
             dataIndex: 'code'
           },
@@ -160,9 +160,9 @@
           }
         ],
         url: {
-          list: "/customerSource/getPage",
-          delete: "/customerSource/delete",
-          deleteBatch: "/customerSource/deleteBatch"
+          list: "/materialUnit/getPage",
+          delete: "/materialUnit/delete",
+          deleteBatch: "/materialUnit/deleteBatch"
         }
       }
     }

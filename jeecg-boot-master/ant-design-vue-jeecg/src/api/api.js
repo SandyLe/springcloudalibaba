@@ -101,6 +101,12 @@ const addCustomerType = (params)=>postAction("/customerType/add",params)
 const editCustomerType = (params)=>postAction("/customerType/edit",params)
 const addCustomerSource = (params)=>postAction("/customerSource/add",params)
 const editCustomerSource = (params)=>postAction("/customerSource/edit",params)
+const addMaterialBrand = (params)=>postAction("/materialBrand/add",params)
+const editMaterialBrand = (params)=>postAction("/materialBrand/edit",params)
+const addMaterialType = (params)=>postAction("/materialType/add",params)
+const editMaterialType = (params)=>postAction("/materialType/edit",params)
+const addMaterialUnit = (params)=>postAction("/materialUnit/add",params)
+const editMaterialUnit = (params)=>postAction("/materialUnit/edit",params)
 
 export {
   // imgView,
@@ -154,7 +160,13 @@ export {
   addCustomerType,
   editCustomerType,
   addCustomerSource,
-  editCustomerSource
+  editCustomerSource,
+  addMaterialBrand,
+  editMaterialBrand,
+  addMaterialType,
+  editMaterialType,
+  addMaterialUnit,
+  editMaterialUnit
 }
 
 

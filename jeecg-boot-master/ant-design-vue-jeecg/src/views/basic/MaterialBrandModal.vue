@@ -35,6 +35,17 @@
             <a-form-item
               :labelCol="hlabelCol"
               :wrapperCol="hwrapperCol"
+              label="官网"
+              label-width="4">
+              <a-input placeholder="请输入官网" v-decorator="[ 'webSite', validatorRules.webSite]" />
+            </a-form-item>
+          </a-col>
+        </a-row>
+        <a-row>
+          <a-col :md="24" :sm="24">
+            <a-form-item
+              :labelCol="hlabelCol"
+              :wrapperCol="hwrapperCol"
               label="备注"
               label-width="4">
               <a-input placeholder="请输入备注" v-decorator="[ 'content', validatorRules.content]" />
@@ -49,9 +60,9 @@
 <script>
   import pick from 'lodash.pick'
   import AFormItem from "ant-design-vue/es/form/FormItem";
-  import {addCustomerSource,editCustomerSource,duplicateCheck } from '@/api/api'
+  import {addMaterialBrand,editMaterialBrand,duplicateCheck } from '@/api/api'
   export default {
-    name: "CustomerSourceModal",
+    name: "MaterialBrandModal",
     data() {
       return {
         title: "操作",
@@ -90,7 +101,7 @@
     },
     methods: {
       add () {
-        this.edit({priceFlag:'0'});
+        this.edit({});
       },
       edit (record) {
         this.form.resetFields();
@@ -105,7 +116,7 @@
         }
 
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'name', 'code','content','priceFlag'))
+          this.form.setFieldsValue(pick(this.model,'name', 'code','content','webSite'))
         });
       },
       close () {
@@ -122,9 +133,9 @@
             let obj;
             console.log(formData)
             if(!this.model.id){
-              obj=addCustomerSource(formData);
+              obj=addMaterialBrand(formData);
             }else{
-              obj=editCustomerSource(formData);
+              obj=editMaterialBrand(formData);
             }
             obj.then((res)=>{
               if(res.success){
