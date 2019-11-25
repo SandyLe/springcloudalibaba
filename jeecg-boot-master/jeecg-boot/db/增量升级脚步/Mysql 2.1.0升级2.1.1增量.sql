@@ -106,3 +106,41 @@ ADD COLUMN `physic_id`  varchar(32) NULL COMMENT '原始表ID' AFTER `copy_type`
 
 ALTER TABLE `onl_cgform_head`
 ADD COLUMN `scroll`  int(3) NULL DEFAULT 0 COMMENT '是否有横向滚动条' AFTER `form_template_mobile`;
+/*
+Navicat MySQL Data Transfer
+
+Source Server         : test
+Source Server Version : 50529
+Source Host           : localhost:3306
+Source Database       : jeecg-boot
+
+Target Server Type    : MYSQL
+Target Server Version : 50529
+File Encoding         : 65001
+
+Date: 2019-11-25 18:07:57
+*/
+
+SET FOREIGN_KEY_CHECKS=0;
+
+-- ----------------------------
+-- Table structure for sl_customer_source
+-- ----------------------------
+DROP TABLE IF EXISTS `sl_customer_source`;
+CREATE TABLE `sl_customer_source` (
+  `id` varchar(30) NOT NULL,
+  `name` varchar(50) DEFAULT NULL,
+  `code` varchar(30) DEFAULT NULL,
+  `content` varchar(1000) DEFAULT NULL,
+  `create_time` datetime DEFAULT NULL,
+  `update_time` datetime DEFAULT NULL,
+  `create_by` varchar(30) DEFAULT NULL,
+  `update_by` varchar(30) DEFAULT NULL,
+  `row_sts` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ----------------------------
+-- Records of sl_customer_source
+-- ----------------------------
+INSERT INTO `sl_customer_source` VALUES ('1198854930209599489', '网络推广', 'WLTG', '网络推广test', '2019-11-25 14:44:23', '2019-11-25 14:46:30', 'admin', 'admin', null);
