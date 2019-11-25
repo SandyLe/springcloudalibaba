@@ -99,6 +99,8 @@ const loadCategoryData = (params)=>getAction("/sys/category/loadAllData",params)
 const addSaleOrder = (params)=>postAction("/saleOrder/add",params);
 const addCustomerType = (params)=>postAction("/customerType/add",params)
 const editCustomerType = (params)=>postAction("/customerType/edit",params)
+const addCustomerSource = (params)=>postAction("/customerSource/add",params)
+const editCustomerSource = (params)=>postAction("/customerSource/edit",params)
 
 export {
   // imgView,
@@ -150,7 +152,9 @@ export {
   loadCategoryData,
   addSaleOrder,
   addCustomerType,
-  editCustomerType
+  editCustomerType,
+  addCustomerSource,
+  editCustomerSource
 }
 
 
