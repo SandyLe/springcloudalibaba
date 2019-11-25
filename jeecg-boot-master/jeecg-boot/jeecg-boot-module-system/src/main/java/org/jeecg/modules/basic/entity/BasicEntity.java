@@ -16,6 +16,9 @@ public class BasicEntity extends JeecgEntity {
     @ApiModelProperty("数据状态")
     private Integer rowSts;
 
+    @ApiModelProperty("排序")
+    private Integer sort;
+
     @ApiModelProperty("备注")
     private String content;
 
@@ -49,5 +52,13 @@ public class BasicEntity extends JeecgEntity {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public Integer getSort() {
+        return sort;
+    }
+
+    public void setSort(Integer sort) {
+        this.sort = sort;
     }
 }
