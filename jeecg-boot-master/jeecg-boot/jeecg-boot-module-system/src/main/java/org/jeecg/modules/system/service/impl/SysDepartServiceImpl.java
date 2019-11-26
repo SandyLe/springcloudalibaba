@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.util.YouBianCodeUtil;
@@ -27,7 +28,7 @@ import io.netty.util.internal.StringUtil;
  * <p>
  * 部门表 服务实现类
  * <p>
- * 
+ *
  * @Author Steve
  * @Since 2019-01-22
  */
@@ -86,14 +87,14 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 		}
 
 	}
-	
+
 	/**
 	 * saveDepartData 的调用方法,生成部门编码和部门类型
-	 * 
+	 *
 	 * @param parentId
 	 * @return
 	 */
-	private String[] generateOrgCode(String parentId) {	
+	private String[] generateOrgCode(String parentId) {
 		//update-begin--Author:Steve  Date:20190201 for：组织机构添加数据代码调整
 				LambdaQueryWrapper<SysDepart> query = new LambdaQueryWrapper<SysDepart>();
 				LambdaQueryWrapper<SysDepart> query1 = new LambdaQueryWrapper<SysDepart>();
@@ -105,8 +106,8 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 				// 定义旧编码字符串
 				String oldOrgCode = "";
 				// 定义部门类型
-				String orgType = "";		
-				// 如果是最高级,则查询出同级的org_code, 调用工具类生成编码并返回                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+				String orgType = "";
+				// 如果是最高级,则查询出同级的org_code, 调用工具类生成编码并返回
 				if (StringUtil.isNullOrEmpty(parentId)) {
 					// 线判断数据库中的表是否为空,空则直接返回初始编码
 					query1.eq(SysDepart::getParentId, "").or().isNull(SysDepart::getParentId);
@@ -151,16 +152,16 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 				strArray[1] = orgType;
 				return strArray;
 		//update-end--Author:Steve  Date:20190201 for：组织机构添加数据代码调整
-	} 
+	}
 
-	
+
 	/**
 	 * removeDepartDataById 对应 delete方法 根据ID删除相关部门数据
-	 * 
+	 *
 	 */
 	/*
 	 * @Override
-	 * 
+	 *
 	 * @Transactional public boolean removeDepartDataById(String id) {
 	 * System.out.println("要删除的ID 为=============================>>>>>"+id); boolean
 	 * flag = this.removeById(id); return flag; }
@@ -182,7 +183,7 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 		}
 
 	}
-	
+
 	@Override
 	@Transactional
 	public void deleteBatchWithChildren(List<String> ids) {
@@ -232,13 +233,13 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 		boolean ok = this.removeByIds(idList);
 		return ok;
 	}
-	
+
 	/**
 	 * delete 方法调用
 	 * @param id
 	 * @param idList
 	 */
-	private void checkChildrenExists(String id, List<String> idList) {	
+	private void checkChildrenExists(String id, List<String> idList) {
 		LambdaQueryWrapper<SysDepart> query = new LambdaQueryWrapper<SysDepart>();
 		query.eq(SysDepart::getParentId,id);
 		List<SysDepart> departList = this.list(query);
@@ -260,4 +261,13 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 		return baseMapper.queryDepartsByUsername(username);
 	}
 
+	@Override
+	public List<SysDepart> getSysDepartList(String orgType) {
+		LambdaQueryWrapper<SysDepart> query = new LambdaQueryWrapper<SysDepart>();
+		if(StringUtils.isNotBlank(orgType)){
+			query.eq(SysDepart::getOrgType,orgType);
+		}
+		List<SysDepart> departList = this.list(query);
+		return departList;
+	}
 }

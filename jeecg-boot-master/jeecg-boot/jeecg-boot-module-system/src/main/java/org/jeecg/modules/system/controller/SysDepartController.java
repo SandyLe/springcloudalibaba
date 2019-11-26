@@ -47,7 +47,7 @@ import lombok.extern.slf4j.Slf4j;
  * <p>
  * 部门表 前端控制器
  * <p>
- * 
+ *
  * @Author: Steve @Since： 2019-01-22
  */
 @RestController
@@ -60,7 +60,7 @@ public class SysDepartController {
 
 	/**
 	 * 查询数据 查出所有部门,并以树结构数据格式响应给前端
-	 * 
+	 *
 	 * @return
 	 */
 	@RequestMapping(value = "/queryTreeList", method = RequestMethod.GET)
@@ -82,8 +82,26 @@ public class SysDepartController {
 	}
 
 	/**
+	 * 查询数据 查出组织树类型节点
+	 *
+	 * @return
+	 */
+	@RequestMapping(value = "/getSysDepartList", method = RequestMethod.GET)
+	public Result<List<SysDepart>> getSysDepartList(String orgType) {
+		Result<List<SysDepart>> result = new Result<>();
+		try {
+			List<SysDepart> list = sysDepartService.getSysDepartList(orgType);
+			result.setResult(list);
+			result.setSuccess(true);
+		} catch (Exception e) {
+			log.error(e.getMessage(),e);
+		}
+		return result;
+	}
+
+	/**
 	 * 添加新数据 添加用户新建的部门对象数据,并保存到数据库
-	 * 
+	 *
 	 * @param sysDepart
 	 * @return
 	 */
@@ -108,7 +126,7 @@ public class SysDepartController {
 
 	/**
 	 * 编辑数据 编辑部门的部分数据,并保存到数据库
-	 * 
+	 *
 	 * @param sysDepart
 	 * @return
 	 */
@@ -133,7 +151,7 @@ public class SysDepartController {
 		}
 		return result;
 	}
-	
+
 	 /**
      *   通过id删除
     * @param id
@@ -162,7 +180,7 @@ public class SysDepartController {
 
 	/**
 	 * 批量删除 根据前端请求的多个ID,对数据库执行删除相关部门数据的操作
-	 * 
+	 *
 	 * @param ids
 	 * @return
 	 */
@@ -182,7 +200,7 @@ public class SysDepartController {
 
 	/**
 	 * 查询数据 添加或编辑页面对该方法发起请求,以树结构形式加载所有部门的名称,方便用户的操作
-	 * 
+	 *
 	 * @return
 	 */
 	@RequestMapping(value = "/queryIdTree", method = RequestMethod.GET)
@@ -216,12 +234,12 @@ public class SysDepartController {
 		}
 		return result;
 	}
-	 
+
 	/**
 	 * <p>
 	 * 部门搜索功能方法,根据关键字模糊搜索相关部门
 	 * </p>
-	 * 
+	 *
 	 * @param keyWord
 	 * @return
 	 */
