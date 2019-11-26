@@ -108,6 +108,8 @@ const editMaterialType = (params)=>postAction("/materialType/edit",params)
 const addMaterialUnit = (params)=>postAction("/materialUnit/add",params)
 const editMaterialUnit = (params)=>postAction("/materialUnit/edit",params)
 
+const loadShopData = (params)=>getAction("/sys/sysDepart/getSysDepartList",params)
+
 export {
   // imgView,
   // doMian,
@@ -166,7 +168,8 @@ export {
   addMaterialType,
   editMaterialType,
   addMaterialUnit,
-  editMaterialUnit
+  editMaterialUnit,
+  loadShopData
 }
 
 
