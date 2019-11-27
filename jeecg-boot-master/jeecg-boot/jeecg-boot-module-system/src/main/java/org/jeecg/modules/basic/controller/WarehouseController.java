@@ -3,6 +3,7 @@ package org.jeecg.modules.basic.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.google.common.collect.Lists;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -12,11 +13,19 @@ import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.modules.basic.entity.Warehouse;
 import org.jeecg.modules.basic.service.WarehouseService;
+import org.jeecg.modules.system.entity.SysDepart;
+import org.jeecg.modules.system.entity.SysUser;
+import org.jeecg.modules.system.service.ISysDepartService;
+import org.jeecg.modules.system.service.ISysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Api(tags = "仓库接口")
@@ -26,6 +35,10 @@ public class WarehouseController {
 
     @Autowired
     private WarehouseService warehouseService;
+    @Autowired
+    private ISysDepartService sysDepartService;
+    @Autowired
+    private ISysUserService sysUserService;
 
     /**
      * 分页列表查询
@@ -44,6 +57,18 @@ public class WarehouseController {
         Page<Warehouse> page = new Page<Warehouse>(pageNo, pageSize);
 
         IPage<Warehouse> pageList = warehouseService.page(page, queryWrapper);
+        List<Warehouse> resultList = pageList.getRecords();
+        List<String> shopIdList = resultList.stream().map(o->o.getBelongsToId()).collect(Collectors.toList());
+        List<String> principalIdLIst = resultList.stream().map(o->o.getPrincipalId()).collect(Collectors.toList());
+        Collection<SysDepart> shopList = sysDepartService.listByIds(shopIdList);
+        Collection<SysUser> principalLIst = sysUserService.listByIds(principalIdLIst);
+        Map<String, String> shopNameMap = shopList.stream().collect(Collectors.toMap(SysDepart::getId, SysDepart::getDepartName));
+        Map<String, String> userNameMap = principalLIst.stream().collect(Collectors.toMap(SysUser::getId, SysUser::getRealname));
+        resultList.stream().forEach(o->{
+            o.setBelongsToName(shopNameMap.get(o.getBelongsToId()));
+            o.setPrincipalName(userNameMap.get(o.getPrincipalId()));
+        });
+        pageList.setRecords(resultList);
         log.info("查询当前页：" + pageList.getCurrent());
         log.info("查询当前页数量：" + pageList.getSize());
         log.info("查询结果数量：" + pageList.getRecords().size());

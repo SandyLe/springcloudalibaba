@@ -80,7 +80,7 @@ import lombok.extern.slf4j.Slf4j;
 public class SysUserController {
 	@Autowired
 	private ISysBaseAPI sysBaseAPI;
-	
+
 	@Autowired
 	private ISysUserService sysUserService;
 
@@ -98,7 +98,17 @@ public class SysUserController {
 
 	@Autowired
 	private RedisUtil redisUtil;
-	
+
+    @RequestMapping(value = "/getAll", method = RequestMethod.GET)
+    public Result<List<SysUser>> queryPageList(SysUser user, HttpServletRequest req) {
+        Result<List<SysUser>> result = new Result<List<SysUser>>();
+        QueryWrapper<SysUser> queryWrapper = QueryGenerator.initQueryWrapper(user, req.getParameterMap());
+        List<SysUser> list = sysUserService.list(queryWrapper);
+        result.setSuccess(true);
+        result.setResult(list);
+        return result;
+    }
+
 	@RequestMapping(value = "/list", method = RequestMethod.GET)
 	public Result<IPage<SysUser>> queryPageList(SysUser user,@RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 									  @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,HttpServletRequest req) {
@@ -700,7 +710,7 @@ public class SysUserController {
         }
         return result;
     }
-    
+
     /**
          *  查询当前用户的所有部门/当前部门编码
      * @return
@@ -723,12 +733,12 @@ public class SysUserController {
         return result;
     }
 
-    
+
 
 
 	/**
 	 * 用户注册接口
-	 * 
+	 *
 	 * @param jsonObject
 	 * @param user
 	 * @return
@@ -790,7 +800,7 @@ public class SysUserController {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param 根据用户名或手机号查询用户信息
 	 * @return
 	 */
@@ -824,7 +834,7 @@ public class SysUserController {
 		result.setMessage("验证失败");
 		return result;
 	}
-	
+
 	/**
 	 * 用户手机号验证
 	 */
@@ -844,7 +854,7 @@ public class SysUserController {
 		result.setSuccess(true);
 		return result;
 	}
-	
+
 	/**
 	 * 用户更改密码
 	 */
@@ -880,11 +890,11 @@ public class SysUserController {
             return result;
         }
     }
-	
+
 
 	/**
 	 * 根据TOKEN获取用户的部分信息（返回的数据是可供表单设计器使用的数据）
-	 * 
+	 *
 	 * @return
 	 */
 	@GetMapping("/getUserSectionInfoByToken")
@@ -895,7 +905,7 @@ public class SysUserController {
 			if (oConvertUtils.isEmpty(token)) {
 				 username = JwtUtil.getUserNameByToken(request);
 			} else {
-				 username = JwtUtil.getUsername(token);				
+				 username = JwtUtil.getUsername(token);
 			}
 
 			log.info(" ------ 通过令牌获取部分用户信息，当前用户： " + username);
@@ -916,7 +926,7 @@ public class SysUserController {
 			return Result.error(500, "查询失败:" + e.getMessage());
 		}
 	}
-	
+
 	/**
 	 * 获取用户列表  根据用户名和真实名 模糊匹配
 	 * @param keyword
@@ -934,7 +944,7 @@ public class SysUserController {
 			query.eq(SysUser::getActivitiSync, "1");
 			query.eq(SysUser::getDelFlag,"0");
 			query.and(i -> i.like(SysUser::getUsername, keyword).or().like(SysUser::getRealname, keyword));
-			
+
 			Page<SysUser> page = new Page<>(pageNo, pageSize);
 			IPage<SysUser> res = this.sysUserService.page(page, query);
 			return Result.ok(res);
@@ -942,7 +952,7 @@ public class SysUserController {
 			log.error(e.getMessage(), e);
 			return Result.error(500, "查询失败:" + e.getMessage());
 		}
-		
+
 	}
-	
+
 }

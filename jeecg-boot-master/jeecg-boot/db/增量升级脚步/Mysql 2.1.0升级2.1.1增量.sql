@@ -192,3 +192,20 @@ CREATE TABLE `sl_material_unit` (
   `sort` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+DROP TABLE IF EXISTS `sl_warehouse`;
+CREATE TABLE `sl_warehouse` (
+  `id` varchar(30) NOT NULL,
+  `name` varchar(50) DEFAULT NULL,
+  `code` varchar(30) DEFAULT NULL,
+  `content` varchar(1000) DEFAULT NULL,
+  `principal_id` varchar(50) DEFAULT NULL,
+  `belongs_to_id` varchar(1000) DEFAULT NULL,
+  `create_time` datetime DEFAULT NULL,
+  `update_time` datetime DEFAULT NULL,
+  `create_by` varchar(30) DEFAULT NULL,
+  `update_by` varchar(30) DEFAULT NULL,
+  `row_sts` int(11) DEFAULT NULL,
+  `sort` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
