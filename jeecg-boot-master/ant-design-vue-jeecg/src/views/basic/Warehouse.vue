@@ -47,11 +47,11 @@
             </a-col>
             <a-col :md="6" :sm="8">
               <a-form-item label="负责人">
-                <a-select v-model="queryParam.belongsToId" placeholder="请选择负责人">
+                <a-select v-model="queryParam.principalId" placeholder="请选择负责人">
                   <a-select-option value="">请选择</a-select-option>
-                  <a-select-option v-for="(item, key) in shopList" :key="key" :value="item.id">
-                    <span style="display: inline-block;width: 100%" :title=" item.departName || item.departNameEn ">
-                      {{ item.departName || item.departNameEn }}
+                  <a-select-option v-for="(item, key) in userList" :key="key" :value="item.id">
+                    <span style="display: inline-block;width: 100%" :title=" item.realname || item.username ">
+                      {{ item.realname || item.username }}
                     </span>
                   </a-select-option>
                 </a-select>
@@ -64,7 +64,7 @@
 
     <!-- 操作按钮区域 -->
     <div class="table-operator" style="border-top: 5px">
-      <a-button @click="handleAdd" type="primary" icon="plus">添加产品单位</a-button>
+      <a-button @click="handleAdd" type="primary" icon="plus">添加仓库</a-button>
 
       <a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
@@ -127,24 +127,24 @@
     <!-- table区域-end -->
 
     <!-- 表单区域 -->
-    <material-unit-modal ref="modalForm" @ok="modalFormOk"></material-unit-modal>
+    <warehouse-modal ref="modalForm" @ok="modalFormOk"></warehouse-modal>
 
   </a-card>
 </template>
 
 <script>
-  import MaterialUnitModal from './MaterialUnitModal'
+  import WarehouseModal from './WarehouseModal'
   import JInput from '@/components/jeecg/JInput'
   import {JeecgListMixin} from '@/mixins/JeecgListMixin'
-  import {loadShopData} from '@/api/api'
+  import {loadShopData, getAllUser} from '@/api/api'
   import ARow from "ant-design-vue/es/grid/Row";
   export default {
-    name: "MaterialUnit",
+    name: "Warehouse",
     mixins: [JeecgListMixin],
     components: {
       ARow,
       JInput,
-      MaterialUnitModal
+      WarehouseModal
     },
     data() {
       return {
@@ -162,14 +162,24 @@
             }
           },
           {
-            title: '单位名称',
+            title: '仓库名称',
             align:"center",
             dataIndex: 'name'
           },
           {
-            title: '单位编码',
+            title: '仓库编码',
             align:"center",
             dataIndex: 'code'
+          },
+          {
+            title: '所属门店',
+            align:"center",
+            dataIndex: 'belongsToName'
+          },
+          {
+            title: '负责人',
+            align:"center",
+            dataIndex: 'principalName'
           },
           {
             title: '备注',
@@ -196,11 +206,12 @@
           }
         ],
         url: {
-          list: "/materialUnit/getPage",
-          delete: "/materialUnit/delete",
-          deleteBatch: "/materialUnit/deleteBatch"
+          list: "/warehouse/getPage",
+          delete: "/warehouse/delete",
+          deleteBatch: "/warehouse/deleteBatch"
         },
-        shopList: []
+        shopList: [],
+        userList: []
       }
     },
     mounted() {
@@ -209,6 +220,11 @@
       loadShopData(params).then((res) => {
         if (res.success) {
           this.shopList = res.result;
+        }
+      })
+      getAllUser().then((res) => {
+        if (res.success) {
+          this.userList = res.result;
         }
       })
     }

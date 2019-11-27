@@ -37,7 +37,7 @@
               :wrapperCol="hwrapperCol"
               label="是否启用分类价格"
               label-width="4">
-              <j-dict-select-tag  v-decorator="['priceFlag', {}]" placeholder="是否启用分类价格" :type="'radio'" :triggerChange="true" dictCode="price_flag"/>
+              <j-dict-select-tag v-decorator="['priceFlag', {}]" placeholder="是否启用分类价格" :type="'radio'" :triggerChange="true" dictCode="price_flag"/>
             </a-form-item>
           </a-col>
         </a-row>

@@ -31,6 +31,38 @@
           </a-col>
         </a-row>
         <a-row>
+          <a-col :md="12" :sm="12">
+            <a-form-item
+              :labelCol="labelCol"
+              :wrapperCol="wrapperCol"
+              label="所属门店">
+              <a-select v-decorator="['belongsToId', {}]" placeholder="请选择门店">
+                <a-select-option value="">请选择</a-select-option>
+                <a-select-option v-for="(item, key) in shopList" :key="key" :value="item.id">
+                    <span style="display: inline-block;width: 100%" :title=" item.departName || item.departNameEn ">
+                      {{ item.departName || item.departNameEn }}
+                    </span>
+                </a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
+          <a-col :md="12" :sm="12">
+            <a-form-item
+              :labelCol="labelCol"
+              :wrapperCol="wrapperCol"
+              label="负责人">
+              <a-select v-decorator="['principalId', {}]" placeholder="请选择负责人">
+                <a-select-option value="">请选择</a-select-option>
+                <a-select-option v-for="(item, key) in userList" :key="key" :value="item.id">
+                    <span style="display: inline-block;width: 100%" :title=" item.realname || item.username ">
+                      {{ item.realname || item.username }}
+                    </span>
+                </a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
+        </a-row>
+        <a-row>
           <a-col :md="24" :sm="24">
             <a-form-item
               :labelCol="hlabelCol"
@@ -49,7 +81,7 @@
 <script>
   import pick from 'lodash.pick'
   import AFormItem from "ant-design-vue/es/form/FormItem";
-  import {addMaterialUnit,editMaterialUnit,duplicateCheck } from '@/api/api'
+  import {addWarehouse,editWarehouse,duplicateCheck,loadShopData, getAllUser } from '@/api/api'
   export default {
     name: "MaterialUnitModal",
     data() {
@@ -82,7 +114,9 @@
               { min: 0, max: 126, message: '长度不超过 126 个字符', trigger: 'blur' }
             ]
           }
-        }
+        },
+        shopList: [],
+        userList: []
       }
     },
     components: {AFormItem},
@@ -97,6 +131,17 @@
         this.model = Object.assign({}, record);
         this.visible = true;
 
+        loadShopData({orgType : '1'}).then((res) => {
+          if (res.success) {
+            this.shopList = res.result;
+          }
+        })
+        getAllUser().then((res) => {
+          if (res.success) {
+            this.userList = res.result;
+          }
+        })
+
         //编辑页面禁止修改角色编码
         if(this.model.id){
           this.roleDisabled = true;
@@ -105,7 +150,7 @@
         }
 
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'name', 'code','content'))
+          this.form.setFieldsValue(pick(this.model,'name', 'code','content','belongsToId','principalId'))
         });
       },
       close () {
@@ -122,9 +167,9 @@
             let obj;
             console.log(formData)
             if(!this.model.id){
-              obj=addMaterialUnit(formData);
+              obj=addWarehouse(formData);
             }else{
-              obj=editMaterialUnit(formData);
+              obj=editWarehouse(formData);
             }
             obj.then((res)=>{
               if(res.success){
@@ -143,6 +188,8 @@
       handleCancel () {
         this.close()
       }
+    },
+    mounted() {
     }
   }
 </script>
