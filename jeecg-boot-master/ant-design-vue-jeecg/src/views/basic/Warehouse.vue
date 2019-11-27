@@ -18,6 +18,20 @@
             </a-form-item>
           </a-col>
 
+
+          <a-col :md="6" :sm="8">
+            <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
+              <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
+              <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
+              <a @click="handleToggleSearch" style="margin-left: 8px">
+                {{ toggleSearchStatus ? '收起' : '展开' }}
+                <a-icon :type="toggleSearchStatus ? 'up' : 'down'"/>
+              </a>
+            </span>
+          </a-col>
+
+        </a-row>
+        <a-row :gutter="24">
           <template v-if="toggleSearchStatus">
             <a-col :md="6" :sm="8">
               <a-form-item label="所属门店">
@@ -31,19 +45,19 @@
                 </a-select>
               </a-form-item>
             </a-col>
+            <a-col :md="6" :sm="8">
+              <a-form-item label="负责人">
+                <a-select v-model="queryParam.belongsToId" placeholder="请选择负责人">
+                  <a-select-option value="">请选择</a-select-option>
+                  <a-select-option v-for="(item, key) in shopList" :key="key" :value="item.id">
+                    <span style="display: inline-block;width: 100%" :title=" item.departName || item.departNameEn ">
+                      {{ item.departName || item.departNameEn }}
+                    </span>
+                  </a-select-option>
+                </a-select>
+              </a-form-item>
+            </a-col>
           </template>
-
-          <a-col :md="6" :sm="8">
-            <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
-              <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
-              <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
-              <a @click="handleToggleSearch" style="margin-left: 8px">
-                {{ toggleSearchStatus ? '收起' : '展开' }}
-                <a-icon :type="toggleSearchStatus ? 'up' : 'down'"/>
-              </a>
-            </span>
-          </a-col>
-
         </a-row>
       </a-form>
     </div>
@@ -123,10 +137,12 @@
   import JInput from '@/components/jeecg/JInput'
   import {JeecgListMixin} from '@/mixins/JeecgListMixin'
   import {loadShopData} from '@/api/api'
+  import ARow from "ant-design-vue/es/grid/Row";
   export default {
     name: "MaterialUnit",
     mixins: [JeecgListMixin],
     components: {
+      ARow,
       JInput,
       MaterialUnitModal
     },
