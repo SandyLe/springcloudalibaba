@@ -47,8 +47,10 @@
 
     <!-- 操作按钮区域 -->
     <div class="table-operator" style="border-top: 5px">
-      <a-button @click="handleAdd" type="primary" icon="plus">添加客户类型</a-button>
-      <a href="/customer/customerSource">添加客户</a>
+      <a-button @click="handleAdd" type="primary" icon="plus">添加客户</a-button>
+      <!-- <router-link to="/customer/customerSource">
+        添加客户
+      </router-link> -->
       <a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
           <a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>
@@ -112,21 +114,21 @@
     <!-- table区域-end -->
 
     <!-- 表单区域 -->
-    <customer-type-modal ref="modalForm" @ok="modalFormOk"></customer-type-modal>
+    <customer-modal ref="modalForm" @ok="modalFormOk"></customer-modal>
 
   </a-card>
 </template>
 
 <script>
-  import CustomerTypeModal from './CustomerTypeModal'
+  import CustomerModal from './CustomerModal'
   import JInput from '@/components/jeecg/JInput'
   import {JeecgListMixin} from '@/mixins/JeecgListMixin'
   export default {
-    name: "CustomerType",
+    name: "Customer",
     mixins: [JeecgListMixin],
     components: {
       JInput,
-      CustomerTypeModal
+      CustomerModal
     },
     data() {
       return {
@@ -196,6 +198,13 @@
           delete: "/customerType/delete",
           deleteBatch: "/customerType/deleteBatch"
         }
+      }
+    },
+    methods: {
+      handleAdd1() {
+        console.log(1234)
+        this.$router.push({ path: "/customer/edit" })
+        // this.$emit("dynamicRouterShow","/customer/customerSource","tianjian")
       }
     }
   }
