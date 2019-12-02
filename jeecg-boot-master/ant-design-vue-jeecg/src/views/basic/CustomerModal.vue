@@ -247,21 +247,220 @@
                 :wrapperCol="hwrapperCol"
                 label="默认发货方式"
                 label-width="4">
-                <j-dict-select-tag v-decorator="['priceFlag', {}]" placeholder="请选择默认发货方式" :type="'select'" :triggerChange="true" dictCode="delivery_type"/>
+                <j-dict-select-tag v-decorator="['priceFlag', {}]" @change="deliveryChange" placeholder="请选择默认发货方式" :type="'select'" :triggerChange="true" dictCode="delivery_type"/>
               </a-form-item>
             </a-col>
           </a-row>
-          <a-row>
-            <a-col :md="24" :sm="24">
-              <a-form-item
-                :labelCol="hlabelCol"
-                :wrapperCol="hwrapperCol"
-                label="备注"
-                label-width="4">
-                <a-input placeholder="请输入备注" v-decorator="[ 'content', validatorRules.content]" />
-              </a-form-item>
-            </a-col>
-          </a-row>
+          <template v-if="zhidingdian">
+            <a-row>
+              <a-col :md="8" :sm="8">
+                <a-form-item
+                  :labelCol="hlabelCol"
+                  :wrapperCol="hwrapperCol"
+                  label="说明"
+                  label-width="4">
+                  <a-input placeholder="请输入说明" v-decorator="[ 'content', validatorRules.content]" />
+                </a-form-item>
+              </a-col>
+              <a-col :md="8" :sm="8">
+                <a-form-item
+                  :labelCol="hlabelCol"
+                  :wrapperCol="hwrapperCol"
+                  label="联系人"
+                  label-width="4">
+                  <a-input placeholder="请输入联系人" v-decorator="[ 'content', validatorRules.content]" />
+                </a-form-item>
+              </a-col>
+              <a-col :md="8" :sm="8">
+                <a-form-item
+                  :labelCol="hlabelCol"
+                  :wrapperCol="hwrapperCol"
+                  label="联系电话"
+                  label-width="4">
+                  <a-input placeholder="请输入联系电话" v-decorator="[ 'content', validatorRules.content]" />
+                </a-form-item>
+              </a-col>
+            </a-row>
+          </template>
+          <template v-if="songche">
+            <a-row>
+              <a-col :md="8" :sm="8">
+                <a-form-item
+                  :labelCol="hlabelCol"
+                  :wrapperCol="hwrapperCol"
+                  label="车牌"
+                  label-width="4">
+                  <a-input placeholder="请输入车牌号" v-decorator="[ 'content', validatorRules.content]" />
+                </a-form-item>
+              </a-col>
+              <a-col :md="8" :sm="8">
+                <a-form-item
+                  :labelCol="hlabelCol"
+                  :wrapperCol="hwrapperCol"
+                  label="司机姓名"
+                  label-width="4">
+                  <a-input placeholder="请输入司机姓名" v-decorator="[ 'content', validatorRules.content]" />
+                </a-form-item>
+              </a-col>
+              <a-col :md="8" :sm="8">
+                <a-form-item
+                  :labelCol="hlabelCol"
+                  :wrapperCol="hwrapperCol"
+                  label="司机电话"
+                  label-width="4">
+                  <a-input placeholder="请输入司机电话" v-decorator="[ 'content', validatorRules.content]" />
+                </a-form-item>
+              </a-col>
+            </a-row>
+            <a-row>
+              <a-col :md="8" :sm="8">
+                <a-form-item
+                  :labelCol="hlabelCol"
+                  :wrapperCol="hwrapperCol"
+                  label="发货地址"
+                  label-width="4">
+                  <a-input placeholder="请输入发货地址" v-decorator="[ 'content', validatorRules.content]" />
+                </a-form-item>
+              </a-col>
+              <a-col :md="8" :sm="8">
+                <a-form-item
+                  :labelCol="hlabelCol"
+                  :wrapperCol="hwrapperCol"
+                  label="收件人"
+                  label-width="4">
+                  <a-input placeholder="请输入收件人" v-decorator="[ 'content', validatorRules.content]" />
+                </a-form-item>
+              </a-col>
+              <a-col :md="8" :sm="8">
+                <a-form-item
+                  :labelCol="hlabelCol"
+                  :wrapperCol="hwrapperCol"
+                  label="联系电话"
+                  label-width="4">
+                  <a-input placeholder="请输入联系电话" v-decorator="[ 'content', validatorRules.content]" />
+                </a-form-item>
+              </a-col>
+            </a-row>
+            <a-row>
+              <a-col :md="24" :sm="24">
+                <a-form-item
+                  labelCol="hlabelCol"
+                  wrapperCol="hwrapperCol"
+                  label="地址">
+                  <a-select v-decorator="['customerSourceId', {}]" placeholder="省" style="width: 10%">
+                    <a-select-option value="">请选择</a-select-option>
+                    <a-select-option v-for="(item, key) in sourceList" :key="key" :value="item.id">
+                    <span style="display: inline-block;width: 100%" :title=" item.name || item.code ">
+                      {{ item.name || item.code }}
+                    </span>
+                    </a-select-option>
+                  </a-select>
+                  <a-select v-decorator="['customerSourceId', {}]" placeholder="市" style="width: 10%">
+                    <a-select-option value="">请选择</a-select-option>
+                    <a-select-option v-for="(item, key) in sourceList" :key="key" :value="item.id">
+                    <span style="display: inline-block;width: 100%" :title=" item.name || item.code ">
+                      {{ item.name || item.code }}
+                    </span>
+                    </a-select-option>
+                  </a-select>
+                  <a-select v-decorator="['customerSourceId', {}]" placeholder="区、县" style="width: 10%">
+                    <a-select-option value="">请选择</a-select-option>
+                    <a-select-option v-for="(item, key) in sourceList" :key="key" :value="item.id">
+                    <span style="display: inline-block;width: 100%" :title=" item.name || item.code ">
+                      {{ item.name || item.code }}
+                    </span>
+                    </a-select-option>
+                  </a-select>
+                  <a-input placeholder="请输入详细地址" v-decorator="[ 'address', validatorRules.address]" style="width: 70%"  />
+                </a-form-item>
+              </a-col>
+            </a-row>
+          </template>
+          <template v-if="wuliu">
+            <a-row>
+              <a-col :md="8" :sm="8">
+                <a-form-item
+                  :labelCol="hlabelCol"
+                  :wrapperCol="hwrapperCol"
+                  label="物流"
+                  label-width="4">
+                  <a-input placeholder="请输入物流" v-decorator="[ 'content', validatorRules.content]" />
+                </a-form-item>
+              </a-col>
+              <a-col :md="8" :sm="8">
+                <a-form-item
+                  :labelCol="hlabelCol"
+                  :wrapperCol="hwrapperCol"
+                  label="网点"
+                  label-width="4">
+                  <a-input placeholder="请输入网点" v-decorator="[ 'content', validatorRules.content]" />
+                </a-form-item>
+              </a-col>
+              <a-col :md="8" :sm="8">
+                <a-form-item
+                  :labelCol="hlabelCol"
+                  :wrapperCol="hwrapperCol"
+                  label="电话"
+                  label-width="4">
+                  <a-input placeholder="请输入电话" v-decorator="[ 'content', validatorRules.content]" />
+                </a-form-item>
+              </a-col>
+            </a-row>
+            <a-row>
+              <a-col :md="8" :sm="8">
+                <a-form-item
+                  :labelCol="hlabelCol"
+                  :wrapperCol="hwrapperCol"
+                  label="收件人"
+                  label-width="4">
+                  <a-input placeholder="请输入收件人" v-decorator="[ 'content', validatorRules.content]" />
+                </a-form-item>
+              </a-col>
+              <a-col :md="8" :sm="8">
+                <a-form-item
+                  :labelCol="hlabelCol"
+                  :wrapperCol="hwrapperCol"
+                  label="联系电话"
+                  label-width="4">
+                  <a-input placeholder="请输入联系电话" v-decorator="[ 'content', validatorRules.content]" />
+                </a-form-item>
+              </a-col>
+            </a-row>
+            <a-row>
+              <a-col :md="24" :sm="24">
+                <a-form-item
+                  labelCol="hlabelCol"
+                  wrapperCol="hwrapperCol"
+                  label="地址">
+                  <a-select v-decorator="['customerSourceId', {}]" placeholder="省" style="width: 10%">
+                    <a-select-option value="">请选择</a-select-option>
+                    <a-select-option v-for="(item, key) in sourceList" :key="key" :value="item.id">
+                    <span style="display: inline-block;width: 100%" :title=" item.name || item.code ">
+                      {{ item.name || item.code }}
+                    </span>
+                    </a-select-option>
+                  </a-select>
+                  <a-select v-decorator="['customerSourceId', {}]" placeholder="市" style="width: 10%">
+                    <a-select-option value="">请选择</a-select-option>
+                    <a-select-option v-for="(item, key) in sourceList" :key="key" :value="item.id">
+                    <span style="display: inline-block;width: 100%" :title=" item.name || item.code ">
+                      {{ item.name || item.code }}
+                    </span>
+                    </a-select-option>
+                  </a-select>
+                  <a-select v-decorator="['customerSourceId', {}]" placeholder="区、县" style="width: 10%">
+                    <a-select-option value="">请选择</a-select-option>
+                    <a-select-option v-for="(item, key) in sourceList" :key="key" :value="item.id">
+                    <span style="display: inline-block;width: 100%" :title=" item.name || item.code ">
+                      {{ item.name || item.code }}
+                    </span>
+                    </a-select-option>
+                  </a-select>
+                  <a-input placeholder="请输入详细地址" v-decorator="[ 'address', validatorRules.address]" style="width: 70%"  />
+                </a-form-item>
+              </a-col>
+            </a-row>
+          </template>
         </a-card>
       </a-form>
     </a-spin>
@@ -318,7 +517,10 @@
           width: '80%',
           style: { top: '20px' },
           fullScreen: false
-        }
+        },
+        zhidingdian: false,
+        wuliu: false,
+        songche: false
       }
     },
     components: {AFormItem,JDictSelectTag},
@@ -390,6 +592,25 @@
           this.modelStyle.style.top = '50px'
         }
         this.modelStyle.fullScreen = mode
+      },
+      deliveryChange(val) {
+        if(val == 'SONGCHE'){
+          this.songche = true;
+          this.wuliu = false;
+          this.zhidingdian = false;
+        } else if(val == 'ZHIDINGDIAN'){
+          this.songche = false;
+          this.wuliu = false;
+          this.zhidingdian = true;
+        } else if(val == 'WULIU'){
+          this.songche = false;
+          this.wuliu = true;
+          this.zhidingdian = false;
+        } else {
+          this.songche = false;
+          this.wuliu = false;
+          this.zhidingdian = false;
+        }
       }
     }
   }
