@@ -99,8 +99,10 @@ const loadCategoryData = (params)=>getAction("/sys/category/loadAllData",params)
 const addSaleOrder = (params)=>postAction("/saleOrder/add",params);
 const addCustomerType = (params)=>postAction("/customerType/add",params)
 const editCustomerType = (params)=>postAction("/customerType/edit",params)
+const getCustomerTypeList = (params)=>getAction("/customerType/getList",params)
 const addCustomerSource = (params)=>postAction("/customerSource/add",params)
 const editCustomerSource = (params)=>postAction("/customerSource/edit",params)
+const getCustomerSourceList = (params)=>getAction("/customerSource/getList",params)
 const addMaterialBrand = (params)=>postAction("/materialBrand/add",params)
 const editMaterialBrand = (params)=>postAction("/materialBrand/edit",params)
 const addMaterialType = (params)=>postAction("/materialType/add",params)
@@ -165,8 +167,10 @@ export {
   addSaleOrder,
   addCustomerType,
   editCustomerType,
+  getCustomerTypeList,
   addCustomerSource,
   editCustomerSource,
+  getCustomerSourceList,
   addMaterialBrand,
   editMaterialBrand,
   addMaterialType,

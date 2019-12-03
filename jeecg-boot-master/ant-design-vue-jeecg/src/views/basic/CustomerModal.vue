@@ -478,7 +478,7 @@
   import pick from 'lodash.pick'
   import AFormItem from "ant-design-vue/es/form/FormItem";
   import JDictSelectTag from '@/components/dict/JDictSelectTag.vue'
-  import {addCustomer,editCustomer,duplicateCheck } from '@/api/api'
+  import {addCustomer,editCustomer,duplicateCheck, getCustomerTypeList, getCustomerSourceList} from '@/api/api'
   export default {
     name: "Customer",
     data() {
@@ -527,7 +527,9 @@
         },
         zhidingdian: false,
         wuliu: false,
-        songche: false
+        songche: false,
+        sourceList: [],
+        typeList: []
       }
     },
     components: {AFormItem,JDictSelectTag},
@@ -535,6 +537,18 @@
     },
     methods: {
       add () {
+        getCustomerTypeList().then((res) => {
+          if (res.success) {
+            this.typeList = res.result;
+          }
+        })
+        getCustomerSourceList().then((res) => {
+          if (res.success) {
+            this.sourceList = res.result;
+          }
+        })
+
+
         this.edit({'gender':'1'});
       },
       edit (record) {
