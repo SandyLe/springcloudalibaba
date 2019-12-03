@@ -210,7 +210,7 @@
                 labelCol="hlabelCol"
                 wrapperCol="hwrapperCol"
                 label="地址">
-                <a-select v-decorator="['customerSourceId', {}]" placeholder="省" style="width: 10%">
+                <a-select v-decorator="['province', {}]" placeholder="省" style="width: 10%">
                   <a-select-option value="">请选择</a-select-option>
                   <a-select-option v-for="(item, key) in sourceList" :key="key" :value="item.id">
                     <span style="display: inline-block;width: 100%" :title=" item.name || item.code ">
@@ -218,7 +218,7 @@
                     </span>
                   </a-select-option>
                 </a-select>
-                <a-select v-decorator="['customerSourceId', {}]" placeholder="市" style="width: 10%">
+                <a-select v-decorator="['city', {}]" placeholder="市" style="width: 10%">
                   <a-select-option value="">请选择</a-select-option>
                   <a-select-option v-for="(item, key) in sourceList" :key="key" :value="item.id">
                     <span style="display: inline-block;width: 100%" :title=" item.name || item.code ">
@@ -226,7 +226,7 @@
                     </span>
                   </a-select-option>
                 </a-select>
-                <a-select v-decorator="['customerSourceId', {}]" placeholder="区、县" style="width: 10%">
+                <a-select v-decorator="['district', {}]" placeholder="区、县" style="width: 10%">
                   <a-select-option value="">请选择</a-select-option>
                   <a-select-option v-for="(item, key) in sourceList" :key="key" :value="item.id">
                     <span style="display: inline-block;width: 100%" :title=" item.name || item.code ">
@@ -247,7 +247,7 @@
                 :wrapperCol="hwrapperCol"
                 label="默认发货方式"
                 label-width="4">
-                <j-dict-select-tag v-decorator="['priceFlag', {}]" @change="deliveryChange" placeholder="请选择默认发货方式" :type="'select'" :triggerChange="true" dictCode="delivery_type"/>
+                <j-dict-select-tag v-decorator="['cdi_defaultType', {}]" @change="deliveryChange" placeholder="请选择默认发货方式" :type="'select'" :triggerChange="true" dictCode="delivery_type"/>
               </a-form-item>
             </a-col>
           </a-row>
@@ -259,7 +259,7 @@
                   :wrapperCol="hwrapperCol"
                   label="说明"
                   label-width="4">
-                  <a-input placeholder="请输入说明" v-decorator="[ 'content', validatorRules.content]" />
+                  <a-input placeholder="请输入说明" v-decorator="[ 'cdi_description', validatorRules.cdi_description]" />
                 </a-form-item>
               </a-col>
               <a-col :md="8" :sm="8">
@@ -268,7 +268,7 @@
                   :wrapperCol="hwrapperCol"
                   label="联系人"
                   label-width="4">
-                  <a-input placeholder="请输入联系人" v-decorator="[ 'content', validatorRules.content]" />
+                  <a-input placeholder="请输入联系人" v-decorator="[ 'cdi_linkman', validatorRules.cdi_linkman]" />
                 </a-form-item>
               </a-col>
               <a-col :md="8" :sm="8">
@@ -277,7 +277,7 @@
                   :wrapperCol="hwrapperCol"
                   label="联系电话"
                   label-width="4">
-                  <a-input placeholder="请输入联系电话" v-decorator="[ 'content', validatorRules.content]" />
+                  <a-input placeholder="请输入联系电话" v-decorator="[ 'cdi_phone', validatorRules.cdi_phone]" />
                 </a-form-item>
               </a-col>
             </a-row>
@@ -290,7 +290,7 @@
                   :wrapperCol="hwrapperCol"
                   label="车牌"
                   label-width="4">
-                  <a-input placeholder="请输入车牌号" v-decorator="[ 'content', validatorRules.content]" />
+                  <a-input placeholder="请输入车牌号" v-decorator="[ 'cdi_carLicense', validatorRules.cdi_carLicense]" />
                 </a-form-item>
               </a-col>
               <a-col :md="8" :sm="8">
@@ -299,7 +299,7 @@
                   :wrapperCol="hwrapperCol"
                   label="司机姓名"
                   label-width="4">
-                  <a-input placeholder="请输入司机姓名" v-decorator="[ 'content', validatorRules.content]" />
+                  <a-input placeholder="请输入司机姓名" v-decorator="[ 'cdi_linkman', validatorRules.cdi_linkman]" />
                 </a-form-item>
               </a-col>
               <a-col :md="8" :sm="8">
@@ -308,7 +308,7 @@
                   :wrapperCol="hwrapperCol"
                   label="司机电话"
                   label-width="4">
-                  <a-input placeholder="请输入司机电话" v-decorator="[ 'content', validatorRules.content]" />
+                  <a-input placeholder="请输入司机电话" v-decorator="[ 'cdi_phone', validatorRules.cdi_phone]" />
                 </a-form-item>
               </a-col>
             </a-row>
@@ -319,7 +319,7 @@
                   :wrapperCol="hwrapperCol"
                   label="发货地址"
                   label-width="4">
-                  <a-input placeholder="请输入发货地址" v-decorator="[ 'content', validatorRules.content]" />
+                  <a-input placeholder="请输入发货地址" v-decorator="[ 'cdi_deliveryAddress', validatorRules.cdi_deliveryAddress]" />
                 </a-form-item>
               </a-col>
               <a-col :md="8" :sm="8">
@@ -328,7 +328,7 @@
                   :wrapperCol="hwrapperCol"
                   label="收件人"
                   label-width="4">
-                  <a-input placeholder="请输入收件人" v-decorator="[ 'content', validatorRules.content]" />
+                  <a-input placeholder="请输入收件人" v-decorator="[ 'cdi_recipients', validatorRules.cdi_recipients]" />
                 </a-form-item>
               </a-col>
               <a-col :md="8" :sm="8">
@@ -337,7 +337,7 @@
                   :wrapperCol="hwrapperCol"
                   label="联系电话"
                   label-width="4">
-                  <a-input placeholder="请输入联系电话" v-decorator="[ 'content', validatorRules.content]" />
+                  <a-input placeholder="请输入联系电话" v-decorator="[ 'cdi_recipients_phone', validatorRules.cdi_recipients_phone]" />
                 </a-form-item>
               </a-col>
             </a-row>
@@ -347,7 +347,7 @@
                   labelCol="hlabelCol"
                   wrapperCol="hwrapperCol"
                   label="地址">
-                  <a-select v-decorator="['customerSourceId', {}]" placeholder="省" style="width: 10%">
+                  <a-select v-decorator="['cdi_province', {}]" placeholder="省" style="width: 10%">
                     <a-select-option value="">请选择</a-select-option>
                     <a-select-option v-for="(item, key) in sourceList" :key="key" :value="item.id">
                     <span style="display: inline-block;width: 100%" :title=" item.name || item.code ">
@@ -355,7 +355,7 @@
                     </span>
                     </a-select-option>
                   </a-select>
-                  <a-select v-decorator="['customerSourceId', {}]" placeholder="市" style="width: 10%">
+                  <a-select v-decorator="['cdi_city', {}]" placeholder="市" style="width: 10%">
                     <a-select-option value="">请选择</a-select-option>
                     <a-select-option v-for="(item, key) in sourceList" :key="key" :value="item.id">
                     <span style="display: inline-block;width: 100%" :title=" item.name || item.code ">
@@ -363,7 +363,7 @@
                     </span>
                     </a-select-option>
                   </a-select>
-                  <a-select v-decorator="['customerSourceId', {}]" placeholder="区、县" style="width: 10%">
+                  <a-select v-decorator="['cdi_district', {}]" placeholder="区、县" style="width: 10%">
                     <a-select-option value="">请选择</a-select-option>
                     <a-select-option v-for="(item, key) in sourceList" :key="key" :value="item.id">
                     <span style="display: inline-block;width: 100%" :title=" item.name || item.code ">
@@ -371,7 +371,7 @@
                     </span>
                     </a-select-option>
                   </a-select>
-                  <a-input placeholder="请输入详细地址" v-decorator="[ 'address', validatorRules.address]" style="width: 70%"  />
+                  <a-input placeholder="请输入详细地址" v-decorator="[ 'cdi_address', validatorRules.cdi_address]" style="width: 70%"  />
                 </a-form-item>
               </a-col>
             </a-row>
@@ -384,7 +384,14 @@
                   :wrapperCol="hwrapperCol"
                   label="物流"
                   label-width="4">
-                  <a-input placeholder="请输入物流" v-decorator="[ 'content', validatorRules.content]" />
+                  <a-select v-decorator="['cdi_logistics', {}]" placeholder="物流" style="width: 10%">
+                    <a-select-option value="">请选择</a-select-option>
+                    <a-select-option v-for="(item, key) in sourceList" :key="key" :value="item.id">
+                    <span style="display: inline-block;width: 100%" :title=" item.name || item.code ">
+                      {{ item.name || item.code }}
+                    </span>
+                    </a-select-option>
+                  </a-select>
                 </a-form-item>
               </a-col>
               <a-col :md="8" :sm="8">
@@ -393,7 +400,7 @@
                   :wrapperCol="hwrapperCol"
                   label="网点"
                   label-width="4">
-                  <a-input placeholder="请输入网点" v-decorator="[ 'content', validatorRules.content]" />
+                  <a-input placeholder="请输入网点" v-decorator="[ 'cdi_branch', validatorRules.cdi_branch]" />
                 </a-form-item>
               </a-col>
               <a-col :md="8" :sm="8">
@@ -402,7 +409,7 @@
                   :wrapperCol="hwrapperCol"
                   label="电话"
                   label-width="4">
-                  <a-input placeholder="请输入电话" v-decorator="[ 'content', validatorRules.content]" />
+                  <a-input placeholder="请输入电话" v-decorator="[ 'cdi_tel', validatorRules.cdi_tel]" />
                 </a-form-item>
               </a-col>
             </a-row>
@@ -413,7 +420,7 @@
                   :wrapperCol="hwrapperCol"
                   label="收件人"
                   label-width="4">
-                  <a-input placeholder="请输入收件人" v-decorator="[ 'content', validatorRules.content]" />
+                  <a-input placeholder="请输入收件人" v-decorator="[ 'cdi_recipients', validatorRules.cdi_recipients]" />
                 </a-form-item>
               </a-col>
               <a-col :md="8" :sm="8">
@@ -422,7 +429,7 @@
                   :wrapperCol="hwrapperCol"
                   label="联系电话"
                   label-width="4">
-                  <a-input placeholder="请输入联系电话" v-decorator="[ 'content', validatorRules.content]" />
+                  <a-input placeholder="请输入联系电话" v-decorator="[ 'cdi_recipients_phone', validatorRules.cdi_recipients_phone]" />
                 </a-form-item>
               </a-col>
             </a-row>
@@ -432,7 +439,7 @@
                   labelCol="hlabelCol"
                   wrapperCol="hwrapperCol"
                   label="地址">
-                  <a-select v-decorator="['customerSourceId', {}]" placeholder="省" style="width: 10%">
+                  <a-select v-decorator="['cdi_province', {}]" placeholder="省" style="width: 10%">
                     <a-select-option value="">请选择</a-select-option>
                     <a-select-option v-for="(item, key) in sourceList" :key="key" :value="item.id">
                     <span style="display: inline-block;width: 100%" :title=" item.name || item.code ">
@@ -440,7 +447,7 @@
                     </span>
                     </a-select-option>
                   </a-select>
-                  <a-select v-decorator="['customerSourceId', {}]" placeholder="市" style="width: 10%">
+                  <a-select v-decorator="['cdi_city', {}]" placeholder="市" style="width: 10%">
                     <a-select-option value="">请选择</a-select-option>
                     <a-select-option v-for="(item, key) in sourceList" :key="key" :value="item.id">
                     <span style="display: inline-block;width: 100%" :title=" item.name || item.code ">
@@ -448,7 +455,7 @@
                     </span>
                     </a-select-option>
                   </a-select>
-                  <a-select v-decorator="['customerSourceId', {}]" placeholder="区、县" style="width: 10%">
+                  <a-select v-decorator="['cdi_district', {}]" placeholder="区、县" style="width: 10%">
                     <a-select-option value="">请选择</a-select-option>
                     <a-select-option v-for="(item, key) in sourceList" :key="key" :value="item.id">
                     <span style="display: inline-block;width: 100%" :title=" item.name || item.code ">
@@ -456,7 +463,7 @@
                     </span>
                     </a-select-option>
                   </a-select>
-                  <a-input placeholder="请输入详细地址" v-decorator="[ 'address', validatorRules.address]" style="width: 70%"  />
+                  <a-input placeholder="请输入详细地址" v-decorator="[ 'cdi_address', validatorRules.cdi_address]" style="width: 70%"  />
                 </a-form-item>
               </a-col>
             </a-row>
