@@ -61,7 +61,7 @@ public class CustomerSourceController {
      */
     @ApiOperation(value = "获取客户来源数据", notes = "获取所有客户来源数据")
     @GetMapping(value = "/getList")
-    public Result<List<CustomerSource>> getList(CustomerSource customerType, HttpServletRequest req) {
+    public Result<?> getList(CustomerSource customerType, HttpServletRequest req) {
         QueryWrapper<CustomerSource> queryWrapper = QueryGenerator.initQueryWrapper(customerType, req.getParameterMap());
         List<CustomerSource> list = customerSourceService.list(queryWrapper);
         return Result.ok(list);

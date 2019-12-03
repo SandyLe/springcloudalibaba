@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
+import java.util.List;
 
 @Slf4j
 @Api(tags = "客户类型")
@@ -49,6 +50,21 @@ public class CustomerTypeController {
         log.info("查询结果数量：" + pageList.getRecords().size());
         log.info("数据总数：" + pageList.getTotal());
         return Result.ok(pageList);
+    }
+
+    /**
+     * 获取所有数据
+     *
+     * @param customerType
+     * @param req
+     * @return
+     */
+    @ApiOperation(value = "获取客户来源数据", notes = "获取所有客户来源数据")
+    @GetMapping(value = "/getList")
+    public Result<?> getList(CustomerType customerType, HttpServletRequest req) {
+        QueryWrapper<CustomerType> queryWrapper = QueryGenerator.initQueryWrapper(customerType, req.getParameterMap());
+        List<CustomerType> list = customerTypeService.list(queryWrapper);
+        return Result.ok(list);
     }
     /**
      * 添加
