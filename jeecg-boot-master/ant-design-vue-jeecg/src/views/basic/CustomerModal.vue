@@ -212,7 +212,7 @@
                 label="地址">
                 <a-select v-decorator="['province', {}]" placeholder="省" style="width: 10%">
                   <a-select-option value="">请选择</a-select-option>
-                  <a-select-option v-for="(item, key) in sourceList" :key="key" :value="item.id">
+                  <a-select-option v-for="(item, key) in provinceList" :key="key" :value="item.id">
                     <span style="display: inline-block;width: 100%" :title=" item.name || item.code ">
                       {{ item.name || item.code }}
                     </span>
@@ -478,7 +478,7 @@
   import pick from 'lodash.pick'
   import AFormItem from "ant-design-vue/es/form/FormItem";
   import JDictSelectTag from '@/components/dict/JDictSelectTag.vue'
-  import {addCustomer,editCustomer,duplicateCheck, getCustomerTypeList, getCustomerSourceList} from '@/api/api'
+  import {addCustomer,editCustomer,duplicateCheck, getCustomerTypeList, getCustomerSourceList, getAreaList} from '@/api/api'
   export default {
     name: "Customer",
     data() {
@@ -529,7 +529,8 @@
         wuliu: false,
         songche: false,
         sourceList: [],
-        typeList: []
+        typeList: [],
+        provinceList: []
       }
     },
     components: {AFormItem,JDictSelectTag},
@@ -547,7 +548,11 @@
             this.sourceList = res.result;
           }
         })
-
+        getAreaList().then((res) => {
+          if (res.success) {
+            this.provinceList = res.result
+          }
+        })
 
         this.edit({'gender':'1'});
       },

@@ -111,6 +111,7 @@ const addMaterialUnit = (params)=>postAction("/materialUnit/add",params)
 const editMaterialUnit = (params)=>postAction("/materialUnit/edit",params)
 const addWarehouse = (params)=>postAction("/warehouse/add",params)
 const editWarehouse = (params)=>postAction("/warehouse/edit",params)
+const getAreaList = (params)=>getAction("/area/getList",params)
 
 const loadShopData = (params)=>getAction("/sys/sysDepart/getSysDepartList",params)
 const getAllUser = (params)=>getAction("/sys/user/getAll",params)
