@@ -55,14 +55,14 @@ public class AreaController {
     /**
      * 获取所有数据
      *
-     * @param Area
+     * @param area
      * @param req
      * @return
      */
     @ApiOperation(value = "获取客户来源数据", notes = "获取所有客户来源数据")
     @GetMapping(value = "/getList")
-    public Result<?> getList(Area Area, HttpServletRequest req) {
-        QueryWrapper<Area> queryWrapper = QueryGenerator.initQueryWrapper(Area, req.getParameterMap());
+    public Result<?> getList(Area area, HttpServletRequest req) {
+        QueryWrapper<Area> queryWrapper = QueryGenerator.initQueryWrapper(area, req.getParameterMap());
         List<Area> list = areaService.list(queryWrapper);
         return Result.ok(list);
     }

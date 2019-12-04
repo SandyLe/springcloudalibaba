@@ -209,3 +209,27 @@ CREATE TABLE `sl_warehouse` (
   `sort` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+DROP TABLE IF EXISTS `sl_area`;
+CREATE TABLE `sl_area` (
+
+  `id` varchar(30) NOT NULL,
+  `name` varchar(50) DEFAULT NULL,
+  `code` varchar(30) DEFAULT NULL,
+  `content` varchar(100) DEFAULT NULL,
+  `parent_id` varchar(50) DEFAULT NULL,
+  `short_name` varchar(30) DEFAULT NULL,
+  `level_type` varchar(30) DEFAULT NULL,
+  `city_code` varchar(30) DEFAULT NULL,
+  `zip_code` varchar(30) DEFAULT NULL,
+  `merge_name` varchar(30) DEFAULT NULL,
+  `lng` decimal(15,4) DEFAULT NULL,
+  `lat`decimal(15,4) DEFAULT NULL,
+  `create_time` datetime DEFAULT NULL,
+  `update_time` datetime DEFAULT NULL,
+  `create_by` varchar(30) DEFAULT NULL,
+  `update_by` varchar(30) DEFAULT NULL,
+  `row_sts` int(11) DEFAULT NULL,
+  `sort` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
