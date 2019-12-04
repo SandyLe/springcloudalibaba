@@ -207,10 +207,10 @@
           <a-row>
             <a-col :md="24" :sm="24">
               <a-form-item
-                labelCol="hlabelCol"
-                wrapperCol="hwrapperCol"
+                :labelCol="hlabelCol"
+                :wrapperCol="hwrapperCol"
                 label="地址">
-                <a-select v-decorator="['province', {}]" placeholder="省" style="width: 10%">
+                <a-select v-decorator="['province', {}]" placeholder="省" style="width: 15%" @change="areaChange" >
                   <a-select-option value="">请选择</a-select-option>
                   <a-select-option v-for="(item, key) in provinceList" :key="key" :value="item.id">
                     <span style="display: inline-block;width: 100%" :title=" item.name || item.code ">
@@ -218,23 +218,23 @@
                     </span>
                   </a-select-option>
                 </a-select>
-                <a-select v-decorator="['city', {}]" placeholder="市" style="width: 10%">
+                <a-select v-decorator="['city', {}]" placeholder="市" style="width: 15%" @change="areaChange" >
                   <a-select-option value="">请选择</a-select-option>
-                  <a-select-option v-for="(item, key) in sourceList" :key="key" :value="item.id">
+                  <a-select-option v-for="(item, key) in cityList" :key="key" :value="item.id">
                     <span style="display: inline-block;width: 100%" :title=" item.name || item.code ">
                       {{ item.name || item.code }}
                     </span>
                   </a-select-option>
                 </a-select>
-                <a-select v-decorator="['district', {}]" placeholder="区、县" style="width: 10%">
+                <a-select v-decorator="['district', {}]" placeholder="区、县" style="width: 15%">
                   <a-select-option value="">请选择</a-select-option>
-                  <a-select-option v-for="(item, key) in sourceList" :key="key" :value="item.id">
+                  <a-select-option v-for="(item, key) in districtList" :key="key" :value="item.id">
                     <span style="display: inline-block;width: 100%" :title=" item.name || item.code ">
                       {{ item.name || item.code }}
                     </span>
                   </a-select-option>
                 </a-select>
-                <a-input placeholder="请输入详细地址" v-decorator="[ 'address', validatorRules.address]" style="width: 70%"  />
+                <a-input placeholder="请输入详细地址" v-decorator="[ 'address', validatorRules.address]" style="width: 55%"  />
               </a-form-item>
             </a-col>
           </a-row>
@@ -255,8 +255,8 @@
             <a-row>
               <a-col :md="8" :sm="8">
                 <a-form-item
-                  :labelCol="hlabelCol"
-                  :wrapperCol="hwrapperCol"
+                  :labelCol="labelCol"
+                  :wrapperCol="wrapperCol"
                   label="说明"
                   label-width="4">
                   <a-input placeholder="请输入说明" v-decorator="[ 'cdi_description', validatorRules.cdi_description]" />
@@ -264,8 +264,8 @@
               </a-col>
               <a-col :md="8" :sm="8">
                 <a-form-item
-                  :labelCol="hlabelCol"
-                  :wrapperCol="hwrapperCol"
+                  :labelCol="labelCol"
+                  :wrapperCol="wrapperCol"
                   label="联系人"
                   label-width="4">
                   <a-input placeholder="请输入联系人" v-decorator="[ 'cdi_linkman', validatorRules.cdi_linkman]" />
@@ -273,8 +273,8 @@
               </a-col>
               <a-col :md="8" :sm="8">
                 <a-form-item
-                  :labelCol="hlabelCol"
-                  :wrapperCol="hwrapperCol"
+                  :labelCol="labelCol"
+                  :wrapperCol="wrapperCol"
                   label="联系电话"
                   label-width="4">
                   <a-input placeholder="请输入联系电话" v-decorator="[ 'cdi_phone', validatorRules.cdi_phone]" />
@@ -286,8 +286,8 @@
             <a-row>
               <a-col :md="8" :sm="8">
                 <a-form-item
-                  :labelCol="hlabelCol"
-                  :wrapperCol="hwrapperCol"
+                  :labelCol="labelCol"
+                  :wrapperCol="wrapperCol"
                   label="车牌"
                   label-width="4">
                   <a-input placeholder="请输入车牌号" v-decorator="[ 'cdi_carLicense', validatorRules.cdi_carLicense]" />
@@ -295,8 +295,8 @@
               </a-col>
               <a-col :md="8" :sm="8">
                 <a-form-item
-                  :labelCol="hlabelCol"
-                  :wrapperCol="hwrapperCol"
+                  :labelCol="labelCol"
+                  :wrapperCol="wrapperCol"
                   label="司机姓名"
                   label-width="4">
                   <a-input placeholder="请输入司机姓名" v-decorator="[ 'cdi_linkman', validatorRules.cdi_linkman]" />
@@ -304,8 +304,8 @@
               </a-col>
               <a-col :md="8" :sm="8">
                 <a-form-item
-                  :labelCol="hlabelCol"
-                  :wrapperCol="hwrapperCol"
+                  :labelCol="labelCol"
+                  :wrapperCol="wrapperCol"
                   label="司机电话"
                   label-width="4">
                   <a-input placeholder="请输入司机电话" v-decorator="[ 'cdi_phone', validatorRules.cdi_phone]" />
@@ -315,8 +315,8 @@
             <a-row>
               <a-col :md="8" :sm="8">
                 <a-form-item
-                  :labelCol="hlabelCol"
-                  :wrapperCol="hwrapperCol"
+                  :labelCol="labelCol"
+                  :wrapperCol="wrapperCol"
                   label="发货地址"
                   label-width="4">
                   <a-input placeholder="请输入发货地址" v-decorator="[ 'cdi_deliveryAddress', validatorRules.cdi_deliveryAddress]" />
@@ -324,8 +324,8 @@
               </a-col>
               <a-col :md="8" :sm="8">
                 <a-form-item
-                  :labelCol="hlabelCol"
-                  :wrapperCol="hwrapperCol"
+                  :labelCol="labelCol"
+                  :wrapperCol="wrapperCol"
                   label="收件人"
                   label-width="4">
                   <a-input placeholder="请输入收件人" v-decorator="[ 'cdi_recipients', validatorRules.cdi_recipients]" />
@@ -333,8 +333,8 @@
               </a-col>
               <a-col :md="8" :sm="8">
                 <a-form-item
-                  :labelCol="hlabelCol"
-                  :wrapperCol="hwrapperCol"
+                  :labelCol="labelCol"
+                  :wrapperCol="wrapperCol"
                   label="联系电话"
                   label-width="4">
                   <a-input placeholder="请输入联系电话" v-decorator="[ 'cdi_recipients_phone', validatorRules.cdi_recipients_phone]" />
@@ -344,8 +344,8 @@
             <a-row>
               <a-col :md="24" :sm="24">
                 <a-form-item
-                  labelCol="hlabelCol"
-                  wrapperCol="hwrapperCol"
+                  :labelCol="hlabelCol"
+                  :wrapperCol="hwrapperCol"
                   label="地址">
                   <a-select v-decorator="['cdi_province', {}]" placeholder="省" style="width: 10%">
                     <a-select-option value="">请选择</a-select-option>
@@ -380,8 +380,8 @@
             <a-row>
               <a-col :md="8" :sm="8">
                 <a-form-item
-                  :labelCol="hlabelCol"
-                  :wrapperCol="hwrapperCol"
+                  :labelCol="labelCol"
+                  :wrapperCol="wrapperCol"
                   label="物流"
                   label-width="4">
                   <a-select v-decorator="['cdi_logistics', {}]" placeholder="物流" style="width: 10%">
@@ -396,8 +396,8 @@
               </a-col>
               <a-col :md="8" :sm="8">
                 <a-form-item
-                  :labelCol="hlabelCol"
-                  :wrapperCol="hwrapperCol"
+                  :labelCol="labelCol"
+                  :wrapperCol="wrapperCol"
                   label="网点"
                   label-width="4">
                   <a-input placeholder="请输入网点" v-decorator="[ 'cdi_branch', validatorRules.cdi_branch]" />
@@ -405,8 +405,8 @@
               </a-col>
               <a-col :md="8" :sm="8">
                 <a-form-item
-                  :labelCol="hlabelCol"
-                  :wrapperCol="hwrapperCol"
+                  :labelCol="labelCol"
+                  :wrapperCol="wrapperCol"
                   label="电话"
                   label-width="4">
                   <a-input placeholder="请输入电话" v-decorator="[ 'cdi_tel', validatorRules.cdi_tel]" />
@@ -416,8 +416,8 @@
             <a-row>
               <a-col :md="8" :sm="8">
                 <a-form-item
-                  :labelCol="hlabelCol"
-                  :wrapperCol="hwrapperCol"
+                  :labelCol="labelCol"
+                  :wrapperCol="wrapperCol"
                   label="收件人"
                   label-width="4">
                   <a-input placeholder="请输入收件人" v-decorator="[ 'cdi_recipients', validatorRules.cdi_recipients]" />
@@ -425,8 +425,8 @@
               </a-col>
               <a-col :md="8" :sm="8">
                 <a-form-item
-                  :labelCol="hlabelCol"
-                  :wrapperCol="hwrapperCol"
+                  :labelCol="labelCol"
+                  :wrapperCol="wrapperCol"
                   label="联系电话"
                   label-width="4">
                   <a-input placeholder="请输入联系电话" v-decorator="[ 'cdi_recipients_phone', validatorRules.cdi_recipients_phone]" />
@@ -436,8 +436,8 @@
             <a-row>
               <a-col :md="24" :sm="24">
                 <a-form-item
-                  labelCol="hlabelCol"
-                  wrapperCol="hwrapperCol"
+                  :labelCol="hlabelCol"
+                  :wrapperCol="hwrapperCol"
                   label="地址">
                   <a-select v-decorator="['cdi_province', {}]" placeholder="省" style="width: 10%">
                     <a-select-option value="">请选择</a-select-option>
@@ -499,7 +499,7 @@
         hlabelCol: {
           xs: { span: 24 },
           xs: { span: 24 },
-          sm: { span: 4 },
+          sm: { span: 2 },
         },
         hwrapperCol: {
           xs: { span: 24 },
@@ -530,7 +530,9 @@
         songche: false,
         sourceList: [],
         typeList: [],
-        provinceList: []
+        provinceList: [],
+        cityList: [],
+        districtList:[]
       }
     },
     components: {AFormItem,JDictSelectTag},
@@ -548,7 +550,7 @@
             this.sourceList = res.result;
           }
         })
-        getAreaList().then((res) => {
+        getAreaList({parentId:'100000'}).then((res) => {
           if (res.success) {
             this.provinceList = res.result
           }
@@ -637,6 +639,29 @@
           this.wuliu = false;
           this.zhidingdian = false;
         }
+      },
+      areaChange(val){
+
+        getAreaList({parentId:val}).then((res) => {
+          if (res.success) {
+            if(res.result && res.result.length>0){
+              if(res.result[0].levelType==2){
+                this.cityList = res.result;
+                this.model.city = '';
+                this.model.district = '';
+                this.$nextTick(() => {
+                  this.form.setFieldsValue(pick(this.model,'city', 'district'))
+                });
+              }else if(res.result[0].levelType==3){
+                this.districtList = res.result;
+                this.model.district = '';
+                this.$nextTick(() => {
+                  this.form.setFieldsValue(pick(this.model, 'district'))
+                });
+              }
+            }
+          }
+        })
       }
     }
   }

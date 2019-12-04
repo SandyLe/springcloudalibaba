@@ -181,7 +181,8 @@ export {
   loadShopData,
   getAllUser,
   addWarehouse,
-  editWarehouse
+  editWarehouse,
+  getAreaList
 }
 
 
