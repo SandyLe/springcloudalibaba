@@ -4,6 +4,7 @@
     :width="modelStyle.width"
     :visible="visible"
     :bodyStyle ="bodyStyle"
+    @ok="handleOk"
     @cancel="handleCancel"
     destroyOnClose
     :confirmLoading="confirmLoading"
