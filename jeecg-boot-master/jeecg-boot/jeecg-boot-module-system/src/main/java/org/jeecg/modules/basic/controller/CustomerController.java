@@ -7,9 +7,12 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.system.query.QueryGenerator;
+import org.jeecg.modules.basic.dto.CustomerEditDto;
 import org.jeecg.modules.basic.entity.Customer;
 import org.jeecg.modules.basic.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,10 +59,15 @@ public class CustomerController {
      * @param customer
      * @return
      */
-    @PostMapping(value = "/add")
+    @PostMapping(value = "/save")
     @AutoLog(value = "添加客户")
     @ApiOperation(value = "添加客户", notes = "添加客户")
-    public Result<?> add(@RequestBody Customer customer) {
+    public Result<?> add(@RequestBody CustomerEditDto customerEditDto) throws Exception {
+        Customer customer = new Customer();
+        BeanUtils.copyProperties(customer, customerEditDto);
+        if(StringUtils.isNotBlank(customerEditDto.getId())){
+            customerService;
+        }
         customerService.save(customer);
         return Result.ok("添加成功！");
     }
