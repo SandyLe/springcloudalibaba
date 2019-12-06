@@ -477,9 +477,10 @@
 
 <script>
   import pick from 'lodash.pick'
+  import moment from 'moment'
   import AFormItem from "ant-design-vue/es/form/FormItem";
   import JDictSelectTag from '@/components/dict/JDictSelectTag.vue'
-  import {addCustomer,editCustomer,duplicateCheck, getCustomerTypeList, getCustomerSourceList, getAreaList} from '@/api/api'
+  import {saveCustomer,duplicateCheck, getCustomerTypeList, getCustomerSourceList, getAreaList} from '@/api/api'
   export default {
     name: "Customer",
     data() {
@@ -526,6 +527,7 @@
           style: { top: '20px' },
           fullScreen: false
         },
+        dateFormat:"YYYY-MM-DD",
         zhidingdian: false,
         wuliu: false,
         songche: false,
@@ -579,19 +581,23 @@
         this.$emit('close');
         this.visible = false;
       },
+      moment,
       handleOk () {
         const that = this;
         // 触发表单验证
         this.form.validateFields((err, values) => {
           if (!err) {
             that.confirmLoading = true;
+            if(!values.birthday){
+              values.birthday = '';
+            }else{
+              values.birthday = values.birthday.format(this.dateFormat);
+            }
             let formData = Object.assign(this.model, values);
             let obj;
             console.log(formData)
-            if(!this.model.id){
-              obj=addCustomer(formData);
-            }else{
-              obj=editCustomer(formData);
+            if(this.model){
+              obj=saveCustomer(formData);
             }
             obj.then((res)=>{
               if(res.success){
