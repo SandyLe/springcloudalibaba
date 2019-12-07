@@ -113,6 +113,7 @@ const addWarehouse = (params)=>postAction("/warehouse/add",params)
 const editWarehouse = (params)=>postAction("/warehouse/edit",params)
 const getAreaList = (params)=>getAction("/area/getList",params)
 const saveCustomer = (params)=>postAction("/customer/save",params)
+const getDeliveryInfo = (params)=>getAction("/customer/getDeliveryInfo",params)
 
 const loadShopData = (params)=>getAction("/sys/sysDepart/getSysDepartList",params)
 const getAllUser = (params)=>getAction("/sys/user/getAll",params)
@@ -184,7 +185,8 @@ export {
   addWarehouse,
   editWarehouse,
   getAreaList,
-  saveCustomer
+  saveCustomer,
+  getDeliveryInfo
 }
 
 

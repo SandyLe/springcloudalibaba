@@ -350,7 +350,7 @@
                   label="地址">
                   <a-select v-decorator="['cdi_province', {}]" placeholder="省" style="width: 10%">
                     <a-select-option value="">请选择</a-select-option>
-                    <a-select-option v-for="(item, key) in sourceList" :key="key" :value="item.id">
+                    <a-select-option v-for="(item, key) in provinceList" :key="key" :value="item.id">
                     <span style="display: inline-block;width: 100%" :title=" item.name || item.code ">
                       {{ item.name || item.code }}
                     </span>
@@ -358,7 +358,7 @@
                   </a-select>
                   <a-select v-decorator="['cdi_city', {}]" placeholder="市" style="width: 10%">
                     <a-select-option value="">请选择</a-select-option>
-                    <a-select-option v-for="(item, key) in sourceList" :key="key" :value="item.id">
+                    <a-select-option v-for="(item, key) in cityList" :key="key" :value="item.id">
                     <span style="display: inline-block;width: 100%" :title=" item.name || item.code ">
                       {{ item.name || item.code }}
                     </span>
@@ -366,7 +366,7 @@
                   </a-select>
                   <a-select v-decorator="['cdi_district', {}]" placeholder="区、县" style="width: 10%">
                     <a-select-option value="">请选择</a-select-option>
-                    <a-select-option v-for="(item, key) in sourceList" :key="key" :value="item.id">
+                    <a-select-option v-for="(item, key) in districtList" :key="key" :value="item.id">
                     <span style="display: inline-block;width: 100%" :title=" item.name || item.code ">
                       {{ item.name || item.code }}
                     </span>
@@ -442,7 +442,7 @@
                   label="地址">
                   <a-select v-decorator="['cdi_province', {}]" placeholder="省" style="width: 10%">
                     <a-select-option value="">请选择</a-select-option>
-                    <a-select-option v-for="(item, key) in sourceList" :key="key" :value="item.id">
+                    <a-select-option v-for="(item, key) in provinceList" :key="key" :value="item.id">
                     <span style="display: inline-block;width: 100%" :title=" item.name || item.code ">
                       {{ item.name || item.code }}
                     </span>
@@ -450,7 +450,7 @@
                   </a-select>
                   <a-select v-decorator="['cdi_city', {}]" placeholder="市" style="width: 10%">
                     <a-select-option value="">请选择</a-select-option>
-                    <a-select-option v-for="(item, key) in sourceList" :key="key" :value="item.id">
+                    <a-select-option v-for="(item, key) in cityList" :key="key" :value="item.id">
                     <span style="display: inline-block;width: 100%" :title=" item.name || item.code ">
                       {{ item.name || item.code }}
                     </span>
@@ -458,7 +458,7 @@
                   </a-select>
                   <a-select v-decorator="['cdi_district', {}]" placeholder="区、县" style="width: 10%">
                     <a-select-option value="">请选择</a-select-option>
-                    <a-select-option v-for="(item, key) in sourceList" :key="key" :value="item.id">
+                    <a-select-option v-for="(item, key) in districtList" :key="key" :value="item.id">
                     <span style="display: inline-block;width: 100%" :title=" item.name || item.code ">
                       {{ item.name || item.code }}
                     </span>
@@ -480,7 +480,7 @@
   import moment from 'moment'
   import AFormItem from "ant-design-vue/es/form/FormItem";
   import JDictSelectTag from '@/components/dict/JDictSelectTag.vue'
-  import {saveCustomer,duplicateCheck, getCustomerTypeList, getCustomerSourceList, getAreaList} from '@/api/api'
+  import {saveCustomer,duplicateCheck, getCustomerTypeList, getCustomerSourceList, getAreaList, getDeliveryInfo} from '@/api/api'
   export default {
     name: "Customer",
     data() {
@@ -543,6 +543,11 @@
     },
     methods: {
       add () {
+
+        this.edit({'gender':'1'});
+      },
+      edit (record) {
+
         getCustomerTypeList().then((res) => {
           if (res.success) {
             this.typeList = res.result;
@@ -558,10 +563,10 @@
             this.provinceList = res.result
           }
         })
+        if (record.birthday) {
+          record.birthday = moment(new Date(record.birthday),this.dateFormat);
+        }
 
-        this.edit({'gender':'1'});
-      },
-      edit (record) {
         this.form.resetFields();
         this.model = Object.assign({}, record);
         this.visible = true;
@@ -569,12 +574,25 @@
         //编辑页面禁止修改角色编码
         if(this.model.id){
           this.roleDisabled = true;
+
+          let that = this;
+          getDeliveryInfo({cdi_sourceId:this.model.id}).then((res) => {
+            if (res.success) {
+              if (res.result) {
+                that.model.cdi_sourceId = res.result.cdi_sourceId;
+              }
+              debugger
+            }
+          })
         }else{
           this.roleDisabled = false;
         }
 
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'name', 'code','content','gender'))
+          this.form.setFieldsValue(pick(this.model,'name', 'code','content','customerTypeId','customerSourceId','phone','memberNo','memberPhone',
+          'memberNickName','nickName','gender','birthday','linkman','tel','email','fax','discount','discountTypeId','bankaccount','bankacctName',
+            'bankName','province','city','district','address','cdi_defaultType','cdi_description','cdi_linkman','cdi_phone','cdi_deliveryAddress',
+          'cdi_recipients','cdi_recipients_phone','cdi_province','cdi_city','cdi_district','cdi_address','cdi_logistics','cdi_branch','cdi_tel'))
         });
       },
       close () {

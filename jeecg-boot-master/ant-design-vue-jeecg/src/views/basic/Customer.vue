@@ -194,9 +194,9 @@
           }
         ],
         url: {
-          list: "/customerType/getPage",
-          delete: "/customerType/delete",
-          deleteBatch: "/customerType/deleteBatch"
+          list: "/customer/getPage",
+          delete: "/customer/delete",
+          deleteBatch: "/customer/deleteBatch"
         }
       }
     },
