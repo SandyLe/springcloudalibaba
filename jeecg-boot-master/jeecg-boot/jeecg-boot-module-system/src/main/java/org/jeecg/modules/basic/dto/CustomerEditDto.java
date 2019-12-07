@@ -60,9 +60,9 @@ public class CustomerEditDto {
     @ApiModelProperty("客户昵称")
     private String nickName;
     @ApiModelProperty("性别")
-    private Integer gender;
+    private String gender;
     @ApiModelProperty("生日")
-    private Date birthday;
+    private String birthday;
     @ApiModelProperty("联系人")
     private String linkman;
     @ApiModelProperty("电话")
@@ -319,19 +319,19 @@ public class CustomerEditDto {
         this.nickName = nickName;
     }
 
-    public Integer getGender() {
+    public String getGender() {
         return gender;
     }
 
-    public void setGender(Integer gender) {
+    public void setGender(String gender) {
         this.gender = gender;
     }
 
-    public Date getBirthday() {
+    public String getBirthday() {
         return birthday;
     }
 
-    public void setBirthday(Date birthday) {
+    public void setBirthday(String birthday) {
         this.birthday = birthday;
     }
 

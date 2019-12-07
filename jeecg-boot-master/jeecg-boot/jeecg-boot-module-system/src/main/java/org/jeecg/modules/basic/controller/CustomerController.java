@@ -4,16 +4,18 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.modules.basic.dto.CustomerEditDto;
 import org.jeecg.modules.basic.entity.Customer;
+import org.jeecg.modules.basic.entity.CustomerDeliveryInfo;
+import org.jeecg.modules.basic.service.CustomerDeliveryInfoService;
 import org.jeecg.modules.basic.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -22,13 +24,15 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 
 @Slf4j
-@Api(tags = "客户类型")
+@Api(tags = "客户")
 @RestController
 @RequestMapping("/customer")
 public class CustomerController {
 
     @Autowired
     private CustomerService customerService;
+    @Autowired
+    private CustomerDeliveryInfoService customerDeliveryInfoService;
 
     /**
      * 分页列表查询
@@ -56,7 +60,7 @@ public class CustomerController {
     /**
      * 添加
      *
-     * @param customer
+     * @param customerEditDto
      * @return
      */
     @PostMapping(value = "/save")
@@ -65,10 +69,21 @@ public class CustomerController {
     public Result<?> add(@RequestBody CustomerEditDto customerEditDto) throws Exception {
         Customer customer = new Customer();
         BeanUtils.copyProperties(customer, customerEditDto);
-        if(StringUtils.isNotBlank(customerEditDto.getId())){
-            customerService;
-        }
         customerService.save(customer);
+        CustomerDeliveryInfo cdi = new CustomerDeliveryInfo();
+        BeanUtils.copyProperties(cdi,customerEditDto);
+        cdi.setCdi_sourceId(customer.getId());
+        cdi.setId(customerEditDto.getCdi_id());
+        cdi.setCreateBy(customerEditDto.getCdi_createBy());
+        cdi.setCreateTime(customerEditDto.getCdi_createTime());
+        cdi.setUpdateBy(customerEditDto.getCdi_updateBy());
+        cdi.setUpdateTime(customerEditDto.getCdi_updateTime());
+        cdi.setCode(customerEditDto.getCdi_code());
+        cdi.setName(customerEditDto.getCdi_name());
+        cdi.setRowSts(customerEditDto.getCdi_rowSts());
+        cdi.setSort(customerEditDto.getCdi_sort());
+        cdi.setCode(customerEditDto.getCdi_content());
+        customerDeliveryInfoService.save(cdi);
         return Result.ok("添加成功！");
     }
 
@@ -124,5 +139,12 @@ public class CustomerController {
     public Result<?> queryById(@ApiParam(name = "id", value = "示例id", required = true) @RequestParam(name = "id", required = true) String id) {
         Customer customer = customerService.getById(id);
         return Result.ok(customer);
+    }
+
+    @GetMapping(value = "/getDeliveryInfo")
+    @ApiModelProperty(value = "查询收货信息", notes = "查询收货信息")
+    public Result<?> getDeliveryInfo(CustomerDeliveryInfo info, HttpServletRequest req){
+        CustomerDeliveryInfo result = customerDeliveryInfoService.getOne(info, req.getParameterMap());
+        return Result.ok(result);
     }
 }
