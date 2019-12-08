@@ -20,12 +20,8 @@
 
           <template v-if="toggleSearchStatus">
             <a-col :md="6" :sm="8">
-              <a-form-item label="是否启用分类价格">
-                <a-select v-model="queryParam.priceFlag" placeholder="请选择分类价格状态查询">
-                  <a-select-option value="">请选择价格状态</a-select-option>
-                  <a-select-option value="1">是</a-select-option>
-                  <a-select-option value="0">否</a-select-option>
-                </a-select>
+              <a-form-item label="手机号">
+                <j-input placeholder="输入手机号查询" v-model="queryParam.phone"></j-input>
               </a-form-item>
             </a-col>
           </template>
@@ -146,28 +142,29 @@
             }
           },
           {
-            title: '类型名称',
+            title: '名称',
             align:"center",
             dataIndex: 'name'
           },
           {
-            title: '类型编码',
+            title: '编码',
             align:"center",
             dataIndex: 'code'
           },
           {
-            title: '是否启用分类价格',
+            title: '手机号',
             align:"center",
-            dataIndex: 'priceFlag',
-            customRender:function (text) {
-              if (text == 0) {
-                return '否';
-              }else if (text == 1) {
-                return '是';
-              }else {
-                return text;
-              }
-            }
+            dataIndex: 'phone'
+          },
+          {
+            title: '客户类型',
+            align:"center",
+            dataIndex: 'customerType'
+          },
+          {
+            title: '客户来源',
+            align:"center",
+            dataIndex: 'customerSource'
           },
           {
             title: '备注',
