@@ -7,6 +7,5 @@ import java.util.Map;
 
 public interface CustomerDeliveryInfoService extends IService<CustomerDeliveryInfo> {
 
-    public CustomerDeliveryInfo getOne(CustomerDeliveryInfo info , Map<String, String[]> paramMap);
 
 }

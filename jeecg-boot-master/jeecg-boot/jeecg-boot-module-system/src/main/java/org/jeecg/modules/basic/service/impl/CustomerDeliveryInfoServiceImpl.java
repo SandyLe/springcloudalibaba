@@ -16,9 +16,4 @@ public class CustomerDeliveryInfoServiceImpl extends ServiceImpl<CustomerDeliver
     @Autowired
     private CustomerDeliveryInfoMapper customerDeliveryInfoMapper;
 
-    @Override
-    public CustomerDeliveryInfo getOne(CustomerDeliveryInfo info ,Map<String, String[]> paramMap){
-
-        return customerDeliveryInfoMapper.selectOne(QueryGenerator.initQueryWrapper(info, paramMap));
-    }
 }

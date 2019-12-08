@@ -1,5 +1,6 @@
 package org.jeecg.modules.basic.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -69,21 +70,23 @@ public class CustomerController {
     public Result<?> add(@RequestBody CustomerEditDto customerEditDto) throws Exception {
         Customer customer = new Customer();
         BeanUtils.copyProperties(customer, customerEditDto);
-        customerService.save(customer);
+        customer.setId(customerEditDto.getId());
+        customer.setCode(customerEditDto.getCode());
+        customerService.saveOrUpdate(customer);
         CustomerDeliveryInfo cdi = new CustomerDeliveryInfo();
         BeanUtils.copyProperties(cdi,customerEditDto);
-        cdi.setCdi_sourceId(customer.getId());
-        cdi.setId(customerEditDto.getCdi_id());
-        cdi.setCreateBy(customerEditDto.getCdi_createBy());
-        cdi.setCreateTime(customerEditDto.getCdi_createTime());
-        cdi.setUpdateBy(customerEditDto.getCdi_updateBy());
-        cdi.setUpdateTime(customerEditDto.getCdi_updateTime());
-        cdi.setCode(customerEditDto.getCdi_code());
-        cdi.setName(customerEditDto.getCdi_name());
-        cdi.setRowSts(customerEditDto.getCdi_rowSts());
-        cdi.setSort(customerEditDto.getCdi_sort());
-        cdi.setCode(customerEditDto.getCdi_content());
-        customerDeliveryInfoService.save(cdi);
+        cdi.setCdiSourceId(customer.getId());
+        cdi.setId(customerEditDto.getCdiId());
+        cdi.setCreateBy(customerEditDto.getCdiCreateBy());
+        cdi.setCreateTime(customerEditDto.getCdiCreateTime());
+        cdi.setUpdateBy(customerEditDto.getCdiUpdateBy());
+        cdi.setUpdateTime(customerEditDto.getCdiUpdateTime());
+        cdi.setCode(customerEditDto.getCdiCode());
+        cdi.setName(customerEditDto.getCdiName());
+        cdi.setRowSts(customerEditDto.getCdiRowSts());
+        cdi.setSort(customerEditDto.getCdiSort());
+        cdi.setCode(customerEditDto.getCdiContent());
+        customerDeliveryInfoService.saveOrUpdate(cdi);
         return Result.ok("添加成功！");
     }
 
@@ -112,6 +115,7 @@ public class CustomerController {
     @ApiOperation(value = "通过ID删除客户", notes = "通过ID删除客户")
     public Result<?> delete(@RequestParam(name = "id", required = true) String id) {
         customerService.removeById(id);
+        customerDeliveryInfoService.remove(new QueryWrapper<CustomerDeliveryInfo>().lambda().eq(CustomerDeliveryInfo::getCdiSourceId, id));
         return Result.ok("删除成功!");
     }
 
@@ -125,6 +129,7 @@ public class CustomerController {
     @ApiOperation(value = "批量删除客户", notes = "批量删除客户")
     public Result<?> deleteBatch(@RequestParam(name = "ids", required = true) String ids) {
         this.customerService.removeByIds(Arrays.asList(ids.split(",")));
+        customerDeliveryInfoService.remove(new LambdaQueryWrapper<CustomerDeliveryInfo>().in(CustomerDeliveryInfo::getCdiSourceId, Arrays.asList(ids.split(","))));
         return Result.ok("批量删除成功！");
     }
 
@@ -144,7 +149,7 @@ public class CustomerController {
     @GetMapping(value = "/getDeliveryInfo")
     @ApiModelProperty(value = "查询收货信息", notes = "查询收货信息")
     public Result<?> getDeliveryInfo(CustomerDeliveryInfo info, HttpServletRequest req){
-        CustomerDeliveryInfo result = customerDeliveryInfoService.getOne(info, req.getParameterMap());
+        CustomerDeliveryInfo result = customerDeliveryInfoService.getOne(QueryGenerator.initQueryWrapper(info, req.getParameterMap()));
         return Result.ok(result);
     }
 }
