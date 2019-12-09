@@ -16,13 +16,21 @@ import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.modules.basic.dto.CustomerEditDto;
 import org.jeecg.modules.basic.entity.Customer;
 import org.jeecg.modules.basic.entity.CustomerDeliveryInfo;
+import org.jeecg.modules.basic.entity.CustomerSource;
+import org.jeecg.modules.basic.entity.CustomerType;
 import org.jeecg.modules.basic.service.CustomerDeliveryInfoService;
 import org.jeecg.modules.basic.service.CustomerService;
+import org.jeecg.modules.basic.service.CustomerSourceService;
+import org.jeecg.modules.basic.service.CustomerTypeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Api(tags = "客户")
@@ -34,7 +42,10 @@ public class CustomerController {
     private CustomerService customerService;
     @Autowired
     private CustomerDeliveryInfoService customerDeliveryInfoService;
-
+    @Autowired
+    private CustomerSourceService customerSourceService;
+    @Autowired
+    private CustomerTypeService customerTypeService;
     /**
      * 分页列表查询
      *
@@ -52,6 +63,18 @@ public class CustomerController {
         Page<Customer> page = new Page<Customer>(pageNo, pageSize);
 
         IPage<Customer> pageList = customerService.page(page, queryWrapper);
+        List<Customer> customerList = pageList.getRecords();
+        List<String> customerTypeIds = customerList.stream().map(Customer::getCustomerTypeId).collect(Collectors.toList());
+        List<String> customerSourceIds = customerList.stream().map(Customer::getCustomerSourceId).collect(Collectors.toList());
+        Collection<CustomerType> customerTypes = customerTypeService.listByIds(customerTypeIds);
+        Collection<CustomerSource> customerSources = customerSourceService.listByIds(customerSourceIds);
+        Map<String, String> customerTypeMap = customerTypes.stream().collect(Collectors.toMap(CustomerType::getId, CustomerType::getName));
+        Map<String, String> customerSourceMap = customerSources.stream().collect(Collectors.toMap(CustomerSource:: getId, CustomerSource:: getName));
+        customerList.stream().forEach(o->{
+            o.setCustomerSource(customerSourceMap.get(o.getCustomerSourceId()));
+            o.setCustomerType(customerTypeMap.get(o.getCustomerTypeId()));
+        });
+
         log.info("查询当前页：" + pageList.getCurrent());
         log.info("查询当前页数量：" + pageList.getSize());
         log.info("查询结果数量：" + pageList.getRecords().size());
