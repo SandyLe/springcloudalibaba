@@ -266,8 +266,8 @@ CREATE TABLE `sl_customer` (
   `fax` varchar(30) DEFAULT NULL,
   `bankaccount` varchar(30) DEFAULT NULL,
   `bankacct_name` varchar(30) DEFAULT NULL,
-  `bank_name` varchar(30) DEFAULT NULL,
-  `discount` varchar(30) DEFAULT NULL,
+  `bank_name` varchar(30) DEFAULT NULL,,
+  `discount` decimal(10,0) DEFAULT NULL
   `discount_type_id` varchar(30) DEFAULT NULL,
   `province` varchar(30) DEFAULT NULL,
   `city` varchar(30) DEFAULT NULL,
@@ -305,4 +305,36 @@ CREATE TABLE `sl_customer_delivery_info` (
   `cdi_logistics` varchar(30) DEFAULT NULL,
   `cdi_branch` varchar(30) DEFAULT NULL,
   `cdi_tel` varchar(30) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+DROP TABLE IF EXISTS `sl_vendor`;
+CREATE TABLE `sl_vendor` (
+
+  `id` varchar(30) NOT NULL,
+  `name` varchar(50) DEFAULT NULL,
+  `code` varchar(30) DEFAULT NULL,
+  `content` varchar(100) DEFAULT NULL,
+  `create_time` datetime DEFAULT NULL,
+  `update_time` datetime DEFAULT NULL,
+  `create_by` varchar(30) DEFAULT NULL,
+  `update_by` varchar(30) DEFAULT NULL,
+  `row_sts` int(11) DEFAULT NULL,
+  `sort` int(11) DEFAULT NULL,
+
+  `linkman` varchar(30) DEFAULT NULL,
+  `tel` varchar(30) DEFAULT NULL,
+  `phone` varchar(30) DEFAULT NULL,
+  `email` varchar(30) DEFAULT NULL,
+  `fax` varchar(30) DEFAULT NULL,
+  `bankaccount` varchar(30) DEFAULT NULL,
+  `bankacct_name` varchar(30) DEFAULT NULL,
+  `bank_name` varchar(30) DEFAULT NULL,,
+  `discount` decimal(10,0) DEFAULT NULL
+  `discount_type_id` varchar(30) DEFAULT NULL,
+  `billing_info` varchar(50) DEFAULT NULL,
+  `web` varchar(30) DEFAULT NULL,
+  `province` varchar(30) DEFAULT NULL,
+  `city` varchar(30) DEFAULT NULL,
+  `district` varchar(30) DEFAULT NULL,
+  `address` varchar(80) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
