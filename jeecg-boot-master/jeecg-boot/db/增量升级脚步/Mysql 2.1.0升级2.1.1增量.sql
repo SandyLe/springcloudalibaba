@@ -338,3 +338,25 @@ CREATE TABLE `sl_vendor` (
   `district` varchar(30) DEFAULT NULL,
   `address` varchar(80) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+DROP TABLE IF EXISTS `sl_material`;
+CREATE TABLE `sl_material` (
+
+  `id` varchar(30) NOT NULL,
+  `name` varchar(50) DEFAULT NULL,
+  `code` varchar(30) DEFAULT NULL,
+  `content` varchar(100) DEFAULT NULL,
+  `create_time` datetime DEFAULT NULL,
+  `update_time` datetime DEFAULT NULL,
+  `create_by` varchar(30) DEFAULT NULL,
+  `update_by` varchar(30) DEFAULT NULL,
+  `row_sts` int(11) DEFAULT NULL,
+  `sort` int(11) DEFAULT NULL,
+
+  `specification` varchar(50) DEFAULT NULL,
+  `brandId` varchar(30) DEFAULT NULL,
+  `typeId` varchar(30) DEFAULT NULL,
+  `uplimit` decimal(10,0) DEFAULT NULL,
+  `downlimit` decimal(10,0) DEFAULT NULL,
+  `pictures` varchar(100) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
