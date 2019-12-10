@@ -116,6 +116,8 @@ const saveCustomer = (params)=>postAction("/customer/save",params)
 const getDeliveryInfo = (params)=>getAction("/customer/getDeliveryInfo",params)
 const addVendor = (params)=>postAction("/vendor/add",params)
 const editVendor = (params)=>postAction("/vendor/edit",params)
+const addMaterial = (params)=>postAction("/material/add",params)
+const editMaterial = (params)=>postAction("/material/edit",params)
 
 const loadShopData = (params)=>getAction("/sys/sysDepart/getSysDepartList",params)
 const getAllUser = (params)=>getAction("/sys/user/getAll",params)
@@ -190,7 +192,9 @@ export {
   saveCustomer,
   getDeliveryInfo,
   addVendor,
-  editVendor
+  editVendor,
+  addMaterial,
+  editMaterial
 }
 
 
