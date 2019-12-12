@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
+import java.util.List;
 
 @Slf4j
 @Api(tags = "产品单位")
@@ -49,6 +50,21 @@ public class MaterialUnitController {
         log.info("查询结果数量：" + pageList.getRecords().size());
         log.info("数据总数：" + pageList.getTotal());
         return Result.ok(pageList);
+    }
+
+    /**
+     * 获取所有数据
+     *
+     * @param materialUnit
+     * @param req
+     * @return
+     */
+    @ApiOperation(value = "获取单位数据", notes = "获取所有单位数据")
+    @GetMapping(value = "/getList")
+    public Result<?> getList(MaterialUnit materialUnit, HttpServletRequest req) {
+        QueryWrapper<MaterialUnit> queryWrapper = QueryGenerator.initQueryWrapper(materialUnit, req.getParameterMap());
+        List<MaterialUnit> list = materialUnitService.list(queryWrapper);
+        return Result.ok(list);
     }
     /**
      * 添加
