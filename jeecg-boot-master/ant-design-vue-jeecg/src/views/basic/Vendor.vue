@@ -161,8 +161,8 @@
           },
           {
             title: '邮箱',
-            align:"email",
-            dataIndex: 'phone'
+            align:"center",
+            dataIndex: 'email'
           },
           {
             title: '备注',

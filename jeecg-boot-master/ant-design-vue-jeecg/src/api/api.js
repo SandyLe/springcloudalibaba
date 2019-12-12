@@ -105,10 +105,13 @@ const editCustomerSource = (params)=>postAction("/customerSource/edit",params)
 const getCustomerSourceList = (params)=>getAction("/customerSource/getList",params)
 const addMaterialBrand = (params)=>postAction("/materialBrand/add",params)
 const editMaterialBrand = (params)=>postAction("/materialBrand/edit",params)
+const getMaterialBrandList = (params)=>getAction("/materialBrand/getList",params)
 const addMaterialType = (params)=>postAction("/materialType/add",params)
 const editMaterialType = (params)=>postAction("/materialType/edit",params)
+const getMaterialTypeList = (params)=>getAction("/materialType/getList",params)
 const addMaterialUnit = (params)=>postAction("/materialUnit/add",params)
 const editMaterialUnit = (params)=>postAction("/materialUnit/edit",params)
+const getMaterialUnitList = (params)=>getAction("/materialUnit/getList",params)
 const addWarehouse = (params)=>postAction("/warehouse/add",params)
 const editWarehouse = (params)=>postAction("/warehouse/edit",params)
 const getAreaList = (params)=>getAction("/area/getList",params)
@@ -194,7 +197,10 @@ export {
   addVendor,
   editVendor,
   addMaterial,
-  editMaterial
+  editMaterial,
+  getMaterialTypeList,
+  getMaterialBrandList,
+  getMaterialUnitList
 }
 
 

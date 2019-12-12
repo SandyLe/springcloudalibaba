@@ -150,19 +150,19 @@
             dataIndex: 'code'
           },
           {
-            title: '负责人',
+            title: '规格',
             align:"center",
-            dataIndex: 'linkman'
+            dataIndex: 'specification'
           },
           {
-            title: '手机',
+            title: '品牌',
             align:"center",
-            dataIndex: 'phone'
+            dataIndex: 'brand'
           },
           {
-            title: '邮箱',
-            align:"email",
-            dataIndex: 'phone'
+            title: '类型',
+            align:"center",
+            dataIndex: 'type'
           },
           {
             title: '备注',
