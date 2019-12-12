@@ -92,27 +92,6 @@ let indexRouter = [{
         },{
           "path": "*", "redirect": "/404", "hidden": true
         }]
-
-  let menu1 =  {
-    path: '/customer/customerEdit',
-    name: 'customer-customerEdit',
-    redirect: null,
-    component: resolve => require(['@/views/basic/CustomerEdit.vue'], resolve),
-    hidden:true,
-    //component:()=> import(`@/views/${item.component}.vue`),
-    meta: {
-      title:'编辑' ,
-      icon: '',
-      url:'' ,
-      permissionList:[{'code':'3'}],
-      keepAlive:true,
-      /*update_begin author:wuxianquan date:20190908 for:赋值 */
-      internalOrExternal:''
-      /*update_end author:wuxianquan date:20190908 for:赋值 */
-    }
-  }
-  indexRouter.push(menu1);
-debugger
   return indexRouter;
 }
 
