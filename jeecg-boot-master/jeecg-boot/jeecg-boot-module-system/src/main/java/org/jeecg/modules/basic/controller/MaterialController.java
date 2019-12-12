@@ -11,13 +11,22 @@ import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.modules.basic.entity.Material;
+import org.jeecg.modules.basic.entity.MaterialBrand;
+import org.jeecg.modules.basic.entity.MaterialType;
+import org.jeecg.modules.basic.entity.MaterialUnit;
+import org.jeecg.modules.basic.service.MaterialBrandService;
 import org.jeecg.modules.basic.service.MaterialService;
+import org.jeecg.modules.basic.service.MaterialTypeService;
+import org.jeecg.modules.basic.service.MaterialUnitService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Api(tags = "产品")
@@ -27,7 +36,12 @@ public class MaterialController {
 
     @Autowired
     private MaterialService materialService;
-
+    @Autowired
+    private MaterialBrandService materialBrandService;
+    @Autowired
+    private MaterialTypeService materialTypeService;
+    @Autowired
+    private MaterialUnitService materialUnitService;
     /**
      * 分页列表查询
      *
@@ -43,8 +57,22 @@ public class MaterialController {
                           HttpServletRequest req) {
         QueryWrapper<Material> queryWrapper = QueryGenerator.initQueryWrapper(material, req.getParameterMap());
         Page<Material> page = new Page<Material>(pageNo, pageSize);
-
         IPage<Material> pageList = materialService.page(page, queryWrapper);
+        List<Material> result = pageList.getRecords();
+        List<String> brandIds = result.stream().map(Material::getBrandId).collect(Collectors.toList());;
+        List<String> typeIds = result.stream().map(Material::getTypeId).collect(Collectors.toList());
+        List<String> unitIds = result.stream().map(Material::getUnitId).collect(Collectors.toList());
+        Collection<MaterialBrand> brands = materialBrandService.listByIds(brandIds);
+        Collection<MaterialType> types = materialTypeService.listByIds(typeIds);
+        Collection<MaterialUnit> units = materialUnitService.listByIds(unitIds);
+        Map<String, String> brandIdNameMap = brands.stream().collect(Collectors.toMap(MaterialBrand::getId, MaterialBrand::getName));
+        Map<String, String> typeIdNameMap = types.stream().collect(Collectors.toMap(MaterialType::getId, MaterialType::getName));
+        Map<String, String> unitIdNameMap = units.stream().collect(Collectors.toMap(MaterialUnit::getId, MaterialUnit::getName));
+        result.stream().forEach(o->{
+            o.setBrand(brandIdNameMap.get(o.getBrandId()));
+            o.setType(typeIdNameMap.get(o.getTypeId()));
+            o.setUnit(unitIdNameMap.get(o.getUnitId()));
+        });
         log.info("查询当前页：" + pageList.getCurrent());
         log.info("查询当前页数量：" + pageList.getSize());
         log.info("查询结果数量：" + pageList.getRecords().size());

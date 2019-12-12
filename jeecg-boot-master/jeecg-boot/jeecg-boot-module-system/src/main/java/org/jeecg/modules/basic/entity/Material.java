@@ -21,6 +21,7 @@ public class Material extends BasicEntity {
     @ApiModelProperty("类型Id")
     private String typeId;
     @ApiModelProperty("类型")
+    @TableField(exist=false)
     private String type;
     @ApiModelProperty("库存上限")
     private BigDecimal uplimit;
@@ -28,6 +29,11 @@ public class Material extends BasicEntity {
     private BigDecimal downlimit;
     @ApiModelProperty("图片")
     private String pictures;
+    @ApiModelProperty("基础单位ID")
+    private String unitId;
+    @ApiModelProperty("基础单位")
+    @TableField(exist=false)
+    private String unit;
 
     public String getSpecification() {
         return specification;
@@ -91,5 +97,21 @@ public class Material extends BasicEntity {
 
     public void setPictures(String pictures) {
         this.pictures = pictures;
+    }
+
+    public String getUnitId() {
+        return unitId;
+    }
+
+    public void setUnitId(String unitId) {
+        this.unitId = unitId;
+    }
+
+    public String getUnit() {
+        return unit;
+    }
+
+    public void setUnit(String unit) {
+        this.unit = unit;
     }
 }

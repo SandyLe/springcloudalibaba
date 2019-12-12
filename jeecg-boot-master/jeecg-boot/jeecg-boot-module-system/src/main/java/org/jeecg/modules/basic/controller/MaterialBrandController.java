@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
+import java.util.List;
 
 @Slf4j
 @Api(tags = "产品品牌")
@@ -49,6 +50,21 @@ public class MaterialBrandController {
         log.info("查询结果数量：" + pageList.getRecords().size());
         log.info("数据总数：" + pageList.getTotal());
         return Result.ok(pageList);
+    }
+
+    /**
+     * 获取所有数据
+     *
+     * @param materialBrand
+     * @param req
+     * @return
+     */
+    @ApiOperation(value = "获取品牌数据", notes = "获取所有品牌数据")
+    @GetMapping(value = "/getList")
+    public Result<?> getList(MaterialBrand materialBrand, HttpServletRequest req) {
+        QueryWrapper<MaterialBrand> queryWrapper = QueryGenerator.initQueryWrapper(materialBrand, req.getParameterMap());
+        List<MaterialBrand> list = materialBrandService.list(queryWrapper);
+        return Result.ok(list);
     }
     /**
      * 添加
