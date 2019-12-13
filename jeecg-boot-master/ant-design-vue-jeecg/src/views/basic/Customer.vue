@@ -43,7 +43,7 @@
 
     <!-- 操作按钮区域 -->
     <div class="table-operator" style="border-top: 5px">
-      <a-button @click="handleAdd1" type="primary" icon="plus">添加客户</a-button>
+      <a-button @click="handleAdd" type="primary" icon="plus">添加客户</a-button>
       <!-- <router-link to="/customer/customerSource">
         添加客户
       </router-link> -->
@@ -92,7 +92,10 @@
             </a>
             <a-menu slot="overlay">
               <a-menu-item>
+                <!--
                 <a href="javascript:;" @click="openAuditTab(1, '3')">详情</a>
+                -->
+                <a href="javascript:;" @click="goDetail(record.id)">详情</a>
               </a-menu-item>
 
               <a-menu-item>
@@ -198,10 +201,11 @@
       }
     },
     methods: {
-      handleAdd1() {
+      goDetail(id) {
         // this.$route.path = "/customer/edit"
         // onclick="self.parent.addOneTab('title','/customer/edit','icon-add')"
-        this.$router.push({ name: "customer-customerEdit"})
+        debugger
+        this.$router.push({ name: "customer-customerEdit", query: {"id":id}})
         // this.$emit("dynamicRouterShow","/customer/customerSource","tianjian")
       }
     }
