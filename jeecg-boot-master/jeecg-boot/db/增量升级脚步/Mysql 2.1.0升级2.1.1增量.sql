@@ -354,8 +354,9 @@ CREATE TABLE `sl_material` (
   `sort` int(11) DEFAULT NULL,
 
   `specification` varchar(50) DEFAULT NULL,
-  `brandId` varchar(30) DEFAULT NULL,
-  `typeId` varchar(30) DEFAULT NULL,
+  `brand_id` varchar(30) DEFAULT NULL,
+  `type_id` varchar(30) DEFAULT NULL,
+  `unit_id` varchar(30) DEFAULT NULL,
   `uplimit` decimal(10,0) DEFAULT NULL,
   `downlimit` decimal(10,0) DEFAULT NULL,
   `pictures` varchar(100) DEFAULT NULL
