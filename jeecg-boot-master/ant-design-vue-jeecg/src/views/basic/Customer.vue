@@ -207,7 +207,7 @@
     methods: {
       goDetail(id) {
         debugger
-        this.$router.push({ name: "monitor-redis-info", query: {"id": id}})
+        this.$router.push({ name: "customer-customerEdit", query: {"id": id}})
       }
     }
   }
