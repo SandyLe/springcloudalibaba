@@ -206,7 +206,6 @@
     },
     methods: {
       goDetail(id) {
-        debugger
         this.$router.push({ name: "customer-customerEdit", query: {"id": id}})
       }
     }
