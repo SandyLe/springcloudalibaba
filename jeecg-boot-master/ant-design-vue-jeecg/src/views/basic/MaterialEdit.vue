@@ -21,7 +21,6 @@
       </detail-list>
       <a-divider style="margin-bottom: 32px"/>
 
-
       <div class="title">退货商品</div>
       <s-table
         style="margin-bottom: 24px"
@@ -249,33 +248,14 @@
       }
     },
     watch: {
-
-      '$route' (to, from) {
+      $route: function () {
+        let id=this.$route.query.id
+        getCustomerOne({id:id}).then((res) => {
+          if (res.success) {
+            this.customer = res.result;
+          }
+        })
         console.log(this.$route.query.id)
-        debugger
-        if (this.$route.query.id) {
-          getCustomerOne({id:this.$route.query.id}).then((res) => {
-            if (res.success) {
-              this.customer = res.result;
-              debugger
-            }
-          })
-        }
-      }
-    },
-    mounted: {
-
-      '$route' (to, from) {
-        console.log(this.$route.query.id)
-        debugger
-        if (this.$route.query.id) {
-          getCustomerOne({id:this.$route.query.id}).then((res) => {
-            if (res.success) {
-              this.customer = res.result;
-              debugger
-            }
-          })
-        }
       }
     }
 

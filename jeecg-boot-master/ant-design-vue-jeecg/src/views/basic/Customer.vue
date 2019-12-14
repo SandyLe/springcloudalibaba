@@ -82,6 +82,9 @@
           </div>
         </template>
 
+        <span slot="nameAction" slot-scope="text, record">
+          <a @click="goDetail(record.id)">{{record.name}}</a>
+        </span>
         <span slot="action" slot-scope="text, record">
           <a @click="handleEdit(record)">编辑</a>
           <a-divider type="vertical"/>
@@ -147,7 +150,8 @@
           {
             title: '名称',
             align:"center",
-            dataIndex: 'name'
+            dataIndex: '',
+            scopedSlots: { customRender: 'nameAction' }
           },
           {
             title: '编码',
@@ -202,11 +206,8 @@
     },
     methods: {
       goDetail(id) {
-        // this.$route.path = "/customer/edit"
-        // onclick="self.parent.addOneTab('title','/customer/edit','icon-add')"
         debugger
-        this.$router.push({ name: "customer-customerEdit", query: {"id":id}})
-        // this.$emit("dynamicRouterShow","/customer/customerSource","tianjian")
+        this.$router.push({ name: "monitor-redis-info", query: {"id": id}})
       }
     }
   }
