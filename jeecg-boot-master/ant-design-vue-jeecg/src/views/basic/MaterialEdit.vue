@@ -142,7 +142,7 @@
         selectedRowKeys: [],
         selectedRows: [],
         url: {
-          list: '/materialSelfUnit/getPage',
+          list: '/materialSelfUnit/getPage?sourceId=' + this.$route.query.id,
           delete: '/materialSelfUnit/delete',
           deleteBatch: "/materialSelfUnit/deleteBatch"
         }
@@ -169,7 +169,6 @@
     create: {
       '$route' (to, from) {
         console.log(this.$route.query.id)
-        debugger
         if (this.$route.query.id) {
           getMaterialOne({id:this.$route.query.id}).then((res) => {
             if (res.success) {
