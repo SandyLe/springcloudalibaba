@@ -361,3 +361,43 @@ CREATE TABLE `sl_material` (
   `downlimit` decimal(10,0) DEFAULT NULL,
   `pictures` varchar(100) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+DROP TABLE IF EXISTS `sl_material_price`;
+CREATE TABLE `sl_material_price` (
+
+  `id` varchar(30) NOT NULL,
+  `name` varchar(50) DEFAULT NULL,
+  `code` varchar(30) DEFAULT NULL,
+  `content` varchar(100) DEFAULT NULL,
+  `create_time` datetime DEFAULT NULL,
+  `update_time` datetime DEFAULT NULL,
+  `create_by` varchar(30) DEFAULT NULL,
+  `update_by` varchar(30) DEFAULT NULL,
+  `row_sts` int(11) DEFAULT NULL,
+  `sort` int(11) DEFAULT NULL,
+
+  `material_id` varchar(30) DEFAULT NULL,
+  `customer_type_id` varchar(30) DEFAULT NULL,
+  `unit_id` varchar(30) DEFAULT NULL,
+  `price` decimal(10,0) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+DROP TABLE IF EXISTS `sl_material_self_unit`;
+CREATE TABLE `sl_material_self_unit` (
+
+  `id` varchar(30) NOT NULL,
+  `name` varchar(50) DEFAULT NULL,
+  `code` varchar(30) DEFAULT NULL,
+  `content` varchar(100) DEFAULT NULL,
+  `create_time` datetime DEFAULT NULL,
+  `update_time` datetime DEFAULT NULL,
+  `create_by` varchar(30) DEFAULT NULL,
+  `update_by` varchar(30) DEFAULT NULL,
+  `row_sts` int(11) DEFAULT NULL,
+  `sort` int(11) DEFAULT NULL,
+
+  `source_id` varchar(30) DEFAULT NULL,
+  `unit_id` varchar(30) DEFAULT NULL,
+  `unit_type` varchar(30) DEFAULT NULL,
+  `qty` decimal(10,0) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
