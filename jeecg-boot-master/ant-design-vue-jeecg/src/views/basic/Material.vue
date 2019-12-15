@@ -80,6 +80,9 @@
           </div>
         </template>
 
+        <span slot="nameAction" slot-scope="text, record">
+          <a @click="goDetail(record.id)">{{record.name}}</a>
+        </span>
         <span slot="action" slot-scope="text, record">
           <a @click="handleEdit(record)">编辑</a>
           <a-divider type="vertical"/>
@@ -142,7 +145,8 @@
           {
             title: '名称',
             align:"center",
-            dataIndex: 'name'
+            dataIndex: '',
+            scopedSlots: { customRender: 'nameAction' }
           },
           {
             title: '编码',
@@ -193,6 +197,11 @@
           delete: "/material/delete",
           deleteBatch: "/material/deleteBatch"
         }
+      }
+    },
+    methods: {
+      goDetail(id) {
+        this.$router.push({ name: "material-materialEdit", query: {"id": id}})
       }
     }
   }

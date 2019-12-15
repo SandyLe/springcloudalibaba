@@ -122,6 +122,11 @@ const addVendor = (params)=>postAction("/vendor/add",params)
 const editVendor = (params)=>postAction("/vendor/edit",params)
 const addMaterial = (params)=>postAction("/material/add",params)
 const editMaterial = (params)=>postAction("/material/edit",params)
+const getMaterialOne = (params)=>getAction("/material/getOne",params)
+const getMaterialSelfUnitList = (params)=>getAction("/materialSelfUnit/getList",params)
+const addMaterialSelfUnit = (params)=>postAction("/materialSelfUnit/add",params)
+const editMaterialSelfUnit = (params)=>postAction("/materialSelfUnit/edit",params)
+
 
 const loadShopData = (params)=>getAction("/sys/sysDepart/getSysDepartList",params)
 const getAllUser = (params)=>getAction("/sys/user/getAll",params)
@@ -202,7 +207,11 @@ export {
   editMaterial,
   getMaterialTypeList,
   getMaterialBrandList,
-  getMaterialUnitList
+  getMaterialUnitList,
+  getMaterialOne,
+  getMaterialSelfUnitList,
+  addMaterialSelfUnit,
+  editMaterialSelfUnit
 }
 
 

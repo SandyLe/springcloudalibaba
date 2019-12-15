@@ -100,8 +100,8 @@
             <a-form-item
               :labelCol="labelCol"
               :wrapperCol="wrapperCol"
-              label="基础单位">
-              <a-select v-decorator="['unitId', {}]" placeholder="基础单位" >
+              label="单位">
+              <a-select v-decorator="['unitId', {}]" placeholder="单位" >
                 <a-select-option value="">请选择</a-select-option>
                 <a-select-option v-for="(item, key) in unitList" :key="key" :value="item.id">
                     <span style="display: inline-block;width: 100%" :title=" item.name || item.code ">

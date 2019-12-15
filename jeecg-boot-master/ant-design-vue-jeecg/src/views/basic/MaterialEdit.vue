@@ -2,244 +2,150 @@
   <page-layout :title="title">
     <a-card :bordered="false">
       <detail-list title="基本信息">
-        <detail-list-item term="客户名称">{{customer.name}}</detail-list-item>
-        <detail-list-item term="客户编码">{{customer.code}}</detail-list-item>
-        <detail-list-item term="状态">{{customer.rowSts}}2</detail-list-item>
-        <detail-list-item term="客户类型">{{customer.customerTypeId}}</detail-list-item>
-        <detail-list-item term="客户来源">{{customer.customerSourceId}}</detail-list-item>
-        <detail-list-item term="性别">{{customer.gender}}</detail-list-item>
+        <detail-list-item term="产品名称">{{material.name}}</detail-list-item>
+        <detail-list-item term="产品编码">{{material.code}}</detail-list-item>
+        <detail-list-item term="状态">{{material.rowSts}}2</detail-list-item>
+        <detail-list-item term="产品规格">{{material.specification}}</detail-list-item>
+        <detail-list-item term="产品类型">{{material.type}}</detail-list-item>
+        <detail-list-item term="产品品牌">{{material.brand}}</detail-list-item>
       </detail-list>
       <a-divider style="margin-bottom: 32px"/>
       <detail-list title="其他信息">
-        <detail-list-item term="客户昵称">{{customer.nickName}}</detail-list-item>
-        <detail-list-item term="生日">{{customer.birthday}}</detail-list-item>
-        <detail-list-item term="联系人">{{customer.linkman}}</detail-list-item>
-        <detail-list-item term="联系电话">{{customer.tel}}</detail-list-item>
-        <detail-list-item term="手机">	{{customer.phone}}</detail-list-item>
-        <detail-list-item term="邮箱">	{{customer.email}}</detail-list-item>
-        <detail-list-item term="传真">	{{customer.fax}}</detail-list-item>
+        <detail-list-item term="库存上限">{{material.nickName}}</detail-list-item>
+        <detail-list-item term="库存下限">{{material.birthday}}</detail-list-item>
+        <detail-list-item term="单位">{{material.linkman}}</detail-list-item>
       </detail-list>
       <a-divider style="margin-bottom: 32px"/>
 
-      <div class="title">退货商品</div>
-      <s-table
-        style="margin-bottom: 24px"
-        :columns="goodsColumns"
-        :data="loadGoodsData">
 
-      </s-table>
+      <div class="title">产品计量单位</div>
+      <!-- 操作按钮区域 -->
+      <div class="table-operator" style="border-top: 5px">
+        <a-button @click="handleAddUnit" type="primary" icon="plus">添加产品计量单位</a-button>
 
-      <div class="title">退货进度</div>
-      <s-table
-        style="margin-bottom: 24px"
-        :columns="scheduleColumns"
-        :data="loadScheduleData">
+        <a-dropdown v-if="selectedRowKeys.length > 0">
+          <a-menu slot="overlay">
+            <a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>
+          </a-menu>
+          <a-button style="margin-left: 8px">
+            批量操作 <a-icon type="down" />
+          </a-button>
+        </a-dropdown>
+      </div>
+      <a-table
+        :size="size"
+        :bordered="bordered"
+        :loading="loading"
+        :columns="columns"
+        :dataSource="dataSource"
+        :rowKey="rowKey"
+        :pagination="pagination"
+        :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
+        @change="handleTableChange">
+        <!--&gt;-->
 
-        <template
-          slot="status"
-          slot-scope="status">
-          <a-badge :status="status" :text="status | statusFilter"/>
+        <template slot="avatarslot" slot-scope="text, record, index">
+          <div class="anty-img-wrap">
+            <a-avatar shape="square" :src="getAvatarView(record.avatar)" icon="user"/>
+          </div>
         </template>
 
-      </s-table>
+        <span slot="action" slot-scope="text, record">
+          <a @click="handleEdit(record)">编辑</a>
+          <a-divider type="vertical"/>
+
+          <a-dropdown>
+            <a class="ant-dropdown-link">
+              更多 <a-icon type="down"/>
+            </a>
+            <a-menu slot="overlay">
+              <a-menu-item>
+                <a href="javascript:;" @click="handleDetail(record)">详情</a>
+              </a-menu-item>
+
+              <a-menu-item>
+                <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
+                  <a>删除</a>
+                </a-popconfirm>
+              </a-menu-item>
+            </a-menu>
+          </a-dropdown>
+        </span>
+      </a-table>
+
+      <!-- 表单区域 -->
+      <material-self-unit-modal ref="modalFormSelfUnit" @ok="modalFormOk"></material-self-unit-modal>
     </a-card>
   </page-layout>
 </template>
 
 <script>
+  import { JeecgListMixin } from '@/mixins/JeecgListMixin'
+  import MaterialSelfUnitModal from './MaterialSelfUnitModal'
   import PageLayout from '@/components/page/PageLayout'
-  import STable from '@/components/table/'
   import DetailList from '@/components/tools/DetailList'
-  import ABadge from "ant-design-vue/es/badge/Badge"
-  import {getCustomerOne} from '@/api/api'
+  import {getMaterialOne} from '@/api/api'
   const DetailListItem = DetailList.Item
 
   export default {
+    mixins: [JeecgListMixin],
     components: {
+      MaterialSelfUnitModal,
       PageLayout,
-      ABadge,
       DetailList,
-      DetailListItem,
-      STable
+      DetailListItem
     },
     data () {
       return {
-        customer: {},
-        goodsColumns: [
+        material: {},
+        /**
+         * 表格大小风格，default, middle, small
+         */
+        size: 'default',
+        loading: true,
+        bordered: false,
+        rowKey: 'id',
+        pagination: {},
+        columns: [
           {
-            title: '商品编号',
-            dataIndex: 'id',
-            key: 'id'
+            title: '单位',
+            dataIndex: 'unit',
+            key: 'unit'
           },
           {
-            title: '商品名称',
-            dataIndex: 'name',
-            key: 'name'
+            title: '单位类型',
+            align:"center",
+            dataIndex: 'unitType',
+            customRender:function (text) {
+              if (text == '0') {
+                return '附属单位';
+              }else if (text == '1') {
+                return '主单位';
+              }else {
+                return text;
+              }
+            }
           },
           {
-            title: '商品条码',
-            dataIndex: 'barcode',
-            key: 'barcode'
+            title: '与主单位比例',
+            align:"center",
+            dataIndex: 'qty'
           },
           {
-            title: '单价',
-            dataIndex: 'price',
-            key: 'price',
-            align: 'right'
-          },
-          {
-            title: '数量（件）',
-            dataIndex: 'num',
-            key: 'num',
-            align: 'right'
-          },
-          {
-            title: '金额',
-            dataIndex: 'amount',
-            key: 'amount',
-            align: 'right'
+            title: '操作',
+            dataIndex: 'action',
+            align:"center",
+            scopedSlots: { customRender: 'action' },
           }
         ],
-        // 加载数据方法 必须为 Promise 对象
-        loadGoodsData: () => {
-          return new Promise((resolve => {
-            resolve({
-              data: [
-                {
-                  id: '1234561',
-                  name: '矿泉水 550ml',
-                  barcode: '12421432143214321',
-                  price: '2.00',
-                  num: '1',
-                  amount: '2.00'
-                },
-                {
-                  id: '1234562',
-                  name: '凉茶 300ml',
-                  barcode: '12421432143214322',
-                  price: '3.00',
-                  num: '2',
-                  amount: '6.00'
-                },
-                {
-                  id: '1234563',
-                  name: '好吃的薯片',
-                  barcode: '12421432143214323',
-                  price: '7.00',
-                  num: '4',
-                  amount: '28.00'
-                },
-                {
-                  id: '1234564',
-                  name: '特别好吃的蛋卷',
-                  barcode: '12421432143214324',
-                  price: '8.50',
-                  num: '3',
-                  amount: '25.50'
-                }
-              ],
-              pageSize: 10,
-              pageNo: 1,
-              totalPage: 1,
-              totalCount: 10
-            })
-          })).then(res => {
-            return res
-          })
-        },
-
-        scheduleColumns: [
-          {
-            title: '时间',
-            dataIndex: 'time',
-            key: 'time'
-          },
-          {
-            title: '当前进度',
-            dataIndex: 'rate',
-            key: 'rate'
-          },
-          {
-            title: '状态',
-            dataIndex: 'status',
-            key: 'status',
-            scopedSlots: { customRender: 'status' },
-          },
-          {
-            title: '操作员ID',
-            dataIndex: 'operator',
-            key: 'operator'
-          },
-          {
-            title: '耗时',
-            dataIndex: 'cost',
-            key: 'cost'
-          }
-        ],
-        loadScheduleData: () => {
-          return new Promise((resolve => {
-            resolve({
-              data: [
-                {
-                  key: '1',
-                  time: '2017-10-01 14:10',
-                  rate: '联系客户',
-                  status: 'processing',
-                  operator: '取货员 ID1234',
-                  cost: '5mins'
-                },
-                {
-                  key: '2',
-                  time: '2017-10-01 14:05',
-                  rate: '取货员出发',
-                  status: 'success',
-                  operator: '取货员 ID1234',
-                  cost: '1h'
-                },
-                {
-                  key: '3',
-                  time: '2017-10-01 13:05',
-                  rate: '取货员接单',
-                  status: 'success',
-                  operator: '取货员 ID1234',
-                  cost: '5mins'
-                },
-                {
-                  key: '4',
-                  time: '2017-10-01 13:00',
-                  rate: '申请审批通过',
-                  status: 'success',
-                  operator: '系统',
-                  cost: '1h'
-                },
-                {
-                  key: '5',
-                  time: '2017-10-01 12:00',
-                  rate: '发起退货申请',
-                  status: 'success',
-                  operator: '用户',
-                  cost: '5mins'
-                }
-              ],
-              pageSize: 10,
-              pageNo: 1,
-              totalPage: 1,
-              totalCount: 10
-            })
-          })).then(res => {
-            return res
-          })
-        },
-      }
-    },
-    filters: {
-      statusFilter(status) {
-        const statusMap = {
-          'processing': '进行中',
-          'success': '完成',
-          'failed': '失败'
+        selfUnitPage:[],
+        selectedRowKeys: [],
+        selectedRows: [],
+        url: {
+          list: '/materialSelfUnit/getPage',
+          delete: '/materialSelfUnit/delete',
+          deleteBatch: "/materialSelfUnit/deleteBatch"
         }
-        return statusMap[status]
       }
     },
     computed: {
@@ -248,14 +154,56 @@
       }
     },
     watch: {
-      $route: function () {
-        let id=this.$route.query.id
-        getCustomerOne({id:id}).then((res) => {
+
+      '$route' (to, from) {
+        console.log(this.$route.query.id)
+        if (this.$route.query.id) {
+          getMaterialOne({id:this.$route.query.id}).then((res) => {
+            if (res.success) {
+              this.material = res.result;
+            }
+          })
+        }
+      }
+    },
+    create: {
+      '$route' (to, from) {
+        console.log(this.$route.query.id)
+        debugger
+        if (this.$route.query.id) {
+          getMaterialOne({id:this.$route.query.id}).then((res) => {
+            if (res.success) {
+              this.material = res.result;
+            }
+          })
+
+        }
+      }
+    },
+    mounted() {
+      if (this.$route.query.id) {
+        getMaterialOne({id:this.$route.query.id}).then((res) => {
           if (res.success) {
-            this.customer = res.result;
+            this.material = res.result;
           }
         })
-        console.log(this.$route.query.id)
+      }
+    },
+    methods: {
+      handleAddUnit: function () {
+        this.$refs.modalFormSelfUnit.add(this.$route.query.id);
+        this.$refs.modalFormSelfUnit.title = "新增";
+        this.$refs.modalFormSelfUnit.disableSubmit = false;
+      },
+      handleDetail:function(record){
+        this.$refs.modalFormSelfUnit.edit(record);
+        this.$refs.modalFormSelfUnit.title="详情";
+        this.$refs.modalFormSelfUnit.disableSubmit = true;
+      },
+      handleEdit: function (record) {
+        this.$refs.modalFormSelfUnit.edit(record);
+        this.$refs.modalFormSelfUnit.title = "编辑";
+        this.$refs.modalFormSelfUnit.disableSubmit = false;
       }
     }
 
