@@ -10,14 +10,20 @@ import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.system.query.QueryGenerator;
+import org.jeecg.modules.basic.entity.CustomerType;
+import org.jeecg.modules.basic.entity.Material;
 import org.jeecg.modules.basic.entity.MaterialPrice;
-import org.jeecg.modules.basic.service.MaterialPriceService;
+import org.jeecg.modules.basic.entity.MaterialUnit;
+import org.jeecg.modules.basic.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Api(tags = "产品价格")
@@ -27,6 +33,12 @@ public class MaterialPriceController {
 
     @Autowired
     private MaterialPriceService materialPriceService;
+    @Autowired
+    private MaterialUnitService materialUnitService;
+    @Autowired
+    private MaterialService materialService;
+    @Autowired
+    private CustomerTypeService customerTypeService;
 
     /**
      * 分页列表查询
@@ -44,6 +56,22 @@ public class MaterialPriceController {
         QueryWrapper<MaterialPrice> queryWrapper = QueryGenerator.initQueryWrapper(materialPrice, req.getParameterMap());
         Page<MaterialPrice> page = new Page<MaterialPrice>(pageNo, pageSize);
         IPage<MaterialPrice> pageList = materialPriceService.page(page, queryWrapper);
+        List<MaterialPrice> records = pageList.getRecords();
+        List<String> mtlIds = records.stream().map(MaterialPrice::getMaterialId).collect(Collectors.toList());
+        List<String> typeIds = records.stream().map(MaterialPrice::getCustomerTypeId).collect(Collectors.toList());
+        List<String> unitIds = records.stream().map(MaterialPrice::getUnitId).collect(Collectors.toList());
+        Collection<Material> materials = materialService.listByIds(mtlIds);
+        Collection<CustomerType> types = customerTypeService.listByIds(typeIds);
+        Collection<MaterialUnit> units = materialUnitService.listByIds(unitIds);
+        Map<String, String> mtlMap = materials.stream().collect(Collectors.toMap(Material::getId, Material::getName));
+        Map<String, String> typeMap = types.stream().collect(Collectors.toMap(CustomerType::getId, CustomerType::getName));
+        Map<String, String> unitMap = units.stream().collect(Collectors.toMap(MaterialUnit::getId, MaterialUnit::getName));
+        records.stream().forEach(o->{
+            o.setCustomerType(typeMap.get(o.getCustomerTypeId()));
+            o.setMaterial(mtlMap.get(o.getMaterialId()));
+            o.setUnit(unitMap.get(o.getUnitId()));
+        });
+        pageList.setRecords(records);
         log.info("查询当前页：" + pageList.getCurrent());
         log.info("查询当前页数量：" + pageList.getSize());
         log.info("查询结果数量：" + pageList.getRecords().size());
