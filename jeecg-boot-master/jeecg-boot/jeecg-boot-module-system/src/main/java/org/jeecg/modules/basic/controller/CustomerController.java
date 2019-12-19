@@ -46,6 +46,21 @@ public class CustomerController {
     private CustomerSourceService customerSourceService;
     @Autowired
     private CustomerTypeService customerTypeService;
+
+    /**
+     * 获取所有数据
+     *
+     * @param customer
+     * @param req
+     * @return
+     */
+    @ApiOperation(value = "获取客户数据", notes = "获取所有客户数据")
+    @GetMapping(value = "/getList")
+    public Result<?> getList(Customer customer, HttpServletRequest req) {
+        QueryWrapper<Customer> queryWrapper = QueryGenerator.initQueryWrapper(customer, req.getParameterMap());
+        List<Customer> list = customerService.list(queryWrapper);
+        return Result.ok(list);
+    }
     /**
      * 分页列表查询
      *
