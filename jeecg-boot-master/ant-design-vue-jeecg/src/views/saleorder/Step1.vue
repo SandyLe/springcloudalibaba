@@ -1,18 +1,18 @@
 <template>
   <div>
-    <a-form style=" margin: 40px auto 0;">
+    <a-form :form="form">
       <a-row>
         <a-col :md="6" :sm="6">
           <a-form-item
-            :labelCol="labelCol"
-            :wrapperCol="wrapperCol"
+            :labelCol="{span: 5}"
+            :wrapperCol="{span: 19}"
             label="客户">
-            <a-select v-decorator="['custid', {}]" placeholder="请选择客户">
+            <a-select v-decorator="['custid', {}]" placeholder="请选择客户"  showSearch
+                      optionFilterProp="children"
+                      notFoundContent="无法找到" >
               <a-select-option value="">请选择</a-select-option>
-              <a-select-option v-for="(item, key) in customerList" :key="key" :value="item.id">
-                    <span style="display: inline-block;width: 100%" :title=" item.name || item.code ">
-                      {{ item.name || item.code }}
-                    </span>
+              <a-select-option v-for="(item, key) in typeList" :key="key" :value="item.id">
+                {{ item.name || item.code }}
               </a-select-option>
             </a-select>
           </a-form-item>
@@ -42,13 +42,10 @@
         </a-col>
         <a-col :md="6" :sm="6">
           <a-form-item
-            label="付款账户"
-            :labelCol="{span: 5}"
-            :wrapperCol="{span: 19}"
-          >
-            <a-select value="1" placeholder="ant-design@alipay.com">
-              <a-select-option value="1">ant-design@alipay.com</a-select-option>
-            </a-select>
+            :labelCol="labelCol"
+            :wrapperCol="wrapperCol"
+            label="单号">
+            <a-input placeholder="请输入代码" v-decorator="[ 'code', {}]" />
           </a-form-item>
         </a-col>
       </a-row>
