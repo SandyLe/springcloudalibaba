@@ -10,8 +10,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.system.query.QueryGenerator;
-import org.jeecg.modules.basic.entity.MaterialUnit;
-import org.jeecg.modules.basic.service.MaterialUnitService;
+import org.jeecg.modules.basic.entity.Vendor;
+import org.jeecg.modules.basic.service.VendorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,31 +20,31 @@ import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
-@Api(tags = "产品单位")
+@Api(tags = "供应商")
 @RestController
-@RequestMapping("/materialUnit")
-public class MaterialUnitController {
+@RequestMapping("/vendor")
+public class VendorController {
 
     @Autowired
-    private MaterialUnitService materialUnitService;
+    private VendorService vendorService;
 
     /**
      * 分页列表查询
      *
-     * @param materialUnit
+     * @param vendor
      * @param pageNo
      * @param pageSize
      * @param req
      * @return
      */
-    @ApiOperation(value = "获取产品单位数据列表", notes = "获取所有产品单位数据列表")
+    @ApiOperation(value = "获取供应商数据列表", notes = "获取所有供应商数据列表")
     @GetMapping(value = "/getPage")
-    public Result<?> list(MaterialUnit materialUnit, @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo, @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
+    public Result<?> list(Vendor vendor, @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo, @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
                           HttpServletRequest req) {
-        QueryWrapper<MaterialUnit> queryWrapper = QueryGenerator.initQueryWrapper(materialUnit, req.getParameterMap());
-        Page<MaterialUnit> page = new Page<MaterialUnit>(pageNo, pageSize);
+        QueryWrapper<Vendor> queryWrapper = QueryGenerator.initQueryWrapper(vendor, req.getParameterMap());
+        Page<Vendor> page = new Page<Vendor>(pageNo, pageSize);
 
-        IPage<MaterialUnit> pageList = materialUnitService.page(page, queryWrapper);
+        IPage<Vendor> pageList = vendorService.page(page, queryWrapper);
         log.info("查询当前页：" + pageList.getCurrent());
         log.info("查询当前页数量：" + pageList.getSize());
         log.info("查询结果数量：" + pageList.getRecords().size());
@@ -55,42 +55,42 @@ public class MaterialUnitController {
     /**
      * 获取所有数据
      *
-     * @param materialUnit
+     * @param vendor
      * @param req
      * @return
      */
-    @ApiOperation(value = "获取单位数据", notes = "获取所有单位数据")
+    @ApiOperation(value = "获取客户来源数据", notes = "获取所有客户来源数据")
     @GetMapping(value = "/getList")
-    public Result<?> getList(MaterialUnit materialUnit, HttpServletRequest req) {
-        QueryWrapper<MaterialUnit> queryWrapper = QueryGenerator.initQueryWrapper(materialUnit, req.getParameterMap());
-        List<MaterialUnit> list = materialUnitService.list(queryWrapper);
+    public Result<?> getList(Vendor vendor, HttpServletRequest req) {
+        QueryWrapper<Vendor> queryWrapper = QueryGenerator.initQueryWrapper(vendor, req.getParameterMap());
+        List<Vendor> list = vendorService.list(queryWrapper);
         return Result.ok(list);
     }
     /**
      * 添加
      *
-     * @param materialUnit
+     * @param vendor
      * @return
      */
     @PostMapping(value = "/add")
-    @AutoLog(value = "添加产品单位")
-    @ApiOperation(value = "添加产品单位", notes = "添加产品单位")
-    public Result<?> add(@RequestBody MaterialUnit materialUnit) {
-        materialUnitService.save(materialUnit);
+    @AutoLog(value = "添加供应商")
+    @ApiOperation(value = "添加供应商", notes = "添加供应商")
+    public Result<?> add(@RequestBody Vendor vendor) {
+        vendorService.save(vendor);
         return Result.ok("添加成功！");
     }
 
     /**
      * 修改
      *
-     * @param materialUnit
+     * @param vendor
      * @return
      */
     @PostMapping(value = "/edit")
-    @AutoLog(value = "修改产品单位")
-    @ApiOperation(value = "修改产品单位", notes = "修改产品单位")
-    public Result<?> edit(@RequestBody MaterialUnit materialUnit){
-        materialUnitService.updateById(materialUnit);
+    @AutoLog(value = "修改供应商")
+    @ApiOperation(value = "修改供应商", notes = "修改供应商")
+    public Result<?> edit(@RequestBody Vendor vendor){
+        vendorService.updateById(vendor);
         return Result.ok("修改成功！");
     }
 
@@ -100,11 +100,11 @@ public class MaterialUnitController {
      * @param id
      * @return
      */
-    @AutoLog(value = "删除产品单位")
+    @AutoLog(value = "删除供应商")
     @DeleteMapping(value = "/delete")
-    @ApiOperation(value = "通过ID删除产品单位", notes = "通过ID删除产品单位")
+    @ApiOperation(value = "通过ID删除供应商", notes = "通过ID删除供应商")
     public Result<?> delete(@RequestParam(name = "id", required = true) String id) {
-        materialUnitService.removeById(id);
+        vendorService.removeById(id);
         return Result.ok("删除成功!");
     }
 
@@ -115,9 +115,9 @@ public class MaterialUnitController {
      * @return
      */
     @DeleteMapping(value = "/deleteBatch")
-    @ApiOperation(value = "批量删除产品单位", notes = "批量删除产品单位")
+    @ApiOperation(value = "批量删除供应商", notes = "批量删除供应商")
     public Result<?> deleteBatch(@RequestParam(name = "ids", required = true) String ids) {
-        this.materialUnitService.removeByIds(Arrays.asList(ids.split(",")));
+        this.vendorService.removeByIds(Arrays.asList(ids.split(",")));
         return Result.ok("批量删除成功！");
     }
 
@@ -128,9 +128,9 @@ public class MaterialUnitController {
      * @return
      */
     @GetMapping(value = "/getOne")
-    @ApiOperation(value = "通过ID查询产品单位", notes = "通过ID查询产品单位")
+    @ApiOperation(value = "通过ID查询供应商", notes = "通过ID查询供应商")
     public Result<?> queryById(@ApiParam(name = "id", value = "示例id", required = true) @RequestParam(name = "id", required = true) String id) {
-        MaterialUnit materialUnit = materialUnitService.getById(id);
-        return Result.ok(materialUnit);
+        Vendor vendor = vendorService.getById(id);
+        return Result.ok(vendor);
     }
 }

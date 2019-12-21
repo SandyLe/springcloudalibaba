@@ -20,8 +20,8 @@
 
           <template v-if="toggleSearchStatus">
             <a-col :md="6" :sm="8">
-              <a-form-item label="手机号">
-                <j-input placeholder="输入手机号查询" v-model="queryParam.phone"></j-input>
+              <a-form-item label="联系人">
+                <j-input placeholder="输入联系人" v-model="queryParam.linkman"></j-input>
               </a-form-item>
             </a-col>
           </template>
@@ -43,10 +43,8 @@
 
     <!-- 操作按钮区域 -->
     <div class="table-operator" style="border-top: 5px">
-      <a-button @click="handleAdd" type="primary" icon="plus">添加客户</a-button>
-      <!-- <router-link to="/customer/customerSource">
-        添加客户
-      </router-link> -->
+      <a-button @click="handleAdd" type="primary" icon="plus">添加供应商</a-button>
+
       <a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
           <a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>
@@ -82,9 +80,6 @@
           </div>
         </template>
 
-        <span slot="nameAction" slot-scope="text, record">
-          <a @click="goDetail(record.id)">{{record.name}}</a>
-        </span>
         <span slot="action" slot-scope="text, record">
           <a @click="handleEdit(record)">编辑</a>
           <a-divider type="vertical"/>
@@ -95,10 +90,7 @@
             </a>
             <a-menu slot="overlay">
               <a-menu-item>
-                <!--
-                <a href="javascript:;" @click="openAuditTab(1, '3')">详情</a>
-                -->
-                <a href="javascript:;" @click="goDetail(record.id)">详情</a>
+                <a href="javascript:;" @click="handleDetail(record)">详情</a>
               </a-menu-item>
 
               <a-menu-item>
@@ -116,21 +108,21 @@
     <!-- table区域-end -->
 
     <!-- 表单区域 -->
-    <customer-modal ref="modalForm" @ok="modalFormOk"></customer-modal>
+    <vendor-modal ref="modalForm" @ok="modalFormOk"></vendor-modal>
 
   </a-card>
 </template>
 
 <script>
-  import CustomerModal from './CustomerModal'
+  import VendorModal from './VendorModal'
   import JInput from '@/components/jeecg/JInput'
   import {JeecgListMixin} from '@/mixins/JeecgListMixin'
   export default {
-    name: "Customer",
+    name: "Vendor",
     mixins: [JeecgListMixin],
     components: {
       JInput,
-      CustomerModal
+      VendorModal
     },
     data() {
       return {
@@ -150,8 +142,7 @@
           {
             title: '名称',
             align:"center",
-            dataIndex: '',
-            scopedSlots: { customRender: 'nameAction' }
+            dataIndex: 'name'
           },
           {
             title: '编码',
@@ -159,19 +150,19 @@
             dataIndex: 'code'
           },
           {
-            title: '手机号',
+            title: '负责人',
+            align:"center",
+            dataIndex: 'linkman'
+          },
+          {
+            title: '手机',
             align:"center",
             dataIndex: 'phone'
           },
           {
-            title: '客户类型',
+            title: '邮箱',
             align:"center",
-            dataIndex: 'customerType'
-          },
-          {
-            title: '客户来源',
-            align:"center",
-            dataIndex: 'customerSource'
+            dataIndex: 'email'
           },
           {
             title: '备注',
@@ -198,15 +189,10 @@
           }
         ],
         url: {
-          list: "/customer/getPage",
-          delete: "/customer/delete",
-          deleteBatch: "/customer/deleteBatch"
+          list: "/vendor/getPage",
+          delete: "/vendor/delete",
+          deleteBatch: "/vendor/deleteBatch"
         }
-      }
-    },
-    methods: {
-      goDetail(id) {
-        this.$router.push({ name: "customer-customerEdit", query: {"id": id}})
       }
     }
   }

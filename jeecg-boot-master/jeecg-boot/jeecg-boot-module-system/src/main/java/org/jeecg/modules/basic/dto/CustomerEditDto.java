@@ -10,21 +10,21 @@ import java.util.Date;
 public class CustomerEditDto {
     /** ID */
     @ApiModelProperty(value = "ID")
-    private java.lang.String id;
+    private String id;
     /** 创建人 */
     @ApiModelProperty(value = "创建人")
-    private java.lang.String createBy;
+    private String createBy;
     /** 创建时间 */
     @ApiModelProperty(value = "创建时间")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private java.util.Date createTime;
+    private Date createTime;
     /** 更新人 */
     @ApiModelProperty(value = "更新人")
-    private java.lang.String updateBy;
+    private String updateBy;
     /** 更新时间 */
     @ApiModelProperty(value = "更新时间")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private java.util.Date updateTime;
+    private Date updateTime;
     @ApiModelProperty("名称")
     private String name;
     @ApiModelProperty("代码")
@@ -60,9 +60,9 @@ public class CustomerEditDto {
     @ApiModelProperty("客户昵称")
     private String nickName;
     @ApiModelProperty("性别")
-    private Integer gender;
+    private String gender;
     @ApiModelProperty("生日")
-    private Date birthday;
+    private String birthday;
     @ApiModelProperty("联系人")
     private String linkman;
     @ApiModelProperty("电话")
@@ -93,63 +93,63 @@ public class CustomerEditDto {
     private String billingInfo;
     /** ID */
     @ApiModelProperty(value = "ID")
-    private java.lang.String cdi_id;
+    private String cdiId;
     /** 创建人 */
     @ApiModelProperty(value = "创建人")
-    private java.lang.String cdi_createBy;
+    private String cdiCreateBy;
     /** 创建时间 */
     @ApiModelProperty(value = "创建时间")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private java.util.Date cdi_createTime;
+    private Date cdiCreateTime;
     /** 更新人 */
     @ApiModelProperty(value = "更新人")
-    private java.lang.String cdi_updateBy;
+    private String cdiUpdateBy;
     /** 更新时间 */
     @ApiModelProperty(value = "更新时间")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private java.util.Date cdi_updateTime;
+    private Date cdiUpdateTime;
     @ApiModelProperty("名称")
-    private String cdi_name;
+    private String cdiName;
     @ApiModelProperty("代码")
-    private String cdi_code;
+    private String cdiCode;
     @ApiModelProperty("数据状态")
-    private Integer cdi_rowSts;
+    private Integer cdiRowSts;
     @ApiModelProperty("排序")
-    private Integer cdi_sort;
+    private Integer cdiSort;
     @ApiModelProperty("备注")
-    private String cdi_content;
+    private String cdiContent;
     @ApiModelProperty("客户")
-    private String cdi_sourceId;
+    private String cdiSourceId;
     @ApiModelProperty("发货方式")
-    private String cdi_defaultType;
+    private String cdiDefaultType;
     @ApiModelProperty("说明")
-    private String cdi_description;
+    private String cdiDescription;
     @ApiModelProperty("联系人")
-    private String cdi_linkman;
+    private String cdiLinkman;
     @ApiModelProperty("联系电话")
-    private String cdi_phone;
+    private String cdiPhone;
     @ApiModelProperty("车牌号")
-    private String cdi_carLicense;
+    private String cdiCarLicense;
     @ApiModelProperty("发货地址")
-    private String cdi_deliveryAddress;
+    private String cdiDeliveryAddress;
     @ApiModelProperty("收件人联系电话")
-    private String cdi_recipients_phone;
+    private String cdiRecipientsPhone;
     @ApiModelProperty("收件人")
-    private String cdi_recipients;
+    private String cdiRecipients;
     @ApiModelProperty("省")
-    private String cdi_province;
+    private String cdiProvince;
     @ApiModelProperty("市")
-    private String cdi_city;
+    private String cdiCity;
     @ApiModelProperty("区、县")
-    private String cdi_district;
+    private String cdiDistrict;
     @ApiModelProperty("详细地址")
-    private String cdi_address;
+    private String cdiAddress;
     @ApiModelProperty("物流公司")
-    private String cdi_logistics;
+    private String cdiLogistics;
     @ApiModelProperty("网点")
-    private String cdi_branch;
+    private String cdiBranch;
     @ApiModelProperty("电话")
-    private String cdi_tel;
+    private String cdiTel;
 
     public String getId() {
         return id;
@@ -319,19 +319,19 @@ public class CustomerEditDto {
         this.nickName = nickName;
     }
 
-    public Integer getGender() {
+    public String getGender() {
         return gender;
     }
 
-    public void setGender(Integer gender) {
+    public void setGender(String gender) {
         this.gender = gender;
     }
 
-    public Date getBirthday() {
+    public String getBirthday() {
         return birthday;
     }
 
-    public void setBirthday(Date birthday) {
+    public void setBirthday(String birthday) {
         this.birthday = birthday;
     }
 
@@ -447,203 +447,211 @@ public class CustomerEditDto {
         this.billingInfo = billingInfo;
     }
 
-    public String getCdi_sourceId() {
-        return cdi_sourceId;
+    public String getCdiId() {
+        return cdiId;
     }
 
-    public void setCdi_sourceId(String cdi_sourceId) {
-        this.cdi_sourceId = cdi_sourceId;
+    public void setCdiId(String cdiId) {
+        this.cdiId = cdiId;
     }
 
-    public String getCdi_defaultType() {
-        return cdi_defaultType;
+    public String getCdiCreateBy() {
+        return cdiCreateBy;
     }
 
-    public void setCdi_defaultType(String cdi_defaultType) {
-        this.cdi_defaultType = cdi_defaultType;
+    public void setCdiCreateBy(String cdiCreateBy) {
+        this.cdiCreateBy = cdiCreateBy;
     }
 
-    public String getCdi_description() {
-        return cdi_description;
+    public Date getCdiCreateTime() {
+        return cdiCreateTime;
     }
 
-    public void setCdi_description(String cdi_description) {
-        this.cdi_description = cdi_description;
+    public void setCdiCreateTime(Date cdiCreateTime) {
+        this.cdiCreateTime = cdiCreateTime;
     }
 
-    public String getCdi_linkman() {
-        return cdi_linkman;
+    public String getCdiUpdateBy() {
+        return cdiUpdateBy;
     }
 
-    public void setCdi_linkman(String cdi_linkman) {
-        this.cdi_linkman = cdi_linkman;
+    public void setCdiUpdateBy(String cdiUpdateBy) {
+        this.cdiUpdateBy = cdiUpdateBy;
     }
 
-    public String getCdi_phone() {
-        return cdi_phone;
+    public Date getCdiUpdateTime() {
+        return cdiUpdateTime;
     }
 
-    public void setCdi_phone(String cdi_phone) {
-        this.cdi_phone = cdi_phone;
+    public void setCdiUpdateTime(Date cdiUpdateTime) {
+        this.cdiUpdateTime = cdiUpdateTime;
     }
 
-    public String getCdi_carLicense() {
-        return cdi_carLicense;
+    public String getCdiName() {
+        return cdiName;
     }
 
-    public void setCdi_carLicense(String cdi_carLicense) {
-        this.cdi_carLicense = cdi_carLicense;
+    public void setCdiName(String cdiName) {
+        this.cdiName = cdiName;
     }
 
-    public String getCdi_deliveryAddress() {
-        return cdi_deliveryAddress;
+    public String getCdiCode() {
+        return cdiCode;
     }
 
-    public void setCdi_deliveryAddress(String cdi_deliveryAddress) {
-        this.cdi_deliveryAddress = cdi_deliveryAddress;
+    public void setCdiCode(String cdiCode) {
+        this.cdiCode = cdiCode;
     }
 
-    public String getCdi_province() {
-        return cdi_province;
+    public Integer getCdiRowSts() {
+        return cdiRowSts;
     }
 
-    public void setCdi_province(String cdi_province) {
-        this.cdi_province = cdi_province;
+    public void setCdiRowSts(Integer cdiRowSts) {
+        this.cdiRowSts = cdiRowSts;
     }
 
-    public String getCdi_city() {
-        return cdi_city;
+    public Integer getCdiSort() {
+        return cdiSort;
     }
 
-    public void setCdi_city(String cdi_city) {
-        this.cdi_city = cdi_city;
+    public void setCdiSort(Integer cdiSort) {
+        this.cdiSort = cdiSort;
     }
 
-    public String getCdi_district() {
-        return cdi_district;
+    public String getCdiContent() {
+        return cdiContent;
     }
 
-    public void setCdi_district(String cdi_district) {
-        this.cdi_district = cdi_district;
+    public void setCdiContent(String cdiContent) {
+        this.cdiContent = cdiContent;
     }
 
-    public String getCdi_address() {
-        return cdi_address;
+    public String getCdiSourceId() {
+        return cdiSourceId;
     }
 
-    public void setCdi_address(String cdi_address) {
-        this.cdi_address = cdi_address;
+    public void setCdiSourceId(String cdiSourceId) {
+        this.cdiSourceId = cdiSourceId;
     }
 
-    public String getCdi_logistics() {
-        return cdi_logistics;
+    public String getCdiDefaultType() {
+        return cdiDefaultType;
     }
 
-    public void setCdi_logistics(String cdi_logistics) {
-        this.cdi_logistics = cdi_logistics;
+    public void setCdiDefaultType(String cdiDefaultType) {
+        this.cdiDefaultType = cdiDefaultType;
     }
 
-    public String getCdi_branch() {
-        return cdi_branch;
+    public String getCdiDescription() {
+        return cdiDescription;
     }
 
-    public void setCdi_branch(String cdi_branch) {
-        this.cdi_branch = cdi_branch;
+    public void setCdiDescription(String cdiDescription) {
+        this.cdiDescription = cdiDescription;
     }
 
-    public String getCdi_tel() {
-        return cdi_tel;
+    public String getCdiLinkman() {
+        return cdiLinkman;
     }
 
-    public void setCdi_tel(String cdi_tel) {
-        this.cdi_tel = cdi_tel;
+    public void setCdiLinkman(String cdiLinkman) {
+        this.cdiLinkman = cdiLinkman;
     }
 
-    public String getCdi_id() {
-        return cdi_id;
+    public String getCdiPhone() {
+        return cdiPhone;
     }
 
-    public void setCdi_id(String cdi_id) {
-        this.cdi_id = cdi_id;
+    public void setCdiPhone(String cdiPhone) {
+        this.cdiPhone = cdiPhone;
     }
 
-    public String getCdi_createBy() {
-        return cdi_createBy;
+    public String getCdiCarLicense() {
+        return cdiCarLicense;
     }
 
-    public void setCdi_createBy(String cdi_createBy) {
-        this.cdi_createBy = cdi_createBy;
+    public void setCdiCarLicense(String cdiCarLicense) {
+        this.cdiCarLicense = cdiCarLicense;
     }
 
-    public Date getCdi_createTime() {
-        return cdi_createTime;
+    public String getCdiDeliveryAddress() {
+        return cdiDeliveryAddress;
     }
 
-    public void setCdi_createTime(Date cdi_createTime) {
-        this.cdi_createTime = cdi_createTime;
+    public void setCdiDeliveryAddress(String cdiDeliveryAddress) {
+        this.cdiDeliveryAddress = cdiDeliveryAddress;
     }
 
-    public String getCdi_updateBy() {
-        return cdi_updateBy;
+    public String getCdiRecipientsPhone() {
+        return cdiRecipientsPhone;
     }
 
-    public void setCdi_updateBy(String cdi_updateBy) {
-        this.cdi_updateBy = cdi_updateBy;
+    public void setCdiRecipientsPhone(String cdiRecipientsPhone) {
+        this.cdiRecipientsPhone = cdiRecipientsPhone;
     }
 
-    public Date getCdi_updateTime() {
-        return cdi_updateTime;
+    public String getCdiRecipients() {
+        return cdiRecipients;
     }
 
-    public void setCdi_updateTime(Date cdi_updateTime) {
-        this.cdi_updateTime = cdi_updateTime;
+    public void setCdiRecipients(String cdiRecipients) {
+        this.cdiRecipients = cdiRecipients;
     }
 
-    public String getCdi_name() {
-        return cdi_name;
+    public String getCdiProvince() {
+        return cdiProvince;
     }
 
-    public void setCdi_name(String cdi_name) {
-        this.cdi_name = cdi_name;
+    public void setCdiProvince(String cdiProvince) {
+        this.cdiProvince = cdiProvince;
     }
 
-    public String getCdi_code() {
-        return cdi_code;
+    public String getCdiCity() {
+        return cdiCity;
     }
 
-    public void setCdi_code(String cdi_code) {
-        this.cdi_code = cdi_code;
+    public void setCdiCity(String cdiCity) {
+        this.cdiCity = cdiCity;
     }
 
-    public Integer getCdi_rowSts() {
-        return cdi_rowSts;
+    public String getCdiDistrict() {
+        return cdiDistrict;
     }
 
-    public void setCdi_rowSts(Integer cdi_rowSts) {
-        this.cdi_rowSts = cdi_rowSts;
+    public void setCdiDistrict(String cdiDistrict) {
+        this.cdiDistrict = cdiDistrict;
     }
 
-    public Integer getCdi_sort() {
-        return cdi_sort;
+    public String getCdiAddress() {
+        return cdiAddress;
     }
 
-    public void setCdi_sort(Integer cdi_sort) {
-        this.cdi_sort = cdi_sort;
+    public void setCdiAddress(String cdiAddress) {
+        this.cdiAddress = cdiAddress;
     }
 
-    public String getCdi_content() {
-        return cdi_content;
+    public String getCdiLogistics() {
+        return cdiLogistics;
     }
 
-    public void setCdi_content(String cdi_content) {
-        this.cdi_content = cdi_content;
+    public void setCdiLogistics(String cdiLogistics) {
+        this.cdiLogistics = cdiLogistics;
     }
 
-    public String getCdi_recipients() {
-        return cdi_recipients;
+    public String getCdiBranch() {
+        return cdiBranch;
     }
 
-    public void setCdi_recipients(String cdi_recipients) {
-        this.cdi_recipients = cdi_recipients;
+    public void setCdiBranch(String cdiBranch) {
+        this.cdiBranch = cdiBranch;
+    }
+
+    public String getCdiTel() {
+        return cdiTel;
+    }
+
+    public void setCdiTel(String cdiTel) {
+        this.cdiTel = cdiTel;
     }
 }

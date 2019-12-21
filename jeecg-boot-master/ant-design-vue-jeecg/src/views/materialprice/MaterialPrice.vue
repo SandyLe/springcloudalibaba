@@ -18,22 +18,10 @@
             </a-form-item>
           </a-col>
 
-          <template v-if="toggleSearchStatus">
-            <a-col :md="6" :sm="8">
-              <a-form-item label="手机号">
-                <j-input placeholder="输入手机号查询" v-model="queryParam.phone"></j-input>
-              </a-form-item>
-            </a-col>
-          </template>
-
           <a-col :md="6" :sm="8">
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
               <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
               <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
-              <a @click="handleToggleSearch" style="margin-left: 8px">
-                {{ toggleSearchStatus ? '收起' : '展开' }}
-                <a-icon :type="toggleSearchStatus ? 'up' : 'down'"/>
-              </a>
             </span>
           </a-col>
 
@@ -43,10 +31,8 @@
 
     <!-- 操作按钮区域 -->
     <div class="table-operator" style="border-top: 5px">
-      <a-button @click="handleAdd" type="primary" icon="plus">添加客户</a-button>
-      <!-- <router-link to="/customer/customerSource">
-        添加客户
-      </router-link> -->
+      <a-button @click="handleAdd" type="primary" icon="plus">添加产品定价</a-button>
+
       <a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
           <a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>
@@ -82,9 +68,6 @@
           </div>
         </template>
 
-        <span slot="nameAction" slot-scope="text, record">
-          <a @click="goDetail(record.id)">{{record.name}}</a>
-        </span>
         <span slot="action" slot-scope="text, record">
           <a @click="handleEdit(record)">编辑</a>
           <a-divider type="vertical"/>
@@ -95,10 +78,7 @@
             </a>
             <a-menu slot="overlay">
               <a-menu-item>
-                <!--
-                <a href="javascript:;" @click="openAuditTab(1, '3')">详情</a>
-                -->
-                <a href="javascript:;" @click="goDetail(record.id)">详情</a>
+                <a href="javascript:;" @click="handleDetail(record)">详情</a>
               </a-menu-item>
 
               <a-menu-item>
@@ -109,28 +89,26 @@
             </a-menu>
           </a-dropdown>
         </span>
-
-
       </a-table>
     </div>
     <!-- table区域-end -->
 
     <!-- 表单区域 -->
-    <customer-modal ref="modalForm" @ok="modalFormOk"></customer-modal>
+    <material-price-modal ref="modalForm" @ok="modalFormOk"></material-price-modal>
 
   </a-card>
 </template>
 
 <script>
-  import CustomerModal from './CustomerModal'
+  import MaterialPriceModal from './MaterialPriceModal'
   import JInput from '@/components/jeecg/JInput'
   import {JeecgListMixin} from '@/mixins/JeecgListMixin'
   export default {
-    name: "Customer",
+    name: "MaterialPrice",
     mixins: [JeecgListMixin],
     components: {
       JInput,
-      CustomerModal
+      MaterialPriceModal
     },
     data() {
       return {
@@ -148,20 +126,9 @@
             }
           },
           {
-            title: '名称',
+            title: '产品名称',
             align:"center",
-            dataIndex: '',
-            scopedSlots: { customRender: 'nameAction' }
-          },
-          {
-            title: '编码',
-            align:"center",
-            dataIndex: 'code'
-          },
-          {
-            title: '手机号',
-            align:"center",
-            dataIndex: 'phone'
+            dataIndex: 'material'
           },
           {
             title: '客户类型',
@@ -169,9 +136,14 @@
             dataIndex: 'customerType'
           },
           {
-            title: '客户来源',
+            title: '计量单位',
             align:"center",
-            dataIndex: 'customerSource'
+            dataIndex: 'unit'
+          },
+          {
+            title: '价格',
+            align:"center",
+            dataIndex: 'price'
           },
           {
             title: '备注',
@@ -198,15 +170,10 @@
           }
         ],
         url: {
-          list: "/customer/getPage",
-          delete: "/customer/delete",
-          deleteBatch: "/customer/deleteBatch"
+          list: "/materialPrice/getPage",
+          delete: "/materialPrice/delete",
+          deleteBatch: "/materialPrice/deleteBatch"
         }
-      }
-    },
-    methods: {
-      goDetail(id) {
-        this.$router.push({ name: "customer-customerEdit", query: {"id": id}})
       }
     }
   }

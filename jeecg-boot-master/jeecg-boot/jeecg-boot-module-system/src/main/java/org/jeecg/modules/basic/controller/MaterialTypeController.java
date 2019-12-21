@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
+import java.util.List;
 
 @Slf4j
 @Api(tags = "产品类型")
@@ -42,13 +43,27 @@ public class MaterialTypeController {
                           HttpServletRequest req) {
         QueryWrapper<MaterialType> queryWrapper = QueryGenerator.initQueryWrapper(materialType, req.getParameterMap());
         Page<MaterialType> page = new Page<MaterialType>(pageNo, pageSize);
-
         IPage<MaterialType> pageList = materialTypeService.page(page, queryWrapper);
         log.info("查询当前页：" + pageList.getCurrent());
         log.info("查询当前页数量：" + pageList.getSize());
         log.info("查询结果数量：" + pageList.getRecords().size());
         log.info("数据总数：" + pageList.getTotal());
         return Result.ok(pageList);
+    }
+
+    /**
+     * 获取所有数据
+     *
+     * @param materialType
+     * @param req
+     * @return
+     */
+    @ApiOperation(value = "获取产品类型数据", notes = "获取所有产品类型数据")
+    @GetMapping(value = "/getList")
+    public Result<?> getList(MaterialType materialType, HttpServletRequest req) {
+        QueryWrapper<MaterialType> queryWrapper = QueryGenerator.initQueryWrapper(materialType, req.getParameterMap());
+        List<MaterialType> list = materialTypeService.list(queryWrapper);
+        return Result.ok(list);
     }
     /**
      * 添加

@@ -105,14 +105,32 @@ const editCustomerSource = (params)=>postAction("/customerSource/edit",params)
 const getCustomerSourceList = (params)=>getAction("/customerSource/getList",params)
 const addMaterialBrand = (params)=>postAction("/materialBrand/add",params)
 const editMaterialBrand = (params)=>postAction("/materialBrand/edit",params)
+const getMaterialBrandList = (params)=>getAction("/materialBrand/getList",params)
 const addMaterialType = (params)=>postAction("/materialType/add",params)
 const editMaterialType = (params)=>postAction("/materialType/edit",params)
+const getMaterialTypeList = (params)=>getAction("/materialType/getList",params)
 const addMaterialUnit = (params)=>postAction("/materialUnit/add",params)
 const editMaterialUnit = (params)=>postAction("/materialUnit/edit",params)
+const getMaterialUnitList = (params)=>getAction("/materialUnit/getList",params)
 const addWarehouse = (params)=>postAction("/warehouse/add",params)
 const editWarehouse = (params)=>postAction("/warehouse/edit",params)
 const getAreaList = (params)=>getAction("/area/getList",params)
+const getCustomerOne = (params)=>getAction("/customer/getOne",params)
 const saveCustomer = (params)=>postAction("/customer/save",params)
+const getCustomerList =  (params)=>getAction("/customer/getList",params)
+const getDeliveryInfo = (params)=>getAction("/customer/getDeliveryInfo",params)
+const addVendor = (params)=>postAction("/vendor/add",params)
+const editVendor = (params)=>postAction("/vendor/edit",params)
+const addMaterial = (params)=>postAction("/material/add",params)
+const editMaterial = (params)=>postAction("/material/edit",params)
+const getMaterialOne = (params)=>getAction("/material/getOne",params)
+const getMaterialList = (params)=>getAction("/material/getList",params)
+const getMaterialSelfUnitList = (params)=>getAction("/materialSelfUnit/getList",params)
+const addMaterialSelfUnit = (params)=>postAction("/materialSelfUnit/add",params)
+const editMaterialSelfUnit = (params)=>postAction("/materialSelfUnit/edit",params)
+const addMaterialPrice = (params)=>postAction("/materialPrice/add",params)
+const editMaterialPrice = (params)=>postAction("/materialPrice/edit",params)
+
 
 const loadShopData = (params)=>getAction("/sys/sysDepart/getSysDepartList",params)
 const getAllUser = (params)=>getAction("/sys/user/getAll",params)
@@ -184,7 +202,24 @@ export {
   addWarehouse,
   editWarehouse,
   getAreaList,
-  saveCustomer
+  saveCustomer,
+  getCustomerOne,
+  getDeliveryInfo,
+  addVendor,
+  editVendor,
+  addMaterial,
+  editMaterial,
+  getMaterialTypeList,
+  getMaterialBrandList,
+  getMaterialUnitList,
+  getMaterialOne,
+  getMaterialSelfUnitList,
+  addMaterialSelfUnit,
+  editMaterialSelfUnit,
+  getMaterialList,
+  addMaterialPrice,
+  editMaterialPrice,
+  getCustomerList
 }
 
 

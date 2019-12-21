@@ -28,10 +28,10 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
 
         CustomerDeliveryInfo cdi = new CustomerDeliveryInfo();
         BeanUtils.copyProperties(dto, cdi, "name", "code");
-        if(StringUtils.isBlank(dto.getCdi_sourceId())){
-            cdi.setCdi_sourceId(customer.getId());
+        if(StringUtils.isBlank(dto.getCdiSourceId())){
+            cdi.setCdiSourceId(customer.getId());
         }
-        cdi.setId(dto.getCdi_id());
+        cdi.setId(dto.getCdiId());
         customerDeliveryInfoService.save(cdi);
         return customer.getId();
     }

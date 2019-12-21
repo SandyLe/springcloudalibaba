@@ -233,3 +233,171 @@ CREATE TABLE `sl_area` (
   `row_sts` int(11) DEFAULT NULL,
   `sort` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+DROP TABLE IF EXISTS `sl_customer`;
+CREATE TABLE `sl_customer` (
+
+  `id` varchar(30) NOT NULL,
+  `name` varchar(50) DEFAULT NULL,
+  `code` varchar(30) DEFAULT NULL,
+  `content` varchar(100) DEFAULT NULL,
+  `create_time` datetime DEFAULT NULL,
+  `update_time` datetime DEFAULT NULL,
+  `create_by` varchar(30) DEFAULT NULL,
+  `update_by` varchar(30) DEFAULT NULL,
+  `row_sts` int(11) DEFAULT NULL,
+  `sort` int(11) DEFAULT NULL,
+
+  `customer_type_id` varchar(50) DEFAULT NULL,
+  `phone` varchar(30) DEFAULT NULL,
+  `wechat_id` varchar(30) DEFAULT NULL,
+  `wechat_nick_name` varchar(30) DEFAULT NULL,
+  `customer_source_id` varchar(30) DEFAULT NULL,
+  `member_no` varchar(30) DEFAULT NULL,
+  `member_phone` varchar(30) DEFAULT NULL,
+  `member_nick_name`varchar(30) DEFAULT NULL,
+  `nick_name`varchar(30) DEFAULT NULL,
+  `gender` int(2) DEFAULT NULL,
+  `birthday` datetime DEFAULT NULL,
+  `linkman` varchar(30) DEFAULT NULL,
+  `tel` varchar(30) DEFAULT NULL,
+  `email` varchar(30) DEFAULT NULL,
+  `fax` varchar(30) DEFAULT NULL,
+  `bankaccount` varchar(30) DEFAULT NULL,
+  `bankacct_name` varchar(30) DEFAULT NULL,
+  `bank_name` varchar(30) DEFAULT NULL,,
+  `discount` decimal(10,0) DEFAULT NULL
+  `discount_type_id` varchar(30) DEFAULT NULL,
+  `province` varchar(30) DEFAULT NULL,
+  `city` varchar(30) DEFAULT NULL,
+  `district` varchar(30) DEFAULT NULL,
+  `address` varchar(80) DEFAULT NULL,
+  `billing_info` varchar(100) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+DROP TABLE IF EXISTS `sl_customer_delivery_info`;
+CREATE TABLE `sl_customer_delivery_info` (
+
+  `id` varchar(30) NOT NULL,
+  `name` varchar(50) DEFAULT NULL,
+  `code` varchar(30) DEFAULT NULL,
+  `content` varchar(100) DEFAULT NULL,
+  `create_time` datetime DEFAULT NULL,
+  `update_time` datetime DEFAULT NULL,
+  `create_by` varchar(30) DEFAULT NULL,
+  `update_by` varchar(30) DEFAULT NULL,
+  `row_sts` int(11) DEFAULT NULL,
+  `sort` int(11) DEFAULT NULL,
+
+  `cdi_source_id` varchar(50) DEFAULT NULL,
+  `cdi_default_type` varchar(10) DEFAULT NULL,
+  `cdi_description` varchar(30) DEFAULT NULL,
+  `cdi_linkman` varchar(30) DEFAULT NULL,
+  `cdi_phone` varchar(30) DEFAULT NULL,
+  `cdi_car_license` varchar(30) DEFAULT NULL,
+  `cdi_delivery_address` varchar(30) DEFAULT NULL,
+  `cdi_province` varchar(30) DEFAULT NULL,
+  `cdi_city` varchar(30) DEFAULT NULL,
+  `cdi_district` varchar(30) DEFAULT NULL,
+  `cdi_address` varchar(50) DEFAULT NULL,
+  `cdi_logistics` varchar(30) DEFAULT NULL,
+  `cdi_branch` varchar(30) DEFAULT NULL,
+  `cdi_tel` varchar(30) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+DROP TABLE IF EXISTS `sl_vendor`;
+CREATE TABLE `sl_vendor` (
+
+  `id` varchar(30) NOT NULL,
+  `name` varchar(50) DEFAULT NULL,
+  `code` varchar(30) DEFAULT NULL,
+  `content` varchar(100) DEFAULT NULL,
+  `create_time` datetime DEFAULT NULL,
+  `update_time` datetime DEFAULT NULL,
+  `create_by` varchar(30) DEFAULT NULL,
+  `update_by` varchar(30) DEFAULT NULL,
+  `row_sts` int(11) DEFAULT NULL,
+  `sort` int(11) DEFAULT NULL,
+
+  `linkman` varchar(30) DEFAULT NULL,
+  `tel` varchar(30) DEFAULT NULL,
+  `phone` varchar(30) DEFAULT NULL,
+  `email` varchar(30) DEFAULT NULL,
+  `fax` varchar(30) DEFAULT NULL,
+  `bankaccount` varchar(30) DEFAULT NULL,
+  `bankacct_name` varchar(30) DEFAULT NULL,
+  `bank_name` varchar(30) DEFAULT NULL,,
+  `discount` decimal(10,0) DEFAULT NULL
+  `discount_type_id` varchar(30) DEFAULT NULL,
+  `billing_info` varchar(50) DEFAULT NULL,
+  `web` varchar(30) DEFAULT NULL,
+  `province` varchar(30) DEFAULT NULL,
+  `city` varchar(30) DEFAULT NULL,
+  `district` varchar(30) DEFAULT NULL,
+  `address` varchar(80) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+DROP TABLE IF EXISTS `sl_material`;
+CREATE TABLE `sl_material` (
+
+  `id` varchar(30) NOT NULL,
+  `name` varchar(50) DEFAULT NULL,
+  `code` varchar(30) DEFAULT NULL,
+  `content` varchar(100) DEFAULT NULL,
+  `create_time` datetime DEFAULT NULL,
+  `update_time` datetime DEFAULT NULL,
+  `create_by` varchar(30) DEFAULT NULL,
+  `update_by` varchar(30) DEFAULT NULL,
+  `row_sts` int(11) DEFAULT NULL,
+  `sort` int(11) DEFAULT NULL,
+
+  `specification` varchar(50) DEFAULT NULL,
+  `brand_id` varchar(30) DEFAULT NULL,
+  `type_id` varchar(30) DEFAULT NULL,
+  `unit_id` varchar(30) DEFAULT NULL,
+  `uplimit` decimal(10,0) DEFAULT NULL,
+  `downlimit` decimal(10,0) DEFAULT NULL,
+  `pictures` varchar(100) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+DROP TABLE IF EXISTS `sl_material_price`;
+CREATE TABLE `sl_material_price` (
+
+  `id` varchar(30) NOT NULL,
+  `name` varchar(50) DEFAULT NULL,
+  `code` varchar(30) DEFAULT NULL,
+  `content` varchar(100) DEFAULT NULL,
+  `create_time` datetime DEFAULT NULL,
+  `update_time` datetime DEFAULT NULL,
+  `create_by` varchar(30) DEFAULT NULL,
+  `update_by` varchar(30) DEFAULT NULL,
+  `row_sts` int(11) DEFAULT NULL,
+  `sort` int(11) DEFAULT NULL,
+
+  `material_id` varchar(30) DEFAULT NULL,
+  `customer_type_id` varchar(30) DEFAULT NULL,
+  `unit_id` varchar(30) DEFAULT NULL,
+  `price` decimal(10,0) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+DROP TABLE IF EXISTS `sl_material_self_unit`;
+CREATE TABLE `sl_material_self_unit` (
+
+  `id` varchar(30) NOT NULL,
+  `name` varchar(50) DEFAULT NULL,
+  `code` varchar(30) DEFAULT NULL,
+  `content` varchar(100) DEFAULT NULL,
+  `create_time` datetime DEFAULT NULL,
+  `update_time` datetime DEFAULT NULL,
+  `create_by` varchar(30) DEFAULT NULL,
+  `update_by` varchar(30) DEFAULT NULL,
+  `row_sts` int(11) DEFAULT NULL,
+  `sort` int(11) DEFAULT NULL,
+
+  `source_id` varchar(30) DEFAULT NULL,
+  `unit_id` varchar(30) DEFAULT NULL,
+  `unit_type` varchar(30) DEFAULT NULL,
+  `qty` decimal(10,0) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

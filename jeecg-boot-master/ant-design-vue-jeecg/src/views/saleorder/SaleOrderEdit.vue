@@ -1,8 +1,31 @@
 <template>
   <page-layout :title="title">
     <a-card :bordered="false">
+      <div style="width: 100%;height:20px;padding-right:32px;">
+        <!--<div style="float: left;">{{ title }}</div>-->
+        <div style="float: right;">
+          <a-button
+            icon="fullscreen"
+            style="width:80px;height:100%;border:0"
+            @click="handleClickToggleFullScreen">保存</a-button>
+          <a-button
+            icon="fullscreen"
+            style="width:80px;height:100%;border:0"
+            @click="handleClickToggleFullScreen">修改</a-button>
+        </div>
+      </div>
+      <a-divider style="margin-bottom: 32px"/>
       <detail-list title="基本信息">
-        <detail-list-item term="客户名称">{{customer.name}}</detail-list-item>
+        <detail-list-item term="客户">
+          <a-select v-decorator="['customerId', {}]" placeholder="请选择客户">
+            <a-select-option value="">请选择</a-select-option>
+            <a-select-option v-for="(item, key) in customerList" :key="key" :value="item.id">
+                    <span style="display: inline-block;width: 100%" :title=" item.name || item.code ">
+                      {{ item.name || item.code }}
+                    </span>
+            </a-select-option>
+          </a-select>
+        </detail-list-item>
         <detail-list-item term="客户编码">{{customer.code}}</detail-list-item>
         <detail-list-item term="状态">{{customer.rowSts}}2</detail-list-item>
         <detail-list-item term="客户类型">{{customer.customerTypeId}}</detail-list-item>
@@ -44,7 +67,7 @@
 <script>
   import PageLayout from '@/components/page/PageLayout'
   import DetailList from '@/components/tools/DetailList'
-  import {getCustomerTypeList, getCustomerOne} from '@/api/api'
+  import {getCustomerTypeList, getCustomerOne, getCustomerList} from '@/api/api'
   const DetailListItem = DetailList.Item
 
   export default {
@@ -71,7 +94,8 @@
             key: 'id'
           }
         ],
-        current:[]
+        current:[],
+        customerList: []
       }
     },
     computed: {
@@ -110,15 +134,22 @@
             }
           })
 
-          getCustomerTypeList().then((res) => {
+          getCustomerList().then((res) => {
             if (res.success) {
-              this.current = res.result;
+              this.customerList = res.result;
             }
           })
         }
       }
     },
     mounted() {
+
+      getCustomerList().then((res) => {
+        if (res.success) {
+          this.customerList = res.result;
+        }
+      })
+
       if (this.$route.query.id) {
         getCustomerOne({id:this.$route.query.id}).then((res) => {
           if (res.success) {
@@ -127,12 +158,6 @@
           }
         })
 
-        getCustomerTypeList().then((res) => {
-          if (res.success) {
-            this.current = res.result;
-            this.loading = false;
-          }
-        })
       }
     }
 

@@ -248,11 +248,16 @@
                 :wrapperCol="hwrapperCol"
                 label="默认发货方式"
                 label-width="4">
-                <j-dict-select-tag v-decorator="['cdi_defaultType', {}]" @change="deliveryChange" placeholder="请选择默认发货方式" :type="'select'" :triggerChange="true" dictCode="delivery_type"/>
+                <a-input style="display: none" v-decorator="[ 'cdiId', validatorRules.cdiId]" />
+                <a-input style="display: none" v-decorator="[ 'cdiCreateTime', validatorRules.cdiCreateTime]" />
+                <a-input style="display: none" v-decorator="[ 'cdiUpdateTime', validatorRules.cdiUpdateTime]" />
+                <a-input style="display: none" v-decorator="[ 'cdiCreateBy', validatorRules.cdiCreateBy]" />
+                <a-input style="display: none" v-decorator="[ 'cdiUpdateBy', validatorRules.cdiUpdateBy]" />
+                <j-dict-select-tag v-decorator="['cdiDefaultType', {}]" @change="deliveryChange" placeholder="请选择默认发货方式" :type="'select'" :triggerChange="true" dictCode="delivery_type"/>
               </a-form-item>
             </a-col>
           </a-row>
-          <template v-if="zhidingdian">
+          <template v-if="cdiDefaultType === 'ZHIDINGDIAN'">
             <a-row>
               <a-col :md="8" :sm="8">
                 <a-form-item
@@ -260,7 +265,7 @@
                   :wrapperCol="wrapperCol"
                   label="说明"
                   label-width="4">
-                  <a-input placeholder="请输入说明" v-decorator="[ 'cdi_description', validatorRules.cdi_description]" />
+                  <a-input placeholder="请输入说明" v-decorator="[ 'cdiDescription', validatorRules.cdiDescription]" />
                 </a-form-item>
               </a-col>
               <a-col :md="8" :sm="8">
@@ -269,7 +274,7 @@
                   :wrapperCol="wrapperCol"
                   label="联系人"
                   label-width="4">
-                  <a-input placeholder="请输入联系人" v-decorator="[ 'cdi_linkman', validatorRules.cdi_linkman]" />
+                  <a-input placeholder="请输入联系人" v-decorator="[ 'cdiLinkman', validatorRules.cdiLinkman]" />
                 </a-form-item>
               </a-col>
               <a-col :md="8" :sm="8">
@@ -278,12 +283,12 @@
                   :wrapperCol="wrapperCol"
                   label="联系电话"
                   label-width="4">
-                  <a-input placeholder="请输入联系电话" v-decorator="[ 'cdi_phone', validatorRules.cdi_phone]" />
+                  <a-input placeholder="请输入联系电话" v-decorator="[ 'cdiPhone', validatorRules.cdiPhone]" />
                 </a-form-item>
               </a-col>
             </a-row>
           </template>
-          <template v-if="songche">
+          <template v-if="cdiDefaultType === 'SONGCHE'">
             <a-row>
               <a-col :md="8" :sm="8">
                 <a-form-item
@@ -291,7 +296,7 @@
                   :wrapperCol="wrapperCol"
                   label="车牌"
                   label-width="4">
-                  <a-input placeholder="请输入车牌号" v-decorator="[ 'cdi_carLicense', validatorRules.cdi_carLicense]" />
+                  <a-input placeholder="请输入车牌号" v-decorator="[ 'cdiCarLicense', validatorRules.cdiCarLicense]" />
                 </a-form-item>
               </a-col>
               <a-col :md="8" :sm="8">
@@ -300,7 +305,7 @@
                   :wrapperCol="wrapperCol"
                   label="司机姓名"
                   label-width="4">
-                  <a-input placeholder="请输入司机姓名" v-decorator="[ 'cdi_linkman', validatorRules.cdi_linkman]" />
+                  <a-input placeholder="请输入司机姓名" v-decorator="[ 'cdiLinkman', validatorRules.cdiLinkman]" />
                 </a-form-item>
               </a-col>
               <a-col :md="8" :sm="8">
@@ -309,7 +314,7 @@
                   :wrapperCol="wrapperCol"
                   label="司机电话"
                   label-width="4">
-                  <a-input placeholder="请输入司机电话" v-decorator="[ 'cdi_phone', validatorRules.cdi_phone]" />
+                  <a-input placeholder="请输入司机电话" v-decorator="[ 'cdiPhone', validatorRules.cdiPhone]" />
                 </a-form-item>
               </a-col>
             </a-row>
@@ -320,7 +325,7 @@
                   :wrapperCol="wrapperCol"
                   label="发货地址"
                   label-width="4">
-                  <a-input placeholder="请输入发货地址" v-decorator="[ 'cdi_deliveryAddress', validatorRules.cdi_deliveryAddress]" />
+                  <a-input placeholder="请输入发货地址" v-decorator="[ 'cdiDeliveryAddress', validatorRules.cdiDeliveryAddress]" />
                 </a-form-item>
               </a-col>
               <a-col :md="8" :sm="8">
@@ -329,7 +334,7 @@
                   :wrapperCol="wrapperCol"
                   label="收件人"
                   label-width="4">
-                  <a-input placeholder="请输入收件人" v-decorator="[ 'cdi_recipients', validatorRules.cdi_recipients]" />
+                  <a-input placeholder="请输入收件人" v-decorator="[ 'cdiRecipients', validatorRules.cdiRecipients]" />
                 </a-form-item>
               </a-col>
               <a-col :md="8" :sm="8">
@@ -338,7 +343,7 @@
                   :wrapperCol="wrapperCol"
                   label="联系电话"
                   label-width="4">
-                  <a-input placeholder="请输入联系电话" v-decorator="[ 'cdi_recipients_phone', validatorRules.cdi_recipients_phone]" />
+                  <a-input placeholder="请输入联系电话" v-decorator="[ 'cdiRecipientsPhone', validatorRules.cdiRecipientsPhone]" />
                 </a-form-item>
               </a-col>
             </a-row>
@@ -348,36 +353,36 @@
                   :labelCol="hlabelCol"
                   :wrapperCol="hwrapperCol"
                   label="地址">
-                  <a-select v-decorator="['cdi_province', {}]" placeholder="省" style="width: 10%">
+                  <a-select v-decorator="['cdiProvince', {}]" placeholder="省" style="width: 10%" @change="areaChangeCdi" >
                     <a-select-option value="">请选择</a-select-option>
-                    <a-select-option v-for="(item, key) in sourceList" :key="key" :value="item.id">
+                    <a-select-option v-for="(item, key) in provinceList" :key="key" :value="item.id">
                     <span style="display: inline-block;width: 100%" :title=" item.name || item.code ">
                       {{ item.name || item.code }}
                     </span>
                     </a-select-option>
                   </a-select>
-                  <a-select v-decorator="['cdi_city', {}]" placeholder="市" style="width: 10%">
+                  <a-select v-decorator="['cdiCity', {}]" placeholder="市" style="width: 10%" @change="areaChangeCdi" >
                     <a-select-option value="">请选择</a-select-option>
-                    <a-select-option v-for="(item, key) in sourceList" :key="key" :value="item.id">
+                    <a-select-option v-for="(item, key) in cdiCityList" :key="key" :value="item.id">
                     <span style="display: inline-block;width: 100%" :title=" item.name || item.code ">
                       {{ item.name || item.code }}
                     </span>
                     </a-select-option>
                   </a-select>
-                  <a-select v-decorator="['cdi_district', {}]" placeholder="区、县" style="width: 10%">
+                  <a-select v-decorator="['cdiDistrict', {}]" placeholder="区、县" style="width: 10%">
                     <a-select-option value="">请选择</a-select-option>
-                    <a-select-option v-for="(item, key) in sourceList" :key="key" :value="item.id">
+                    <a-select-option v-for="(item, key) in cdiDistrictList" :key="key" :value="item.id">
                     <span style="display: inline-block;width: 100%" :title=" item.name || item.code ">
                       {{ item.name || item.code }}
                     </span>
                     </a-select-option>
                   </a-select>
-                  <a-input placeholder="请输入详细地址" v-decorator="[ 'cdi_address', validatorRules.cdi_address]" style="width: 70%"  />
+                  <a-input placeholder="请输入详细地址" v-decorator="[ 'cdiAddress', validatorRules.cdiAddress]" style="width: 70%"  />
                 </a-form-item>
               </a-col>
             </a-row>
           </template>
-          <template v-if="wuliu">
+          <template v-if="cdiDefaultType === 'WULIU'">
             <a-row>
               <a-col :md="8" :sm="8">
                 <a-form-item
@@ -385,7 +390,7 @@
                   :wrapperCol="wrapperCol"
                   label="物流"
                   label-width="4">
-                  <a-select v-decorator="['cdi_logistics', {}]" placeholder="物流" style="width: 10%">
+                  <a-select v-decorator="['cdiLogistics', {}]" placeholder="物流" style="width: 10%">
                     <a-select-option value="">请选择</a-select-option>
                     <a-select-option v-for="(item, key) in sourceList" :key="key" :value="item.id">
                     <span style="display: inline-block;width: 100%" :title=" item.name || item.code ">
@@ -401,7 +406,7 @@
                   :wrapperCol="wrapperCol"
                   label="网点"
                   label-width="4">
-                  <a-input placeholder="请输入网点" v-decorator="[ 'cdi_branch', validatorRules.cdi_branch]" />
+                  <a-input placeholder="请输入网点" v-decorator="[ 'cdiBranch', validatorRules.cdiBranch]" />
                 </a-form-item>
               </a-col>
               <a-col :md="8" :sm="8">
@@ -410,7 +415,7 @@
                   :wrapperCol="wrapperCol"
                   label="电话"
                   label-width="4">
-                  <a-input placeholder="请输入电话" v-decorator="[ 'cdi_tel', validatorRules.cdi_tel]" />
+                  <a-input placeholder="请输入电话" v-decorator="[ 'cdiTel', validatorRules.cdiTel]" />
                 </a-form-item>
               </a-col>
             </a-row>
@@ -421,7 +426,7 @@
                   :wrapperCol="wrapperCol"
                   label="收件人"
                   label-width="4">
-                  <a-input placeholder="请输入收件人" v-decorator="[ 'cdi_recipients', validatorRules.cdi_recipients]" />
+                  <a-input placeholder="请输入收件人" v-decorator="[ 'cdiRecipients', validatorRules.cdiRecipients]" />
                 </a-form-item>
               </a-col>
               <a-col :md="8" :sm="8">
@@ -430,7 +435,7 @@
                   :wrapperCol="wrapperCol"
                   label="联系电话"
                   label-width="4">
-                  <a-input placeholder="请输入联系电话" v-decorator="[ 'cdi_recipients_phone', validatorRules.cdi_recipients_phone]" />
+                  <a-input placeholder="请输入联系电话" v-decorator="[ 'cdiRecipientsPhone', validatorRules.cdiRecipientsPhone]" />
                 </a-form-item>
               </a-col>
             </a-row>
@@ -440,31 +445,31 @@
                   :labelCol="hlabelCol"
                   :wrapperCol="hwrapperCol"
                   label="地址">
-                  <a-select v-decorator="['cdi_province', {}]" placeholder="省" style="width: 10%">
+                  <a-select v-decorator="['cdiProvince', {}]" placeholder="省" style="width: 10%" @change="areaChangeCdi" >
                     <a-select-option value="">请选择</a-select-option>
-                    <a-select-option v-for="(item, key) in sourceList" :key="key" :value="item.id">
+                    <a-select-option v-for="(item, key) in provinceList" :key="key" :value="item.id">
                     <span style="display: inline-block;width: 100%" :title=" item.name || item.code ">
                       {{ item.name || item.code }}
                     </span>
                     </a-select-option>
                   </a-select>
-                  <a-select v-decorator="['cdi_city', {}]" placeholder="市" style="width: 10%">
+                  <a-select v-decorator="['cdiCity', {}]" placeholder="市" style="width: 10%" @change="areaChangeCdi" >
                     <a-select-option value="">请选择</a-select-option>
-                    <a-select-option v-for="(item, key) in sourceList" :key="key" :value="item.id">
+                    <a-select-option v-for="(item, key) in cdiCityList" :key="key" :value="item.id">
                     <span style="display: inline-block;width: 100%" :title=" item.name || item.code ">
                       {{ item.name || item.code }}
                     </span>
                     </a-select-option>
                   </a-select>
-                  <a-select v-decorator="['cdi_district', {}]" placeholder="区、县" style="width: 10%">
+                  <a-select v-decorator="['cdiDistrict', {}]" placeholder="区、县" style="width: 10%">
                     <a-select-option value="">请选择</a-select-option>
-                    <a-select-option v-for="(item, key) in sourceList" :key="key" :value="item.id">
+                    <a-select-option v-for="(item, key) in cdiDistrictList" :key="key" :value="item.id">
                     <span style="display: inline-block;width: 100%" :title=" item.name || item.code ">
                       {{ item.name || item.code }}
                     </span>
                     </a-select-option>
                   </a-select>
-                  <a-input placeholder="请输入详细地址" v-decorator="[ 'cdi_address', validatorRules.cdi_address]" style="width: 70%"  />
+                  <a-input placeholder="请输入详细地址" v-decorator="[ 'cdiAddress', validatorRules.cdiAddress]" style="width: 70%"  />
                 </a-form-item>
               </a-col>
             </a-row>
@@ -480,7 +485,7 @@
   import moment from 'moment'
   import AFormItem from "ant-design-vue/es/form/FormItem";
   import JDictSelectTag from '@/components/dict/JDictSelectTag.vue'
-  import {saveCustomer,duplicateCheck, getCustomerTypeList, getCustomerSourceList, getAreaList} from '@/api/api'
+  import {saveCustomer,duplicateCheck, getCustomerTypeList, getCustomerSourceList, getAreaList, getDeliveryInfo} from '@/api/api'
   export default {
     name: "Customer",
     data() {
@@ -528,14 +533,14 @@
           fullScreen: false
         },
         dateFormat:"YYYY-MM-DD",
-        zhidingdian: false,
-        wuliu: false,
-        songche: false,
+        cdiDefaultType: '',
         sourceList: [],
         typeList: [],
         provinceList: [],
         cityList: [],
-        districtList:[]
+        districtList:[],
+        cdiCityList: [],
+        cdiDistrictList:[]
       }
     },
     components: {AFormItem,JDictSelectTag},
@@ -543,6 +548,11 @@
     },
     methods: {
       add () {
+
+        this.edit({'gender':'1','cdiDefaultType':''});
+      },
+      edit (record) {
+
         getCustomerTypeList().then((res) => {
           if (res.success) {
             this.typeList = res.result;
@@ -558,10 +568,32 @@
             this.provinceList = res.result
           }
         })
+        if (record.birthday) {
+          record.birthday = moment(new Date(record.birthday),this.dateFormat);
+        }
+        if (record.province){
+          getAreaList({parentId:record.province}).then((res) => {
+            if (res.success) {
+              if(res.result && res.result.length>0){
+                if(res.result[0].levelType==2){
+                  this.cityList = res.result;
+                }
+              }
+            }
+          })
+        }
+        if (record.city){
+          getAreaList({parentId:record.city}).then((res) => {
+            if (res.success) {
+              if(res.result && res.result.length>0){
+                if(res.result[0].levelType==3){
+                  this.districtList = res.result;
+                }
+              }
+            }
+          })
+        }
 
-        this.edit({'gender':'1'});
-      },
-      edit (record) {
         this.form.resetFields();
         this.model = Object.assign({}, record);
         this.visible = true;
@@ -569,12 +601,67 @@
         //编辑页面禁止修改角色编码
         if(this.model.id){
           this.roleDisabled = true;
+
+          let that = this;
+          getDeliveryInfo({cdiSourceId:this.model.id}).then((res) => {
+            if (res.success) {
+              if (res.result) {
+                that.model.cdiSourceId = res.result.cdiSourceId;
+                that.model.cdiDefaultType = res.result.cdiDefaultType;
+                that.model.cdiDescription = res.result.cdiDescription;
+                that.model.cdiLinkman = res.result.cdiLinkman;
+                that.model.cdiPhone = res.result.cdiPhone;
+                that.model.cdiDeliveryAddress = res.result.cdiDeliveryAddress;
+                that.model.cdiRecipients = res.result.cdiRecipients;
+                that.model.cdiRecipientsPhone = res.result.cdiRecipientsPhone;
+                that.model.cdiProvince = res.result.cdiProvince;
+                that.model.cdiCity = res.result.cdiCity;
+                that.model.cdiDistrict = res.result.cdiDistrict;
+                that.model.cdiAddress = res.result.cdiAddress;
+                that.model.cdiLogistics = res.result.cdiLogistics;
+                that.model.cdiBranch = res.result.cdiBranch;
+                that.model.cdiTel = res.result.cdiTel;
+                that.model.cdiCarLicense = res.result.cdiCarLicense;
+                that.model.cdiId = res.result.id;
+                that.deliveryChange(that.model.cdiDefaultType)
+
+                if (that.model.cdiProvince){
+                  getAreaList({parentId:that.model.cdiProvince}).then((res) => {
+                    if (res.success) {
+                      if(res.result && res.result.length>0){
+                        if(res.result[0].levelType==2){
+                          this.cdiCityList = res.result;
+                        }
+                      }
+                    }
+                  })
+                }
+                if (that.model.cdiCity){
+                  getAreaList({parentId:that.model.cdiCity}).then((res) => {
+                    if (res.success) {
+                      if(res.result && res.result.length>0){
+                        if(res.result[0].levelType==3){
+                          this.cdiDistrictList = res.result;
+                        }
+                      }
+                    }
+                  })
+                }
+                this.$nextTick(() => {
+                  this.form.setFieldsValue(pick(that.model,'cdiDefaultType','cdiDescription','cdiLinkman','cdiPhone','cdiDeliveryAddress','cdiCarLicense',
+                    'cdiRecipients','cdiRecipientsPhone','cdiProvince','cdiCity','cdiDistrict','cdiAddress','cdiLogistics','cdiBranch','cdiTel','cdiId'));
+                });
+              }
+            }
+          })
         }else{
           this.roleDisabled = false;
         }
 
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'name', 'code','content','gender'))
+          this.form.setFieldsValue(pick(this.model,'name', 'code','content','customerTypeId','customerSourceId','phone','memberNo','memberPhone',
+          'memberNickName','nickName','gender','birthday','linkman','tel','email','fax','discount','discountTypeId','bankaccount','bankacctName',
+            'bankName','province','city','district','address'))
         });
       },
       close () {
@@ -629,23 +716,7 @@
         this.modelStyle.fullScreen = mode
       },
       deliveryChange(val) {
-        if(val == 'SONGCHE'){
-          this.songche = true;
-          this.wuliu = false;
-          this.zhidingdian = false;
-        } else if(val == 'ZHIDINGDIAN'){
-          this.songche = false;
-          this.wuliu = false;
-          this.zhidingdian = true;
-        } else if(val == 'WULIU'){
-          this.songche = false;
-          this.wuliu = true;
-          this.zhidingdian = false;
-        } else {
-          this.songche = false;
-          this.wuliu = false;
-          this.zhidingdian = false;
-        }
+        this.cdiDefaultType = val;
       },
       areaChange(val){
 
@@ -664,6 +735,29 @@
                 this.model.district = '';
                 this.$nextTick(() => {
                   this.form.setFieldsValue(pick(this.model, 'district'))
+                });
+              }
+            }
+          }
+        })
+      },
+      areaChangeCdi(val) {
+
+        getAreaList({parentId:val}).then((res) => {
+          if (res.success) {
+            if(res.result && res.result.length>0){
+              if(res.result[0].levelType==2){
+                this.cdiCityList = res.result;
+                this.model.cdiCity = '';
+                this.model.cdiDistrict = '';
+                this.$nextTick(() => {
+                  this.form.setFieldsValue(pick(this.model,'cdiCity', 'cdiDistrict'))
+                });
+              }else if(res.result[0].levelType==3){
+                this.cdiDistrictList = res.result;
+                this.model.cdiDistrict = '';
+                this.$nextTick(() => {
+                  this.form.setFieldsValue(pick(this.model, 'cdiDistrict'))
                 });
               }
             }
