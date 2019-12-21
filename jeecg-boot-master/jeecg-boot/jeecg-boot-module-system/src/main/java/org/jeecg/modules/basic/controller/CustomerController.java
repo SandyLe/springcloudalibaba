@@ -66,7 +66,7 @@ public class CustomerController {
         Customer customer = new Customer();
         BeanUtils.copyProperties(customer, customerEditDto);
         if(StringUtils.isNotBlank(customerEditDto.getId())){
-            customerService;
+
         }
         customerService.save(customer);
         return Result.ok("添加成功！");
