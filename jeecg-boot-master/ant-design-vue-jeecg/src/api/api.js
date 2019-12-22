@@ -96,7 +96,9 @@ const duplicateCheck = (params)=>getAction("/sys/duplicate/check",params);
 const loadCategoryData = (params)=>getAction("/sys/category/loadAllData",params);
 
 // 销售订单
-const addSaleOrder = (params)=>postAction("/saleOrder/add",params);
+const addSaleOrder = (params)=>postAction("/saleOrder/add",params)
+const editSaleOrder = (params)=>postAction("/saleOrder/edit",params)
+const getSaleOrderOne = (params)=>getAction("/saleOrder/getOne",params)
 const addCustomerType = (params)=>postAction("/customerType/add",params)
 const editCustomerType = (params)=>postAction("/customerType/edit",params)
 const getCustomerTypeList = (params)=>getAction("/customerType/getList",params)
@@ -185,6 +187,8 @@ export {
   getSystemSubmenu,
   loadCategoryData,
   addSaleOrder,
+  editSaleOrder,
+  getSaleOrderOne,
   addCustomerType,
   editCustomerType,
   getCustomerTypeList,
