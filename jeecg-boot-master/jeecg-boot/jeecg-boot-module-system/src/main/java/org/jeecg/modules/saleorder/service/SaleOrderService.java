@@ -1,7 +1,7 @@
 package org.jeecg.modules.saleorder.service;
 
+import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.saleorder.entity.SaleOrder;
 
-public interface SaleOrderService {
-    void save (SaleOrder entity);
+public interface SaleOrderService extends IService<SaleOrder> {
 }
