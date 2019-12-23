@@ -38,10 +38,7 @@
             :labelCol="{span: 5}"
             :wrapperCol="{span: 19}"
             label="订单日期">
-            <a-date-picker
-              style="width: 100%"
-              placeholder="请选择订单日期"
-              v-decorator="['billDate', {}]"/>
+            <a-date-picker showTime format='YYYY-MM-DD HH:mm:ss' v-decorator="[ 'billDate', {}]"/>
           </a-form-item>
         </a-col>
       </a-row>
@@ -251,7 +248,6 @@
         this.saleOrderForm.resetFields();
         this.model = Object.assign({}, record);
         this.visible = true;
-
         //编辑页面禁止修改角色编码
         if(this.model.id){
           this.roleDisabled = true;
@@ -260,9 +256,9 @@
         }
 
         this.$nextTick(() => {
-          this.saleOrderForm.setFieldsValue(pick(this.model,'name', 'code','content','customerId','channelId','billDate','memberNo','memberPhone',
-            'memberNickName','nickName','gender','birthday','linkman','tel','email','fax','discount','discountTypeId','bankaccount','bankacctName',
-            'bankName','province','city','district','address'))
+          this.saleOrderForm.setFieldsValue(pick(this.model,'name', 'code','content','customerId','channelId','billDate'))
+          //时间格式化
+          this.saleOrderForm.setFieldsValue({billDate: this.model.billDate ? moment(this.model.billDate) : null})
         });
       },
       saveSaleOrder(id) {
