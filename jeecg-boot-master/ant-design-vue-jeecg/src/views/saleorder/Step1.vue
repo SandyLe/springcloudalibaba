@@ -232,10 +232,13 @@
             scopedSlots: { customRender: 'action' },
           }
         ],
+        selfUnitPage:[],
+        selectedRowKeys: [],
+        selectedRows: [],
         url: {
-          list: "/customer/getPage",
-          delete: "/customer/delete",
-          deleteBatch: "/customer/deleteBatch"
+          list: "/saleOrderMtl/getPage?sourceId=" + this.$route.query.id,
+          delete: "/saleOrderMtl/delete",
+          deleteBatch: "/saleOrderMtl/deleteBatch"
         }
       }
     },
