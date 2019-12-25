@@ -16,6 +16,7 @@
           :wrapperCol="wrapperCol"
           label="备注">
           <a-input placeholder="请输入备注" v-decorator="[ 'content', validatorRules.content]" />
+          <a-input placeholder="请输入备注" v-decorator="[ 'price', validatorRules.price]" />
         </a-form-item>
       </a-form>
     </a-spin>
@@ -25,10 +26,10 @@
 <script>
 
   import AFormItem from "ant-design-vue/es/form/FormItem";
-  import {addSaleOrder,editRole,duplicateCheck } from '@/api/api'
+  import {addSaleMtlOrder,editRole,duplicateCheck } from '@/api/api'
 
   export default {
-    name: "SaleOrderModal",
+    name: "SaleOrderMtlModal",
     data() {
       return {
         title: "操作",
@@ -62,7 +63,10 @@
         this.edit({});
       },
       edit (record) {
+        console.log(this.$route.query.id)
+        debugger
         this.form.resetFields();
+        record.sourceId = this.$route.query.id;
         this.model = Object.assign({}, record);
         this.visible = true;
 
@@ -88,7 +92,7 @@
             let obj;
             console.log(formData)
             if(!this.model.id){
-              obj=addSaleOrder(formData);
+              obj=addSaleMtlOrder(formData);
             }else{
               obj=editRole(formData);
             }

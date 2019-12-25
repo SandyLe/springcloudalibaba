@@ -23,7 +23,7 @@
     </div>
     <!-- 操作按钮区域 -->
     <div class="table-operator"  style="margin-top: 5px">
-      <a-button @click="handleEditSaleOrder" type="primary" icon="plus">新增</a-button>
+      <a-button @click="handleEditSaleOrder(0)" type="primary" icon="plus">新增</a-button>
       <a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
           <a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>
@@ -77,7 +77,7 @@
 </template>
 
 <script>
-  import SaleOrderModal from './SaleOrderModal'
+  import SaleOrderModal from './SaleOrderMtlModal'
   import JInput from '@/components/jeecg/JInput'
   import {JeecgListMixin} from '@/mixins/JeecgListMixin'
   export default {
@@ -187,7 +187,3 @@
     }
   }
 </script>
-
-<style scoped>
-  @import '~@assets/less/common.less'
-</style>

@@ -59,7 +59,7 @@
         <a-col>
           <!-- 操作按钮区域 -->
           <div class="table-operator" style="border-top: 5px">
-            <a-button @click="handleAddMtl" type="primary" icon="plus">添加产品</a-button>
+            <a-button @click="handleAdd" type="primary" icon="plus">添加产品</a-button>
             <a-dropdown v-if="selectedRowKeys.length > 0">
               <a-menu slot="overlay">
                 <a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>
@@ -127,7 +127,9 @@
           <!-- table区域-end -->
 
           <!-- 表单区域 -->
-          <customer-modal ref="modalForm" @ok="modalFormOk"></customer-modal>
+
+          <!-- 表单区域 -->
+          <sale-order-mtl-modal ref="modalForm" @ok="modalFormOk"></sale-order-mtl-modal>
         </a-col>
       </a-row>
       <a-row>
@@ -141,7 +143,7 @@
 </template>
 
 <script>
-  import CustomerModal from '../basic/CustomerModal'
+  import SaleOrderMtlModal from './SaleOrderMtlModal'
   import pick from 'lodash.pick'
   import moment from 'moment'
   import JDictSelectTag from '@/components/dict/JDictSelectTag.vue'
@@ -151,7 +153,7 @@
     name: "Step1",
     mixins: [JeecgListMixin],
     components: {
-      CustomerModal,
+      SaleOrderMtlModal,
       JDictSelectTag
     },
     data () {
@@ -236,13 +238,24 @@
         selectedRowKeys: [],
         selectedRows: [],
         url: {
-          list: "/saleOrderMtl/getPage?sourceId=" + this.$route.query.id,
+          list: "/saleOrderMtl/getPage",
           delete: "/saleOrderMtl/delete",
           deleteBatch: "/saleOrderMtl/deleteBatch"
         }
       }
     },
     methods: {
+      getQueryParams(){
+        debugger
+        console.log(this.$route.query.id)
+        let param = {};
+        if(this.$route.query.id){
+          param.sourceId = this.$route.query.id
+        }else{
+          param.sourceId = -1;
+        }
+        return param;
+      },
       moment,
       add () {
         this.edit({'gender':'1','cdiDefaultType':''});
