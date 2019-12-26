@@ -32,20 +32,23 @@ public class SaleOrderMtlServiceImpl extends ServiceImpl<SaleOrderMtlMapper, Sal
     @Transactional
     public BigDecimal saveSaleOrderMtl(SaleOrderMtl saleOrderMtl){
 
+        saleOrderMtl.setAmount(saleOrderMtl.getQuantity().multiply(saleOrderMtl.getPrice()));
         if (StringUtils.isNotBlank(saleOrderMtl.getDiscountType())) {
             if (DiscountType.PERCENT.getId().equals(saleOrderMtl.getDiscountType())){
-                saleOrderMtl.setAmount(saleOrderMtl.getQuantity().multiply(saleOrderMtl.getPrice()).multiply(saleOrderMtl.getDiscount().divide(new BigDecimal(100), 8, RoundingMode.CEILING)));
+                saleOrderMtl.setAmount(saleOrderMtl.getAmount().multiply(saleOrderMtl.getDiscount().divide(new BigDecimal(100), 8, RoundingMode.CEILING)));
             } else if (DiscountType.AMOUNT.getId().equals(saleOrderMtl.getDiscountType())) {
-                saleOrderMtl.setAmount(saleOrderMtl.getQuantity().multiply(saleOrderMtl.getPrice()).subtract(saleOrderMtl.getDiscount()));
+                saleOrderMtl.setAmount(saleOrderMtl.getAmount().subtract(saleOrderMtl.getDiscount()));
             }
         }
         super.save(saleOrderMtl);
-        BigDecimal totalAmount = BigDecimal.ONE;
+        BigDecimal totalAmount = BigDecimal.ZERO;
         Map<String,Object> columns = new HashMap<>();
-        columns.put("sourceId", saleOrderMtl.getSourceId());
+        columns.put("source_id", saleOrderMtl.getSourceId());
         Collection<SaleOrderMtl> list = listByMap(columns);
         for (SaleOrderMtl o: list){
-            totalAmount = totalAmount.add(o.getAmount());
+            if (null != o.getAmount()){
+                totalAmount = totalAmount.add(o.getAmount());
+            }
         }
         SaleOrder saleOrder = saleOrderService.getById(saleOrderMtl.getSourceId());
         saleOrder.setTotalamount(totalAmount);

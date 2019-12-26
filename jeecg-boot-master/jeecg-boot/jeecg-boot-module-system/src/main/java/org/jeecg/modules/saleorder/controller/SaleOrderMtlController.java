@@ -53,7 +53,7 @@ public class SaleOrderMtlController {
     @AutoLog(value = "添加销售订单")
     @ApiOperation(value = "添加销售订单", notes = "添加销售订单")
     public Result<?> add(@RequestBody SaleOrderMtl saleOrderMtl) {
-        saleOrderMtlService.save(saleOrderMtl);
+        saleOrderMtlService.saveSaleOrderMtl(saleOrderMtl);
         return Result.ok("添加成功！");
     }
     /**

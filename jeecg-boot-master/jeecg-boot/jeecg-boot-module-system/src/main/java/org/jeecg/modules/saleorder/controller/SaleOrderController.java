@@ -49,7 +49,9 @@ public class SaleOrderController {
     @ApiOperation(value = "添加销售订单", notes = "添加销售订单")
     public Result<?> add(@RequestBody SaleOrder saleOrder) {
         saleOrderService.save(saleOrder);
-        return Result.ok("添加成功！");
+        Result<Object> result = Result.ok();
+        result.setResult(saleOrder.getId());
+        return result;
     }
     /**
      * 获取所有数据
@@ -112,7 +114,9 @@ public class SaleOrderController {
     @ApiOperation(value = "修改销售订单", notes = "修改销售订单")
     public Result<?> edit(@RequestBody SaleOrder saleOrder){
         saleOrderService.updateById(saleOrder);
-        return Result.ok("修改成功！");
+        Result<Object> result = Result.ok();
+        result.setResult(saleOrder.getId());
+        return result;
     }
 
     /**
