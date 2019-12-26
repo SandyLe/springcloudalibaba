@@ -1,23 +1,117 @@
 <template>
   <a-modal
-    :title="title"
-    :width="800"
+    :width="modelStyle.width"
     :visible="visible"
     :confirmLoading="confirmLoading"
     @ok="handleOk"
     @cancel="handleCancel"
     cancelText="关闭"
     wrapClassName="ant-modal-cust-warp"
-    style="top:5%;height: 85%;overflow-y: hidden">
+    :bodyStyle ="bodyStyle">
+
+    <template slot="title">
+      <div style="width: 100%;height:20px;padding-right:32px;">
+        <div style="float: left;">{{ title }}</div>
+        <div style="float: right;">
+          <a-button
+            icon="fullscreen"
+            style="width:56px;height:100%;border:0"
+            @click="handleClickToggleFullScreen"/>
+        </div>
+      </div>
+    </template>
+
     <a-spin :spinning="confirmLoading">
       <a-form :form="form">
-        <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="备注">
-          <a-input placeholder="请输入备注" v-decorator="[ 'content', validatorRules.content]" />
-          <a-input placeholder="请输入备注" v-decorator="[ 'price', validatorRules.price]" />
-        </a-form-item>
+        <a-row>
+          <a-col :md="6" :sm="6">
+            <a-form-item
+              :labelCol="labelCol"
+              :wrapperCol="wrapperCol"
+              label="产品">
+              <a-select v-decorator="['typeId', {}]" placeholder="请选择产品" showSearch optionFilterProp="children" notFoundContent="没有匹配的产品"  >
+                <a-select-option value="">请选择</a-select-option>
+                <a-select-option v-for="(item, key) in typeList" :key="key" :value="item.id">
+                    <span style="display: inline-block;width: 100%" :title=" item.name || item.code ">
+                      {{ item.name || item.code }}
+                    </span>
+                </a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
+          <a-col :md="6" :sm="6">
+            <a-form-item
+              :labelCol="labelCol"
+              :wrapperCol="wrapperCol"
+              label="规格">
+              <a-input placeholder="请输入代码" v-decorator="[ 'code', {}]" />
+            </a-form-item>
+          </a-col>
+          <a-col :md="6" :sm="6">
+            <a-form-item
+              :labelCol="labelCol"
+              :wrapperCol="wrapperCol"
+              label="编码">
+              <a-input placeholder="请输入代码" v-decorator="[ 'code', {}]" />
+            </a-form-item>
+          </a-col>
+          <a-col :md="6" :sm="6">
+            <a-form-item
+              :labelCol="labelCol"
+              :wrapperCol="wrapperCol"
+              label="单价">
+              <a-input placeholder="请输入代码" v-decorator="[ 'code', {}]" />
+            </a-form-item>
+          </a-col>
+        </a-row>
+        <a-row>
+          <a-col :md="6" :sm="6">
+            <a-form-item
+              :labelCol="labelCol"
+              :wrapperCol="wrapperCol"
+              label="数量">
+              <a-input placeholder="请输入代码" v-decorator="[ 'code', {}]" />
+            </a-form-item>
+          </a-col>
+          <a-col :md="6" :sm="6">
+            <a-form-item
+              :labelCol="labelCol"
+              :wrapperCol="wrapperCol"
+              label="单位">
+              <a-select v-decorator="['typeId', {}]" placeholder="类型" >
+                <a-select-option value="">请选择</a-select-option>
+                <a-select-option v-for="(item, key) in typeList" :key="key" :value="item.id">
+                    <span style="display: inline-block;width: 100%" :title=" item.name || item.code ">
+                      {{ item.name || item.code }}
+                    </span>
+                </a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
+          <a-col :md="6" :sm="6">
+            <a-form-item
+              :labelCol="labelCol"
+              :wrapperCol="wrapperCol"
+              label="折扣">
+              <a-input placeholder="请输入代码" v-decorator="[ 'code', {}]" />
+            </a-form-item>
+          </a-col>
+          <a-col :md="6" :sm="6">
+            <a-form-item
+              :labelCol="labelCol"
+              :wrapperCol="wrapperCol"
+              label="折扣类型">
+              <a-select v-decorator="['typeId', {}]" placeholder="类型" >
+                <a-select-option value="">请选择</a-select-option>
+                <a-select-option v-for="(item, key) in typeList" :key="key" :value="item.id">
+                    <span style="display: inline-block;width: 100%" :title=" item.name || item.code ">
+                      {{ item.name || item.code }}
+                    </span>
+                </a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
+        </a-row>
       </a-form>
     </a-spin>
   </a-modal>
@@ -43,6 +137,16 @@
         wrapperCol: {
           xs: { span: 24 },
           sm: { span: 16 },
+        },
+        bodyStyle:{
+          padding: "0",
+          height:(window.innerHeight*0.8)+"px",
+          "overflow-y":"auto"
+        },
+        modelStyle:{
+          width: '80%',
+          style: { top: '20px' },
+          fullScreen: false
         },
         model: {},
         form: this.$form.createForm(this),
@@ -112,6 +216,18 @@
       },
       handleCancel () {
         this.close()
+      },
+      /** 切换全屏显示 */
+      handleClickToggleFullScreen() {
+        let mode = !this.modelStyle.fullScreen
+        if (mode) {
+          this.modelStyle.width = '100%'
+          this.modelStyle.style.top = '20px'
+        } else {
+          this.modelStyle.width = '80%'
+          this.modelStyle.style.top = '50px'
+        }
+        this.modelStyle.fullScreen = mode
       }
     }
   }

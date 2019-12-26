@@ -133,10 +133,8 @@
         </a-col>
       </a-row>
       <a-row>
-        <a-col :md="24" :sm="24">
-          <a-form-item :wrapperCol="{span: 19, offset: 5}">
-            <a-button type="primary" @click="nextStep">下一步</a-button>
-          </a-form-item>
+        <a-col :md="24" :sm="24" style="text-align: center ">
+          <a-button type="primary" @click="nextStep">下一步</a-button>
         </a-col>
       </a-row>
   </div>
@@ -343,7 +341,6 @@
             this.edit(res.result);
           }
         })
-
       }
     }
   }
