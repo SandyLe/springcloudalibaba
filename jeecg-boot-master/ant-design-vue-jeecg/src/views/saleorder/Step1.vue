@@ -59,7 +59,7 @@
         <a-col>
           <!-- 操作按钮区域 -->
           <div class="table-operator" style="border-top: 5px">
-            <a-button @click="handleAdd" type="primary" icon="plus">添加产品</a-button>
+            <a-button @click="handleAddMtl" type="primary" icon="plus">添加产品</a-button>
             <a-dropdown v-if="selectedRowKeys.length > 0">
               <a-menu slot="overlay">
                 <a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>
@@ -129,7 +129,7 @@
           <!-- 表单区域 -->
 
           <!-- 表单区域 -->
-          <sale-order-mtl-modal ref="modalForm" @ok="modalFormOk"></sale-order-mtl-modal>
+          <sale-order-mtl-modal ref="saleOrderMtlModal" @ok="modalFormOk"></sale-order-mtl-modal>
         </a-col>
       </a-row>
       <a-row>
@@ -287,10 +287,11 @@
             }else{
               values.billDate = values.billDate.format(this.dateFormat);
             }
-            values.id = id;
+            if(id){
+              values.id = id;
+            }
             let formData = Object.assign(this.model, values);
             let obj;
-            console.log(formData)
             if(this.model){
               if (values.id) {
                 obj=editSaleOrder(formData);
@@ -300,14 +301,16 @@
             }
             obj.then((res)=>{
               if(res.success){
-                that.$message.success(res.message);
-                that.$emit('ok');
+                debugger
+                this.$route.query.id = res.result;
+                // that.$message.success(res.message);
+                // that.$emit('ok');
               }else{
                 that.$message.warning(res.message);
               }
             }).finally(() => {
               that.confirmLoading = false;
-              that.close();
+              // that.close();
             })
           }
         })
@@ -316,14 +319,11 @@
         debugger
         this.mainId = this.$route.query.id;
         console.log(this.mainId)
-        this.saveSaleOrder(this.mainId);
         if (!this.mainId) {
-          this.saveSaleOrder();
+          this.saveSaleOrder(this.mainId);
         }
-        this.$route.query.id = '121212121';
-        console.log(this.$route.query.id )
-        // this.saveSaleOrder(id);
-        debugger
+        this.$refs.saleOrderMtlModal.add();
+        this.$refs.saleOrderMtlModal.title = "新增";
       },
       nextStep () {
         this.$emit('nextStep')

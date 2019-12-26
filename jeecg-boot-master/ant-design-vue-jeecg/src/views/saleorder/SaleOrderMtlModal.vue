@@ -29,9 +29,9 @@
               :labelCol="labelCol"
               :wrapperCol="wrapperCol"
               label="产品">
-              <a-select v-decorator="['typeId', {}]" placeholder="请选择产品" showSearch optionFilterProp="children" notFoundContent="没有匹配的产品"  >
+              <a-select v-decorator="['mtlId', {}]" placeholder="请选择产品" showSearch optionFilterProp="children" notFoundContent="没有匹配的产品"  >
                 <a-select-option value="">请选择</a-select-option>
-                <a-select-option v-for="(item, key) in typeList" :key="key" :value="item.id">
+                <a-select-option v-for="(item, key) in mtlList" :key="key" :value="item.id">
                     <span style="display: inline-block;width: 100%" :title=" item.name || item.code ">
                       {{ item.name || item.code }}
                     </span>
@@ -44,7 +44,7 @@
               :labelCol="labelCol"
               :wrapperCol="wrapperCol"
               label="规格">
-              <a-input placeholder="请输入代码" v-decorator="[ 'code', {}]" />
+              <a-input placeholder="请输入规格" v-decorator="[ 'specification', {}]" />
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="6">
@@ -52,7 +52,7 @@
               :labelCol="labelCol"
               :wrapperCol="wrapperCol"
               label="编码">
-              <a-input placeholder="请输入代码" v-decorator="[ 'code', {}]" />
+              <a-input placeholder="请输入代码" v-decorator="[ 'mtlCode', {}]" />
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="6">
@@ -60,7 +60,7 @@
               :labelCol="labelCol"
               :wrapperCol="wrapperCol"
               label="单价">
-              <a-input placeholder="请输入代码" v-decorator="[ 'code', {}]" />
+              <a-input placeholder="请输入单价" v-decorator="[ 'price', {}]" />
             </a-form-item>
           </a-col>
         </a-row>
@@ -70,7 +70,7 @@
               :labelCol="labelCol"
               :wrapperCol="wrapperCol"
               label="数量">
-              <a-input placeholder="请输入代码" v-decorator="[ 'code', {}]" />
+              <a-input placeholder="请输入数量" v-decorator="[ 'quantity', {}]" />
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="6">
@@ -78,9 +78,9 @@
               :labelCol="labelCol"
               :wrapperCol="wrapperCol"
               label="单位">
-              <a-select v-decorator="['typeId', {}]" placeholder="类型" >
+              <a-select v-decorator="['unitId', {}]" placeholder="类型" >
                 <a-select-option value="">请选择</a-select-option>
-                <a-select-option v-for="(item, key) in typeList" :key="key" :value="item.id">
+                <a-select-option v-for="(item, key) in unitList" :key="key" :value="item.id">
                     <span style="display: inline-block;width: 100%" :title=" item.name || item.code ">
                       {{ item.name || item.code }}
                     </span>
@@ -93,15 +93,15 @@
               :labelCol="labelCol"
               :wrapperCol="wrapperCol"
               label="折扣">
-              <a-input placeholder="请输入代码" v-decorator="[ 'code', {}]" />
+              <a-input placeholder="请输入折扣" v-decorator="[ 'discount', {}]" />
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="6">
             <a-form-item
               :labelCol="labelCol"
               :wrapperCol="wrapperCol"
-              label="折扣类型">
-              <a-select v-decorator="['typeId', {}]" placeholder="类型" >
+              label="折扣方式">
+              <a-select v-decorator="['discountType', {}]" placeholder="折扣方式" >
                 <a-select-option value="">请选择</a-select-option>
                 <a-select-option v-for="(item, key) in typeList" :key="key" :value="item.id">
                     <span style="display: inline-block;width: 100%" :title=" item.name || item.code ">
@@ -120,7 +120,7 @@
 <script>
 
   import AFormItem from "ant-design-vue/es/form/FormItem";
-  import {addSaleMtlOrder,editRole,duplicateCheck } from '@/api/api'
+  import {addSaleMtlOrder,getMaterialList,duplicateCheck } from '@/api/api'
 
   export default {
     name: "SaleOrderMtlModal",
@@ -128,7 +128,6 @@
       return {
         title: "操作",
         visible: false,
-        roleDisabled: false,
         confirmLoading: false,
         labelCol: {
           xs: { span: 24 },
@@ -156,7 +155,8 @@
               { min: 0, max: 126, message: '长度不超过 126 个字符', trigger: 'blur' }
             ]
           }
-        }
+        },
+        mtlList:[]
       }
     },
     components: {AFormItem},
@@ -173,13 +173,12 @@
         record.sourceId = this.$route.query.id;
         this.model = Object.assign({}, record);
         this.visible = true;
-
-        //编辑页面禁止修改角色编码
-        if(this.model.id){
-          this.roleDisabled = true;
-        }else{
-          this.roleDisabled = false;
-        }
+        let that = this;
+        getMaterialList().then((res) => {
+          if (res.success) {
+            that.mtlList = res.result;
+          }
+        })
 
       },
       close () {
@@ -192,6 +191,7 @@
         this.form.validateFields((err, values) => {
           if (!err) {
             that.confirmLoading = true;
+            values.sourceId = this.$route.query.id;
             let formData = Object.assign(this.model, values);
             let obj;
             console.log(formData)
