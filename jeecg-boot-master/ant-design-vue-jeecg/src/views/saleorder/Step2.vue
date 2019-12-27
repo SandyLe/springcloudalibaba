@@ -48,6 +48,7 @@
 </template>
 
 <script>
+  import {editSaleOrder, getSaleOrderOne, getSaleOrderMtlList } from '@/api/api'
   export default {
     name: "Step2",
     methods: {
@@ -56,6 +57,14 @@
       },
       prevStep () {
         this.$emit('prevStep')
+      }
+    },
+    mounted() {
+      if (this.$route.query.id) {
+        getSaleOrderOne({id:this.$route.query.id}).then((res) => {
+          if (res.success) {
+          }
+        })
       }
     }
   }

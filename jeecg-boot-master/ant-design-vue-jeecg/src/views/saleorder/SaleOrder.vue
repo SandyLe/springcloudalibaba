@@ -23,7 +23,7 @@
     </div>
     <!-- 操作按钮区域 -->
     <div class="table-operator"  style="margin-top: 5px">
-      <a-button @click="handleAddSaleOrder" type="primary" icon="plus">新增</a-button>
+      <a-button @click="handleEditSaleOrder(0)" type="primary" icon="plus">新增</a-button>
       <a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
           <a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>
@@ -46,8 +46,11 @@
         :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         @change="handleTableChange">
 
+        <span slot="nameAction" slot-scope="text, record">
+          <a @click="goDetail(record.id)">{{record.code}}</a>
+        </span>
         <span slot="action" slot-scope="text, record">
-          <a @click="handleEdit(record)">编辑</a>
+          <a @click="handleEditSaleOrder(record.id)">编辑</a>
 
           <a-divider type="vertical" />
           <a-dropdown>
@@ -74,7 +77,7 @@
 </template>
 
 <script>
-  import SaleOrderModal from './SaleOrderModal'
+  import SaleOrderModal from './SaleOrderMtlModal'
   import JInput from '@/components/jeecg/JInput'
   import {JeecgListMixin} from '@/mixins/JeecgListMixin'
   export default {
@@ -87,15 +90,87 @@
     data () {
       return {
         queryParam:{},
-        columns: [],
+        columns: [
+
+          {
+            title: '#',
+            dataIndex: '',
+            key:'rowIndex',
+            width:60,
+            align:"center",
+            customRender:function (t,r,index) {
+              return parseInt(index)+1;
+            }
+          },
+          {
+            title: '销售单号',
+            align:"center",
+            dataIndex: '',
+            scopedSlots: { customRender: 'nameAction' }
+          },
+          {
+            title: '客户',
+            align:"center",
+            dataIndex: 'customer'
+          },
+          {
+            title: '出货单位',
+            align:"center",
+            dataIndex: 'warehouse'
+          },
+          {
+            title: '渠道',
+            align:"center",
+            dataIndex: 'channel'
+          },
+          {
+            title: '发货时间',
+            align:"center",
+            dataIndex: 'deliveryTime'
+          },
+          {
+            title: '安装时间',
+            dataIndex: 'installTime',
+            align:"center"
+          },
+          {
+            title: '订单时间',
+            dataIndex: 'billdate',
+            align:"center"
+          },
+          {
+            title: '订单状态',
+            dataIndex: 'billstatus',
+            align:"center"
+          },
+          {
+            title: '收款方式',
+            dataIndex: 'receiptType',
+            align:"center"
+          },
+          {
+            title: '总金额',
+            dataIndex: 'totalamount',
+            align:"center"
+          },
+          {
+            title: '已付金额',
+            align:"center",
+            dataIndex: 'payamount'
+          },
+          {
+            title: '操作',
+            dataIndex: 'action',
+            align:"center",
+            scopedSlots: { customRender: 'action' },
+          }
+        ],
         url: {
-          imgerver: window._CONFIG['domianURL'] + "/sys/common/view",
-          syncUser: "/process/extActProcess/doSyncUser",
-          list: "/sys/user/list",
-          delete: "/sys/user/delete",
-          deleteBatch: "/sys/user/deleteBatch",
-          exportXlsUrl: "/sys/user/exportXls",
-          importExcelUrl: "sys/user/importExcel",
+          list: "/saleOrder/getPage",
+          delete: "/saleOrder/delete",
+          deleteBatch: "/saleOrder/deleteBatch",
+          exportXlsUrl: "/saleOrder/exportXls",
+          importExcelUrl: "/saleOrder/importExcel",
         },
       }
     },
@@ -106,13 +181,9 @@
       searchReset () {
 
       },
-      handleAddSaleOrder () {
-        this.$router.push({ name: "saleorder-saleOrderEdit"})
+      handleEditSaleOrder (id) {
+        this.$router.push({ name: "saleorder-saleOrderEdit", query: {"id": id}})
       }
     }
   }
 </script>
-
-<style scoped>
-  @import '~@assets/less/common.less'
-</style>

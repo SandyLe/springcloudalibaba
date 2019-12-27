@@ -401,3 +401,54 @@ CREATE TABLE `sl_material_self_unit` (
   `unit_type` varchar(30) DEFAULT NULL,
   `qty` decimal(10,0) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+DROP TABLE IF EXISTS `sl_sale_order`;
+CREATE TABLE `sl_sale_order` (
+
+  `id` varchar(30) NOT NULL,
+  `name` varchar(50) DEFAULT NULL,
+  `code` varchar(30) DEFAULT NULL,
+  `content` varchar(100) DEFAULT NULL,
+  `create_time` datetime DEFAULT NULL,
+  `update_time` datetime DEFAULT NULL,
+  `create_by` varchar(30) DEFAULT NULL,
+  `update_by` varchar(30) DEFAULT NULL,
+  `row_sts` int(11) DEFAULT NULL,
+  `sort` int(11) DEFAULT NULL,
+
+  `customer_id` varchar(30) DEFAULT NULL,
+  `warehouse_id` varchar(30) DEFAULT NULL,
+  `channel_id` varchar(30) DEFAULT NULL,
+  `qty` decimal(10,0) DEFAULT NULL,
+  `delivery_time` datetime DEFAULT NULL,
+  `install_time` datetime DEFAULT NULL,
+  `bill_date` datetime DEFAULT NULL,
+  `receipt_type` varchar(5) DEFAULT NULL,
+  `billing_info` varchar(30) DEFAULT NULL,
+  `bill_status` int(2) DEFAULT NULL,
+  `totalamount` decimal(10,0) DEFAULT NULL,
+  `payamount` decimal(10,0) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+DROP TABLE IF EXISTS `sl_sale_order_mtl`;
+CREATE TABLE `sl_sale_order_mtl` (
+
+  `id` varchar(30) NOT NULL,
+  `name` varchar(50) DEFAULT NULL,
+  `code` varchar(30) DEFAULT NULL,
+  `content` varchar(100) DEFAULT NULL,
+  `create_time` datetime DEFAULT NULL,
+  `update_time` datetime DEFAULT NULL,
+  `create_by` varchar(30) DEFAULT NULL,
+  `update_by` varchar(30) DEFAULT NULL,
+  `row_sts` int(11) DEFAULT NULL,
+  `sort` int(11) DEFAULT NULL,
+
+  `source_id` varchar(30) DEFAULT NULL,
+  `mtl_id` varchar(30) DEFAULT NULL,
+  `unit_id` varchar(30) DEFAULT NULL,
+  `quantity` decimal(10,0) DEFAULT NULL,
+  `price` decimal(10,0) DEFAULT NULL,
+  `discount` decimal(10,0) DEFAULT NULL,
+  `amount` decimal(10,0) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

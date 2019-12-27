@@ -11,11 +11,16 @@ import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.modules.basic.entity.Customer;
+import org.jeecg.modules.basic.entity.Material;
+import org.jeecg.modules.basic.entity.MaterialUnit;
 import org.jeecg.modules.basic.entity.Warehouse;
 import org.jeecg.modules.basic.service.CustomerService;
+import org.jeecg.modules.basic.service.MaterialService;
+import org.jeecg.modules.basic.service.MaterialUnitService;
 import org.jeecg.modules.basic.service.WarehouseService;
 import org.jeecg.modules.saleorder.entity.SaleOrder;
-import org.jeecg.modules.saleorder.service.SaleOrderService;
+import org.jeecg.modules.saleorder.entity.SaleOrderMtl;
+import org.jeecg.modules.saleorder.service.SaleOrderMtlService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,48 +34,46 @@ import java.util.stream.Collectors;
 @Slf4j
 @Api(tags = "单表销售订单")
 @RestController
-@RequestMapping("/saleOrder")
-public class SaleOrderController {
+@RequestMapping("/saleOrderMtl")
+public class SaleOrderMtlController {
 
     @Autowired
-    private SaleOrderService saleOrderService;
+    private SaleOrderMtlService saleOrderMtlService;
     @Autowired
-    private CustomerService customerService;
+    private MaterialService materialService;
     @Autowired
-    private WarehouseService warehouseService;
+    private MaterialUnitService materialUnitService;
     /**
      * 添加
      *
-     * @param saleOrder
+     * @param saleOrderMtl
      * @return
      */
     @PostMapping(value = "/add")
     @AutoLog(value = "添加销售订单")
     @ApiOperation(value = "添加销售订单", notes = "添加销售订单")
-    public Result<?> add(@RequestBody SaleOrder saleOrder) {
-        saleOrderService.save(saleOrder);
-        Result<Object> result = Result.ok();
-        result.setResult(saleOrder.getId());
-        return result;
+    public Result<?> add(@RequestBody SaleOrderMtl saleOrderMtl) {
+        saleOrderMtlService.saveSaleOrderMtl(saleOrderMtl);
+        return Result.ok("添加成功！");
     }
     /**
      * 获取所有数据
      *
-     * @param saleOrder
+     * @param saleOrderMtl
      * @param req
      * @return
      */
     @ApiOperation(value = "获取销售订单数据", notes = "获取所有销售订单数据")
     @GetMapping(value = "/getList")
-    public Result<?> getList(SaleOrder saleOrder, HttpServletRequest req) {
-        QueryWrapper<SaleOrder> queryWrapper = QueryGenerator.initQueryWrapper(saleOrder, req.getParameterMap());
-        List<SaleOrder> list = saleOrderService.list(queryWrapper);
+    public Result<?> getList(SaleOrderMtl saleOrderMtl, HttpServletRequest req) {
+        QueryWrapper<SaleOrderMtl> queryWrapper = QueryGenerator.initQueryWrapper(saleOrderMtl, req.getParameterMap());
+        List<SaleOrderMtl> list = saleOrderMtlService.list(queryWrapper);
         return Result.ok(list);
     }
     /**
      * 分页列表查询
      *
-     * @param saleOrder
+     * @param saleOrderMtl
      * @param pageNo
      * @param pageSize
      * @param req
@@ -78,22 +81,26 @@ public class SaleOrderController {
      */
     @ApiOperation(value = "获取销售订单数据列表", notes = "获取所有销售订单数据列表")
     @GetMapping(value = "/getPage")
-    public Result<?> list(SaleOrder saleOrder, @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo, @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
+    public Result<?> list(SaleOrderMtl saleOrderMtl, @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo, @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
                           HttpServletRequest req) {
-        QueryWrapper<SaleOrder> queryWrapper = QueryGenerator.initQueryWrapper(saleOrder, req.getParameterMap());
-        Page<SaleOrder> page = new Page<SaleOrder>(pageNo, pageSize);
+        QueryWrapper<SaleOrderMtl> queryWrapper = QueryGenerator.initQueryWrapper(saleOrderMtl, req.getParameterMap());
+        Page<SaleOrderMtl> page = new Page<SaleOrderMtl>(pageNo, pageSize);
 
-        IPage<SaleOrder> pageList = saleOrderService.page(page, queryWrapper);
-        List<SaleOrder> saleOrderList = pageList.getRecords();
-        List<String> customerIds = saleOrderList.stream().map(SaleOrder::getCustomerId).collect(Collectors.toList());
-        List<String> warehouseIds = saleOrderList.stream().map(SaleOrder::getWarehouseId).collect(Collectors.toList());
-        Collection<Customer> customers = customerService.listByIds(customerIds);
-        Collection<Warehouse> warehouses = warehouseService.listByIds(warehouseIds);
-        Map<String, String> customerMap = customers.stream().collect(Collectors.toMap(Customer::getId, Customer::getName));
-        Map<String, String> warehouseMap = warehouses.stream().collect(Collectors.toMap(Warehouse:: getId, Warehouse:: getName));
+        IPage<SaleOrderMtl> pageList = saleOrderMtlService.page(page, queryWrapper);
+        List<SaleOrderMtl> saleOrderList = pageList.getRecords();
+        List<String> mtlIds = saleOrderList.stream().map(SaleOrderMtl::getMtlId).collect(Collectors.toList());
+        List<String> unitIds = saleOrderList.stream().map(SaleOrderMtl::getUnitId).collect(Collectors.toList());
+        Collection<Material> materials = materialService.listByIds(mtlIds);
+        Collection<MaterialUnit> warehouses = materialUnitService.listByIds(unitIds);
+        Map<String, String> mtlMap = materials.stream().collect(Collectors.toMap(Material::getId, Material::getName));
+        Map<String, String> mtlCodeMap = materials.stream().collect(Collectors.toMap(Material::getId, Material::getCode));
+        Map<String, String> mtlSpecMap = materials.stream().collect(Collectors.toMap(Material::getId, Material::getSpecification));
+        Map<String, String> unitMap = warehouses.stream().collect(Collectors.toMap(MaterialUnit:: getId, MaterialUnit:: getName));
         saleOrderList.stream().forEach(o->{
-            o.setWarehouse(warehouseMap.get(o.getWarehouseId()));
-            o.setCustomer(customerMap.get(o.getCustomerId()));
+            o.setUnit(unitMap.get(o.getUnitId()));
+            o.setMtl(mtlMap.get(o.getMtlId()));
+            o.setMtlCode(mtlCodeMap.get(o.getMtlId()));
+            o.setSpecification(mtlSpecMap.get(o.getMtlId()));
         });
 
         log.info("查询当前页：" + pageList.getCurrent());
@@ -106,17 +113,15 @@ public class SaleOrderController {
     /**
      * 修改
      *
-     * @param saleOrder
+     * @param saleOrderMtl
      * @return
      */
     @PostMapping(value = "/edit")
     @AutoLog(value = "修改销售订单")
     @ApiOperation(value = "修改销售订单", notes = "修改销售订单")
-    public Result<?> edit(@RequestBody SaleOrder saleOrder){
-        saleOrderService.updateById(saleOrder);
-        Result<Object> result = Result.ok();
-        result.setResult(saleOrder.getId());
-        return result;
+    public Result<?> edit(@RequestBody SaleOrderMtl saleOrderMtl){
+        saleOrderMtlService.updateById(saleOrderMtl);
+        return Result.ok("修改成功！");
     }
 
     /**
@@ -129,7 +134,7 @@ public class SaleOrderController {
     @DeleteMapping(value = "/delete")
     @ApiOperation(value = "通过ID删除销售订单", notes = "通过ID删除销售订单")
     public Result<?> delete(@RequestParam(name = "id", required = true) String id) {
-        saleOrderService.removeById(id);
+        saleOrderMtlService.removeById(id);
         return Result.ok("删除成功!");
     }
 
@@ -142,7 +147,7 @@ public class SaleOrderController {
     @DeleteMapping(value = "/deleteBatch")
     @ApiOperation(value = "批量删除销售订单", notes = "批量删除销售订单")
     public Result<?> deleteBatch(@RequestParam(name = "ids", required = true) String ids) {
-        this.saleOrderService.removeByIds(Arrays.asList(ids.split(",")));
+        this.saleOrderMtlService.removeByIds(Arrays.asList(ids.split(",")));
         return Result.ok("批量删除成功！");
     }
 
@@ -155,7 +160,7 @@ public class SaleOrderController {
     @GetMapping(value = "/getOne")
     @ApiOperation(value = "通过ID查询销售订单", notes = "通过ID查询销售订单")
     public Result<?> queryById(@ApiParam(name = "id", value = "示例id", required = true) @RequestParam(name = "id", required = true) String id) {
-        SaleOrder saleOrder = saleOrderService.getById(id);
-        return Result.ok(saleOrder);
+        SaleOrderMtl saleOrderMtl = saleOrderMtlService.getById(id);
+        return Result.ok(saleOrderMtl);
     }
 }
