@@ -96,10 +96,10 @@
               </template>
 
               <span slot="nameAction" slot-scope="text, record">
-                <a @click="goDetail(record.id)">{{record.name}}</a>
+                <a @click="goDetail(record.mtlId)">{{record.mtl}}</a>
               </span>
               <span slot="action" slot-scope="text, record">
-                <a @click="handleEdit(record)">编辑</a>
+                <a @click="handleEditMtl(record)">编辑</a>
                 <a-divider type="vertical"/>
 
                 <a-dropdown>
@@ -244,8 +244,6 @@
     },
     methods: {
       getQueryParams(){
-        debugger
-        console.log(this.$route.query.id)
         let param = {};
         if(this.$route.query.id){
           param.sourceId = this.$route.query.id
@@ -268,7 +266,6 @@
         }else{
           this.roleDisabled = false;
         }
-
         this.$nextTick(() => {
           this.saleOrderForm.setFieldsValue(pick(this.model,'name', 'code','content','customerId','channelId','billDate'))
           //时间格式化
@@ -323,6 +320,11 @@
           this.saveSaleOrder(this.mainId);
         }
         this.$refs.saleOrderMtlModal.add();
+        this.$refs.saleOrderMtlModal.title = "新增";
+      },
+      handleEditMtl (record) {
+        debugger
+        this.$refs.saleOrderMtlModal.edit(record);
         this.$refs.saleOrderMtlModal.title = "新增";
       },
       nextStep () {

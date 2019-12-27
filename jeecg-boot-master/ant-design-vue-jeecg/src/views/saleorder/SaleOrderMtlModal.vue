@@ -103,7 +103,7 @@
               label="折扣方式">
               <a-select v-decorator="['discountType', {}]" placeholder="折扣方式" >
                 <a-select-option value="">请选择</a-select-option>
-                <a-select-option v-for="(item, key) in typeList" :key="key" :value="item.id">
+                <a-select-option v-for="(item, key) in discountTypeList" :key="key" :value="item.id">
                     <span style="display: inline-block;width: 100%" :title=" item.name || item.code ">
                       {{ item.name || item.code }}
                     </span>
@@ -119,6 +119,7 @@
 
 <script>
 
+  import pick from 'lodash.pick'
   import AFormItem from "ant-design-vue/es/form/FormItem";
   import {addSaleMtlOrder,getMaterialList,duplicateCheck } from '@/api/api'
 
@@ -156,7 +157,9 @@
             ]
           }
         },
-        mtlList:[]
+        mtlList:[],
+        unitList: [],
+        discountTypeList: []
       }
     },
     components: {AFormItem},
@@ -179,6 +182,9 @@
             that.mtlList = res.result;
           }
         })
+        this.$nextTick(() => {
+          this.form.setFieldsValue(pick(this.model,'mtlId', 'mtlCode','specification','unitId','price','discount'))
+        });
 
       },
       close () {
