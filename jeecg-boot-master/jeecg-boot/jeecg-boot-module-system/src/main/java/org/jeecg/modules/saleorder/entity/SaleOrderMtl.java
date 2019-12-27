@@ -20,6 +20,12 @@ public class SaleOrderMtl extends JeecgEntity {
     @ApiModelProperty("产品")
     @TableField(exist=false)
     private String mtl;
+    @ApiModelProperty("产品Code")
+    @TableField(exist=false)
+    private String mtlCode;
+    @ApiModelProperty("规格")
+    @TableField(exist=false)
+    private String specification;
     @ApiModelProperty("单位ID")
     private String unitId;
     @ApiModelProperty("单位")
@@ -114,5 +120,21 @@ public class SaleOrderMtl extends JeecgEntity {
 
     public void setDiscountType(String discountType) {
         this.discountType = discountType;
+    }
+
+    public String getSpecification() {
+        return specification;
+    }
+
+    public void setSpecification(String specification) {
+        this.specification = specification;
+    }
+
+    public String getMtlCode() {
+        return mtlCode;
+    }
+
+    public void setMtlCode(String mtlCode) {
+        this.mtlCode = mtlCode;
     }
 }
