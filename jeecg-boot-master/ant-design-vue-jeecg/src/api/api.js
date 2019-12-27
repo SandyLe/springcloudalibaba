@@ -121,6 +121,7 @@ const getCustomerList =  (params)=>getAction("/customer/getList",params)
 const getDeliveryInfo = (params)=>getAction("/customer/getDeliveryInfo",params)
 const addVendor = (params)=>postAction("/vendor/add",params)
 const editVendor = (params)=>postAction("/vendor/edit",params)
+const getVendorList = (params)=>getAction("/vendor/getList",params)
 const addMaterial = (params)=>postAction("/material/add",params)
 const editMaterial = (params)=>postAction("/material/edit",params)
 const getMaterialOne = (params)=>getAction("/material/getOne",params)
@@ -207,6 +208,7 @@ export {
   getDeliveryInfo,
   addVendor,
   editVendor,
+  getVendorList,
   addMaterial,
   editMaterial,
   getMaterialTypeList,
