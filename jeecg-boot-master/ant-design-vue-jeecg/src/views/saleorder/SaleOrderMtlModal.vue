@@ -29,7 +29,8 @@
               :labelCol="labelCol"
               :wrapperCol="wrapperCol"
               label="产品">
-              <a-select v-decorator="['mtlId', {}]" placeholder="请选择产品" showSearch optionFilterProp="children" notFoundContent="没有匹配的产品"  >
+              <a-select v-decorator="['mtlId', {}]" placeholder="请选择产品" showSearch optionFilterProp="children"
+                        @change="mtlChange" notFoundContent="没有匹配的产品"  >
                 <a-select-option value="">请选择</a-select-option>
                 <a-select-option v-for="(item, key) in mtlList" :key="key" :value="item.id">
                     <span style="display: inline-block;width: 100%" :title=" item.name || item.code ">
@@ -78,11 +79,11 @@
               :labelCol="labelCol"
               :wrapperCol="wrapperCol"
               label="单位">
-              <a-select v-decorator="['unitId', {}]" placeholder="类型" >
+              <a-select v-decorator="['unitId', {}]" placeholder="单位" @change="unitChange" >
                 <a-select-option value="">请选择</a-select-option>
-                <a-select-option v-for="(item, key) in unitList" :key="key" :value="item.id">
-                    <span style="display: inline-block;width: 100%" :title=" item.name || item.code ">
-                      {{ item.name || item.code }}
+                <a-select-option v-for="(item, key) in unitList" :key="key" :value="item.unitId">
+                    <span style="display: inline-block;width: 100%" :title=" item.unit">
+                      {{ item.unit }}
                     </span>
                 </a-select-option>
               </a-select>
@@ -121,10 +122,16 @@
 
   import pick from 'lodash.pick'
   import AFormItem from "ant-design-vue/es/form/FormItem";
-  import {addSaleMtlOrder,getMaterialList,duplicateCheck } from '@/api/api'
+  import {addSaleMtlOrder,editSaleMtlOrder,getMaterialList,duplicateCheck,getDiscountTypeList,getMaterialSelfUnitList,getMtlPrice } from '@/api/api'
 
   export default {
     name: "SaleOrderMtlModal",
+    props: {
+      saleOrder: {
+        type: Object,
+        default: () => {}
+      }
+    },
     data() {
       return {
         title: "操作",
@@ -157,6 +164,7 @@
             ]
           }
         },
+        unitId: '',
         mtlList:[],
         unitList: [],
         discountTypeList: []
@@ -182,10 +190,48 @@
             that.mtlList = res.result;
           }
         })
+        getDiscountTypeList().then((res) => {
+          if (res.success) {
+            that.discountTypeList = res.result;
+          }
+        })
+        if (record.mtlId){
+          getMaterialSelfUnitList({addSelf:true,sourceId:record.mtlId}).then((res) => {
+            if (res.success) {
+              this.unitList = res.result;
+            }
+          })
+        } else {
+          this.unitList = [];
+        }
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'mtlId', 'mtlCode','specification','unitId','price','discount'))
+          this.form.setFieldsValue(pick(this.model,'mtlId', 'mtlCode','specification','unitId','price','discount','quantity','discountType'))
         });
 
+      },
+      mtlChange (val) {
+        debugger
+        getMaterialSelfUnitList({addSelf:true,sourceId:val}).then((res) => {
+          if (res.success) {
+            this.unitList = res.result;
+          }
+        })
+
+        getMtlPrice({customerId:this.saleOrder.customerId, mtlId:val, unitId:this.unitId}).then((res) => {
+          if (res.success) {
+            const mtlPrice = res.result;
+            this.model.mtlCode = mtlPrice.mtlCode;
+            this.model.unitId = mtlPrice.unitId;
+            this.model.specification = mtlPrice.specification;
+            this.model.price = mtlPrice.price;
+            this.$nextTick(() => {
+              this.form.setFieldsValue(pick(this.model,'mtlCode','specification','unitId','price'))
+            });
+          }
+        })
+      },
+      unitChange (val) {
+        this.unitId = val;
       },
       close () {
         this.$emit('close');
@@ -204,7 +250,7 @@
             if(!this.model.id){
               obj=addSaleMtlOrder(formData);
             }else{
-              obj=editRole(formData);
+              obj=editSaleMtlOrder(formData);
             }
             obj.then((res)=>{
               if(res.success){

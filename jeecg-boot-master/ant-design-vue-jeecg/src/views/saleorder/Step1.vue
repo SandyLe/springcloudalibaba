@@ -111,7 +111,7 @@
                       <!--
                       <a href="javascript:;" @click="openAuditTab(1, '3')">详情</a>
                       -->
-                      <a href="javascript:;" @click="goDetail(record.id)">详情</a>
+                      <a href="javascript:;" @click="handleEditMtl(record)">详情</a>
                     </a-menu-item>
 
                     <a-menu-item>
@@ -129,7 +129,7 @@
           <!-- 表单区域 -->
 
           <!-- 表单区域 -->
-          <sale-order-mtl-modal ref="saleOrderMtlModal" @ok="modalFormOk"></sale-order-mtl-modal>
+          <sale-order-mtl-modal ref="saleOrderMtlModal" :saleOrder = "saleOrder" @ok="modalFormOk"></sale-order-mtl-modal>
         </a-col>
       </a-row>
       <a-row>
@@ -156,6 +156,7 @@
     },
     data () {
       return {
+        saleOrder: {},
         dateFormat:"YYYY-MM-DD HH:mm:ss",
         saleOrderForm: this.$form.createForm(this),
         mainId: 0,
@@ -200,6 +201,11 @@
             dataIndex: 'mtlCode'
           },
           {
+            title: '数量',
+            align:"center",
+            dataIndex: 'quantity'
+          },
+          {
             title: '单位',
             align:"center",
             dataIndex: 'unit'
@@ -216,9 +222,8 @@
           },
           {
             title: '折扣类型',
-            dataIndex: 'discountType',
-            align:"center",
-            sorter: true
+            dataIndex: 'discountTypeName',
+            align:"center"
           },
           {
             title: '金额',
@@ -299,7 +304,8 @@
             obj.then((res)=>{
               if(res.success){
                 debugger
-                this.$route.query.id = res.result;
+                this.$route.query.id = res.result.id;
+                that.saleOrder = res.result;
                 // that.$message.success(res.message);
                 // that.$emit('ok');
               }else{
@@ -325,7 +331,10 @@
       handleEditMtl (record) {
         debugger
         this.$refs.saleOrderMtlModal.edit(record);
-        this.$refs.saleOrderMtlModal.title = "新增";
+        this.$refs.saleOrderMtlModal.title = "编辑";
+      },
+      goDetail(id) {
+        this.$router.push({ name: "material-materialEdit", query: {"id": id}})
       },
       nextStep () {
         this.$emit('nextStep')
@@ -340,6 +349,7 @@
       if (this.$route.query.id) {
         getSaleOrderOne({id:this.$route.query.id}).then((res) => {
           if (res.success) {
+            this.saleOrder = res.result;
             this.edit(res.result);
           }
         })

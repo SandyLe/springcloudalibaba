@@ -100,6 +100,7 @@ const addSaleOrder = (params)=>postAction("/saleOrder/add",params)
 const editSaleOrder = (params)=>postAction("/saleOrder/edit",params)
 const getSaleOrderOne = (params)=>getAction("/saleOrder/getOne",params)
 const addSaleMtlOrder = (params)=>postAction("/saleOrderMtl/add",params)
+const editSaleMtlOrder = (params)=>postAction("/saleOrderMtl/edit",params)
 const addCustomerType = (params)=>postAction("/customerType/add",params)
 const editCustomerType = (params)=>postAction("/customerType/edit",params)
 const getCustomerTypeList = (params)=>getAction("/customerType/getList",params)
@@ -135,7 +136,9 @@ const addMaterialSelfUnit = (params)=>postAction("/materialSelfUnit/add",params)
 const editMaterialSelfUnit = (params)=>postAction("/materialSelfUnit/edit",params)
 const addMaterialPrice = (params)=>postAction("/materialPrice/add",params)
 const editMaterialPrice = (params)=>postAction("/materialPrice/edit",params)
+const getMtlPrice = (params)=>getAction("/materialPrice/getMtlPrice",params)
 
+const getDiscountTypeList = (params)=>getAction("/basic/fc/enum/discountType/getList",params)
 
 const loadShopData = (params)=>getAction("/sys/sysDepart/getSysDepartList",params)
 const getAllUser = (params)=>getAction("/sys/user/getAll",params)
@@ -229,7 +232,10 @@ export {
   addMaterialPrice,
   editMaterialPrice,
   getCustomerList,
-  addSaleMtlOrder
+  addSaleMtlOrder,
+  editSaleMtlOrder,
+  getDiscountTypeList,
+  getMtlPrice
 }
 
 
