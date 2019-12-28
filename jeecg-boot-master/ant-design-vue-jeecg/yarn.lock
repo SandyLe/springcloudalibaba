@@ -11757,6 +11757,11 @@ yargs@~3.10.0:
     decamelize "^1.0.0"
     window-size "0.1.0"
 
+yarn@^1.21.1:
+  version "1.21.1"
+  resolved "https://registry.npm.taobao.org/yarn/download/yarn-1.21.1.tgz?cache=0&sync_timestamp=1576069986796&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fyarn%2Fdownload%2Fyarn-1.21.1.tgz#1d5da01a9a03492dc4a5957befc1fd12da83d89c"
+  integrity sha1-HV2gGpoDSS3EpZV778H9EtqD2Jw=
+
 yorkie@^2.0.0:
   version "2.0.0"
   resolved "https://registry.npmjs.org/yorkie/-/yorkie-2.0.0.tgz#92411912d435214e12c51c2ae1093e54b6bb83d9"

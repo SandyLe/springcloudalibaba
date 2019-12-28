@@ -6,7 +6,6 @@
         <a-row :gutter="24">
           <a-col :md="6" :sm="8">
             <a-form-item label="供应商">
-              <!-- <a-input placeholder="请输入供应商" v-model="queryParam.vendorId"></a-input> -->
               <a-select v-decorator="['queryParam.vendorId', {}]" placeholder="请输入供应商">
                 <a-select-option value="">请选择</a-select-option>
                 <a-select-option v-for="(item, key) in dictOptions.vendorId" :key="key" :value="item.id">
@@ -16,18 +15,21 @@
             </a-form-item>
           </a-col>
           <a-col :md="12" :sm="16">
-            <a-form-item label="业务时间">
-              <j-date :show-time="true" date-format="YYYY-MM-DD HH:mm:ss" placeholder="请选择开始时间" class="query-group-cust" v-model="queryParam.businessDate_begin"></j-date>
-              <span class="query-group-split-cust"></span>
-              <j-date :show-time="true" date-format="YYYY-MM-DD HH:mm:ss" placeholder="请选择结束时间" class="query-group-cust" v-model="queryParam.businessDate_end"></j-date>
+            <a-form-item label="仓库">
+              <a-select v-decorator="['queryParam.warehouseId', {}]" placeholder="请输入仓库">
+                <a-select-option value="">请选择</a-select-option>
+                <a-select-option v-for="(item, key) in dictOptions.warehouse" :key="key" :value="item.id">
+                     {{ item.name }}
+                </a-select-option>
+              </a-select> 
             </a-form-item>
           </a-col>
           <template v-if="toggleSearchStatus">
             <a-col :md="12" :sm="16">
-              <a-form-item label="创建时间">
-                <j-date placeholder="请选择开始日期" class="query-group-cust" v-model="queryParam.createDate_begin"></j-date>
+              <a-form-item label="业务时间">
+                <j-date placeholder="请选择开始日期" class="query-group-cust" v-model="queryParam.billdate_begin"></j-date>
                 <span class="query-group-split-cust"></span>
-                <j-date placeholder="请选择结束日期" class="query-group-cust" v-model="queryParam.createDate_end"></j-date>
+                <j-date placeholder="请选择结束日期" class="query-group-cust" v-model="queryParam.billdate_end"></j-date>
               </a-form-item>
             </a-col>
           </template>
@@ -128,14 +130,14 @@
 <script>
 
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
-  import PurchasesModal from './PurchasesModal'
+  import PurchasesModal from './PurchaseModal'
   import JDictSelectTag from '@/components/dict/JDictSelectTag.vue'
   import { filterMultiDictText } from '@/components/dict/JDictSelectUtil'
   import JDate from '@/components/jeecg/JDate.vue'
-  import { getVendorList , ajaxGetDictItems } from '@/api/api'
+  import { getVendorList , ajaxGetDictItems , getWarehouseList } from '@/api/api'
 
   export default {
-    name: "PurchasesList",
+    name: "PurchaseList",
     mixins:[JeecgListMixin],
     components: {
       JDictSelectTag,
@@ -144,6 +146,7 @@
     },
     data () {
       return {
+        queryParam: {},
         description: '采购列表管理页面',
         // 表头
         columns: [
@@ -170,44 +173,48 @@
             }
           },
           {
-            title:'业务时间',
+            title:'备注',
             align:"center",
-            dataIndex: 'businessTime'
+            dataIndex: 'description'
           },
           {
-            title:'金额',
+            title:'仓库',
             align:"center",
-            dataIndex: 'amount'
-          },
-          {
-            title:'更新时间',
-            align:"center",
-            dataIndex: 'updateTime'
-          },
-          {
-            title:'创建时间',
-            align:"center",
-            dataIndex: 'createTime',
-            // customRender:function (text) {
-            //   return !text?"":(text.length>10?text.substr(0,10):text)
-            // }
-          },
-          {
-            title:'排序值',
-            align:"center",
-            dataIndex: 'sort'
-          },
-          {
-            title:'状态',
-            align:"center",
-            dataIndex: 'states',
+            dataIndex: 'warehouseId',
             customRender:(text)=>{
               if(!text){
                 return ''
               }else{
-                return filterMultiDictText(this.dictOptions['purchasestype'], text+"")
+                return filterMultiDictText(this.dictOptions['warehouse'], text+"")
               }
             }
+          },
+          {
+            title:'结算账户',
+            align:"center",
+            dataIndex: 'account'
+          },
+          {
+            title:'实付金额',
+            align:"center",
+            dataIndex: 'payamount'
+          },
+          {
+            title:'总金额',
+            align:"center",
+            dataIndex: 'totalamount'
+          },
+          {
+            title:'订单日期',
+            align:"center",
+            dataIndex: 'billdate',
+            // customRender:(text)=>{
+            //   if(!text){
+            //     return ''
+            //   }else{
+            //     return filterMultiDictText(this.dictOptions['purchasestype'], text+"")
+            //   }
+            // }
           },
           {
             title: '操作',
@@ -217,15 +224,16 @@
           }
         ],
         url: {
-          list: "/purchases/list",
-          delete: "/purchases/delete",
-          deleteBatch: "/purchases/deleteBatch",
-          exportXlsUrl: "/purchases/exportXls",
-          importExcelUrl: "purchases/importExcel",
+          list: "/purchase/getPaged",
+          delete: "/purchase/delete",
+          deleteBatch: "/purchase/deleteBatch",
+          exportXlsUrl: "/purchase/exportXls",
+          importExcelUrl: "purchase/importExcel",
         },
         dictOptions:{
          vendorId:[],
-         purchasestype:[]
+         purchasestype:[],
+         warehouse:[]
         },
       }
     },
@@ -252,7 +260,18 @@
           if (res.success) {
             this.$set(this.dictOptions, 'purchasestype', res.result)
           }
-        })
+        });
+        getWarehouseList('').then((res) => {
+          if (res.success) {
+            if(res.result && res.result.length > 0){
+              res.result.forEach(function(option){
+                option.value = option.id;
+                option.text = option.name;
+              })
+            }
+            this.$set(this.dictOptions, 'warehouse', res.result)
+          }
+        });
       }
        
     }

@@ -117,6 +117,7 @@ const editMaterialUnit = (params)=>postAction("/materialUnit/edit",params)
 const getMaterialUnitList = (params)=>getAction("/materialUnit/getList",params)
 const addWarehouse = (params)=>postAction("/warehouse/add",params)
 const editWarehouse = (params)=>postAction("/warehouse/edit",params)
+const getWarehouseList = (params)=>getAction("/warehouse/getList",params)
 const getAreaList = (params)=>getAction("/area/getList",params)
 const getCustomerOne = (params)=>getAction("/customer/getOne",params)
 const saveCustomer = (params)=>postAction("/customer/save",params)
@@ -207,6 +208,7 @@ export {
   getAllUser,
   addWarehouse,
   editWarehouse,
+  getWarehouseList,
   getAreaList,
   saveCustomer,
   getCustomerOne,
