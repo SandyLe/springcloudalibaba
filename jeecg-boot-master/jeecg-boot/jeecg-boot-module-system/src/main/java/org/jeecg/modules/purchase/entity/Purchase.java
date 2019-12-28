@@ -29,7 +29,7 @@ public class Purchase implements Serializable {
 
     /*供应商*/
     @Excel(name = "供应商", width = 15)
-    private int vendorId;
+    private String vendorId;
 
     /*备注*/
     @Excel(name = "备注", width = 15)
@@ -37,7 +37,7 @@ public class Purchase implements Serializable {
 
     /*仓库id*/
     @Excel(name = "仓库id", width = 15)
-    private int warehouseId;
+    private String warehouseId;
 
     /*结算账户*/
     @Excel(name = "结算账户",width = 20)
@@ -45,7 +45,7 @@ public class Purchase implements Serializable {
 
     /*实付金额*/
     @Excel(name = "实付金额",width = 20)
-    private double payamount;
+    private String payamount;
 
     /*订单日期*/
     @Excel(name = "订单日期",width = 20 , format = "yyyy-MM-dd HH:mm:ss")
@@ -55,6 +55,11 @@ public class Purchase implements Serializable {
 
     /*总金额*/
     @Excel(name = "总金额",width = 20)
-    private double totalamount;
+    private String totalamount;
 
+    /*创建日期*/
+    @Excel(name = "创建日期",width = 20 , format = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date createTime;
 }

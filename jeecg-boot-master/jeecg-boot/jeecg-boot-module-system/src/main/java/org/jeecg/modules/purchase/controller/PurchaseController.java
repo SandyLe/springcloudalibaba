@@ -27,7 +27,7 @@ public class PurchaseController extends JeecgController<Purchase, IPurchaseServi
     @Autowired
     private IPurchaseService purchaseService;
 
-    @GetMapping("/list")
+    @GetMapping("/getPaged")
     public Result<?> queryPageList(Purchase purchase,
                                    @RequestParam(name = "pageNo",defaultValue = "1") Integer pageNo,
                                    @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
@@ -45,7 +45,7 @@ public class PurchaseController extends JeecgController<Purchase, IPurchaseServi
         return Result.ok("添加成功");
     }
 
-    @PostMapping("/edit")
+    @PutMapping("/edit")
     public Result<?> edit(@RequestBody Purchase purchase){
         purchaseService.updateById(purchase);
         return Result.ok("编辑成功");
