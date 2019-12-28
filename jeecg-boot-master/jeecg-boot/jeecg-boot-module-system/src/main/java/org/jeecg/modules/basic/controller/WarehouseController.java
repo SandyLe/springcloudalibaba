@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.system.query.QueryGenerator;
+import org.jeecg.modules.basic.entity.Vendor;
 import org.jeecg.modules.basic.entity.Warehouse;
 import org.jeecg.modules.basic.service.WarehouseService;
 import org.jeecg.modules.system.entity.SysDepart;
@@ -75,6 +76,22 @@ public class WarehouseController {
         log.info("数据总数：" + pageList.getTotal());
         return Result.ok(pageList);
     }
+
+    /**
+     * 获取所有数据
+     *
+     * @param warehouse
+     * @param req
+     * @return
+     */
+    @ApiOperation(value = "获取仓库数据列表", notes = "获取所有仓库据列表")
+    @GetMapping(value = "/getList")
+    public Result<?> getList(Warehouse warehouse, HttpServletRequest req) {
+        QueryWrapper<Warehouse> queryWrapper = QueryGenerator.initQueryWrapper(warehouse, req.getParameterMap());
+        List<Warehouse> list = warehouseService.list(queryWrapper);
+        return Result.ok(list);
+    }
+
     /**
      * 添加
      *
