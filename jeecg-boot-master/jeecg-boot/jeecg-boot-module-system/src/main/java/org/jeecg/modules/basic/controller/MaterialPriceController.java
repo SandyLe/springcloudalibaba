@@ -7,13 +7,12 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.system.query.QueryGenerator;
-import org.jeecg.modules.basic.entity.CustomerType;
-import org.jeecg.modules.basic.entity.Material;
-import org.jeecg.modules.basic.entity.MaterialPrice;
-import org.jeecg.modules.basic.entity.MaterialUnit;
+import org.jeecg.modules.basic.dto.SaleOrderMtlPriceDto;
+import org.jeecg.modules.basic.entity.*;
 import org.jeecg.modules.basic.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -39,6 +38,8 @@ public class MaterialPriceController {
     private MaterialService materialService;
     @Autowired
     private CustomerTypeService customerTypeService;
+    @Autowired
+    private CustomerService customerService;
 
     /**
      * 分页列表查询
@@ -159,5 +160,30 @@ public class MaterialPriceController {
     public Result<?> queryById(@ApiParam(name = "id", value = "示例id", required = true) @RequestParam(name = "id", required = true) String id) {
         MaterialPrice materialPrice = materialPriceService.getById(id);
         return Result.ok(materialPrice);
+    }
+
+    /**
+     * 获取价格
+     *
+     * @param
+     * @return
+     */
+    @GetMapping(value = "/getMtlPrice")
+    @ApiOperation(value = "通过ID查询产品价格", notes = "通过ID查询产品价格")
+    public Result<?> getMtlPrice(@ApiParam(name = "customerId", value = "客户id", required = true) @RequestParam(name = "customerId", required = true) String customerId,
+                                 @ApiParam(name = "mtlId", value = "产品id", required = true) @RequestParam(name = "mtlId", required = true) String mtlId,
+                                 @ApiParam(name = "unitId", value = "单位id", required = true) @RequestParam(name = "unitId", required = false) String unitId) {
+        SaleOrderMtlPriceDto dto = new SaleOrderMtlPriceDto();
+        Material material = materialService.getById(mtlId);
+        dto.setMtlCode(mtlId);
+        dto.setMtlCode(material.getCode());
+        dto.setMtlName(material.getName());
+        dto.setSpecification(material.getSpecification());
+        dto.setUnitId(StringUtils.isNotBlank(unitId) ? unitId : material.getUnitId());
+
+        Customer customer = customerService.getById(customerId);
+        MaterialPrice materialPrice = materialPriceService.getMtlPrice(customer.getCustomerTypeId(), mtlId, unitId);
+        dto.setPrice(materialPrice.getPrice());
+        return Result.ok(dto);
     }
 }

@@ -29,4 +29,14 @@ public enum DiscountType implements AbstractEnum{
     public void setName(String name) {
         this.name = name;
     }
+
+    String getName(String id) {
+        DiscountType [] values = DiscountType.values();
+        for (DiscountType o: values){
+            if(o.getMap().get("id").equals(id)){
+                return o.getMap().get("name").toString();
+            }
+        }
+        return null;
+    }
 }

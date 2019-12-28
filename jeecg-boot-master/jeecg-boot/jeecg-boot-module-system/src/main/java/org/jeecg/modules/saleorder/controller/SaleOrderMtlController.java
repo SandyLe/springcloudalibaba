@@ -7,6 +7,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.EnumUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.system.query.QueryGenerator;
@@ -14,6 +15,9 @@ import org.jeecg.modules.basic.entity.Customer;
 import org.jeecg.modules.basic.entity.Material;
 import org.jeecg.modules.basic.entity.MaterialUnit;
 import org.jeecg.modules.basic.entity.Warehouse;
+import org.jeecg.modules.basic.enums.AbstractEnum;
+import org.jeecg.modules.basic.enums.DiscountType;
+import org.jeecg.modules.basic.enums.EnumConvertUtils;
 import org.jeecg.modules.basic.service.CustomerService;
 import org.jeecg.modules.basic.service.MaterialService;
 import org.jeecg.modules.basic.service.MaterialUnitService;
@@ -101,6 +105,7 @@ public class SaleOrderMtlController {
             o.setMtl(mtlMap.get(o.getMtlId()));
             o.setMtlCode(mtlCodeMap.get(o.getMtlId()));
             o.setSpecification(mtlSpecMap.get(o.getMtlId()));
+            o.setDiscountTypeName(EnumConvertUtils.getName(DiscountType.class, o.getDiscountType()));
         });
 
         log.info("查询当前页：" + pageList.getCurrent());
@@ -120,7 +125,7 @@ public class SaleOrderMtlController {
     @AutoLog(value = "修改销售订单")
     @ApiOperation(value = "修改销售订单", notes = "修改销售订单")
     public Result<?> edit(@RequestBody SaleOrderMtl saleOrderMtl){
-        saleOrderMtlService.updateById(saleOrderMtl);
+        saleOrderMtlService.saveSaleOrderMtl(saleOrderMtl);
         return Result.ok("修改成功！");
     }
 

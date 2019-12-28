@@ -3,21 +3,27 @@ package org.jeecg.modules.basic.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.google.common.collect.Lists;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.system.query.QueryGenerator;
+import org.jeecg.modules.basic.entity.Material;
 import org.jeecg.modules.basic.entity.MaterialSelfUnit;
 import org.jeecg.modules.basic.entity.MaterialUnit;
 import org.jeecg.modules.basic.service.MaterialSelfUnitService;
+import org.jeecg.modules.basic.service.MaterialService;
 import org.jeecg.modules.basic.service.MaterialUnitService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -35,6 +41,9 @@ public class MaterialSelfUnitController {
 
     @Autowired
     private MaterialUnitService materialUnitService;
+
+    @Autowired
+    private MaterialService materialService;
 
     /**
      * 分页列表查询
@@ -79,6 +88,30 @@ public class MaterialSelfUnitController {
     public Result<?> getList(MaterialSelfUnit materialSelfUnit, HttpServletRequest req) {
         QueryWrapper<MaterialSelfUnit> queryWrapper = QueryGenerator.initQueryWrapper(materialSelfUnit, req.getParameterMap());
         List<MaterialSelfUnit> list = materialSelfUnitService.list(queryWrapper);
+        List<String> unitIds = list.stream().map(MaterialSelfUnit::getUnitId).collect(Collectors.toList());
+        Collection<MaterialUnit> units = Lists.newArrayList();
+        if (CollectionUtils.isNotEmpty(unitIds)) {
+            units = materialUnitService.listByIds(unitIds);
+            Map<String, String> unitMap = units.stream().collect(Collectors.toMap(MaterialUnit::getId, MaterialUnit::getName));
+            list.stream().forEach(o->{
+                o.setUnit(unitMap.get(o.getUnitId()));
+            });
+        }
+        String addSelf = req.getParameter("addSelf").toLowerCase();
+        String sourceId = req.getParameter("sourceId");
+        if(StringUtils.isNotBlank(addSelf) && "true".equals(addSelf) && StringUtils.isNotBlank(sourceId)){
+            Material material = materialService.getById(sourceId);
+            if (StringUtils.isNotBlank(material.getUnitId())) {
+                MaterialSelfUnit msu = new MaterialSelfUnit();
+                msu.setUnitId(material.getUnitId());
+                MaterialUnit materialUnit = materialUnitService.getById(material.getUnitId());
+                msu.setUnit(materialUnit.getName());
+                msu.setQty(BigDecimal.ONE);
+                msu.setSourceId(sourceId);
+                list.add(msu);
+            }
+
+        }
         return Result.ok(list);
     }
     /**

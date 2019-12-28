@@ -4,5 +4,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.basic.entity.MaterialPrice;
 
 public interface MaterialPriceService extends IService<MaterialPrice> {
-
+    public MaterialPrice getMtlPrice(String customerTypeId, String mtlId, String unitId);
 }

@@ -39,6 +39,9 @@ public class SaleOrderMtl extends JeecgEntity {
     private BigDecimal discount;
     @ApiModelProperty("折扣类型")
     private String discountType;
+    @ApiModelProperty("折扣类型名称")
+    @TableField(exist=false)
+    private String discountTypeName;
     @ApiModelProperty("金额")
     private BigDecimal amount;
 
@@ -120,6 +123,14 @@ public class SaleOrderMtl extends JeecgEntity {
 
     public void setDiscountType(String discountType) {
         this.discountType = discountType;
+    }
+
+    public String getDiscountTypeName() {
+        return discountTypeName;
+    }
+
+    public void setDiscountTypeName(String discountTypeName) {
+        this.discountTypeName = discountTypeName;
     }
 
     public String getSpecification() {

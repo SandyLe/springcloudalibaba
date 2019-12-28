@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import java.math.BigDecimal;
+
 @TableName("sl_material_price")
 @ApiModel(value = "MaterialPrice", description = "产品价格")
 public class MaterialPrice extends BasicEntity {
@@ -27,8 +29,8 @@ public class MaterialPrice extends BasicEntity {
     @TableField(exist=false)
     private String unit;
 
-    @ApiModelProperty("价格ID")
-    private String price;
+    @ApiModelProperty("价格")
+    private BigDecimal price;
 
     public String getMaterialId() {
         return materialId;
@@ -78,11 +80,11 @@ public class MaterialPrice extends BasicEntity {
         this.unit = unit;
     }
 
-    public String getPrice() {
+    public BigDecimal getPrice() {
         return price;
     }
 
-    public void setPrice(String price) {
+    public void setPrice(BigDecimal price) {
         this.price = price;
     }
 }

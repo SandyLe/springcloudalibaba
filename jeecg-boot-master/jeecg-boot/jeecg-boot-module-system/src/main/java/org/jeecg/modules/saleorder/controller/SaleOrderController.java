@@ -50,7 +50,7 @@ public class SaleOrderController {
     public Result<?> add(@RequestBody SaleOrder saleOrder) {
         saleOrderService.save(saleOrder);
         Result<Object> result = Result.ok();
-        result.setResult(saleOrder.getId());
+        result.setResult(saleOrder);
         return result;
     }
     /**
@@ -115,7 +115,7 @@ public class SaleOrderController {
     public Result<?> edit(@RequestBody SaleOrder saleOrder){
         saleOrderService.updateById(saleOrder);
         Result<Object> result = Result.ok();
-        result.setResult(saleOrder.getId());
+        result.setResult(saleOrder);
         return result;
     }
 

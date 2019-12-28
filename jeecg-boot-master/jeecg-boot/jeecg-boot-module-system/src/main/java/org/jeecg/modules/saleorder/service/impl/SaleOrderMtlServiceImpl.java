@@ -40,7 +40,11 @@ public class SaleOrderMtlServiceImpl extends ServiceImpl<SaleOrderMtlMapper, Sal
                 saleOrderMtl.setAmount(saleOrderMtl.getAmount().subtract(saleOrderMtl.getDiscount()));
             }
         }
-        super.save(saleOrderMtl);
+        if (StringUtils.isNotBlank(saleOrderMtl.getId())) {
+            super.updateById(saleOrderMtl);
+        } else {
+            super.save(saleOrderMtl);
+        }
         BigDecimal totalAmount = BigDecimal.ZERO;
         Map<String,Object> columns = new HashMap<>();
         columns.put("source_id", saleOrderMtl.getSourceId());

@@ -12,13 +12,7 @@ public interface AbstractEnum {
     default Map<String, Object> getMap() {
 
         Map<String, Object> map = new HashMap<>();
-        try {
-            int id = Integer.parseInt(getId());
-            map.put("id", id);
-        }
-        catch (NumberFormatException e) {
-            map.put("id", getId());
-        }
+        map.put("id", getId());
         map.put("name", this.getName());
         return map;
     }
