@@ -55,7 +55,11 @@ public class SaleOrderMtlServiceImpl extends ServiceImpl<SaleOrderMtlMapper, Sal
             }
         }
         SaleOrder saleOrder = saleOrderService.getById(saleOrderMtl.getSourceId());
-        saleOrder.setTotalamount(totalAmount);
+        BigDecimal tempTotalAmount = BigDecimal.ZERO;
+        if (null != saleOrder.getOtheramount()){
+            tempTotalAmount = totalAmount.add(saleOrder.getOtheramount());
+        }
+        saleOrder.setTotalamount(tempTotalAmount);
         saleOrderService.updateById(saleOrder);
         return totalAmount;
     }

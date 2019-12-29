@@ -426,6 +426,8 @@ CREATE TABLE `sl_sale_order` (
   `receipt_type` varchar(5) DEFAULT NULL,
   `billing_info` varchar(30) DEFAULT NULL,
   `bill_status` int(2) DEFAULT NULL,
+  `mtlamount` decimal(10,0) DEFAULT NULL,
+  `otheramount` decimal(10,0) DEFAULT NULL,
   `totalamount` decimal(10,0) DEFAULT NULL,
   `payamount` decimal(10,0) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -450,5 +452,39 @@ CREATE TABLE `sl_sale_order_mtl` (
   `quantity` decimal(10,0) DEFAULT NULL,
   `price` decimal(10,0) DEFAULT NULL,
   `discount` decimal(10,0) DEFAULT NULL,
+  `amount` decimal(10,0) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+DROP TABLE IF EXISTS `sl_expense`;
+CREATE TABLE `sl_expense` (
+  `id` varchar(30) NOT NULL,
+  `name` varchar(50) DEFAULT NULL,
+  `code` varchar(30) DEFAULT NULL,
+  `content` varchar(1000) DEFAULT NULL,
+  `create_time` datetime DEFAULT NULL,
+  `update_time` datetime DEFAULT NULL,
+  `create_by` varchar(30) DEFAULT NULL,
+  `update_by` varchar(30) DEFAULT NULL,
+  `row_sts` int(11) DEFAULT NULL,
+  `sort` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+DROP TABLE IF EXISTS `sl_sale_order_expense`;
+CREATE TABLE `sl_sale_order_expense` (
+
+  `id` varchar(30) NOT NULL,
+  `name` varchar(50) DEFAULT NULL,
+  `code` varchar(30) DEFAULT NULL,
+  `content` varchar(100) DEFAULT NULL,
+  `create_time` datetime DEFAULT NULL,
+  `update_time` datetime DEFAULT NULL,
+  `create_by` varchar(30) DEFAULT NULL,
+  `update_by` varchar(30) DEFAULT NULL,
+  `row_sts` int(11) DEFAULT NULL,
+  `sort` int(11) DEFAULT NULL,
+
+  `source_id` varchar(30) DEFAULT NULL,
+  `expense_id` varchar(30) DEFAULT NULL,
   `amount` decimal(10,0) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

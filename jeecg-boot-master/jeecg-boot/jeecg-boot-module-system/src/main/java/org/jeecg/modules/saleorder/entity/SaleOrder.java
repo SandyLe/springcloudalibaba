@@ -40,6 +40,10 @@ public class SaleOrder extends BasicEntity {
     private Date billDate;
     @ApiModelProperty("订单状态")
     private Integer billStatus;
+    @ApiModelProperty("产品费用金额")
+    private BigDecimal mtlamount;
+    @ApiModelProperty("其他费用")
+    private BigDecimal otheramount;
     @ApiModelProperty("总金额")
     private BigDecimal totalamount;
     @ApiModelProperty("已付金额")
@@ -155,5 +159,21 @@ public class SaleOrder extends BasicEntity {
 
     public void setChannelId(String channelId) {
         this.channelId = channelId;
+    }
+
+    public BigDecimal getMtlamount() {
+        return mtlamount;
+    }
+
+    public void setMtlamount(BigDecimal mtlamount) {
+        this.mtlamount = mtlamount;
+    }
+
+    public BigDecimal getOtheramount() {
+        return otheramount;
+    }
+
+    public void setOtheramount(BigDecimal otheramount) {
+        this.otheramount = otheramount;
     }
 }
