@@ -137,6 +137,11 @@ const editMaterialSelfUnit = (params)=>postAction("/materialSelfUnit/edit",param
 const addMaterialPrice = (params)=>postAction("/materialPrice/add",params)
 const editMaterialPrice = (params)=>postAction("/materialPrice/edit",params)
 const getMtlPrice = (params)=>getAction("/materialPrice/getMtlPrice",params)
+const addExpense = (params)=>postAction("/expense/add",params)
+const editExpense = (params)=>postAction("/expense/edit",params)
+const getExpenseList = (params)=>getAction("/expense/getList",params)
+const addSaleOrderExpense = (params)=>postAction("/saleOrderExpense/add",params)
+const editSaleOrderExpense = (params)=>postAction("/saleOrderExpense/edit",params)
 
 const getDiscountTypeList = (params)=>getAction("/basic/fc/enum/discountType/getList",params)
 
@@ -235,7 +240,12 @@ export {
   addSaleMtlOrder,
   editSaleMtlOrder,
   getDiscountTypeList,
-  getMtlPrice
+  getMtlPrice,
+  addExpense,
+  editExpense,
+  getExpenseList,
+  addSaleOrderExpense,
+  editSaleOrderExpense
 }
 
 

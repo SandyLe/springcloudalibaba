@@ -128,8 +128,8 @@
 
           <!-- 表单区域 -->
 
-          <!-- 表单区域 -->
           <sale-order-mtl-modal ref="saleOrderMtlModal" :saleOrder = "saleOrder" @ok="modalFormOk"></sale-order-mtl-modal>
+          <!-- 表单区域 -->
         </a-col>
       </a-row>
       <a-row>
@@ -337,6 +337,9 @@
         this.$router.push({ name: "material-materialEdit", query: {"id": id}})
       },
       nextStep () {
+        debugger
+        this.mainId = this.$route.query.id;
+        this.saveSaleOrder(this.mainId);
         this.$emit('nextStep')
       }
     },
