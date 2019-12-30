@@ -145,7 +145,7 @@
           },
           {
             title: '收款方式',
-            dataIndex: 'receiptType',
+            dataIndex: 'receiptTypeName',
             align:"center"
           },
           {
