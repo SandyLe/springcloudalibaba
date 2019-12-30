@@ -10,12 +10,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.system.query.QueryGenerator;
+import org.jeecg.common.system.vo.DictModel;
 import org.jeecg.modules.basic.entity.Customer;
 import org.jeecg.modules.basic.entity.Warehouse;
 import org.jeecg.modules.basic.service.CustomerService;
 import org.jeecg.modules.basic.service.WarehouseService;
 import org.jeecg.modules.saleorder.entity.SaleOrder;
 import org.jeecg.modules.saleorder.service.SaleOrderService;
+import org.jeecg.modules.system.service.ISysDictService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,6 +40,8 @@ public class SaleOrderController {
     private CustomerService customerService;
     @Autowired
     private WarehouseService warehouseService;
+    @Autowired
+    private ISysDictService iSysDictService;
     /**
      * 添加
      *
@@ -89,11 +93,17 @@ public class SaleOrderController {
         List<String> warehouseIds = saleOrderList.stream().map(SaleOrder::getWarehouseId).collect(Collectors.toList());
         Collection<Customer> customers = customerService.listByIds(customerIds);
         Collection<Warehouse> warehouses = warehouseService.listByIds(warehouseIds);
+        Collection<DictModel> sysDict = iSysDictService.queryDictItemsByCode("receipt_type");
+        Collection<DictModel> channelDicts = iSysDictService.queryDictItemsByCode("channel");
         Map<String, String> customerMap = customers.stream().collect(Collectors.toMap(Customer::getId, Customer::getName));
         Map<String, String> warehouseMap = warehouses.stream().collect(Collectors.toMap(Warehouse:: getId, Warehouse:: getName));
+        Map<String, String> dictModelMap = sysDict.stream().collect(Collectors.toMap(DictModel::getValue, DictModel::getText));
+        Map<String, String> channelMap = channelDicts.stream().collect(Collectors.toMap(DictModel::getValue, DictModel::getText));
         saleOrderList.stream().forEach(o->{
             o.setWarehouse(warehouseMap.get(o.getWarehouseId()));
             o.setCustomer(customerMap.get(o.getCustomerId()));
+            o.setReceiptTypeName(dictModelMap.get(o.getReceiptType()));
+            o.setChannel(channelMap.get(o.getChannelId()));
         });
 
         log.info("查询当前页：" + pageList.getCurrent());

@@ -34,6 +34,9 @@ public class SaleOrder extends BasicEntity {
     private Date installTime;
     @ApiModelProperty("收款方式")
     private String receiptType;
+    @ApiModelProperty("收款方式")
+    @TableField(exist=false)
+    private String receiptTypeName;
     @ApiModelProperty("开票信息")
     private String billingInfo;
     @ApiModelProperty("订单时间")
@@ -175,5 +178,13 @@ public class SaleOrder extends BasicEntity {
 
     public void setOtheramount(BigDecimal otheramount) {
         this.otheramount = otheramount;
+    }
+
+    public String getReceiptTypeName() {
+        return receiptTypeName;
+    }
+
+    public void setReceiptTypeName(String receiptTypeName) {
+        this.receiptTypeName = receiptTypeName;
     }
 }
