@@ -13,6 +13,7 @@ import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.DictModel;
 import org.jeecg.modules.basic.entity.Customer;
 import org.jeecg.modules.basic.entity.Warehouse;
+import org.jeecg.modules.basic.enums.BillStatus;
 import org.jeecg.modules.basic.service.CustomerService;
 import org.jeecg.modules.basic.service.WarehouseService;
 import org.jeecg.modules.saleorder.entity.SaleOrder;
@@ -22,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -52,7 +54,9 @@ public class SaleOrderController {
     @AutoLog(value = "添加销售订单")
     @ApiOperation(value = "添加销售订单", notes = "添加销售订单")
     public Result<?> add(@RequestBody SaleOrder saleOrder) {
-        saleOrderService.save(saleOrder);
+
+        saleOrder.setBillStatus(BillStatus.NEW.getId());
+      saleOrderService.save(saleOrder);
         Result<Object> result = Result.ok();
         result.setResult(saleOrder);
         return result;
@@ -104,6 +108,7 @@ public class SaleOrderController {
             o.setCustomer(customerMap.get(o.getCustomerId()));
             o.setReceiptTypeName(dictModelMap.get(o.getReceiptType()));
             o.setChannel(channelMap.get(o.getChannelId()));
+            o.setBillStatusName(BillStatus.getName(o.getBillStatus()));
         });
 
         log.info("查询当前页：" + pageList.getCurrent());
@@ -123,6 +128,9 @@ public class SaleOrderController {
     @AutoLog(value = "修改销售订单")
     @ApiOperation(value = "修改销售订单", notes = "修改销售订单")
     public Result<?> edit(@RequestBody SaleOrder saleOrder){
+        if (null != saleOrder.getTotalamount() && null != saleOrder.getPayamount() && saleOrder.getPayamount().compareTo(BigDecimal.ZERO) > 0) {
+            saleOrder.setBillStatus(saleOrder.getTotalamount().compareTo(saleOrder.getPayamount()) <= 0 ? BillStatus.PAID.getId() : BillStatus.PARTICIALPAYMENT.getId());
+        }
         saleOrderService.updateById(saleOrder);
         Result<Object> result = Result.ok();
         result.setResult(saleOrder);

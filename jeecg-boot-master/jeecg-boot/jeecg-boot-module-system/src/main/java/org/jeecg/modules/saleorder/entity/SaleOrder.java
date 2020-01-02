@@ -43,6 +43,9 @@ public class SaleOrder extends BasicEntity {
     private Date billDate;
     @ApiModelProperty("订单状态")
     private Integer billStatus;
+    @ApiModelProperty("订单状态")
+    @TableField(exist=false)
+    private String billStatusName;
     @ApiModelProperty("产品费用金额")
     private BigDecimal mtlamount;
     @ApiModelProperty("其他费用")
@@ -186,5 +189,13 @@ public class SaleOrder extends BasicEntity {
 
     public void setReceiptTypeName(String receiptTypeName) {
         this.receiptTypeName = receiptTypeName;
+    }
+
+    public String getBillStatusName() {
+        return billStatusName;
+    }
+
+    public void setBillStatusName(String billStatusName) {
+        this.billStatusName = billStatusName;
     }
 }

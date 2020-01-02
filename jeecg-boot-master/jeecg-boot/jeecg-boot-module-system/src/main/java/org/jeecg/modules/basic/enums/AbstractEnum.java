@@ -5,14 +5,20 @@ import java.util.Map;
 
 public interface AbstractEnum {
 
-    String getId();
+    String getSid();
 
     String getName();
 
     default Map<String, Object> getMap() {
 
         Map<String, Object> map = new HashMap<>();
-        map.put("id", getId());
+        try {
+            int id = Integer.parseInt(getSid());
+            map.put("id", id);
+        }
+        catch (NumberFormatException e) {
+            map.put("id", getSid());
+        }
         map.put("name", this.getName());
         return map;
     }
