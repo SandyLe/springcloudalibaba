@@ -140,7 +140,7 @@
           },
           {
             title: '订单状态',
-            dataIndex: 'billstatus',
+            dataIndex: 'billStatusName',
             align:"center"
           },
           {
