@@ -43,7 +43,7 @@ public class EnumConvertUtils {
 		List<AbstractEnum> data = EnumUtils.getEnumList(clazz);
 		for (Object id : ids) {
 			for (AbstractEnum one : data) {
-				if (null != id && one.getId().equals(id.toString())) {
+				if (null != id && one.getSid().equals(id.toString())) {
 					list.add(one.getMap());
 					break;
 				}
@@ -68,7 +68,7 @@ public class EnumConvertUtils {
 		for (AbstractEnum one : data) {
 			boolean isIn = false;
 			for (Object id : ids) {
-				if (one.getId().equals(id.toString())) {
+				if (one.getSid().equals(id.toString())) {
 					isIn = true;
 					break;
 				}
@@ -93,7 +93,7 @@ public class EnumConvertUtils {
 		List<AbstractEnum> data = EnumUtils.getEnumList(clazz);
 
 		for (AbstractEnum one : data) {
-			if (one.getId().equals(id.toString()))
+			if (one.getSid().equals(id.toString()))
 				return one.getMap();
 		}
 		return new HashedMap();
@@ -113,7 +113,7 @@ public class EnumConvertUtils {
 		List<AbstractEnum> data = EnumUtils.getEnumList(clazz);
 
 		for (AbstractEnum one : data) {
-			if (one.getId().equals(id.toString()))
+			if (one.getSid().equals(id.toString()))
 				return one.getName();
 		}
 		return null;
@@ -124,7 +124,7 @@ public class EnumConvertUtils {
 	 * 根据name返回Id
 	 *
 	 * @param clazz
-	 * @param id
+	 * @param name
 	 * @return
 	 */
 	public static String getId(Class clazz, Object name) {
@@ -135,7 +135,7 @@ public class EnumConvertUtils {
 
 		for (AbstractEnum one : data) {
 			if (one.getName().equals(name.toString()))
-				return one.getId();
+				return one.getSid();
 		}
 		return null;
 
@@ -155,7 +155,7 @@ public class EnumConvertUtils {
 		for (E e : Arrays.asList(clazz.getEnumConstants())) {
 			if (e instanceof AbstractEnum) {
 				AbstractEnum one = (AbstractEnum) e;
-				if (one.getId().equals(id.toString()))
+				if (one.getSid().equals(id.toString()))
 					return (E) one;
 			}
 		}

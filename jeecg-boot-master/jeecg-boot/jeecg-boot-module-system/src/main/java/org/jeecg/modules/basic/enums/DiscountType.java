@@ -13,6 +13,10 @@ public enum DiscountType implements AbstractEnum{
     }
 
     @Override
+    public String getSid() {
+        return id;
+    }
+
     public String getId() {
         return id;
     }
