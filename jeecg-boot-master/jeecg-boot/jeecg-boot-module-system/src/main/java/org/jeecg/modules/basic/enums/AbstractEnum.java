@@ -9,12 +9,18 @@ public interface AbstractEnum {
 
     String getName();
 
+    Object getId();
+
     default Map<String, Object> getMap() {
 
         Map<String, Object> map = new HashMap<>();
         try {
-            int id = Integer.parseInt(getSid());
-            map.put("id", id);
+            if (getId() instanceof Integer) {
+                int id = Integer.parseInt(getSid());
+                map.put("id", id);
+            } else {
+                map.put("id", getSid());
+            }
         }
         catch (NumberFormatException e) {
             map.put("id", getSid());
