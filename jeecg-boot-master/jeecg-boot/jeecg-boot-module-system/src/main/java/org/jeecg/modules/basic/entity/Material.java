@@ -34,6 +34,8 @@ public class Material extends BasicEntity {
     @ApiModelProperty("基础单位")
     @TableField(exist=false)
     private String unit;
+    @ApiModelProperty("基础单位ID")
+    private String barCode;
 
     public String getSpecification() {
         return specification;
@@ -109,6 +111,14 @@ public class Material extends BasicEntity {
 
     public String getUnit() {
         return unit;
+    }
+
+    public String getBarCode() {
+        return barCode;
+    }
+
+    public void setBarCode(String barCode) {
+        this.barCode = barCode;
     }
 
     public void setUnit(String unit) {

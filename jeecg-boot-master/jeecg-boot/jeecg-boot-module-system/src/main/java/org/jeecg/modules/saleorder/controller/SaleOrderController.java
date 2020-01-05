@@ -7,16 +7,21 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.DictModel;
+import org.jeecg.modules.basic.dto.DeliveryEditDto;
 import org.jeecg.modules.basic.entity.Customer;
 import org.jeecg.modules.basic.entity.Warehouse;
 import org.jeecg.modules.basic.enums.BillStatus;
 import org.jeecg.modules.basic.service.CustomerService;
 import org.jeecg.modules.basic.service.WarehouseService;
 import org.jeecg.modules.saleorder.entity.SaleOrder;
+import org.jeecg.modules.saleorder.entity.SaleOrderDeliveryInfo;
+import org.jeecg.modules.saleorder.service.SaleOrderDeliveryInfoService;
 import org.jeecg.modules.saleorder.service.SaleOrderService;
 import org.jeecg.modules.system.service.ISysDictService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +49,8 @@ public class SaleOrderController {
     private WarehouseService warehouseService;
     @Autowired
     private ISysDictService iSysDictService;
+    @Autowired
+    private SaleOrderDeliveryInfoService saleOrderDeliveryInfoService;
     /**
      * 添加
      *
@@ -176,4 +183,42 @@ public class SaleOrderController {
         SaleOrder saleOrder = saleOrderService.getById(id);
         return Result.ok(saleOrder);
     }
+
+    /**
+     * 发货
+     *
+     * @param deliveryEditDto
+     * @return
+     */
+    @PostMapping(value = "/delivery")
+    @AutoLog(value = "发货")
+    @ApiOperation(value = "发货", notes = "发货")
+    public Result<?> edit(@RequestBody DeliveryEditDto deliveryEditDto) throws Exception {
+        String billId = deliveryEditDto.getId();
+        SaleOrder saleOrder = saleOrderService.getById(billId);
+        saleOrder.setWarehouseId(deliveryEditDto.getWarehouseId());
+        saleOrder.setDeliveryTime(deliveryEditDto.getDeliveryTime());
+        saleOrder.setInstallTime(deliveryEditDto.getInstallTime());
+        saleOrderService.updateById(saleOrder);
+
+        SaleOrderDeliveryInfo cdi = new SaleOrderDeliveryInfo();
+        BeanUtils.copyProperties(cdi,deliveryEditDto);
+        cdi.setCdiSourceId(saleOrder.getId());
+        cdi.setId(deliveryEditDto.getCdiId());
+        cdi.setCreateBy(deliveryEditDto.getCdiCreateBy());
+        cdi.setCreateTime(deliveryEditDto.getCdiCreateTime());
+        cdi.setUpdateBy(deliveryEditDto.getCdiUpdateBy());
+        cdi.setUpdateTime(deliveryEditDto.getCdiUpdateTime());
+        cdi.setCode(deliveryEditDto.getCdiCode());
+        cdi.setName(deliveryEditDto.getCdiName());
+        cdi.setRowSts(deliveryEditDto.getCdiRowSts());
+        cdi.setSort(deliveryEditDto.getCdiSort());
+        cdi.setCode(deliveryEditDto.getCdiContent());
+        saleOrderDeliveryInfoService.saveOrUpdate(cdi);
+
+        Result<Object> result = Result.ok();
+        result.setResult(saleOrder);
+        return result;
+    }
+
 }

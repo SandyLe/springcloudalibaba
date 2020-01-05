@@ -304,7 +304,9 @@ CREATE TABLE `sl_customer_delivery_info` (
   `cdi_address` varchar(50) DEFAULT NULL,
   `cdi_logistics` varchar(30) DEFAULT NULL,
   `cdi_branch` varchar(30) DEFAULT NULL,
-  `cdi_tel` varchar(30) DEFAULT NULL
+  `cdi_tel` varchar(30) DEFAULT NULL,
+  `cdi_recipients_phone` varchar(30) DEFAULT NULL,
+  `cdi_recipients` varchar(30) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 DROP TABLE IF EXISTS `sl_vendor`;
@@ -487,4 +489,79 @@ CREATE TABLE `sl_sale_order_expense` (
   `source_id` varchar(30) DEFAULT NULL,
   `expense_id` varchar(30) DEFAULT NULL,
   `amount` decimal(10,0) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+DROP TABLE IF EXISTS `sl_saleorder_delivery_info`;
+CREATE TABLE `sl_saleorder_delivery_info` (
+
+  `id` varchar(30) NOT NULL,
+  `name` varchar(50) DEFAULT NULL,
+  `code` varchar(30) DEFAULT NULL,
+  `content` varchar(100) DEFAULT NULL,
+  `create_time` datetime DEFAULT NULL,
+  `update_time` datetime DEFAULT NULL,
+  `create_by` varchar(30) DEFAULT NULL,
+  `update_by` varchar(30) DEFAULT NULL,
+  `row_sts` int(11) DEFAULT NULL,
+  `sort` int(11) DEFAULT NULL,
+
+  `cdi_source_id` varchar(50) DEFAULT NULL,
+  `cdi_default_type` varchar(10) DEFAULT NULL,
+  `cdi_description` varchar(30) DEFAULT NULL,
+  `cdi_linkman` varchar(30) DEFAULT NULL,
+  `cdi_phone` varchar(30) DEFAULT NULL,
+  `cdi_car_license` varchar(30) DEFAULT NULL,
+  `cdi_delivery_address` varchar(30) DEFAULT NULL,
+  `cdi_province` varchar(30) DEFAULT NULL,
+  `cdi_city` varchar(30) DEFAULT NULL,
+  `cdi_district` varchar(30) DEFAULT NULL,
+  `cdi_address` varchar(50) DEFAULT NULL,
+  `cdi_logistics` varchar(30) DEFAULT NULL,
+  `cdi_branch` varchar(30) DEFAULT NULL,
+  `cdi_tel` varchar(30) DEFAULT NULL,
+  `cdi_recipients_phone` varchar(30) DEFAULT NULL,
+  `cdi_recipients` varchar(30) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+DROP TABLE IF EXISTS `sl_inventory`;
+CREATE TABLE `sl_inventory` (
+
+  `id` varchar(30) NOT NULL,
+  `name` varchar(50) DEFAULT NULL,
+  `code` varchar(30) DEFAULT NULL,
+  `content` varchar(100) DEFAULT NULL,
+  `create_time` datetime DEFAULT NULL,
+  `update_time` datetime DEFAULT NULL,
+  `create_by` varchar(30) DEFAULT NULL,
+  `update_by` varchar(30) DEFAULT NULL,
+  `row_sts` int(11) DEFAULT NULL,
+  `sort` int(11) DEFAULT NULL,
+
+  `mtl_id` varchar(30) DEFAULT NULL,
+  `warehouse_id` varchar(30) DEFAULT NULL,
+  `stock_amount` decimal(10,0) DEFAULT NULL,
+  `warningstart` decimal(10,0) DEFAULT NULL,
+  `warningend` decimal(10,0) DEFAULT NULL,
+  `unit_id` varchar(30) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+DROP TABLE IF EXISTS `sl_stocking`;
+CREATE TABLE `sl_stocking` (
+
+  `id` varchar(30) NOT NULL,
+  `name` varchar(50) DEFAULT NULL,
+  `code` varchar(30) DEFAULT NULL,
+  `content` varchar(100) DEFAULT NULL,
+  `create_time` datetime DEFAULT NULL,
+  `update_time` datetime DEFAULT NULL,
+  `create_by` varchar(30) DEFAULT NULL,
+  `update_by` varchar(30) DEFAULT NULL,
+  `row_sts` int(11) DEFAULT NULL,
+  `sort` int(11) DEFAULT NULL,
+
+  `mtl_id` varchar(30) DEFAULT NULL,
+  `warehouse_id` varchar(30) DEFAULT NULL,
+  `stock_amount` decimal(10,0) DEFAULT NULL,
+  `before_amount` decimal(10,0) DEFAULT NULL,
+  `unit_id` varchar(30) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
