@@ -17,7 +17,6 @@ import java.util.Date;
  * @Date: 2019/12/27 15:24
  * @Version: V1.0
  */
-
 @Data
 @TableName("sl_purchase")
 public class Purchase implements Serializable {
