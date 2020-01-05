@@ -1,12 +1,12 @@
 <template>
-<a-modal :title="title" :width="width" :visible="visible" :confirmLoading="confirmLoading" @ok="handleOk" @cancel="handleCancel" cancelText="关闭">
-    <a-spin :spinning="confirmLoading">
+<div>
+    <a-card :bordered="false">
         <a-form :form="form">
             <a-row>
                 <a-col :span="12">
                     <a-form-item label="供应商" :labelCol="labelCol" :wrapperCol="wrapperCol">
                         <a-select v-decorator="['vendorId', {}]" placeholder="请选择供应商">
-                            <a-select-option v-for="(item, key) in vendorIddictOptions" :key="key" :value="item.id">
+                            <a-select-option v-for="(item, key) in dictOptions.vendorId" :key="key" :value="item.id">
                                 {{ item.name }}
                             </a-select-option>
                         </a-select>
@@ -15,7 +15,7 @@
                 <a-col :span="12">
                     <a-form-item label="仓库" :labelCol="labelCol" :wrapperCol="wrapperCol">
                         <a-select v-decorator="['warehouseId', {}]" placeholder="请选择仓库">
-                            <a-select-option v-for="(item, key) in warehouseOptions" :key="key" :value="item.id">
+                            <a-select-option v-for="(item, key) in dictOptions.warehouse" :key="key" :value="item.id">
                                 {{ item.name }}
                             </a-select-option>
                         </a-select>
@@ -25,7 +25,7 @@
             <a-row>
                 <a-col :span="12">
                     <a-form-item label="结算账户" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                        <a-input v-decorator="[ 'account', {}]" placeholder="请输入结算账户" style="width: 100%" />
+                        <a-input v-decorator="[ 'account', {}]" placeholder="请输入结算账户" />
                     </a-form-item>
                 </a-col>
                 <a-col :span="12">
@@ -37,12 +37,12 @@
             <a-row>
                 <a-col :span="12">
                     <a-form-item label="实付金额" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                        <a-input-number v-decorator="[ 'payamount', {}]" placeholder="请输入实付金额" style="width: 100%" />
+                        <a-input-number v-decorator="[ 'payamount', {}]" placeholder="请输入实付金额" style="width:100%" />
                     </a-form-item>
                 </a-col>
                 <a-col :span="12">
                     <a-form-item label="总金额" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                        <a-input-number v-decorator="[ 'totalamount', {}]" placeholder="请输入总金额" style="width: 100%" />
+                        <a-input-number v-decorator="[ 'totalamount', {}]" placeholder="请输入总金额" style="width:100%"/>
                     </a-form-item>
                 </a-col>
             </a-row>
@@ -51,10 +51,17 @@
                     <a-card>
                         <form :autoFormCreate="(form) => this.form = form">
                             <a-table :columns="columns" :dataSource="data" :pagination="false">
-                                <template v-for="(col, i) in ['name', 'workId', 'department']" :slot="col" slot-scope="text, record, index">
-                                    <a-input :key="col" v-if="record.editable" style="margin: -5px 0" :value="text" :placeholder="columns[i].title" @change="e => handleChange(e.target.value, record.key, col)" />
-                                    <template v-else>{{ text }}</template>
+                                <template v-for="(col, i) in ['mtlId', 'unitId','quantity', 'price', 'discount', 'amount', 'description', 'action']" :slot="col" slot-scope="text, record, index">
+                                    <a-select v-if="['mtlId','unitId'].indexOf(columns[i].dataIndex) > -1" v-decorator="[columns[i].dataIndex, {}]" @change="e => handleChange(e, record.key, col)" :placeholder="'请选择'+columns[i].title">
+                                        <a-select-option v-for="(item, key) in columns[i].list" :key="key" :value="item.id">
+                                            {{ item.name }}
+                                        </a-select-option>
+                                    </a-select>
+                                    <a-input :key="col" v-else-if="record.editable" style="margin: -5px 0" :value="text" :placeholder="columns[i].title" @change="e => handleChange(e.target.value, record.key, col)" />
+                                    <template v-else>{{ text }}
+                                    </template>
                                 </template>
+
                                 <template slot="operation" slot-scope="text, record, index">
                                     <template v-if="record.editable">
                                         <span v-if="record.isNew">
@@ -79,15 +86,19 @@
                                     </span>
                                 </template>
                             </a-table>
-                            <a-button style="width: 100%; margin-top: 16px; margin-bottom: 8px" type="dashed" icon="plus" @click="newMember">新增成员</a-button>
+                            <a-button style="width: 100%; margin-top: 16px; margin-bottom: 8px" type="dashed" icon="plus" @click="newMember">新增产品</a-button>
                         </form>
                     </a-card>
-
                 </a-col>
             </a-row>
         </a-form>
-    </a-spin>
-</a-modal>
+    </a-card>
+    <footer-tool-bar>
+        <a-button type="primary" @click="handleOk">保存</a-button>
+        <router-view :key="this.$route.path"></router-view>
+        <a-button :style="{marginLeft:'20px'}" @click="backToList">返回</a-button>
+    </footer-tool-bar>
+</div>
 </template>
 
 <script>
@@ -97,14 +108,24 @@ import {
 import pick from 'lodash.pick'
 import JDate from '@/components/jeecg/JDate'
 import JDictSelectTag from '@/components/dict/JDictSelectTag'
+import FooterToolBar from '@/components/tools/FooterToolBar'
+import {
+    getVendorList,
+    ajaxGetDictItems,
+    getWarehouseList,
+    getMaterialList,
+    getMaterialUnitList
+} from '@/api/api'
 export default {
     name: 'PurchasesModal',
     components: {
         JDate,
+        FooterToolBar,
         JDictSelectTag
     },
     data() {
         return {
+            hasaddmain: false,
             form: this.$form.createForm(this),
             title: '操作',
             width: '80%',
@@ -145,46 +166,146 @@ export default {
             },
             vendorIddictOptions: [],
             warehouseOptions: [],
-            // purchasestypedict: [],
+            dictOptions: {
+                vendorId: [],
+                warehouse: [],
+                materiallist: [],
+                materialunitlist: []
+            },
             columns: [{
-                    title: '成员姓名',
-                    dataIndex: 'name',
-                    key: 'name',
+                    title: '产品', //顺序不要调整，getMaterialList中有用
+                    dataIndex: 'mtlId',
+                    key: 'mtlId',
                     width: '20%',
                     scopedSlots: {
-                        customRender: 'name'
+                        customRender: 'mtlId'
                     }
                 },
                 {
-                    title: '工号',
-                    dataIndex: 'workId',
-                    key: 'workId',
+                    title: '单位', //顺序不要调整，getMaterialUnitList中有用
+                    dataIndex: 'unitId',
+                    key: 'unitId',
+                    width: '10%',
+                    scopedSlots: {
+                        customRender: 'unitId'
+                    }
+                },
+                {
+                    title: '数量',
+                    dataIndex: 'quantity',
+                    key: 'quantity',
+                    width: '10%',
+                    scopedSlots: {
+                        customRender: 'quantity'
+                    }
+                },
+                {
+                    title: '单价',
+                    dataIndex: 'price',
+                    key: 'price',
+                    width: '10%',
+                    scopedSlots: {
+                        customRender: 'price'
+                    }
+                },
+                {
+                    title: '折扣',
+                    dataIndex: 'discount',
+                    key: 'discount',
+                    width: '10%',
+                    scopedSlots: {
+                        customRender: 'discount'
+                    }
+                },
+                {
+                    title: '金额',
+                    dataIndex: 'amount',
+                    key: 'amount',
+                    width: '10%',
+                    scopedSlots: {
+                        customRender: 'amount'
+                    }
+                },
+                {
+                    title: '备注',
+                    dataIndex: 'description',
+                    key: 'description',
                     width: '20%',
                     scopedSlots: {
-                        customRender: 'workId'
+                        customRender: 'description'
                     }
                 },
-                {
-                    title: '所属部门',
-                    dataIndex: 'department',
-                    key: 'department',
-                    width: '40%',
-                    scopedSlots: {
-                        customRender: 'department'
-                    }
-                },
-                {
-                    title: '操作',
-                    key: 'action',
-                    scopedSlots: {
-                        customRender: 'operation'
-                    }
-                }
+                // {
+                //     title: '操作',
+                //     key: 'action',
+                //     width: '10%',
+                //     scopedSlots: {
+                //         customRender: 'operation'
+                //     }
+                // }
             ],
+            data: []
         }
     },
-    created() {},
+    created() {
+        this.initDictConfig();
+        this.newMember();
+    },
     methods: {
+        initDictConfig() {
+            //供应商
+            getVendorList('').then((res) => {
+                if (res.success) {
+                    if (res.result && res.result.length > 0) {
+                        res.result.forEach(function (option) {
+                            option.value = option.id;
+                            option.text = option.name;
+                        })
+                    }
+                    this.$set(this.dictOptions, 'vendorId', res.result)
+                }
+            });
+            //仓库
+            getWarehouseList('').then((res) => {
+                if (res.success) {
+                    if (res.result && res.result.length > 0) {
+                        res.result.forEach(function (option) {
+                            option.value = option.id;
+                            option.text = option.name;
+                        })
+                    }
+                    this.$set(this.dictOptions, 'warehouse', res.result)
+                }
+            });
+            //产品
+            getMaterialList('').then((res) => {
+                if (res.success) {
+                    if (res.result && res.result.length > 0) {
+                        res.result.forEach(function (option) {
+                            option.value = option.id;
+                            option.text = option.name;
+                        })
+                    }
+                    this.columns[0].list = res.result;
+                    this.$set(this.dictOptions, 0, this.columns[0])
+                    // this.$set(this.dictOptions, 'materiallist', res.result)
+                }
+            });
+            //单位
+            getMaterialUnitList('').then((res) => {
+                if (res.success) {
+                    if (res.result && res.result.length > 0) {
+                        res.result.forEach(function (option) {
+                            option.value = option.id;
+                            option.text = option.name;
+                        })
+                    }
+                    this.columns[1].list = res.result;
+                    this.$set(this.dictOptions, 1, this.columns[1])
+                    // this.$set(this.dictOptions, 'materialunitlist', res.result)
+                }
+            });
+        },
         add() {
             this.edit({})
         },
@@ -220,12 +341,14 @@ export default {
                         method = 'put'
                     }
                     let formData = Object.assign(this.model, values)
+                    formData.detaillist = that.data;
                     console.log('表单提交数据', formData)
                     httpAction(httpurl, formData, method)
                         .then(res => {
                             if (res.success) {
                                 that.$message.success(res.message)
                                 that.$emit('ok')
+                                that.hasaddmain = true;
                             } else {
                                 that.$message.warning(res.message)
                             }
@@ -244,6 +367,52 @@ export default {
             this.form.setFieldsValue(
                 pick(row, 'vendorId', 'description', 'warehouseId', 'account', 'payamount', 'totalamount')
             )
+        },
+        newMember() {
+            this.data.push({
+                key: this.data.length,
+                name: '',
+                workId: '',
+                department: '',
+                editable: true,
+                isNew: true
+            })
+        },
+        handleChange(value, key, column) {
+            const newData = [...this.data]
+            const target = newData.filter(item => key === item.key)[0]
+            if (target) {
+                target[column] = value;
+                if (target.quantity && target.price) {
+                    if (target.discount)
+                        target['amount'] = parseFloat(target.quantity) * parseFloat(target.price) - parseFloat(target.discount);
+                    else
+                        target['amount'] = parseFloat(target.quantity) * parseFloat(target.price);
+                }
+                this.data = newData
+            }
+        },
+        toggle(key) {
+            let target = this.data.filter(item => item.key === key)[0]
+            target.editable = !target.editable
+        },
+        cancel(key) {
+            let target = this.data.filter(item => item.key === key)[0]
+            target.editable = false
+        },
+        remove(key) {
+            const newData = this.data.filter(item => item.key !== key)
+            this.data = newData
+        },
+        saveRow(key) {
+            let target = this.data.filter(item => item.key === key)[0]
+            target.editable = false
+            target.isNew = false
+        },
+        backToList() {
+            this.$router.replace({
+                path: '/purchase/PurchaseList'
+            });
         }
     }
 }
