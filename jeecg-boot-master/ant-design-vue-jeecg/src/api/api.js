@@ -99,6 +99,8 @@ const loadCategoryData = (params)=>getAction("/sys/category/loadAllData",params)
 const addSaleOrder = (params)=>postAction("/saleOrder/add",params)
 const editSaleOrder = (params)=>postAction("/saleOrder/edit",params)
 const getSaleOrderOne = (params)=>getAction("/saleOrder/getOne",params)
+const delivery = (params)=>postAction("/saleOrder/delivery",params)
+const getSaleOrderDeliveryInfo = (params)=>getAction("/saleOrderDeliveryInfo/getList",params)
 const addSaleMtlOrder = (params)=>postAction("/saleOrderMtl/add",params)
 const editSaleMtlOrder = (params)=>postAction("/saleOrderMtl/edit",params)
 const addCustomerType = (params)=>postAction("/customerType/add",params)
@@ -142,6 +144,9 @@ const editExpense = (params)=>postAction("/expense/edit",params)
 const getExpenseList = (params)=>getAction("/expense/getList",params)
 const addSaleOrderExpense = (params)=>postAction("/saleOrderExpense/add",params)
 const editSaleOrderExpense = (params)=>postAction("/saleOrderExpense/edit",params)
+const addStocking = (params)=>postAction("/stocking/add",params)
+const editStocking = (params)=>postAction("/stocking/edit",params)
+const handleStocking = (params)=>postAction("/stocking/handleStocking",params)
 
 const getDiscountTypeList = (params)=>getAction("/basic/fc/enum/discountType/getList",params)
 
@@ -245,7 +250,12 @@ export {
   editExpense,
   getExpenseList,
   addSaleOrderExpense,
-  editSaleOrderExpense
+  editSaleOrderExpense,
+  delivery,
+  getSaleOrderDeliveryInfo,
+  addStocking,
+  editStocking,
+  handleStocking
 }
 
 

@@ -246,7 +246,7 @@
               <a-form-item
                 :labelCol="hlabelCol"
                 :wrapperCol="hwrapperCol"
-                label="默认发货方式"
+                label="默认收货方式"
                 label-width="4">
                 <a-input style="display: none" v-decorator="[ 'cdiId', validatorRules.cdiId]" />
                 <a-input style="display: none" v-decorator="[ 'cdiCreateTime', validatorRules.cdiCreateTime]" />
