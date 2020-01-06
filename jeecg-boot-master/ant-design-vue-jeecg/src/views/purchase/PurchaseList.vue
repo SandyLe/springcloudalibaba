@@ -269,7 +269,7 @@ export default {
             });
         },
         diyhandleAdd(){ 
-          this.$router.push({ path:'/purchase/PurchaseModal' });
+          this.$router.replace({ path:'/purchase/PurchaseModal' });
         }
     }
 }
