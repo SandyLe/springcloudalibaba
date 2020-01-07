@@ -44,30 +44,20 @@
         :pagination="ipagination"
         :loading="loading"
         :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
+        :row-class-name="status_change"
         @change="handleTableChange">
 
         <span slot="nameAction" slot-scope="text, record">
           <a @click="goDetail(record.mtlId)">{{record.material}}</a>
         </span>
-        <span slot="action" slot-scope="text, record">
+        <span slot="action" v-if="record.rowSts !== 6" slot-scope="text, record">
           <a @click="handleEdit(record)">编辑</a>
-
           <a-divider type="vertical" />
-          <a-dropdown>
-            <a class="ant-dropdown-link">
-              更多 <a-icon type="down" />
-            </a>
-            <a-menu slot="overlay">
-              <a-menu-item>
-                <a @click="handleStocking(record)">盘点</a>
-              </a-menu-item>
-              <a-menu-item>
-                <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
-                  <a>删除</a>
-                </a-popconfirm>
-              </a-menu-item>
-            </a-menu>
-          </a-dropdown>
+          <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
+            <a>删除</a>
+          </a-popconfirm>
+          <a-divider type="vertical" />
+          <a v-if="record.rowSts !== 6" @click="handleStocking(record)">盘点</a>
         </span>
       </a-table>
     </div>
@@ -146,6 +136,12 @@
       }
     },
     methods: {
+      status_change:function (row) {
+        debugger
+        if(row.rowSts===6){
+          return 'demo-table-info-row';
+        }
+      },
       handleStocking (record) {
         let that = this;
         let content = "是否确认盘点 " + record.warehouse + " 中 " + record.material + " 库存数量？"
@@ -180,3 +176,8 @@
     }
   }
 </script>
+<style lang="scss">
+  .demo-table-info-row td {
+    background-color: #fafafa ;
+  }
+</style>

@@ -22,6 +22,7 @@
       </a-form>
     </div>
     <!-- 操作按钮区域 -->
+    <!--
     <div class="table-operator"  style="margin-top: 5px">
       <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
       <a-dropdown v-if="selectedRowKeys.length > 0">
@@ -33,6 +34,7 @@
         </a-button>
       </a-dropdown>
     </div>
+    -->
     <div>
       <a-table
         ref="table"
@@ -51,23 +53,23 @@
         </span>
         <span slot="action" slot-scope="text, record">
           <a @click="handleEdit(record.id)">编辑</a>
-
-          <a-divider type="vertical" />
-          <a-dropdown>
-            <a class="ant-dropdown-link">
-              更多 <a-icon type="down" />
-            </a>
-            <a-menu slot="overlay">
-              <a-menu-item>
-                <a @click="handlePerssion(record.id)">授权</a>
-              </a-menu-item>
-              <a-menu-item>
-                <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
-                  <a>删除</a>
-                </a-popconfirm>
-              </a-menu-item>
-            </a-menu>
-          </a-dropdown>
+          <!--
+                    <a-divider type="vertical" />
+                    <a-dropdown>
+                      <a class="ant-dropdown-link">
+                        更多 <a-icon type="down" />
+                      </a>
+                      <a-menu slot="overlay">
+                        <a-menu-item>
+                          <a @click="handlePerssion(record.id)">授权</a>
+                        </a-menu-item>
+                        <a-menu-item>
+                          <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
+                            <a>删除</a>
+                          </a-popconfirm>
+                        </a-menu-item>
+                      </a-menu>
+                    </a-dropdown> -->
         </span>
       </a-table>
     </div>
