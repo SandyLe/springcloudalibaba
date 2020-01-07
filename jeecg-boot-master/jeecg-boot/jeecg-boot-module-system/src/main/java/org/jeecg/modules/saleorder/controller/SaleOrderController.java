@@ -199,6 +199,7 @@ public class SaleOrderController {
         saleOrder.setWarehouseId(deliveryEditDto.getWarehouseId());
         saleOrder.setDeliveryTime(deliveryEditDto.getDeliveryTime());
         saleOrder.setInstallTime(deliveryEditDto.getInstallTime());
+        saleOrder.setBillStatus(BillStatus.TOSEND.getId());
         saleOrderService.updateById(saleOrder);
 
         SaleOrderDeliveryInfo cdi = new SaleOrderDeliveryInfo();

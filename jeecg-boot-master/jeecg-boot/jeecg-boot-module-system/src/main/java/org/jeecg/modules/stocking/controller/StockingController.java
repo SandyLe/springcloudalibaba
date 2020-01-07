@@ -190,8 +190,8 @@ public class StockingController {
      */
     @PostMapping(value = "/handleStocking")
     @ApiOperation(value = "通过ID查询盘点单", notes = "通过ID查询盘点单")
-    public Result<?> handleStocking(@ApiParam(name = "id", value = "id", required = true) @RequestParam(name = "id", required = true) String id) {
-        String msg = stockingService.handleStocking(id);
+    public Result<?> handleStocking(@RequestBody Stocking stocking) {
+        String msg = stockingService.handleStocking(stocking.getId());
         if (StringUtils.isNotBlank(msg)){
             return Result.error(msg);
         }

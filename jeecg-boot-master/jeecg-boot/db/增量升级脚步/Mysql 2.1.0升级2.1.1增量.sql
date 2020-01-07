@@ -565,3 +565,25 @@ CREATE TABLE `sl_stocking` (
   `before_amount` decimal(10,0) DEFAULT NULL,
   `unit_id` varchar(30) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+DROP TABLE IF EXISTS `sl_inventory_log`;
+CREATE TABLE `sl_inventory_log` (
+
+  `id` varchar(30) NOT NULL,
+  `name` varchar(50) DEFAULT NULL,
+  `code` varchar(30) DEFAULT NULL,
+  `content` varchar(100) DEFAULT NULL,
+  `create_time` datetime DEFAULT NULL,
+  `update_time` datetime DEFAULT NULL,
+  `create_by` varchar(30) DEFAULT NULL,
+  `update_by` varchar(30) DEFAULT NULL,
+  `row_sts` int(11) DEFAULT NULL,
+  `sort` int(11) DEFAULT NULL,
+
+  `mtl_id` varchar(30) DEFAULT NULL,
+  `warehouse_id` varchar(30) DEFAULT NULL,
+  `stock_amount` decimal(10,0) DEFAULT NULL,
+  `before_amount` decimal(10,0) DEFAULT NULL,
+  `unit_id` varchar(30) DEFAULT NULL,
+  `operation_id` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

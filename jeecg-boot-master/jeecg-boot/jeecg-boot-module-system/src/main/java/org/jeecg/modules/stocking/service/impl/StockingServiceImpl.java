@@ -1,7 +1,11 @@
 package org.jeecg.modules.stocking.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.sun.jmx.snmp.EnumRowStatus;
+import org.jeecg.modules.basic.enums.InventoryOperation;
 import org.jeecg.modules.inventory.entity.Inventory;
+import org.jeecg.modules.inventory.entity.InventoryLog;
+import org.jeecg.modules.inventory.service.InventoryLogService;
 import org.jeecg.modules.inventory.service.InventoryService;
 import org.jeecg.modules.stocking.entity.Stocking;
 import org.jeecg.modules.stocking.mapper.StockingMapper;
@@ -15,9 +19,10 @@ public class StockingServiceImpl extends ServiceImpl<StockingMapper, Stocking>  
 
     @Autowired
     private StockingMapper stockingMapper;
-
     @Autowired
     private InventoryService inventoryService;
+    @Autowired
+    private InventoryLogService inventoryLogService;
 
     @Transactional
     @Override
@@ -34,6 +39,12 @@ public class StockingServiceImpl extends ServiceImpl<StockingMapper, Stocking>  
             inventory.setMtlId(stocking.getMtlId());
             inventory.setStockAmount(stocking.getStockAmount());
             inventoryService.saveOrUpdate(inventory);
+            stocking.setRowSts(EnumRowStatus.destroy);
+            updateById(stocking);
+
+            //库存流水日志
+            InventoryLog inventoryLog = new InventoryLog(stocking.getMtlId(), stocking.getWarehouseId(), stocking.getStockAmount(), stocking.getBeforeAmount(), stocking.getUnitId(), InventoryOperation.STOCKING.getId());
+            inventoryLogService.save(inventoryLog);
         }
         return msg;
     }
