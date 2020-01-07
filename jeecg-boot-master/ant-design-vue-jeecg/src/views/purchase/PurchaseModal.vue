@@ -250,6 +250,24 @@ export default {
     created() {
         this.initDictConfig();
         this.newMember();
+        this.add();
+    },
+    watch: {
+        // 如果 `data` 发生改变，这个函数就会运行
+        data: function () {
+            // console.log(newdata);
+            let datatotalamount = 0;
+            this.data.forEach(function(target){
+                if (target.quantity && target.price) {
+                    if (target.discount)
+                        datatotalamount += parseFloat(target.quantity) * parseFloat(target.price) - parseFloat(target.discount);
+                    else
+                        datatotalamount += parseFloat(target.quantity) * parseFloat(target.price);
+                }
+            });
+            this.model.totalamount = datatotalamount;
+            this.form.setFieldsValue({ 'totalamount' :datatotalamount })
+        }
     },
     methods: {
         initDictConfig() {
@@ -310,8 +328,8 @@ export default {
             this.edit({})
         },
         edit(record) {
-            this.vendorIddictOptions = this.$parent.$parent.dictOptions.vendorId
-            this.warehouseOptions = this.$parent.$parent.dictOptions.warehouse
+            // this.vendorIddictOptions = this.$parent.$parent.dictOptions.vendorId
+            // this.warehouseOptions = this.$parent.$parent.dictOptions.warehouse
             this.form.resetFields()
             this.model = Object.assign({}, record)
             this.visible = true
@@ -349,6 +367,9 @@ export default {
                                 that.$message.success(res.message)
                                 that.$emit('ok')
                                 that.hasaddmain = true;
+                                this.$router.replace({
+                                    path: '/purchase/PurchaseList'
+                                });
                             } else {
                                 that.$message.warning(res.message)
                             }
@@ -410,9 +431,10 @@ export default {
             target.isNew = false
         },
         backToList() {
-            this.$router.replace({
-                path: '/purchase/PurchaseList'
-            });
+            console.log(this.$route.matched);
+            this.$route.matched.splice(this.$route.matched.length-1 ,1);
+            console.log(this.$route.matched);
+            this.$router.replace({ path:'/purchase/PurchaseList' });
         }
     }
 }

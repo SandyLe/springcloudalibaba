@@ -50,24 +50,13 @@ public class PurchaseController extends JeecgController<Purchase, IPurchaseServi
     @PostMapping("/add")
     @Transactional
     public Result<?> add(@RequestBody Purchasedtldto purchasedtldto){
-        System.out.println("purchasedtldto接收内容");
-        System.out.println(purchasedtldto);
-        purchaseService.save(purchasedtldto);
         if (purchasedtldto.getDetaillist().size() > 0){
             for (Purchasedtl item: purchasedtldto.getDetaillist()){
                 item.setSourceId(purchasedtldto.getId());
-                System.out.println(item);
-                System.out.println(item == null);
                 purchasedtlService.save(item);
             }
-//            purchasedtldto.getDetaillist().forEach(item->{
-//                item.setSourceId(purchasedtldto.getId());
-//                System.out.println(item);
-//                System.out.println(item == null);
-//                purchasedtlService.save(item);
-//            });
         }
-        return Result.ok(purchasedtldto);
+        return Result.ok("添加成功");
     }
 
     @PutMapping("/edit")
@@ -77,14 +66,18 @@ public class PurchaseController extends JeecgController<Purchase, IPurchaseServi
     }
 
     @DeleteMapping("/delete")
+    @Transactional
     public Result<?> delete(@RequestParam(name = "id", required = true) String id){
         purchaseService.removeById(id);
+        purchasedtlService.removeBySourceId(id);
         return Result.ok("删除成功!");
     }
 
     @DeleteMapping("/deleteBatch")
+    @Transactional
     public Result<?> deleteBatch(@RequestParam(name = "ids", required = true) String ids){
         purchaseService.removeByIds(Arrays.asList(ids.split(",")));
+        purchasedtlService.removeBySourceIds(Arrays.asList(ids.split(",")));
         return Result.ok("批量删除成功!");
     }
 
