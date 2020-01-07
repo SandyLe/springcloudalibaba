@@ -291,6 +291,7 @@ CREATE TABLE `sl_customer_delivery_info` (
   `row_sts` int(11) DEFAULT NULL,
   `sort` int(11) DEFAULT NULL,
 
+  `source_id` varchar(50) DEFAULT NULL,
   `cdi_source_id` varchar(50) DEFAULT NULL,
   `cdi_default_type` varchar(10) DEFAULT NULL,
   `cdi_description` varchar(30) DEFAULT NULL,
@@ -306,7 +307,8 @@ CREATE TABLE `sl_customer_delivery_info` (
   `cdi_branch` varchar(30) DEFAULT NULL,
   `cdi_tel` varchar(30) DEFAULT NULL,
   `cdi_recipients_phone` varchar(30) DEFAULT NULL,
-  `cdi_recipients` varchar(30) DEFAULT NULL
+  `cdi_recipients` varchar(30) DEFAULT NULL,
+  `bill_status` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 DROP TABLE IF EXISTS `sl_vendor`;

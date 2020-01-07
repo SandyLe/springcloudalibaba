@@ -10,6 +10,8 @@ import org.jeecg.modules.basic.entity.BasicEntity;
 public class SaleOrderDeliveryInfo extends BasicEntity {
 
     @ApiModelProperty("销售订单ID")
+    private String sourceId;
+    @ApiModelProperty("客户ID")
     private String cdiSourceId;
     @ApiModelProperty("发货方式")
     private String cdiDefaultType;
@@ -41,6 +43,24 @@ public class SaleOrderDeliveryInfo extends BasicEntity {
     private String cdiRecipientsPhone;
     @ApiModelProperty("收件人")
     private String cdiRecipients;
+    @ApiModelProperty("表单状态")
+    private Integer billStatus;
+
+    public String getSourceId() {
+        return sourceId;
+    }
+
+    public void setSourceId(String sourceId) {
+        this.sourceId = sourceId;
+    }
+
+    public Integer getBillStatus() {
+        return billStatus;
+    }
+
+    public void setBillStatus(Integer billStatus) {
+        this.billStatus = billStatus;
+    }
 
     public String getCdiSourceId() {
         return cdiSourceId;

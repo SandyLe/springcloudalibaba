@@ -135,6 +135,22 @@ public class SaleOrderController {
     @AutoLog(value = "修改销售订单")
     @ApiOperation(value = "修改销售订单", notes = "修改销售订单")
     public Result<?> edit(@RequestBody SaleOrder saleOrder){
+        saleOrderService.updateById(saleOrder);
+        Result<Object> result = Result.ok();
+        result.setResult(saleOrder);
+        return result;
+    }
+
+    /**
+     * 收款
+     *
+     * @param saleOrder
+     * @return
+     */
+    @PostMapping(value = "/checkout")
+    @AutoLog(value = "修改销售订单")
+    @ApiOperation(value = "修改销售订单", notes = "修改销售订单")
+    public Result<?> checkout(@RequestBody SaleOrder saleOrder){
         if (null != saleOrder.getTotalamount() && null != saleOrder.getPayamount() && saleOrder.getPayamount().compareTo(BigDecimal.ZERO) > 0) {
             saleOrder.setBillStatus(saleOrder.getTotalamount().compareTo(saleOrder.getPayamount()) <= 0 ? BillStatus.PAID.getId() : BillStatus.PARTICIALPAYMENT.getId());
         }
@@ -204,7 +220,8 @@ public class SaleOrderController {
 
         SaleOrderDeliveryInfo cdi = new SaleOrderDeliveryInfo();
         BeanUtils.copyProperties(cdi,deliveryEditDto);
-        cdi.setCdiSourceId(saleOrder.getId());
+        cdi.setCdiSourceId(saleOrder.getCustomerId());
+        cdi.setSourceId(saleOrder.getId());
         cdi.setId(deliveryEditDto.getCdiId());
         cdi.setCreateBy(deliveryEditDto.getCdiCreateBy());
         cdi.setCreateTime(deliveryEditDto.getCdiCreateTime());
@@ -215,6 +232,7 @@ public class SaleOrderController {
         cdi.setRowSts(deliveryEditDto.getCdiRowSts());
         cdi.setSort(deliveryEditDto.getCdiSort());
         cdi.setCode(deliveryEditDto.getCdiContent());
+        cdi.setBillStatus(BillStatus.TOSEND.getId());
         saleOrderDeliveryInfoService.saveOrUpdate(cdi);
 
         Result<Object> result = Result.ok();
