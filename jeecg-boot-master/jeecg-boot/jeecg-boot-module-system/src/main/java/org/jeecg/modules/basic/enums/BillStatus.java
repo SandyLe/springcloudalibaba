@@ -34,6 +34,11 @@ public enum BillStatus implements AbstractEnum{
         return name;
     }
 
+    @Override
+    public String getCode() {
+        return null;
+    }
+
     public void setName(String name) {
         this.name = name;
     }

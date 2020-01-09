@@ -27,6 +27,10 @@ public enum InventoryOperation implements AbstractEnum{
     }
 
     @Override
+    public String getCode() {
+        return null;
+    }
+    @Override
     public String getName() {
         return name;
     }

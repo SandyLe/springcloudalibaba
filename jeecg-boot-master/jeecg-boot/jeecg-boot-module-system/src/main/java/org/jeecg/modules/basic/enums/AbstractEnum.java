@@ -9,6 +9,8 @@ public interface AbstractEnum {
 
     String getName();
 
+    String getCode();
+
     Object getId();
 
     default Map<String, Object> getMap() {
@@ -26,6 +28,7 @@ public interface AbstractEnum {
             map.put("id", getSid());
         }
         map.put("name", this.getName());
+        map.put("code", this.getCode());
         return map;
     }
 }

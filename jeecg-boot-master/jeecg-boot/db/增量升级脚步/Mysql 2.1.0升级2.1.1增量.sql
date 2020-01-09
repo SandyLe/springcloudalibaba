@@ -589,3 +589,24 @@ CREATE TABLE `sl_inventory_log` (
   `unit_id` varchar(30) DEFAULT NULL,
   `operation_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+DROP TABLE IF EXISTS `sl_bill_code_builder`;
+CREATE TABLE `sl_bill_code_builder` (
+
+  `id` varchar(30) NOT NULL,
+  `name` varchar(50) DEFAULT NULL,
+  `code` varchar(30) DEFAULT NULL,
+  `content` varchar(100) DEFAULT NULL,
+  `create_time` datetime DEFAULT NULL,
+  `update_time` datetime DEFAULT NULL,
+  `create_by` varchar(30) DEFAULT NULL,
+  `update_by` varchar(30) DEFAULT NULL,
+  `row_sts` int(11) DEFAULT NULL,
+  `sort` int(11) DEFAULT NULL,
+
+  `bill_type` int(11) DEFAULT NULL,
+  `prefix` varchar(30) DEFAULT NULL,
+  `zero_count` int(11) DEFAULT NULL,
+  `date_fmt_id` int(11) DEFAULT NULL,
+  `has_date` int(1) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
