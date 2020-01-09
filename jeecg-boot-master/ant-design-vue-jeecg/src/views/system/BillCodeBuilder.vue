@@ -56,8 +56,6 @@
           <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
             <a>删除</a>
           </a-popconfirm>
-          <a-divider type="vertical" />
-          <a v-if="record.rowSts !== 6" @click="handlebillCodeBuilder(record)">盘点</a>
         </span>
       </a-table>
     </div>
@@ -115,7 +113,19 @@
           {
             title: '含日期',
             align:"center",
-            dataIndex: 'hasDate'
+            customRender:function (t,r,index) {
+              return t.hasDate ? '是' : '否';
+            }
+          },
+          {
+            title: '预览',
+            align:"center",
+            dataIndex: 'preview'
+          },
+          {
+            title: '当前段位',
+            align:"center",
+            dataIndex: 'currentLevel'
           },
           {
             title: '操作',

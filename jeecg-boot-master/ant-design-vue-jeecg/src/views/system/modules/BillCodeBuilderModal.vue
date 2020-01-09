@@ -64,8 +64,8 @@
               :wrapperCol="wrapperCol"
               label="是否含日期">
               <a-radio-group v-decorator="['hasDate', {}]">
-                <a-radio :value="1">是</a-radio>
-                <a-radio :value="0">否</a-radio>
+                <a-radio :value="true">是</a-radio>
+                <a-radio :value="false">否</a-radio>
               </a-radio-group>
             </a-form-item>
           </a-col>
@@ -148,10 +148,10 @@
     },
     methods: {
       add () {
-        this.edit({"hasDate":0});
+        this.edit({"hasDate":false});
       },
       edit (record) {
-        console.log(this.$route.query.id)
+        console.log(record)
         debugger
         this.form.resetFields();
         this.model = Object.assign({}, record);
@@ -168,7 +168,7 @@
           }
         })
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'hasDate','mtlId' ,'mtlCode','barCode','specification','unitId','beforeAmount','stockAmount'))
+          this.form.setFieldsValue(pick(this.model,'hasDate','dateFmtId' ,'zeroCount','prefix','billType'))
         });
 
       },
