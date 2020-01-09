@@ -26,6 +26,9 @@ public class BillCodeBuilder extends BasicEntity {
     @ApiModelProperty("是否有日期")
     private Boolean hasDate;
 
+    @ApiModelProperty("当前段位")
+    private Long currentLevel;
+
     public Integer getBillType() {
         return billType;
     }
@@ -60,6 +63,14 @@ public class BillCodeBuilder extends BasicEntity {
 
     public Boolean getHasDate() {
         return hasDate;
+    }
+
+    public Long getCurrentLevel() {
+        return currentLevel;
+    }
+
+    public void setCurrentLevel(Long currentLevel) {
+        this.currentLevel = currentLevel;
     }
 
     public void setHasDate(Boolean hasDate) {

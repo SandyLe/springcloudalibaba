@@ -5,4 +5,6 @@ import org.jeecg.modules.basic.entity.BillCodeBuilder;
 
 public interface BillCodeBuilderService extends IService<BillCodeBuilder> {
 
+    public String getBillCode(Integer billType);
+
 }

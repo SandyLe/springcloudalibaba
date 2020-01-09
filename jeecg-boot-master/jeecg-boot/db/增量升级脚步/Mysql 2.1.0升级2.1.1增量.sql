@@ -608,5 +608,6 @@ CREATE TABLE `sl_bill_code_builder` (
   `prefix` varchar(30) DEFAULT NULL,
   `zero_count` int(11) DEFAULT NULL,
   `date_fmt_id` int(11) DEFAULT NULL,
-  `has_date` int(1) DEFAULT NULL
+  `has_date` int(1) DEFAULT NULL,
+  `current_level` bigint DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

@@ -12,4 +12,9 @@ public class BillCodeBuilderServiceImpl extends ServiceImpl<BillCodeBuilderMappe
 
     @Autowired
     private BillCodeBuilderMapper billCodeBuilderMapper;
+
+    @Override
+    public String getBillCode(Integer billType) {
+        return null;
+    }
 }
