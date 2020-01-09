@@ -3,6 +3,9 @@ package org.jeecg.modules.basic.entity;
 import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.StringUtils;
+import org.jeecg.common.util.DateUtils;
 import org.jeecg.modules.basic.enums.BillType;
 import org.jeecg.modules.basic.enums.DateFormat;
 import org.jeecg.modules.basic.enums.EnumConvertUtils;
@@ -27,7 +30,7 @@ public class BillCodeBuilder extends BasicEntity {
     private Boolean hasDate;
 
     @ApiModelProperty("当前段位")
-    private Long currentLevel;
+    private Long currentLevel = 0l;
 
     public Integer getBillType() {
         return billType;
@@ -39,6 +42,21 @@ public class BillCodeBuilder extends BasicEntity {
 
     public String getPrefix() {
         return prefix;
+    }
+
+    public String getPreview() {
+
+        StringBuilder sb = new StringBuilder();
+        if (StringUtils.isNotBlank(this.prefix)) {
+            sb.append(this.prefix);
+        }
+        if (BooleanUtils.isTrue(hasDate)) {
+            sb.append(DateUtils.getDate(EnumConvertUtils.getName(DateFormat.class, this.dateFmtId)));
+        }
+        if (this.zeroCount >0 ){
+            sb.append(String.format("%0"+this.zeroCount+"d", 1));
+        }
+        return sb.toString();
     }
 
     public void setPrefix(String prefix) {
