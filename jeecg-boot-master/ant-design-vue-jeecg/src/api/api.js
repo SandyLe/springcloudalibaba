@@ -265,7 +265,7 @@ export {
   getBillTypeList,
   getDateFmtList,
   addBillCodeBuilder,
-  editBillCodeBuilder,
+  editBillCodeBuilder
 }
 
 
