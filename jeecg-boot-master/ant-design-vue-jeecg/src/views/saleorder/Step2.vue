@@ -164,7 +164,7 @@
   import SaleOrderExpenseModal from './SaleOrderExpenseModal'
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import { deleteAction, postAction, getAction } from '@/api/manage'
-  import {editSaleOrder, getSaleOrderOne, getSaleOrderMtlList } from '@/api/api'
+  import {checkout, getSaleOrderOne, getSaleOrderMtlList } from '@/api/api'
   import JDictSelectTag from '@/components/dict/JDictSelectTag.vue'
   export default {
     name: "Step2",
@@ -470,7 +470,7 @@
             let obj;
             console.log(formData)
             if(this.model.id){
-              obj=editSaleOrder(formData);
+              obj=checkout(formData);
             }
             obj.then((res)=>{
               if(res.success){

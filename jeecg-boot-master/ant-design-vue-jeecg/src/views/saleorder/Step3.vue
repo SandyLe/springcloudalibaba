@@ -405,10 +405,11 @@
       setDeliveryInfo (billId) {
         debugger
         let that = this;
-        getSaleOrderDeliveryInfo({cdiSourceId:billId}).then((res) => {
+        getSaleOrderDeliveryInfo({sourceId:billId}).then((res) => {
           if (res.success) {
             if (res.result) {
               let obj = res.result[0];
+              that.model.sourceId = obj.sourceId;
               that.model.cdiSourceId = obj.cdiSourceId;
               that.model.cdiDefaultType = obj.cdiDefaultType;
               that.model.cdiDescription = obj.cdiDescription;

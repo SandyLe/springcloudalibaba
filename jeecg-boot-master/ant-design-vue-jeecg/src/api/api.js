@@ -98,6 +98,7 @@ const loadCategoryData = (params)=>getAction("/sys/category/loadAllData",params)
 // 销售订单
 const addSaleOrder = (params)=>postAction("/saleOrder/add",params)
 const editSaleOrder = (params)=>postAction("/saleOrder/edit",params)
+const checkout = (params)=>postAction("/saleOrder/checkout",params)
 const getSaleOrderOne = (params)=>getAction("/saleOrder/getOne",params)
 const delivery = (params)=>postAction("/saleOrder/delivery",params)
 const getSaleOrderDeliveryInfo = (params)=>getAction("/saleOrderDeliveryInfo/getList",params)
@@ -147,8 +148,12 @@ const editSaleOrderExpense = (params)=>postAction("/saleOrderExpense/edit",param
 const addStocking = (params)=>postAction("/stocking/add",params)
 const editStocking = (params)=>postAction("/stocking/edit",params)
 const handleStocking = (params)=>postAction("/stocking/handleStocking",params)
+const editBillCodeBuilder = (params)=>postAction("/billCodeBuilder/edit",params)
+const addBillCodeBuilder = (params)=>postAction("/billCodeBuilder/add",params)
 
 const getDiscountTypeList = (params)=>getAction("/basic/fc/enum/discountType/getList",params)
+const getBillTypeList = (params)=>getAction("/basic/fc/enum/billType/getList",params)
+const getDateFmtList = (params)=>getAction("/basic/fc/enum/dateFormat/getList",params)
 
 const loadShopData = (params)=>getAction("/sys/sysDepart/getSysDepartList",params)
 const getAllUser = (params)=>getAction("/sys/user/getAll",params)
@@ -255,7 +260,12 @@ export {
   getSaleOrderDeliveryInfo,
   addStocking,
   editStocking,
-  handleStocking
+  handleStocking,
+  checkout,
+  getBillTypeList,
+  getDateFmtList,
+  addBillCodeBuilder,
+  editBillCodeBuilder,
 }
 
 
