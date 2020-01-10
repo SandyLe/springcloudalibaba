@@ -17,6 +17,8 @@ import org.jeecg.modules.basic.dto.DeliveryEditDto;
 import org.jeecg.modules.basic.entity.Customer;
 import org.jeecg.modules.basic.entity.Warehouse;
 import org.jeecg.modules.basic.enums.BillStatus;
+import org.jeecg.modules.basic.enums.BillType;
+import org.jeecg.modules.basic.service.BillCodeBuilderService;
 import org.jeecg.modules.basic.service.CustomerService;
 import org.jeecg.modules.basic.service.WarehouseService;
 import org.jeecg.modules.saleorder.entity.SaleOrder;
@@ -51,6 +53,8 @@ public class SaleOrderController {
     private ISysDictService iSysDictService;
     @Autowired
     private SaleOrderDeliveryInfoService saleOrderDeliveryInfoService;
+    @Autowired
+    private BillCodeBuilderService billCodeBuilderService;
     /**
      * 添加
      *
@@ -63,7 +67,8 @@ public class SaleOrderController {
     public Result<?> add(@RequestBody SaleOrder saleOrder) {
 
         saleOrder.setBillStatus(BillStatus.NEW.getId());
-      saleOrderService.save(saleOrder);
+        saleOrder.setCode(billCodeBuilderService.getBillCode(BillType.SALEORDER.getId()));
+        saleOrderService.save(saleOrder);
         Result<Object> result = Result.ok();
         result.setResult(saleOrder);
         return result;
