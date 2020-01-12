@@ -8,7 +8,8 @@ public enum BillType implements AbstractEnum{
     SALERETURNORDER(3, "sale_return_order", "销售退货"),
     PURCHASEORDER(4, "purchase_order", "采购订单"),
     PURCHASERETURNORDER(5, "purchase_return_order", "采购退货"),
-    MATERIAL(6, "material", "产品");
+    MATERIAL(6, "material", "产品"),
+    STOCKING(7, "stocking", "库存盘点");
 
     private Integer id;
     private String code;

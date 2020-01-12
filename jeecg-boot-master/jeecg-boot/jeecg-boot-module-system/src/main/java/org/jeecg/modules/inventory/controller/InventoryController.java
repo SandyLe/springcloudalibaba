@@ -7,6 +7,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.system.query.QueryGenerator;
@@ -91,20 +92,22 @@ public class InventoryController {
 
         IPage<Inventory> pageList = inventoryService.page(page, queryWrapper);
         List<Inventory> inventoryList = pageList.getRecords();
-        List<String> mtlIds = inventoryList.stream().map(Inventory::getMtlId).collect(Collectors.toList());
-        List<String> warehouseIds = inventoryList.stream().map(Inventory::getWarehouseId).collect(Collectors.toList());
-        List<String> unitIds = inventoryList.stream().map(Inventory::getUnitId).collect(Collectors.toList());
-        Collection<Material> materials = materialService.listByIds(mtlIds);
-        Collection<Warehouse> warehouses = warehouseService.listByIds(warehouseIds);
-        Collection<MaterialUnit> units = materialUnitService.listByIds(unitIds);
-        Map<String, String> materialMap = materials.stream().collect(Collectors.toMap(Material::getId, Material::getName));
-        Map<String, String> warehouseMap = warehouses.stream().collect(Collectors.toMap(Warehouse:: getId, Warehouse:: getName));
-        Map<String, String> unitMap = units.stream().collect(Collectors.toMap(MaterialUnit::getId, MaterialUnit::getName));
-        inventoryList.stream().forEach(o->{
-            o.setWarehouse(warehouseMap.get(o.getWarehouseId()));
-            o.setMaterial(materialMap.get(o.getMtlId()));
-            o.setUnit(unitMap.get(o.getUnitId()));
-        });
+        if (CollectionUtils.isNotEmpty(inventoryList)) {
+            List<String> mtlIds = inventoryList.stream().map(Inventory::getMtlId).collect(Collectors.toList());
+            List<String> warehouseIds = inventoryList.stream().map(Inventory::getWarehouseId).collect(Collectors.toList());
+            List<String> unitIds = inventoryList.stream().map(Inventory::getUnitId).collect(Collectors.toList());
+            Collection<Material> materials = materialService.listByIds(mtlIds);
+            Collection<Warehouse> warehouses = warehouseService.listByIds(warehouseIds);
+            Collection<MaterialUnit> units = materialUnitService.listByIds(unitIds);
+            Map<String, String> materialMap = materials.stream().collect(Collectors.toMap(Material::getId, Material::getName));
+            Map<String, String> warehouseMap = warehouses.stream().collect(Collectors.toMap(Warehouse:: getId, Warehouse:: getName));
+            Map<String, String> unitMap = units.stream().collect(Collectors.toMap(MaterialUnit::getId, MaterialUnit::getName));
+            inventoryList.stream().forEach(o->{
+                o.setWarehouse(warehouseMap.get(o.getWarehouseId()));
+                o.setMaterial(materialMap.get(o.getMtlId()));
+                o.setUnit(unitMap.get(o.getUnitId()));
+            });
+        }
 
         log.info("查询当前页：" + pageList.getCurrent());
         log.info("查询当前页数量：" + pageList.getSize());

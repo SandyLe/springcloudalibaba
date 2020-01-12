@@ -508,6 +508,8 @@ CREATE TABLE `sl_saleorder_delivery_info` (
   `sort` int(11) DEFAULT NULL,
 
   `cdi_source_id` varchar(50) DEFAULT NULL,
+  `warehouse_id` varchar(50) DEFAULT NULL,
+  `cdi_source_bill_code` varchar(50) DEFAULT NULL,
   `cdi_default_type` varchar(10) DEFAULT NULL,
   `cdi_description` varchar(30) DEFAULT NULL,
   `cdi_linkman` varchar(30) DEFAULT NULL,
@@ -582,9 +584,12 @@ CREATE TABLE `sl_inventory_log` (
   `row_sts` int(11) DEFAULT NULL,
   `sort` int(11) DEFAULT NULL,
 
+  `source_bill_type` int(10) DEFAULT NULL,
+  `source_id` varchar(30) DEFAULT NULL,
   `mtl_id` varchar(30) DEFAULT NULL,
   `warehouse_id` varchar(30) DEFAULT NULL,
   `stock_amount` decimal(10,0) DEFAULT NULL,
+  `opt_amount` decimal(10,0) DEFAULT NULL,
   `before_amount` decimal(10,0) DEFAULT NULL,
   `unit_id` varchar(30) DEFAULT NULL,
   `operation_id` int(11) DEFAULT NULL

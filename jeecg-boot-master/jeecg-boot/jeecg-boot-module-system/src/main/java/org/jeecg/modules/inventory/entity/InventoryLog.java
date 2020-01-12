@@ -14,6 +14,10 @@ public class InventoryLog extends BasicEntity {
 
     @ApiModelProperty("产品ID")
     private String mtlId;
+    @ApiModelProperty("原单ID")
+    private String sourceId;
+    @ApiModelProperty("原单类型ID")
+    private Integer sourceBillType;
     @TableField(exist=false)
     @ApiModelProperty("产品")
     private String material;
@@ -24,6 +28,8 @@ public class InventoryLog extends BasicEntity {
     private String warehouse;
     @ApiModelProperty("库存")
     private BigDecimal stockAmount;
+    @ApiModelProperty("操作数量")
+    private BigDecimal optAmount;
     @ApiModelProperty("操作前数量")
     private BigDecimal beforeAmount;
     @ApiModelProperty("单位ID")
@@ -40,10 +46,13 @@ public class InventoryLog extends BasicEntity {
     public InventoryLog() {
     }
 
-    public InventoryLog(String mtlId, String warehouseId, BigDecimal stockAmount, BigDecimal beforeAmount, String unitId, Integer operationId) {
+    public InventoryLog(String sourceId, Integer sourceBillType, String mtlId, String warehouseId, BigDecimal stockAmount, BigDecimal optAmount, BigDecimal beforeAmount, String unitId, Integer operationId) {
         this.mtlId = mtlId;
+        this.sourceId = sourceId;
+        this.sourceBillType = sourceBillType;
         this.warehouseId = warehouseId;
         this.stockAmount = stockAmount;
+        this.optAmount = optAmount;
         this.beforeAmount = beforeAmount;
         this.unitId = unitId;
         this.operationId = operationId;
@@ -127,5 +136,29 @@ public class InventoryLog extends BasicEntity {
 
     public void setUnit(String unit) {
         this.unit = unit;
+    }
+
+    public String getSourceId() {
+        return sourceId;
+    }
+
+    public void setSourceId(String sourceId) {
+        this.sourceId = sourceId;
+    }
+
+    public Integer getSourceBillType() {
+        return sourceBillType;
+    }
+
+    public void setSourceBillType(Integer sourceBillType) {
+        this.sourceBillType = sourceBillType;
+    }
+
+    public BigDecimal getOptAmount() {
+        return optAmount;
+    }
+
+    public void setOptAmount(BigDecimal optAmount) {
+        this.optAmount = optAmount;
     }
 }

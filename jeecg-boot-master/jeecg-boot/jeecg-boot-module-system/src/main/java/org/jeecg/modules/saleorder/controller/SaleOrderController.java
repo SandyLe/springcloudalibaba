@@ -140,6 +140,10 @@ public class SaleOrderController {
     @AutoLog(value = "修改销售订单")
     @ApiOperation(value = "修改销售订单", notes = "修改销售订单")
     public Result<?> edit(@RequestBody SaleOrder saleOrder){
+        SaleOrder exists = saleOrderService.getById(saleOrder.getId());
+        saleOrder.setMtlamount(exists.getMtlamount());
+        saleOrder.setOtheramount(exists.getOtheramount());
+        saleOrder.setTotalamount(exists.getTotalamount());
         saleOrderService.updateById(saleOrder);
         Result<Object> result = Result.ok();
         result.setResult(saleOrder);
@@ -220,14 +224,15 @@ public class SaleOrderController {
         saleOrder.setWarehouseId(deliveryEditDto.getWarehouseId());
         saleOrder.setDeliveryTime(deliveryEditDto.getDeliveryTime());
         saleOrder.setInstallTime(deliveryEditDto.getInstallTime());
-        saleOrder.setBillStatus(BillStatus.TOSEND.getId());
-        saleOrderService.updateById(saleOrder);
 
         SaleOrderDeliveryInfo cdi = new SaleOrderDeliveryInfo();
         BeanUtils.copyProperties(cdi,deliveryEditDto);
         cdi.setCdiSourceId(saleOrder.getCustomerId());
         cdi.setSourceId(saleOrder.getId());
+        cdi.setSourceBillCode(saleOrder.getCode());
+        cdi.setWarehouseId(saleOrder.getWarehouseId());
         cdi.setId(deliveryEditDto.getCdiId());
+
         cdi.setCreateBy(deliveryEditDto.getCdiCreateBy());
         cdi.setCreateTime(deliveryEditDto.getCdiCreateTime());
         cdi.setUpdateBy(deliveryEditDto.getCdiUpdateBy());
@@ -237,7 +242,12 @@ public class SaleOrderController {
         cdi.setRowSts(deliveryEditDto.getCdiRowSts());
         cdi.setSort(deliveryEditDto.getCdiSort());
         cdi.setCode(deliveryEditDto.getCdiContent());
-        cdi.setBillStatus(BillStatus.TOSEND.getId());
+        if (StringUtils.isEmpty(cdi.getId())) {
+            cdi.setBillStatus(BillStatus.TOSEND.getId());
+            saleOrder.setBillStatus(BillStatus.TOSEND.getId());
+        }
+
+        saleOrderService.updateById(saleOrder);
         saleOrderDeliveryInfoService.saveOrUpdate(cdi);
 
         Result<Object> result = Result.ok();

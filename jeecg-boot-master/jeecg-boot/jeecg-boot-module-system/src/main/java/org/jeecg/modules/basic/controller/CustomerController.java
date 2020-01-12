@@ -10,6 +10,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.system.query.QueryGenerator;
@@ -18,10 +19,8 @@ import org.jeecg.modules.basic.entity.Customer;
 import org.jeecg.modules.basic.entity.CustomerDeliveryInfo;
 import org.jeecg.modules.basic.entity.CustomerSource;
 import org.jeecg.modules.basic.entity.CustomerType;
-import org.jeecg.modules.basic.service.CustomerDeliveryInfoService;
-import org.jeecg.modules.basic.service.CustomerService;
-import org.jeecg.modules.basic.service.CustomerSourceService;
-import org.jeecg.modules.basic.service.CustomerTypeService;
+import org.jeecg.modules.basic.enums.BillType;
+import org.jeecg.modules.basic.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -46,6 +45,8 @@ public class CustomerController {
     private CustomerSourceService customerSourceService;
     @Autowired
     private CustomerTypeService customerTypeService;
+    @Autowired
+    private BillCodeBuilderService billCodeBuilderService;
 
     /**
      * 获取所有数据
@@ -109,7 +110,11 @@ public class CustomerController {
         Customer customer = new Customer();
         BeanUtils.copyProperties(customer, customerEditDto);
         customer.setId(customerEditDto.getId());
-        customer.setCode(customerEditDto.getCode());
+        if (StringUtils.isEmpty(customerEditDto.getId())) {
+            customer.setCode(billCodeBuilderService.getBillCode(BillType.CUSTOMER.getId()));
+        } else {
+            customer.setCode(customerEditDto.getCode());
+        }
         customerService.saveOrUpdate(customer);
         CustomerDeliveryInfo cdi = new CustomerDeliveryInfo();
         BeanUtils.copyProperties(cdi,customerEditDto);

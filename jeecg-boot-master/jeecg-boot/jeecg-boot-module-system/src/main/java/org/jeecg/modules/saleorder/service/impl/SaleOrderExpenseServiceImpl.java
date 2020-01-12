@@ -47,7 +47,7 @@ public class SaleOrderExpenseServiceImpl extends ServiceImpl<SaleOrderExpenseMap
         }
         SaleOrder saleOrder = saleOrderService.getById(saleOrderExpense.getSourceId());
         saleOrder.setOtheramount(totalAmount);
-        BigDecimal tempTotalAmount = totalAmount;
+        BigDecimal tempTotalAmount = BigDecimal.ZERO.add(totalAmount);
         if (null != saleOrder.getMtlamount()){
             tempTotalAmount = tempTotalAmount.add(saleOrder.getMtlamount());
         }

@@ -70,6 +70,20 @@ public class InventoryLogController {
     public Result<?> getList(InventoryLog inventoryLog, HttpServletRequest req) {
         QueryWrapper<InventoryLog> queryWrapper = QueryGenerator.initQueryWrapper(inventoryLog, req.getParameterMap());
         List<InventoryLog> list = inventoryLogService.list(queryWrapper);
+        List<String> mtlIds = list.stream().map(InventoryLog::getMtlId).collect(Collectors.toList());
+        List<String> warehouseIds = list.stream().map(InventoryLog::getWarehouseId).collect(Collectors.toList());
+        List<String> unitIds = list.stream().map(InventoryLog::getUnitId).collect(Collectors.toList());
+        Collection<Material> materials = materialService.listByIds(mtlIds);
+        Collection<Warehouse> warehouses = warehouseService.listByIds(warehouseIds);
+        Collection<MaterialUnit> units = materialUnitService.listByIds(unitIds);
+        Map<String, String> materialMap = materials.stream().collect(Collectors.toMap(Material::getId, Material::getName));
+        Map<String, String> warehouseMap = warehouses.stream().collect(Collectors.toMap(Warehouse:: getId, Warehouse:: getName));
+        Map<String, String> unitMap = units.stream().collect(Collectors.toMap(MaterialUnit::getId, MaterialUnit::getName));
+        list.stream().forEach(o->{
+            o.setWarehouse(warehouseMap.get(o.getWarehouseId()));
+            o.setMaterial(materialMap.get(o.getMtlId()));
+            o.setUnit(unitMap.get(o.getUnitId()));
+        });
         return Result.ok(list);
     }
     /**

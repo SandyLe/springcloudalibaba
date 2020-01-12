@@ -8,7 +8,9 @@ public enum BillStatus implements AbstractEnum{
     TOSEND(3, "待发货"),
     PARTICIALSEND(4, "部分发货"),
     TOINSTALL(5, "待安装"),
-    DOWN(6, "已完成");
+    DOWN(6, "已完成"),
+    PARTICIALSTOCK(7, "部分出库"),
+    STOCKED(8, "出库完成");
 
     private Integer id;
     private String name;

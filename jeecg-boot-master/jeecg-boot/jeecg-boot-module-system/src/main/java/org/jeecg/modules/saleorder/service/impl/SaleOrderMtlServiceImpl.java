@@ -35,7 +35,7 @@ public class SaleOrderMtlServiceImpl extends ServiceImpl<SaleOrderMtlMapper, Sal
         saleOrderMtl.setAmount(saleOrderMtl.getQuantity().multiply(saleOrderMtl.getPrice()));
         if (StringUtils.isNotBlank(saleOrderMtl.getDiscountType())) {
             if (DiscountType.PERCENT.getId().equals(saleOrderMtl.getDiscountType())){
-                saleOrderMtl.setAmount(saleOrderMtl.getAmount().multiply(saleOrderMtl.getDiscount().divide(new BigDecimal(100), 8, RoundingMode.CEILING)));
+                saleOrderMtl.setAmount(saleOrderMtl.getAmount().multiply(BigDecimal.ONE.subtract(saleOrderMtl.getDiscount().divide(new BigDecimal(100), 8, RoundingMode.CEILING))));
             } else if (DiscountType.AMOUNT.getId().equals(saleOrderMtl.getDiscountType())) {
                 saleOrderMtl.setAmount(saleOrderMtl.getAmount().subtract(saleOrderMtl.getDiscount()));
             }
@@ -55,12 +55,14 @@ public class SaleOrderMtlServiceImpl extends ServiceImpl<SaleOrderMtlMapper, Sal
             }
         }
         SaleOrder saleOrder = saleOrderService.getById(saleOrderMtl.getSourceId());
-        BigDecimal tempTotalAmount = BigDecimal.ZERO;
+        saleOrder.setMtlamount(totalAmount);
+        BigDecimal tempTotalAmount = BigDecimal.ZERO.add(totalAmount);
         if (null != saleOrder.getOtheramount()){
             tempTotalAmount = totalAmount.add(saleOrder.getOtheramount());
         }
         saleOrder.setTotalamount(tempTotalAmount);
-        saleOrderService.updateById(saleOrder);
-        return totalAmount;
+        Boolean result = saleOrderService.saveOrUpdate(saleOrder);
+        System.out.println(saleOrder.getId() + "," + result + "," + saleOrder.getTotalamount());
+        return tempTotalAmount;
     }
 }

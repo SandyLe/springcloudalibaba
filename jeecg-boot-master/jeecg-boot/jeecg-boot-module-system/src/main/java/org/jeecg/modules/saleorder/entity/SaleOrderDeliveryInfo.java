@@ -1,5 +1,6 @@
 package org.jeecg.modules.saleorder.entity;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -11,10 +12,23 @@ public class SaleOrderDeliveryInfo extends BasicEntity {
 
     @ApiModelProperty("销售订单ID")
     private String sourceId;
+    @ApiModelProperty("销售订单Code")
+    private String sourceBillCode;
     @ApiModelProperty("客户ID")
     private String cdiSourceId;
+    @ApiModelProperty("客户")
+    @TableField(exist=false)
+    private String customer;
     @ApiModelProperty("发货方式")
     private String cdiDefaultType;
+    @ApiModelProperty("发货方式")
+    @TableField(exist=false)
+    private String cdiDefaultTypeName;
+    @ApiModelProperty("出货仓库ID")
+    private String warehouseId;
+    @ApiModelProperty("出货仓库")
+    @TableField(exist=false)
+    private String warehouse;
     @ApiModelProperty("说明")
     private String cdiDescription;
     @ApiModelProperty("联系人")
@@ -45,6 +59,9 @@ public class SaleOrderDeliveryInfo extends BasicEntity {
     private String cdiRecipients;
     @ApiModelProperty("表单状态")
     private Integer billStatus;
+    @ApiModelProperty("订单状态")
+    @TableField(exist=false)
+    private String billStatusName;
 
     public String getSourceId() {
         return sourceId;
@@ -188,5 +205,53 @@ public class SaleOrderDeliveryInfo extends BasicEntity {
 
     public void setCdiRecipients(String cdiRecipients) {
         this.cdiRecipients = cdiRecipients;
+    }
+
+    public String getSourceBillCode() {
+        return sourceBillCode;
+    }
+
+    public void setSourceBillCode(String sourceBillCode) {
+        this.sourceBillCode = sourceBillCode;
+    }
+
+    public String getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(String customer) {
+        this.customer = customer;
+    }
+
+    public String getCdiDefaultTypeName() {
+        return cdiDefaultTypeName;
+    }
+
+    public void setCdiDefaultTypeName(String cdiDefaultTypeName) {
+        this.cdiDefaultTypeName = cdiDefaultTypeName;
+    }
+
+    public String getWarehouseId() {
+        return warehouseId;
+    }
+
+    public void setWarehouseId(String warehouseId) {
+        this.warehouseId = warehouseId;
+    }
+
+    public String getWarehouse() {
+        return warehouse;
+    }
+
+    public void setWarehouse(String warehouse) {
+        this.warehouse = warehouse;
+    }
+
+    public String getBillStatusName() {
+        return billStatusName;
+    }
+
+    public void setBillStatusName(String billStatusName) {
+        this.billStatusName = billStatusName;
     }
 }

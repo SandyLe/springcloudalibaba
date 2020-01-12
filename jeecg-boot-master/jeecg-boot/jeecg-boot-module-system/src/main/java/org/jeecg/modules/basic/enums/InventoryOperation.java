@@ -4,7 +4,7 @@ public enum InventoryOperation implements AbstractEnum{
 
     STOCKING(0, "库存盘点"),
     SALEOUT(1, "销售出库"),
-    PURCHASEIN(1, "采购入库");
+    PURCHASEIN(2, "采购入库");
 
     private Integer id;
     private String name;
