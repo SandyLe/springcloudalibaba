@@ -145,7 +145,6 @@
     },
     methods: {
       status_change:function (row) {
-        debugger
         if(row.rowSts===6){
           return 'demo-table-info-row';
         }

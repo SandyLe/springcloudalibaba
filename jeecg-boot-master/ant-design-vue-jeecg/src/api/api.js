@@ -102,6 +102,8 @@ const checkout = (params)=>postAction("/saleOrder/checkout",params)
 const getSaleOrderOne = (params)=>getAction("/saleOrder/getOne",params)
 const delivery = (params)=>postAction("/saleOrder/delivery",params)
 const getSaleOrderDeliveryInfo = (params)=>getAction("/saleOrderDeliveryInfo/getList",params)
+const getDeliveryMtls = (params)=>getAction("/saleOrderDeliveryInfo/mtl/getList",params)
+const deliveryStockOut = (params)=>postAction("/saleOrderDeliveryInfo/mtls/stockout",params)
 const addSaleMtlOrder = (params)=>postAction("/saleOrderMtl/add",params)
 const editSaleMtlOrder = (params)=>postAction("/saleOrderMtl/edit",params)
 const addCustomerType = (params)=>postAction("/customerType/add",params)
@@ -150,6 +152,7 @@ const editStocking = (params)=>postAction("/stocking/edit",params)
 const handleStocking = (params)=>postAction("/stocking/handleStocking",params)
 const editBillCodeBuilder = (params)=>postAction("/billCodeBuilder/edit",params)
 const addBillCodeBuilder = (params)=>postAction("/billCodeBuilder/add",params)
+const viewInventoryLog = (params)=>getAction("/inventoryLog/getList",params)
 
 const getDiscountTypeList = (params)=>getAction("/basic/fc/enum/discountType/getList",params)
 const getBillTypeList = (params)=>getAction("/basic/fc/enum/billType/getList",params)
@@ -258,6 +261,7 @@ export {
   editSaleOrderExpense,
   delivery,
   getSaleOrderDeliveryInfo,
+  getDeliveryMtls,
   addStocking,
   editStocking,
   handleStocking,
@@ -265,7 +269,9 @@ export {
   getBillTypeList,
   getDateFmtList,
   addBillCodeBuilder,
-  editBillCodeBuilder
+  editBillCodeBuilder,
+  deliveryStockOut,
+  viewInventoryLog
 }
 
 

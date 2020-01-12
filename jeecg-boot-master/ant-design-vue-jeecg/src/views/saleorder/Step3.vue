@@ -427,6 +427,7 @@
               that.model.cdiTel = obj.cdiTel;
               that.model.cdiCarLicense = obj.cdiCarLicense;
               that.model.cdiId = obj.id;
+              that.model.warehouseId = obj.warehouseId;
               that.deliveryChange(that.model.cdiDefaultType)
 
               if (that.model.cdiProvince){

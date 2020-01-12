@@ -21,7 +21,7 @@
         </a-row>
       </a-form>
     </div>
-    <!-- 操作按钮区域 -->
+    <!-- 操作按钮区域
     <div class="table-operator"  style="margin-top: 5px">
       <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
       <a-dropdown v-if="selectedRowKeys.length > 0">
@@ -32,7 +32,7 @@
           批量操作 <a-icon type="down" />
         </a-button>
       </a-dropdown>
-    </div>
+    </div> -->
     <div>
       <a-table
         ref="table"
@@ -48,39 +48,40 @@
         @change="handleTableChange">
 
         <span slot="nameAction" slot-scope="text, record">
-          <a @click="goDetail(record.mtlId)">{{record.material}}</a>
+          <a @click="goDetail(record.sourceId)">{{record.sourceBillCode}}</a>
         </span>
         <span slot="action" v-if="record.rowSts !== 6" slot-scope="text, record">
-          <a @click="handleEdit(record)">编辑</a>
+          <a v-if="record.billStatus !== 8" @click="handleStocking(record)">出库</a>
           <a-divider type="vertical" />
-          <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
-            <a>删除</a>
-          </a-popconfirm>
-          <a-divider type="vertical" />
-          <a v-if="record.rowSts !== 6" @click="handleStocking(record)">盘点</a>
+          <a @click="viewInventoryLog(record)">出库记录</a>
         </span>
       </a-table>
     </div>
 
-    <stocking-modal ref="modalForm" @ok="modalFormOk"></stocking-modal>
+    <sale-put-out-modal ref="salePutOutModal" :putoutmtls="putoutmtls" @ok="modalFormOk"></sale-put-out-modal>
+    <inventory-log-modal ref="inventoryLogModal" :inventoryLogs="inventoryLogs" @ok="modalFormOk"></inventory-log-modal>
   </a-card>
 </template>
 
 <script>
-  import StockingModal from './StockingModal'
+  import SalePutOutModal from './SalePutOutModal'
+  import InventoryLogModal from './InventoryLogModal'
   import JInput from '@/components/jeecg/JInput'
   import {JeecgListMixin} from '@/mixins/JeecgListMixin'
-  import {handleStocking} from '@/api/api'
+  import {getDeliveryMtls, viewInventoryLog, handleStocking} from '@/api/api'
   export default {
     name: "SaleOutOut",
     mixins: [JeecgListMixin],
     components: {
       JInput,
-      StockingModal
+      SalePutOutModal,
+      InventoryLogModal
     },
     data () {
       return {
-        queryParam:{},
+        queryParam: {},
+        putoutmtls: [],
+        inventoryLogs: [],
         columns: [
 
           {
@@ -99,25 +100,25 @@
             dataIndex: 'warehouse'
           },
           {
-            title: '产品',
+            title: '销售订单',
             align:"center",
             dataIndex: '',
             scopedSlots: { customRender: 'nameAction' }
           },
           {
-            title: '盘点数量',
+            title: '客户',
             align:"center",
-            dataIndex: 'stockAmount'
+            dataIndex: 'customer'
           },
           {
-            title: '盘点前数量',
+            title: '发货方式',
             align:"center",
-            dataIndex: 'beforeAmount'
+            dataIndex: 'cdiDefaultTypeName'
           },
           {
-            title: '单位',
+            title: '状态',
             align:"center",
-            dataIndex: 'unit'
+            dataIndex: 'billStatusName'
           },
           {
             title: '操作',
@@ -127,45 +128,43 @@
           }
         ],
         url: {
-          list: "/stocking/getPage",
-          delete: "/stocking/delete",
-          deleteBatch: "/stocking/deleteBatch",
-          exportXlsUrl: "/stocking/exportXls",
-          importExcelUrl: "/stocking/importExcel",
+          list: "/saleOrderDeliveryInfo/getPage",
+          delete: "/saleOrderDeliveryInfo/delete",
+          deleteBatch: "/saleOrderDeliveryInfo/deleteBatch",
+          exportXlsUrl: "/saleOrderDeliveryInfo/exportXls",
+          importExcelUrl: "/saleOrderDeliveryInfo/importExcel",
         },
       }
     },
     methods: {
       status_change:function (row) {
-        debugger
         if(row.rowSts===6){
           return 'demo-table-info-row';
         }
       },
       handleStocking (record) {
-        let that = this;
-        let content = "是否确认盘点 " + record.warehouse + " 中 " + record.material + " 库存数量？"
-        if(record.beforeAmount !== record.stockAmount){
-          content = "❌ 盘点数量与库存数量有差距，" + content;
-        } else {
-          content = "✅" + content;
+        this.putoutmtls = [];
+        if (record.id && record.sourceId) {
+          getDeliveryMtls({sourceId: record.sourceId, id:record.id}).then((res) => {
+            if (res.success) {
+              this.putoutmtls = res.result;
+            }
+          })
         }
-        this.$confirm({
-          title: "确认盘点",
-          content: content,
-          onOk: function () {
-            handleStocking({id:record.id}).then((res) => {
-              if (res.success) {
-                that.$message.success(res.message);
-                that.loadData();
-                that.onClearSelected();
-              } else {
-                that.$message.warning(res.message);
-              }
-            })
-          }
-        });
-
+        this.$refs.salePutOutModal.edit(record);
+        this.$refs.salePutOutModal.title = "待出库列表";
+      },
+      viewInventoryLog (record) {
+        this.inventoryLogs = [];
+        if (record.id && record.sourceId) {
+          viewInventoryLog({sourceId: record.sourceId}).then((res) => {
+            if (res.success) {
+              this.inventoryLogs = res.result;
+            }
+          })
+        }
+        this.$refs.inventoryLogModal.edit(record);
+        this.$refs.inventoryLogModal.title = "出库记录列表";
       },
       searchQuery () {
 
