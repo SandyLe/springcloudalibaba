@@ -1,5 +1,6 @@
 package org.jeecg.modules.basic.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -11,8 +12,12 @@ import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.modules.basic.entity.Vendor;
+import org.jeecg.modules.basic.enums.BillType;
+import org.jeecg.modules.basic.service.BillCodeBuilderService;
 import org.jeecg.modules.basic.service.VendorService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -27,6 +32,9 @@ public class VendorController {
 
     @Autowired
     private VendorService vendorService;
+    @Autowired
+    private BillCodeBuilderService billCodeBuilderService;
+
 
     /**
      * 分页列表查询
@@ -76,6 +84,11 @@ public class VendorController {
     @AutoLog(value = "添加供应商")
     @ApiOperation(value = "添加供应商", notes = "添加供应商")
     public Result<?> add(@RequestBody Vendor vendor) {
+        if (StringUtils.isEmpty(vendor.getId())) {
+            vendor.setCode(billCodeBuilderService.getBillCode(BillType.VENDOR.getId()));
+        }
+        Vendor existCode = vendorService.getOne(new LambdaQueryWrapper<Vendor>().eq(Vendor::getCode, vendor.getCode()).ne(Vendor::getId, vendor.getId()));
+        Assert.isNull(existCode, "编号已存在！");
         vendorService.save(vendor);
         return Result.ok("添加成功！");
     }
@@ -90,6 +103,8 @@ public class VendorController {
     @AutoLog(value = "修改供应商")
     @ApiOperation(value = "修改供应商", notes = "修改供应商")
     public Result<?> edit(@RequestBody Vendor vendor){
+        Vendor existCode = vendorService.getOne(new LambdaQueryWrapper<Vendor>().eq(Vendor::getCode, vendor.getCode()).ne(Vendor::getId, vendor.getId()));
+        Assert.isNull(existCode, "编号已存在！");
         vendorService.updateById(vendor);
         return Result.ok("修改成功！");
     }

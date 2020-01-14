@@ -1,5 +1,6 @@
 package org.jeecg.modules.stocking.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -18,6 +19,8 @@ import org.jeecg.modules.basic.entity.Material;
 import org.jeecg.modules.basic.entity.MaterialUnit;
 import org.jeecg.modules.basic.entity.Warehouse;
 import org.jeecg.modules.basic.enums.BillStatus;
+import org.jeecg.modules.basic.enums.BillType;
+import org.jeecg.modules.basic.service.BillCodeBuilderService;
 import org.jeecg.modules.basic.service.MaterialService;
 import org.jeecg.modules.basic.service.MaterialUnitService;
 import org.jeecg.modules.basic.service.WarehouseService;
@@ -25,6 +28,7 @@ import org.jeecg.modules.stocking.entity.Stocking;
 import org.jeecg.modules.stocking.service.StockingService;
 import org.jeecg.modules.system.service.ISysDictService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -49,6 +53,8 @@ public class StockingController {
     private WarehouseService warehouseService;
     @Autowired
     private MaterialUnitService materialUnitService;
+    @Autowired
+    private BillCodeBuilderService billCodeBuilderService;
     /**
      * 添加
      *
@@ -59,7 +65,11 @@ public class StockingController {
     @AutoLog(value = "添加盘点单")
     @ApiOperation(value = "添加盘点单", notes = "添加盘点单")
     public Result<?> add(@RequestBody Stocking stocking) {
-
+        if (StringUtils.isEmpty(stocking.getId())) {
+            stocking.setCode(billCodeBuilderService.getBillCode(BillType.STOCKING.getId()));
+        }
+        Stocking existCode = stockingService.getOne(new LambdaQueryWrapper<Stocking>().eq(Stocking::getCode, stocking.getCode()).ne(Stocking::getId, stocking.getId()));
+        Assert.isNull(existCode, "单号已存在！");
         stockingService.save(stocking);
         Result<Object> result = Result.ok();
         result.setResult(stocking);
@@ -185,7 +195,7 @@ public class StockingController {
     /**
      * 盘点
      *
-     * @param id
+     * @param stocking
      * @return
      */
     @PostMapping(value = "/handleStocking")

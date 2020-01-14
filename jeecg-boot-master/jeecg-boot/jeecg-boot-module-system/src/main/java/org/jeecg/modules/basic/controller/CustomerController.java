@@ -22,6 +22,7 @@ import org.jeecg.modules.basic.entity.CustomerType;
 import org.jeecg.modules.basic.enums.BillType;
 import org.jeecg.modules.basic.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -115,6 +116,8 @@ public class CustomerController {
         } else {
             customer.setCode(customerEditDto.getCode());
         }
+        Customer exists = customerService.getOne(new LambdaQueryWrapper<Customer>().eq(Customer::getCode, customer.getCode()).ne(Customer::getId, customer.getId()));
+        Assert.isNull(exists, "编号已存在！");
         customerService.saveOrUpdate(customer);
         CustomerDeliveryInfo cdi = new CustomerDeliveryInfo();
         BeanUtils.copyProperties(cdi,customerEditDto);
