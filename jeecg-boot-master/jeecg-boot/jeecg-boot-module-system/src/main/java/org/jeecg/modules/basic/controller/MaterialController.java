@@ -1,5 +1,6 @@
 package org.jeecg.modules.basic.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -7,6 +8,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.system.query.QueryGenerator;
@@ -14,11 +16,10 @@ import org.jeecg.modules.basic.entity.Material;
 import org.jeecg.modules.basic.entity.MaterialBrand;
 import org.jeecg.modules.basic.entity.MaterialType;
 import org.jeecg.modules.basic.entity.MaterialUnit;
-import org.jeecg.modules.basic.service.MaterialBrandService;
-import org.jeecg.modules.basic.service.MaterialService;
-import org.jeecg.modules.basic.service.MaterialTypeService;
-import org.jeecg.modules.basic.service.MaterialUnitService;
+import org.jeecg.modules.basic.enums.BillType;
+import org.jeecg.modules.basic.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -42,6 +43,8 @@ public class MaterialController {
     private MaterialTypeService materialTypeService;
     @Autowired
     private MaterialUnitService materialUnitService;
+    @Autowired
+    private BillCodeBuilderService billCodeBuilderService;
     /**
      * 分页列表查询
      *
@@ -104,6 +107,11 @@ public class MaterialController {
     @AutoLog(value = "添加产品")
     @ApiOperation(value = "添加产品", notes = "添加产品")
     public Result<?> add(@RequestBody Material material) {
+        if (StringUtils.isEmpty(material.getId())) {
+            material.setCode(billCodeBuilderService.getBillCode(BillType.MATERIAL.getId()));
+        }
+        Material existCode = materialService.getOne(new LambdaQueryWrapper<Material>().eq(Material::getCode, material.getCode()).ne(Material::getId, material.getId()));
+        Assert.isNull(existCode, "编号已存在！");
         materialService.save(material);
         return Result.ok("添加成功！");
     }
@@ -118,6 +126,8 @@ public class MaterialController {
     @AutoLog(value = "修改产品")
     @ApiOperation(value = "修改产品", notes = "修改产品")
     public Result<?> edit(@RequestBody Material material){
+        Material existCode = materialService.getOne(new LambdaQueryWrapper<Material>().eq(Material::getCode, material.getCode()).ne(Material::getId, material.getId()));
+        Assert.isNull(existCode, "编号已存在！");
         materialService.updateById(material);
         return Result.ok("修改成功！");
     }

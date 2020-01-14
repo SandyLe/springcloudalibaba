@@ -1,5 +1,6 @@
 package org.jeecg.modules.inventory.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -14,6 +15,8 @@ import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.modules.basic.entity.Material;
 import org.jeecg.modules.basic.entity.MaterialUnit;
 import org.jeecg.modules.basic.entity.Warehouse;
+import org.jeecg.modules.basic.enums.BillType;
+import org.jeecg.modules.basic.service.BillCodeBuilderService;
 import org.jeecg.modules.basic.service.MaterialService;
 import org.jeecg.modules.basic.service.MaterialUnitService;
 import org.jeecg.modules.basic.service.WarehouseService;
@@ -21,6 +24,8 @@ import org.jeecg.modules.inventory.entity.Inventory;
 import org.jeecg.modules.inventory.service.InventoryService;
 import org.jeecg.modules.system.service.ISysDictService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -44,6 +49,8 @@ public class InventoryController {
     private WarehouseService warehouseService;
     @Autowired
     private MaterialUnitService materialUnitService;
+    @Autowired
+    private BillCodeBuilderService billCodeBuilderService;
     /**
      * 添加
      *
@@ -54,7 +61,11 @@ public class InventoryController {
     @AutoLog(value = "添加库存")
     @ApiOperation(value = "添加库存", notes = "添加库存")
     public Result<?> add(@RequestBody Inventory inventory) {
-
+        if (StringUtils.isEmpty(inventory.getId())) {
+            inventory.setCode(billCodeBuilderService.getBillCode(BillType.INVENTORY.getId()));
+        }
+        Inventory existCode = inventoryService.getOne(new LambdaQueryWrapper<Inventory>().eq(Inventory::getCode, inventory.getCode()).ne(Inventory::getId, inventory.getId()));
+        Assert.isNull(existCode, "单号已存在！");
         inventoryService.save(inventory);
         Result<Object> result = Result.ok();
         result.setResult(inventory);
@@ -126,6 +137,8 @@ public class InventoryController {
     @AutoLog(value = "修改库存")
     @ApiOperation(value = "修改库存", notes = "修改库存")
     public Result<?> edit(@RequestBody Inventory inventory){
+        Inventory existCode = inventoryService.getOne(new LambdaQueryWrapper<Inventory>().eq(Inventory::getCode, inventory.getCode()).ne(Inventory::getId, inventory.getId()));
+        Assert.isNull(existCode, "单号已存在！");
         inventoryService.updateById(inventory);
         Result<Object> result = Result.ok();
         result.setResult(inventory);
