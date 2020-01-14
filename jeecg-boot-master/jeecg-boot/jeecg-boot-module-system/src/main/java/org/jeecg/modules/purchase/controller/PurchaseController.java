@@ -50,6 +50,7 @@ public class PurchaseController extends JeecgController<Purchase, IPurchaseServi
     @PostMapping("/add")
     @Transactional
     public Result<?> add(@RequestBody Purchasedtldto purchasedtldto){
+        purchaseService.save(purchasedtldto);
         if (purchasedtldto.getDetaillist().size() > 0){
             for (Purchasedtl item: purchasedtldto.getDetaillist()){
                 item.setSourceId(purchasedtldto.getId());
@@ -60,8 +61,18 @@ public class PurchaseController extends JeecgController<Purchase, IPurchaseServi
     }
 
     @PutMapping("/edit")
-    public Result<?> edit(@RequestBody Purchase purchase){
-        purchaseService.updateById(purchase);
+    public Result<?> edit(@RequestBody Purchasedtldto purchasedtldto){
+        purchaseService.updateById(purchasedtldto);
+        if (purchasedtldto.getDetaillist().size() > 0){
+            for (Purchasedtl item: purchasedtldto.getDetaillist()){
+                if (item.getId() != null && item.getId().length() > 0)
+                    purchasedtlService.updateById(item);
+                else{
+                    item.setSourceId(purchasedtldto.getId());
+                    purchasedtlService.save(item);
+                }
+            }
+        }
         return Result.ok("编辑成功");
     }
 
@@ -84,10 +95,22 @@ public class PurchaseController extends JeecgController<Purchase, IPurchaseServi
     @GetMapping("/queryById")
     public Result<?> queryById(@RequestParam(name = "id", required = true) String id){
         Purchase purchase = purchaseService.getById(id);
+        System.out.println(purchase.getId());
         if (purchase == null){
             return Result.ok("未找到对应数据");
         }
-        return Result.ok(purchase);
+        Purchasedtldto purchasedtldto = new Purchasedtldto();
+        purchasedtldto.setId(purchase.getId());
+        purchasedtldto.setVendorId(purchase.getVendorId());
+        purchasedtldto.setDescription(purchase.getDescription());
+        purchasedtldto.setWarehouseId(purchase.getWarehouseId());
+        purchasedtldto.setAccount(purchase.getAccount());
+        purchasedtldto.setPayamount(purchase.getPayamount());
+        purchasedtldto.setBilldate(purchase.getBilldate());
+        purchasedtldto.setTotalamount(purchase.getTotalamount());
+        purchasedtldto.setCreateTime(purchase.getCreateTime());
+        purchasedtldto.setDetaillist(purchasedtlService.queryBySourceId(purchase.getId()));
+        return Result.ok(purchasedtldto);
     }
 
     @RequestMapping("/exportXls")

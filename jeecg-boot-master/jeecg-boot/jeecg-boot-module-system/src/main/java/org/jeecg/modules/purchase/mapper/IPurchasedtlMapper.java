@@ -23,4 +23,10 @@ public interface IPurchasedtlMapper extends BaseMapper<Purchasedtl> {
      * @param sourceIds
      */
     void removeBySourceIds(@Param("sourceIds") List<String> sourceIds);
+
+    /**
+     * 根据总表ID查询详情
+     * @param sourceId
+     */
+    List<Purchasedtl> queryBySourceId(@Param("sourceId")String sourceId);
 }
