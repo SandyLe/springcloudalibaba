@@ -102,7 +102,7 @@ public class PurchaseController extends JeecgController<Purchase, IPurchaseServi
         Purchasedtldto purchasedtldto = new Purchasedtldto();
         purchasedtldto.setId(purchase.getId());
         purchasedtldto.setVendorId(purchase.getVendorId());
-        purchasedtldto.setDescription(purchase.getDescription());
+        purchasedtldto.setContent(purchase.getContent());
         purchasedtldto.setWarehouseId(purchase.getWarehouseId());
         purchasedtldto.setAccount(purchase.getAccount());
         purchasedtldto.setPayamount(purchase.getPayamount());
