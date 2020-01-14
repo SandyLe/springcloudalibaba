@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import org.jeecg.modules.basic.entity.BasicEntity;
 import org.springframework.format.annotation.DateTimeFormat;
 import lombok.Data;
 
@@ -18,17 +19,10 @@ import java.util.Date;
  */
 @Data
 @TableName("sl_purchasedtl")
-public class Purchasedtl implements Serializable {
-    private static final long serialVersionUID = 1L;
-
-    @TableId(type = IdType.ID_WORKER_STR)
-    private String id;
+public class Purchasedtl extends BasicEntity {
 
     /*采购订单id*/
     private String sourceId;
-
-    /*备注*/
-    private String description;
 
     /*产品id*/
     private String mtlId;
@@ -47,9 +41,4 @@ public class Purchasedtl implements Serializable {
 
     /*金额*/
     private String amount;
-
-    /*创建时间*/
-    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date createTime;
 }
