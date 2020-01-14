@@ -1,5 +1,6 @@
 package org.jeecg.modules.saleorder.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -28,6 +29,7 @@ import org.jeecg.modules.saleorder.service.SaleOrderDeliveryInfoService;
 import org.jeecg.modules.saleorder.service.SaleOrderService;
 import org.jeecg.modules.system.service.ISysDictService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -69,6 +71,8 @@ public class SaleOrderController {
 
         saleOrder.setBillStatus(BillStatus.NEW.getId());
         saleOrder.setCode(billCodeBuilderService.getBillCode(BillType.SALEORDER.getId()));
+        SaleOrder exists = saleOrderService.getOne(new LambdaQueryWrapper<SaleOrder>().eq(SaleOrder::getCode, saleOrder.getCode()).ne(SaleOrder::getId, saleOrder.getId()));
+        Assert.isNull(exists, "单号已存在！");
         saleOrderService.save(saleOrder);
         Result<Object> result = Result.ok();
         result.setResult(saleOrder);
@@ -143,6 +147,8 @@ public class SaleOrderController {
     @ApiOperation(value = "修改销售订单", notes = "修改销售订单")
     public Result<?> edit(@RequestBody SaleOrder saleOrder){
         SaleOrder exists = saleOrderService.getById(saleOrder.getId());
+        SaleOrder existCode = saleOrderService.getOne(new LambdaQueryWrapper<SaleOrder>().eq(SaleOrder::getCode, saleOrder.getCode()).ne(SaleOrder::getId, saleOrder.getId()));
+        Assert.isNull(existCode, "单号已存在！");
         saleOrder.setMtlamount(exists.getMtlamount());
         saleOrder.setOtheramount(exists.getOtheramount());
         saleOrder.setTotalamount(exists.getTotalamount());

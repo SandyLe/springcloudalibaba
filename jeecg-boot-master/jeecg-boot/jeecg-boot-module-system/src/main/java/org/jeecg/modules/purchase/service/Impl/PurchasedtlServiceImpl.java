@@ -31,4 +31,11 @@ public class PurchasedtlServiceImpl extends ServiceImpl<IPurchasedtlMapper, Purc
     public void removeBySourceIds(@Param("sourceIds") List<String> sourceIds){
         baseMapper.removeBySourceIds(sourceIds);
     }
+    /**
+     * 根据总表ID查询详情
+     * @param sourceId
+     */
+    public List<Purchasedtl> queryBySourceId(@Param("sourceId")String sourceId){
+        return baseMapper.queryBySourceId(sourceId);
+    }
 }

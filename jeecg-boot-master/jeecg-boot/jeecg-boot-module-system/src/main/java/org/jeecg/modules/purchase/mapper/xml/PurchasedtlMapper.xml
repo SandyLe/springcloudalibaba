@@ -13,4 +13,9 @@
             </foreach>
         )
     </delete>
+    
+    <select id="queryBySourceId" resultType="org.jeecg.modules.purchase.entity.Purchasedtl">
+        SELECT * FROM sl_purchasedtl WHERE source_id = #{sourceId}
+    </select>
+
 </mapper>

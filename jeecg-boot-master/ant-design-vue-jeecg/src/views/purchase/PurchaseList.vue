@@ -51,7 +51,7 @@
 
     <!-- 操作按钮区域 -->
     <div class="table-operator">
-        <a-button @click="diyhandleAdd" type="primary" icon="plus">新增</a-button>
+        <a-button @click="diyhandleEdit" type="primary" icon="plus">新增</a-button>
         <a-button type="primary" icon="download" @click="handleExportXls('采购列表')">导出</a-button>
         <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
             <a-button type="primary" icon="import">导入</a-button>
@@ -91,7 +91,7 @@
             </template>
 
             <span slot="action" slot-scope="text, record">
-                <a @click="handleEdit(record)">编辑</a>
+                <a @click="diyhandleEdit" :data-id="record.id">编辑</a>
 
                 <a-divider type="vertical" />
                 <a-dropdown>
@@ -166,11 +166,6 @@ export default {
                     }
                 },
                 {
-                    title: '备注',
-                    align: "center",
-                    dataIndex: 'description'
-                },
-                {
                     title: '仓库',
                     align: "center",
                     dataIndex: 'warehouseId',
@@ -208,6 +203,11 @@ export default {
                     //     return filterMultiDictText(this.dictOptions['purchasestype'], text+"")
                     //   }
                     // }
+                },
+                {
+                    title: '备注',
+                    align: "center",
+                    dataIndex: 'description'
                 },
                 {
                     title: '操作',
@@ -250,12 +250,6 @@ export default {
                     this.$set(this.dictOptions, 'vendorId', res.result)
                 }
             });
-            // //根据字典Code, 初始化字典数组
-            // ajaxGetDictItems('purchases_type', null).then((res) => {
-            //     if (res.success) {
-            //         this.$set(this.dictOptions, 'purchasestype', res.result)
-            //     }
-            // });
             getWarehouseList('').then((res) => {
                 if (res.success) {
                     if (res.result && res.result.length > 0) {
@@ -268,8 +262,11 @@ export default {
                 }
             });
         },
-        diyhandleAdd(){ 
-          this.$router.replace({ path:'/purchase/PurchaseModal' });
+        diyhandleEdit(e){ 
+            if(e.target.dataset.id)
+                this.$router.replace({ path:'/purchase/PurchaseModal/' + e.target.dataset.id });
+            else
+                this.$router.replace({ path:'/purchase/PurchaseModal/' });
         }
     }
 }

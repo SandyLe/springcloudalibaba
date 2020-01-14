@@ -43,6 +43,7 @@
                 <a-col :span="12">
                     <a-form-item label="总金额" :labelCol="labelCol" :wrapperCol="wrapperCol">
                         <a-input-number v-decorator="[ 'totalamount', {}]" placeholder="请输入总金额" style="width:100%"/>
+                        <a-input v-decorator="[ 'id', {}]" placeholder="实体主键" type="hidden"/>                        
                     </a-form-item>
                 </a-col>
             </a-row>
@@ -50,24 +51,24 @@
                 <a-col :span="24">
                     <a-card>
                         <form :autoFormCreate="(form) => this.form = form">
-                            <a-table :columns="columns" :dataSource="data" :pagination="false">
+                            <a-table :columns="columns" :dataSource="tabledata" :pagination="false" rowKey="id">
                                 <template v-for="(col, i) in ['mtlId', 'unitId','quantity', 'price', 'discount', 'amount', 'description', 'action']" :slot="col" slot-scope="text, record, index">
-                                    <a-select v-if="['mtlId','unitId'].indexOf(columns[i].dataIndex) > -1" v-decorator="[columns[i].dataIndex, {}]" @change="e => handleChange(e, record.key, col)" :placeholder="'请选择'+columns[i].title">
+                                    <a-select v-if="['mtlId','unitId'].indexOf(columns[i].dataIndex) > -1" v-decorator="[record[columns[i].dataIndex], {}]" 
+                                        @change="e => handleChange(e, record.key, col)" :placeholder="'请选择'+columns[i].title" :value="record[columns[i].dataIndex]">
                                         <a-select-option v-for="(item, key) in columns[i].list" :key="key" :value="item.id">
                                             {{ item.name }}
                                         </a-select-option>
-                                    </a-select>
-                                    <a-input :key="col" v-else-if="record.editable" style="margin: -5px 0" :value="text" :placeholder="columns[i].title" @change="e => handleChange(e.target.value, record.key, col)" />
-                                    <template v-else>{{ text }}
-                                    </template>
+                                    </a-select>                                    
+                                    <a-input :key="col" v-else style="margin: -5px 0" :value="text" :placeholder="columns[i].title" @change="e => handleChange(e.target.value, record.key, col)" />
+                                    <!-- <template v-else>{{ text }}</template> -->
                                 </template>
 
                                 <template slot="operation" slot-scope="text, record, index">
                                     <template v-if="record.editable">
                                         <span v-if="record.isNew">
-                                            <a @click="saveRow(record.key)">添加</a>
-                                            <a-divider type="vertical" />
-                                            <a-popconfirm title="是否要删除此行？" @confirm="remove(record.key)">
+                                            <!-- <a @click="saveRow(record.key)">添加</a>
+                                            <a-divider type="vertical" /> -->
+                                            <a-popconfirm title="是否要删除此行？" @confirm="remove(record.key,'')">
                                                 <a>删除</a>
                                             </a-popconfirm>
                                         </span>
@@ -78,11 +79,12 @@
                                         </span>
                                     </template>
                                     <span v-else>
-                                        <a @click="toggle(record.key)">编辑</a>
-                                        <a-divider type="vertical" />
-                                        <a-popconfirm title="是否要删除此行？" @confirm="remove(record.key)">
+                                        <!-- <a @click="toggle(record.key)">编辑</a> 
+                                        <a-divider type="vertical" /> -->
+                                        <a-popconfirm title="是否要删除此行？" :data-id="record.id" @confirm="remove(record.key,record.id)">
                                             <a>删除</a>
                                         </a-popconfirm>
+                                        <a-input v-decorator="[ 'id', {}]" placeholder="实体主键" type="hidden"/>
                                     </span>
                                 </template>
                             </a-table>
@@ -114,7 +116,9 @@ import {
     ajaxGetDictItems,
     getWarehouseList,
     getMaterialList,
-    getMaterialUnitList
+    getMaterialUnitList,
+    purchasequeryById,
+    purchasedetailDelete
 } from '@/api/api'
 export default {
     name: 'PurchasesModal',
@@ -235,29 +239,31 @@ export default {
                         customRender: 'description'
                     }
                 },
-                // {
-                //     title: '操作',
-                //     key: 'action',
-                //     width: '10%',
-                //     scopedSlots: {
-                //         customRender: 'operation'
-                //     }
-                // }
+                {
+                    title: '操作',
+                    key: 'action',
+                    width: '10%',
+                    scopedSlots: {
+                        customRender: 'operation'
+                    }
+                }
             ],
-            data: []
+            tabledata: []
         }
     },
     created() {
         this.initDictConfig();
         this.newMember();
         this.add();
+        // this.$route.matched.splice(this.$route.matched.length-1 ,1);
+        // console.log(this.$route.meta);
     },
     watch: {
         // 如果 `data` 发生改变，这个函数就会运行
-        data: function () {
+        tabledata: function () {
             // console.log(newdata);
             let datatotalamount = 0;
-            this.data.forEach(function(target){
+            this.tabledata.forEach(function(target){
                 if (target.quantity && target.price) {
                     if (target.discount)
                         datatotalamount += parseFloat(target.quantity) * parseFloat(target.price) - parseFloat(target.discount);
@@ -325,17 +331,29 @@ export default {
             });
         },
         add() {
-            this.edit({})
+            if(this.$route.params.id){
+                purchasequeryById({"id":this.$route.params.id}).then((res)=>{
+                    if (res.result) {                        
+                        if(res.result.detaillist){
+                            this.tabledata = res.result.detaillist;
+                            for(let i=0;i < this.tabledata.length ; i++){
+                                this.tabledata[i].key = i;
+                            }
+                        }
+                        this.edit(res.result);
+                    }
+                });
+            }
+            else
+                this.edit({})
         },
         edit(record) {
-            // this.vendorIddictOptions = this.$parent.$parent.dictOptions.vendorId
-            // this.warehouseOptions = this.$parent.$parent.dictOptions.warehouse
             this.form.resetFields()
             this.model = Object.assign({}, record)
             this.visible = true
             this.$nextTick(() => {
                 this.form.setFieldsValue(
-                    pick(this.model, 'vendorId', 'description', 'warehouseId', 'account', 'payamount', 'totalamount')
+                    pick(this.model, 'id', 'vendorId', 'description', 'warehouseId', 'account', 'payamount', 'totalamount')
                 )
             })
         },
@@ -359,7 +377,7 @@ export default {
                         method = 'put'
                     }
                     let formData = Object.assign(this.model, values)
-                    formData.detaillist = that.data;
+                    formData.detaillist = that.tabledata;
                     console.log('表单提交数据', formData)
                     httpAction(httpurl, formData, method)
                         .then(res => {
@@ -390,8 +408,8 @@ export default {
             )
         },
         newMember() {
-            this.data.push({
-                key: this.data.length,
+            this.tabledata.push({
+                key: this.tabledata.length,
                 name: '',
                 workId: '',
                 department: '',
@@ -400,7 +418,7 @@ export default {
             })
         },
         handleChange(value, key, column) {
-            const newData = [...this.data]
+            const newData = [...this.tabledata]
             const target = newData.filter(item => key === item.key)[0]
             if (target) {
                 target[column] = value;
@@ -410,32 +428,42 @@ export default {
                     else
                         target['amount'] = parseFloat(target.quantity) * parseFloat(target.price);
                 }
-                this.data = newData
+                this.tabledata = newData
             }
         },
         toggle(key) {
-            let target = this.data.filter(item => item.key === key)[0]
+            let target = this.tabledata.filter(item => item.key === key)[0]
             target.editable = !target.editable
         },
         cancel(key) {
-            let target = this.data.filter(item => item.key === key)[0]
+            let target = this.tabledata.filter(item => item.key === key)[0]
             target.editable = false
         },
-        remove(key) {
-            const newData = this.data.filter(item => item.key !== key)
-            this.data = newData
+        remove(key,id) {
+            const newData = this.tabledata.filter(item => item.key !== key)
+            this.tabledata = newData;
+            if(id){
+                purchasedetailDelete({"id" : id}).then((res) => {
+                    if (res.success) {
+                    }
+                });
+            }
         },
         saveRow(key) {
-            let target = this.data.filter(item => item.key === key)[0]
+            let target = this.tabledata.filter(item => item.key === key)[0]
             target.editable = false
             target.isNew = false
         },
         backToList() {
-            console.log(this.$route.matched);
+            // console.log(this.$route.matched);
             this.$route.matched.splice(this.$route.matched.length-1 ,1);
-            console.log(this.$route.matched);
             this.$router.replace({ path:'/purchase/PurchaseList' });
         }
     }
 }
 </script>
+<style scoped>
+.hide{
+    display: none;
+}
+</style>
