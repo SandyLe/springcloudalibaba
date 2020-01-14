@@ -58,13 +58,13 @@
       </a-table>
     </div>
 
-    <sale-put-out-modal ref="salePutOutModal" :putoutmtls="putoutmtls" @ok="modalFormOk"></sale-put-out-modal>
+    <!-- <sale-put-out-modal ref="salePutOutModal" :putoutmtls="putoutmtls" @ok="modalFormOk"></sale-put-out-modal> -->
     <inventory-log-modal ref="inventoryLogModal" :inventoryLogs="inventoryLogs" @ok="modalFormOk"></inventory-log-modal>
   </a-card>
 </template>
 
 <script>
-  import SalePutOutModal from './SalePutOutModal'
+  // import SalePutOutModal from './SalePutOutModal'
   import InventoryLogModal from './InventoryLogModal'
   import JInput from '@/components/jeecg/JInput'
   import {JeecgListMixin} from '@/mixins/JeecgListMixin'
@@ -74,7 +74,7 @@
     mixins: [JeecgListMixin],
     components: {
       JInput,
-      SalePutOutModal,
+      // SalePutOutModal,
       InventoryLogModal
     },
     data () {
@@ -151,8 +151,8 @@
             }
           })
         }
-        this.$refs.salePutOutModal.edit(record);
-        this.$refs.salePutOutModal.title = "待出库列表";
+        // this.$refs.salePutOutModal.edit(record);
+        // this.$refs.salePutOutModal.title = "待出库列表";
       },
       viewInventoryLog (record) {
         this.inventoryLogs = [];

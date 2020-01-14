@@ -161,6 +161,9 @@ const getDateFmtList = (params)=>getAction("/basic/fc/enum/dateFormat/getList",p
 const loadShopData = (params)=>getAction("/sys/sysDepart/getSysDepartList",params)
 const getAllUser = (params)=>getAction("/sys/user/getAll",params)
 
+//采购
+const purchasequeryById = (params)=>getAction("/purchase/queryById",params)
+const purchasedetailDelete = (params)=>deleteAction("/purchasedtl/delete",params)
 
 export {
   // imgView,
@@ -271,7 +274,9 @@ export {
   addBillCodeBuilder,
   editBillCodeBuilder,
   deliveryStockOut,
-  viewInventoryLog
+  viewInventoryLog,
+  purchasequeryById,
+  purchasedetailDelete
 }
 
 
