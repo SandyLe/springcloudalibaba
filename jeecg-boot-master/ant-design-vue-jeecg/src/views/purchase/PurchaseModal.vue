@@ -101,7 +101,7 @@
             </a-row>
             <a-row>
               <a-col :span="24">
-                    <inventory-modal ref="modalForm" ></inventory-modal>
+                    <inventory-modal ref="inventorymodalForm" ></inventory-modal>
               </a-col>
             </a-row>
         </a-form>
@@ -127,7 +127,7 @@ import pick from 'lodash.pick'
 import JDate from '@/components/jeecg/JDate'
 import JDictSelectTag from '@/components/dict/JDictSelectTag'
 import FooterToolBar from '@/components/tools/FooterToolBar'
-import InventoryModal from '../inventory/StockingModal'
+import InventoryModal from '../inventory/InventoryInModal'
 import {
     getVendorList,
     ajaxGetDictItems,
@@ -398,17 +398,18 @@ export default {
                     console.log('表单提交数据', formData)
                     httpAction(httpurl, formData, method)
                         .then(res => {
+                            console.log(res);
                             if (res.success) {
                                 that.$message.success(res.message)
                                 that.$emit('ok')
                                 that.hasaddmain = true;
 
                                 if (!that.model.id) {
-                                    that.$refs.modalForm.add();
+                                    that.$refs.inventorymodalForm.add();
                                 } else {
-                                    that.$refs.modalForm.edit();
+                                    that.$refs.inventorymodalForm.edit(res.result.inventory);
                                 }                                
-                                that.$refs.modalForm.disableSubmit = false;
+                                that.$refs.inventorymodalForm.disableSubmit = false;
 
                                 // this.$router.replace({
                                 //     path: '/purchase/PurchaseList'

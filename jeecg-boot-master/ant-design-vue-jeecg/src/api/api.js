@@ -164,6 +164,7 @@ const getAllUser = (params)=>getAction("/sys/user/getAll",params)
 //采购
 const purchasequeryById = (params)=>getAction("/purchase/queryById",params)
 const purchasedetailDelete = (params)=>deleteAction("/purchasedtl/delete",params)
+const inventoryInedit = (params)=>postAction("/inventoryIn/edit",params)
 
 export {
   // imgView,
@@ -276,7 +277,8 @@ export {
   deliveryStockOut,
   viewInventoryLog,
   purchasequeryById,
-  purchasedetailDelete
+  purchasedetailDelete,
+  inventoryInedit
 }
 
 
