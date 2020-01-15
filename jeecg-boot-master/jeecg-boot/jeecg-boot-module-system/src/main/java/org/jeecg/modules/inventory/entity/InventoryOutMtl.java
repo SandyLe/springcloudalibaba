@@ -38,6 +38,16 @@ public class InventoryOutMtl extends BasicEntity {
     @TableField(exist=false)
     private String barCode;
 
+    public InventoryOutMtl() {
+    }
+
+    public InventoryOutMtl(String sourceId, String mtlId, BigDecimal quantity, String unitId) {
+        this.sourceId = sourceId;
+        this.mtlId = mtlId;
+        this.quantity = quantity;
+        this.unitId = unitId;
+    }
+
     public String getSourceId() {
         return sourceId;
     }
