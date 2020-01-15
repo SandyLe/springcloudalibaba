@@ -6,30 +6,22 @@
             <a-row :gutter="24">
                 <a-col :md="6" :sm="8">
                     <a-form-item label="供应商">
-                        <a-select v-decorator="['queryParam.vendorId', {}]" placeholder="请输入供应商">
-                            <a-select-option value="">请选择</a-select-option>
-                            <a-select-option v-for="(item, key) in dictOptions.vendorId" :key="key" :value="item.id">
-                                {{ item.name }}
-                            </a-select-option>
-                        </a-select>
+                        <a-input placeholder="请输入供应商" v-model="queryParam.vendorId"></a-input>
                     </a-form-item>
                 </a-col>
                 <a-col :md="12" :sm="16">
-                    <a-form-item label="仓库">
-                        <a-select v-decorator="['queryParam.warehouseId', {}]" placeholder="请输入仓库">
-                            <a-select-option value="">请选择</a-select-option>
-                            <a-select-option v-for="(item, key) in dictOptions.warehouse" :key="key" :value="item.id">
-                                {{ item.name }}
-                            </a-select-option>
-                        </a-select>
+                    <a-form-item label="业务时间">
+                        <j-date :show-time="true" date-format="YYYY-MM-DD HH:mm:ss" placeholder="请选择开始时间" class="query-group-cust" v-model="queryParam.businessTime_begin"></j-date>
+                        <span class="query-group-split-cust"></span>
+                        <j-date :show-time="true" date-format="YYYY-MM-DD HH:mm:ss" placeholder="请选择结束时间" class="query-group-cust" v-model="queryParam.businessTime_end"></j-date>
                     </a-form-item>
                 </a-col>
                 <template v-if="toggleSearchStatus">
                     <a-col :md="12" :sm="16">
-                        <a-form-item label="业务时间">
-                            <j-date placeholder="请选择开始日期" class="query-group-cust" v-model="queryParam.billdate_begin"></j-date>
+                        <a-form-item label="创建时间">
+                            <j-date placeholder="请选择开始日期" class="query-group-cust" v-model="queryParam.createTime_begin"></j-date>
                             <span class="query-group-split-cust"></span>
-                            <j-date placeholder="请选择结束日期" class="query-group-cust" v-model="queryParam.billdate_end"></j-date>
+                            <j-date placeholder="请选择结束日期" class="query-group-cust" v-model="queryParam.createTime_end"></j-date>
                         </a-form-item>
                     </a-col>
                 </template>
@@ -51,7 +43,7 @@
 
     <!-- 操作按钮区域 -->
     <div class="table-operator">
-        <a-button @click="diyhandleEdit" type="primary" icon="plus">新增</a-button>
+        <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
         <a-button type="primary" icon="download" @click="handleExportXls('采购列表')">导出</a-button>
         <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
             <a-button type="primary" icon="import">导入</a-button>
@@ -91,7 +83,7 @@
             </template>
 
             <span slot="action" slot-scope="text, record">
-                <a @click="diyhandleEdit" :data-id="record.id">编辑</a>
+                <a @click="handleEdit(record)">编辑</a>
 
                 <a-divider type="vertical" />
                 <a-dropdown>
@@ -110,7 +102,7 @@
         </a-table>
     </div>
 
-    <!-- <purchases-modal ref="modalForm" @ok="modalFormOk"></purchases-modal> -->
+    <purchasereturn-modal ref="modalForm" @ok="modalFormOk"></purchasereturn-modal>
 </a-card>
 </template>
 
@@ -118,30 +110,21 @@
 import {
     JeecgListMixin
 } from '@/mixins/JeecgListMixin'
-// import PurchasesModal from './PurchaseModal'
+import PurchasereturnModal from './PurchasereturnModal'
 import JDictSelectTag from '@/components/dict/JDictSelectTag.vue'
-import {
-    filterMultiDictText
-} from '@/components/dict/JDictSelectUtil'
 import JDate from '@/components/jeecg/JDate.vue'
-import {
-    getVendorList,
-    ajaxGetDictItems,
-    getWarehouseList
-} from '@/api/api'
 
 export default {
-    name: "PurchaseList",
+    name: "PurchasereturnList",
     mixins: [JeecgListMixin],
     components: {
         JDictSelectTag,
         JDate,
-        // PurchasesModal
+        PurchasereturnModal
     },
     data() {
         return {
-            queryParam: {},
-            description: '采购列表管理页面',
+            description: '采购退货管理页面',
             // 表头
             columns: [{
                     title: '#',
@@ -166,48 +149,37 @@ export default {
                     }
                 },
                 {
-                    title: '仓库',
+                    title: '业务时间',
                     align: "center",
-                    dataIndex: 'warehouseId',
-                    customRender: (text) => {
-                        if (!text) {
-                            return ''
-                        } else {
-                            return filterMultiDictText(this.dictOptions['warehouse'], text + "")
-                        }
+                    dataIndex: 'businessTime'
+                },
+                {
+                    title: '金额',
+                    align: "center",
+                    dataIndex: 'amount'
+                },
+                {
+                    title: '更新时间',
+                    align: "center",
+                    dataIndex: 'updateTime'
+                },
+                {
+                    title: '创建时间',
+                    align: "center",
+                    dataIndex: 'createTime',
+                    customRender: function (text) {
+                        return !text ? "" : (text.length > 10 ? text.substr(0, 10) : text)
                     }
                 },
                 {
-                    title: '结算账户',
+                    title: '排序值',
                     align: "center",
-                    dataIndex: 'account'
+                    dataIndex: 'sort'
                 },
                 {
-                    title: '实付金额',
+                    title: '状态',
                     align: "center",
-                    dataIndex: 'payamount'
-                },
-                {
-                    title: '总金额',
-                    align: "center",
-                    dataIndex: 'totalamount'
-                },
-                {
-                    title: '订单日期',
-                    align: "center",
-                    dataIndex: 'billdate',
-                    // customRender:(text)=>{
-                    //   if(!text){
-                    //     return ''
-                    //   }else{
-                    //     return filterMultiDictText(this.dictOptions['purchasestype'], text+"")
-                    //   }
-                    // }
-                },
-                {
-                    title: '备注',
-                    align: "center",
-                    dataIndex: 'content'
+                    dataIndex: 'states'
                 },
                 {
                     title: '操作',
@@ -219,16 +191,14 @@ export default {
                 }
             ],
             url: {
-                list: "/purchase/getPaged",
-                delete: "/purchase/delete",
-                deleteBatch: "/purchase/deleteBatch",
-                exportXlsUrl: "/purchase/exportXls",
-                importExcelUrl: "purchase/importExcel",
+                list: "/purchasereturn/getPaged",
+                delete: "/purchasereturn/delete",
+                deleteBatch: "/purchasereturn/deleteBatch",
+                exportXlsUrl: "/purchasereturn/exportXls",
+                importExcelUrl: "purchasereturn/importExcel",
             },
             dictOptions: {
                 vendorId: [],
-                purchasestype: [],
-                warehouse: []
             },
         }
     },
@@ -239,35 +209,13 @@ export default {
     },
     methods: {
         initDictConfig() {
-            getVendorList('').then((res) => {
+            initDictOptions('').then((res) => {
                 if (res.success) {
-                    if (res.result && res.result.length > 0) {
-                        res.result.forEach(function (option) {
-                            option.value = option.id;
-                            option.text = option.name;
-                        })
-                    }
                     this.$set(this.dictOptions, 'vendorId', res.result)
                 }
-            });
-            getWarehouseList('').then((res) => {
-                if (res.success) {
-                    if (res.result && res.result.length > 0) {
-                        res.result.forEach(function (option) {
-                            option.value = option.id;
-                            option.text = option.name;
-                        })
-                    }
-                    this.$set(this.dictOptions, 'warehouse', res.result)
-                }
-            });
-        },
-        diyhandleEdit(e){ 
-            if(e.target.dataset.id)
-                this.$router.replace({ path:'/purchase/PurchaseModal/' + e.target.dataset.id });
-            else
-                this.$router.replace({ path:'/purchase/PurchaseModal/' });
+            })
         }
+
     }
 }
 </script>

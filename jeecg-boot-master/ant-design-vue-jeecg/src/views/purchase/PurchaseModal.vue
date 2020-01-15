@@ -30,7 +30,7 @@
                 </a-col>
                 <a-col :span="12">
                     <a-form-item label="备注" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                        <a-input v-decorator="[ 'description', {}]" placeholder="请输入备注"></a-input>
+                        <a-input v-decorator="[ 'content', {}]" placeholder="请输入备注"></a-input>
                     </a-form-item>
                 </a-col>
             </a-row>
@@ -43,7 +43,10 @@
                 <a-col :span="12">
                     <a-form-item label="总金额" :labelCol="labelCol" :wrapperCol="wrapperCol">
                         <a-input-number v-decorator="[ 'totalamount', {}]" placeholder="请输入总金额" style="width:100%"/>
-                        <a-input v-decorator="[ 'id', {}]" placeholder="实体主键" type="hidden"/>                        
+                        <div style="display:none;">
+                            <a-input v-decorator="[ 'id', {}]" placeholder="实体主键" type="hidden" /> 
+                            <a-input v-decorator="[ 'code', {}]" placeholder="代码" type="hidden"/>                        
+                        </div>
                     </a-form-item>
                 </a-col>
             </a-row>
@@ -52,7 +55,7 @@
                     <a-card>
                         <form :autoFormCreate="(form) => this.form = form">
                             <a-table :columns="columns" :dataSource="tabledata" :pagination="false" rowKey="id">
-                                <template v-for="(col, i) in ['mtlId', 'unitId','quantity', 'price', 'discount', 'amount', 'description', 'action']" :slot="col" slot-scope="text, record, index">
+                                <template v-for="(col, i) in ['mtlId', 'unitId','quantity', 'price', 'discount', 'amount', 'content', 'action']" :slot="col" slot-scope="text, record, index">
                                     <a-select v-if="['mtlId','unitId'].indexOf(columns[i].dataIndex) > -1" v-decorator="[record[columns[i].dataIndex], {}]" 
                                         @change="e => handleChange(e, record.key, col)" :placeholder="'请选择'+columns[i].title" :value="record[columns[i].dataIndex]">
                                         <a-select-option v-for="(item, key) in columns[i].list" :key="key" :value="item.id">
@@ -84,7 +87,10 @@
                                         <a-popconfirm title="是否要删除此行？" :data-id="record.id" @confirm="remove(record.key,record.id)">
                                             <a>删除</a>
                                         </a-popconfirm>
-                                        <a-input v-decorator="[ 'id', {}]" placeholder="实体主键" type="hidden"/>
+                                        <div style="display:none;">
+                                            <a-input v-decorator="[ 'id', {}]" placeholder="实体主键" type="hidden"/>
+                                            <a-input v-decorator="[ 'code', {}]" placeholder="代码" type="hidden"/>
+                                        </div>
                                     </span>
                                 </template>
                             </a-table>
@@ -93,17 +99,27 @@
                     </a-card>
                 </a-col>
             </a-row>
+            <a-row>
+              <a-col :span="24">
+                    <inventory-modal ref="modalForm" ></inventory-modal>
+              </a-col>
+            </a-row>
         </a-form>
+        
+        
     </a-card>
     <footer-tool-bar>
         <a-button type="primary" @click="handleOk">保存</a-button>
         <router-view :key="this.$route.path"></router-view>
         <a-button :style="{marginLeft:'20px'}" @click="backToList">返回</a-button>
     </footer-tool-bar>
+    
 </div>
+    
 </template>
 
 <script>
+
 import {
     httpAction
 } from '@/api/manage'
@@ -111,6 +127,7 @@ import pick from 'lodash.pick'
 import JDate from '@/components/jeecg/JDate'
 import JDictSelectTag from '@/components/dict/JDictSelectTag'
 import FooterToolBar from '@/components/tools/FooterToolBar'
+import InventoryModal from '../inventory/StockingModal'
 import {
     getVendorList,
     ajaxGetDictItems,
@@ -125,7 +142,8 @@ export default {
     components: {
         JDate,
         FooterToolBar,
-        JDictSelectTag
+        JDictSelectTag,
+        InventoryModal
     },
     data() {
         return {
@@ -232,11 +250,11 @@ export default {
                 },
                 {
                     title: '备注',
-                    dataIndex: 'description',
-                    key: 'description',
+                    dataIndex: 'content',
+                    key: 'content',
                     width: '20%',
                     scopedSlots: {
-                        customRender: 'description'
+                        customRender: 'content'
                     }
                 },
                 {
@@ -255,8 +273,7 @@ export default {
         this.initDictConfig();
         this.newMember();
         this.add();
-        // this.$route.matched.splice(this.$route.matched.length-1 ,1);
-        // console.log(this.$route.meta);
+     
     },
     watch: {
         // 如果 `data` 发生改变，这个函数就会运行
@@ -353,7 +370,7 @@ export default {
             this.visible = true
             this.$nextTick(() => {
                 this.form.setFieldsValue(
-                    pick(this.model, 'id', 'vendorId', 'description', 'warehouseId', 'account', 'payamount', 'totalamount')
+                    pick(this.model, 'id', 'code', 'vendorId', 'content', 'warehouseId', 'account', 'payamount', 'totalamount')
                 )
             })
         },
@@ -385,9 +402,17 @@ export default {
                                 that.$message.success(res.message)
                                 that.$emit('ok')
                                 that.hasaddmain = true;
-                                this.$router.replace({
-                                    path: '/purchase/PurchaseList'
-                                });
+
+                                if (!that.model.id) {
+                                    that.$refs.modalForm.add();
+                                } else {
+                                    that.$refs.modalForm.edit();
+                                }                                
+                                that.$refs.modalForm.disableSubmit = false;
+
+                                // this.$router.replace({
+                                //     path: '/purchase/PurchaseList'
+                                // });
                             } else {
                                 that.$message.warning(res.message)
                             }
@@ -404,7 +429,7 @@ export default {
         },
         popupCallback(row) {
             this.form.setFieldsValue(
-                pick(row, 'vendorId', 'description', 'warehouseId', 'account', 'payamount', 'totalamount')
+                pick(row, 'code', 'vendorId', 'content', 'warehouseId', 'account', 'payamount', 'totalamount')
             )
         },
         newMember() {
@@ -454,7 +479,7 @@ export default {
             target.editable = false
             target.isNew = false
         },
-        backToList() {
+        backToList() {            
             // console.log(this.$route.matched);
             this.$route.matched.splice(this.$route.matched.length-1 ,1);
             this.$router.replace({ path:'/purchase/PurchaseList' });

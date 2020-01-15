@@ -79,15 +79,13 @@
 </template>
 
 <script>
-  import InventoryModal from './StockingModal'
   import JInput from '@/components/jeecg/JInput'
   import {JeecgListMixin} from '@/mixins/JeecgListMixin'
   export default {
     name: "",
     mixins: [JeecgListMixin],
     components: {
-      JInput,
-      InventoryModal
+      JInput
     },
     data () {
       return {
