@@ -77,7 +77,9 @@ public class PurchaseController extends JeecgController<Purchase, IPurchaseServi
 
 //        InventoryIn existCode = inventoryInService.getOne(new LambdaQueryWrapper<InventoryIn>().eq(InventoryIn::getSourceId, purchasedtldto.getId()));
         InventoryIn model = new InventoryIn();
+        model.setBillStatus(0);
         model.setSourceId(purchasedtldto.getId());
+        model.setBillType(BillType.INVENTORYIN.getId());
         model.setCode(billCodeBuilderService.getBillCode(BillType.INVENTORYIN.getId()));
         inventoryInService.save(model);
         dto.setMsg("添加成功");
@@ -106,11 +108,15 @@ public class PurchaseController extends JeecgController<Purchase, IPurchaseServi
         InventoryIn existCode = inventoryInService.getOne(new LambdaQueryWrapper<InventoryIn>().eq(InventoryIn::getSourceId, purchasedtldto.getId()));
         if (existCode == null){
             existCode = new InventoryIn();
+            existCode.setBillStatus(0);
+            existCode.setBillType(BillType.INVENTORYIN.getId());
             existCode.setSourceId(purchasedtldto.getId());
             existCode.setCode(billCodeBuilderService.getBillCode(BillType.INVENTORYIN.getId()));
             inventoryInService.save(existCode);
         }
         dto.setInventory(existCode);
+        dto.setMsg("编辑成功");
+
         return Result.ok(dto);
     }
 
