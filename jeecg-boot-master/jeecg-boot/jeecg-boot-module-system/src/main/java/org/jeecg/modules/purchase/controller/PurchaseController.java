@@ -1,5 +1,6 @@
 package org.jeecg.modules.purchase.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -8,6 +9,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.base.controller.JeecgController;
 import org.jeecg.common.system.query.QueryGenerator;
+import org.jeecg.modules.basic.enums.BillType;
+import org.jeecg.modules.basic.service.BillCodeBuilderService;
+import org.jeecg.modules.inventory.entity.InventoryIn;
+import org.jeecg.modules.inventory.service.InventoryInService;
+import org.jeecg.modules.purchase.dto.PurchaseInventorydto;
 import org.jeecg.modules.purchase.dto.Purchasedtldto;
 import org.jeecg.modules.purchase.entity.Purchase;
 import org.jeecg.modules.purchase.entity.Purchasedtl;
@@ -28,12 +34,17 @@ import java.util.List;
 @RestController
 @RequestMapping("/purchase")
 public class PurchaseController extends JeecgController<Purchase, IPurchaseService> {
+    @Autowired
+    private InventoryInService inventoryInService;
 
     @Autowired
     private IPurchaseService purchaseService;
 
     @Autowired
     private IPurchasedtlService purchasedtlService;
+
+    @Autowired
+    private BillCodeBuilderService billCodeBuilderService;
 
     @GetMapping("/getPaged")
     public Result<?> queryPageList(Purchase purchase,
@@ -50,18 +61,37 @@ public class PurchaseController extends JeecgController<Purchase, IPurchaseServi
     @PostMapping("/add")
     @Transactional
     public Result<?> add(@RequestBody Purchasedtldto purchasedtldto){
+        PurchaseInventorydto dto = new PurchaseInventorydto();
+        dto.setMsg("添加失败");
+
+        String code = billCodeBuilderService.getBillCode(BillType.PURCHASEORDER.getId());
+        purchasedtldto.setCode(code);
         purchaseService.save(purchasedtldto);
         if (purchasedtldto.getDetaillist().size() > 0){
             for (Purchasedtl item: purchasedtldto.getDetaillist()){
+                item.setCode(code);
                 item.setSourceId(purchasedtldto.getId());
                 purchasedtlService.save(item);
             }
         }
-        return Result.ok("添加成功");
+
+//        InventoryIn existCode = inventoryInService.getOne(new LambdaQueryWrapper<InventoryIn>().eq(InventoryIn::getSourceId, purchasedtldto.getId()));
+        InventoryIn model = new InventoryIn();
+        model.setSourceId(purchasedtldto.getId());
+        model.setCode(billCodeBuilderService.getBillCode(BillType.INVENTORYIN.getId()));
+        inventoryInService.save(model);
+        dto.setMsg("添加成功");
+        dto.setInventory(model);
+
+        return Result.ok(dto);
     }
 
     @PutMapping("/edit")
+    @Transactional
     public Result<?> edit(@RequestBody Purchasedtldto purchasedtldto){
+        PurchaseInventorydto dto = new PurchaseInventorydto();
+        dto.setMsg("编辑失败");
+
         purchaseService.updateById(purchasedtldto);
         if (purchasedtldto.getDetaillist().size() > 0){
             for (Purchasedtl item: purchasedtldto.getDetaillist()){
@@ -73,7 +103,15 @@ public class PurchaseController extends JeecgController<Purchase, IPurchaseServi
                 }
             }
         }
-        return Result.ok("编辑成功");
+        InventoryIn existCode = inventoryInService.getOne(new LambdaQueryWrapper<InventoryIn>().eq(InventoryIn::getSourceId, purchasedtldto.getId()));
+        if (existCode == null){
+            existCode = new InventoryIn();
+            existCode.setSourceId(purchasedtldto.getId());
+            existCode.setCode(billCodeBuilderService.getBillCode(BillType.INVENTORYIN.getId()));
+            inventoryInService.save(existCode);
+        }
+        dto.setInventory(existCode);
+        return Result.ok(dto);
     }
 
     @DeleteMapping("/delete")
@@ -108,6 +146,7 @@ public class PurchaseController extends JeecgController<Purchase, IPurchaseServi
         purchasedtldto.setPayamount(purchase.getPayamount());
         purchasedtldto.setBilldate(purchase.getBilldate());
         purchasedtldto.setTotalamount(purchase.getTotalamount());
+        purchasedtldto.setCode(purchase.getCode());
         purchasedtldto.setCreateTime(purchase.getCreateTime());
         purchasedtldto.setDetaillist(purchasedtlService.queryBySourceId(purchase.getId()));
         return Result.ok(purchasedtldto);
