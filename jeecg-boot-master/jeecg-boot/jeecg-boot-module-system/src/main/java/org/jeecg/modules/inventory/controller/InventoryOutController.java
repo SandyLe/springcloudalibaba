@@ -15,7 +15,9 @@ import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.modules.basic.entity.Material;
 import org.jeecg.modules.basic.entity.MaterialUnit;
 import org.jeecg.modules.basic.entity.Warehouse;
+import org.jeecg.modules.basic.enums.BillStatus;
 import org.jeecg.modules.basic.enums.BillType;
+import org.jeecg.modules.basic.enums.EnumConvertUtils;
 import org.jeecg.modules.basic.service.BillCodeBuilderService;
 import org.jeecg.modules.basic.service.WarehouseService;
 import org.jeecg.modules.inventory.entity.InventoryOut;
@@ -104,6 +106,9 @@ public class InventoryOutController {
         Map<String, String> warehouseMap = warehouses.stream().collect(Collectors.toMap(Warehouse:: getId, Warehouse:: getName));
         inventoryOutList.stream().forEach(o->{
             o.setWarehouse(warehouseMap.get(o.getWarehouseId()));
+            o.setBillTypeName(EnumConvertUtils.getName(BillType.class, o.getBillType()));
+            o.setSourceBillTypeName(EnumConvertUtils.getName(BillType.class, o.getSourceBillType()));
+            o.setBillStatusName(EnumConvertUtils.getName(BillStatus.class, o.getBillStatus()));
         });
 
         log.info("查询当前页：" + pageList.getCurrent());
