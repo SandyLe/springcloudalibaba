@@ -31,34 +31,30 @@
               :wrapperCol="wrapperCol"
               label="采购单">
               {{ model.sourceId }}
+              <div style="display:none;">
               <a-input type="hidden" placeholder="请输入规格" v-decorator="[ 'sourceId', {}]" />
+              <a-input type="hidden" placeholder="原单类型" v-decorator="[ 'billType', {}]" />
+              <a-input type="hidden" placeholder="仓库" v-decorator="[ 'warehouseId', {}]" />
+              <a-input type="hidden" placeholder="id" v-decorator="[ 'id', {}]" /></div>
             </a-form-item>
           </a-col>
-          <a-col :md="6" :sm="6">
+          <!-- <a-col :md="6" :sm="6">
             <a-form-item
               :labelCol="labelCol"
                 :wrapperCol="wrapperCol"
               label="仓库">
-              <a-select v-decorator="['warehouseId', {}]" placeholder="请选择仓库" showSearch optionFilterProp="children"
-                        @change="mtlChange" notFoundContent="没有匹配的仓库"  >
-                <a-select-option value="">请选择</a-select-option>
-                <a-select-option v-for="(item, key) in warehouseList" :key="key" :value="item.id">
-                    <span style="display: inline-block;width: 100%" :title=" item.name || item.code ">
-                      {{ item.name || item.code }}
-                    </span>
-                </a-select-option>
-              </a-select>
+              {{ warehouseList.filter(p=>p.id == model.warehouseId)[0].name }} 
             </a-form-item>
-          </a-col>
+          </a-col> -->
           <a-col :md="6" :sm="6">
             <a-form-item
               :labelCol="labelCol"
               :wrapperCol="wrapperCol"
-              label="入库时间">
+              label="出货时间">
               <a-date-picker format="YYYY-MM-DD HH:mm:ss" 
-                            placeholder="请输入入库时间" showTime                            
+                            placeholder="请输入出货时间" showTime                            
                             style="width: 100%" @change="onDateChange" 
-                            :defaultValue="!model.putInTime ? null :moment( model.putInTime, 'YYYY-MM-DD HH:mm:ss')" name="putInTime" id="putInTime"/>
+                            :defaultValue="!model.putOutTime ? null :moment( model.putOutTime, 'YYYY-MM-DD HH:mm:ss')" name="putOutTime" id="putOutTime"/>
             </a-form-item>
           </a-col>
         </a-row>
@@ -73,7 +69,7 @@ import 'moment/locale/zh-cn';
 moment.locale('zh-cn');
   import pick from 'lodash.pick'
   import AFormItem from "ant-design-vue/es/form/FormItem";
-  import {getWarehouseList, inventoryInedit } from '@/api/api'
+  import {getWarehouseList, inventoryOutadd } from '@/api/api'
 
   export default {
     name: "StockingModal",
@@ -85,7 +81,7 @@ moment.locale('zh-cn');
     },
     data() {
       return {
-        title: "入库单",
+        title: "出库单",
         visible: false,
         confirmLoading: false,
         labelCol: {
@@ -109,11 +105,11 @@ moment.locale('zh-cn');
         model: {},
         form: this.$form.createForm(this),
         validatorRules: {
-          rcontent: {
-            rules: [
-              { min: 0, max: 126, message: '长度不超过 126 个字符', trigger: 'blur' }
-            ]
-          }
+          // rcontent: {
+          //   rules: [
+          //     { min: 0, max: 126, message: '长度不超过 126 个字符', trigger: 'blur' }
+          //   ]
+          // }
         },
         unitId: '',
         mtlList:[],
@@ -139,8 +135,9 @@ moment.locale('zh-cn');
             that.warehouseList = res.result;
           }
         })
+        
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'id','sourceId' ,'billStatus','putInTime','warehouseId','billType'))
+          this.form.setFieldsValue(pick(this.model,'id','sourceId' ,'billType','warehouseId','putOutTime'))
         });
 
       },
@@ -149,8 +146,9 @@ moment.locale('zh-cn');
         this.form.setFieldsValue({ 'warehouseId' : val })
       },
       onDateChange(date, dateString) {
-        this.model.putInTime = dateString;
-        this.form.setFieldsValue({ 'putInTime' : dateString })
+        // console.log(date, dateString);
+        this.model.putOutTime = dateString;
+        this.form.setFieldsValue({ 'putOutTime' : dateString })
       },
       unitChange (val) {
         this.unitId = val;
@@ -165,9 +163,8 @@ moment.locale('zh-cn');
         this.form.validateFields((err, values) => {
           if (!err) {
             that.confirmLoading = true;
-            let formData = Object.assign(this.model, values);
-            
-            inventoryInedit(formData).then((res)=>{
+            let formData = Object.assign(this.model, values);            
+            inventoryOutadd(formData).then((res)=>{
               if(res.success){
                 that.$message.success(res.message);
                 that.$emit('ok');

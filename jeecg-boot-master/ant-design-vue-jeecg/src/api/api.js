@@ -164,7 +164,9 @@ const getAllUser = (params)=>getAction("/sys/user/getAll",params)
 //采购
 const purchasequeryById = (params)=>getAction("/purchase/queryById",params)
 const purchasedetailDelete = (params)=>deleteAction("/purchasedtl/delete",params)
-const inventoryInedit = (params)=>postAction("/inventoryIn/edit",params)
+
+const inventoryInedit = (params)=>postAction("/inventoryIn/edit",params)  //入库单编辑
+const inventoryOutadd = (params)=>postAction("/inventoryOut/add",params)  //新增出库单
 
 export {
   // imgView,
@@ -278,7 +280,8 @@ export {
   viewInventoryLog,
   purchasequeryById,
   purchasedetailDelete,
-  inventoryInedit
+  inventoryInedit,
+  inventoryOutadd
 }
 
 

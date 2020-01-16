@@ -91,9 +91,15 @@
             </template>
 
             <span slot="action" slot-scope="text, record">
-                <a @click="diyhandleEdit" :data-id="record.id">编辑</a>
+                <a v-if="record.inventoryin!=null&&record.inventoryin.billStatus==1" @click="handleinventoryout(record.inventoryin)" :data-id="record.id">退货</a>
+                <a-divider type="vertical" v-if="record.inventoryin!=null&&record.inventoryin.billStatus==1"/>
 
-                <a-divider type="vertical" />
+                <a v-if="record.inventoryin!=null" @click="handleinventoryin(record.inventoryin)" :data-id="record.id">入库单</a>
+                <a-divider type="vertical" v-if="record.inventoryin!=null"/>
+                
+                <a v-if="!(record.inventoryin!=null&&record.inventoryin.billStatus==1)" @click="diyhandleEdit" :data-id="record.id">编辑</a>
+                <a-divider type="vertical" v-if="!(record.inventoryin!=null&&record.inventoryin.billStatus==1)"/>
+                
                 <a-dropdown>
                     <a class="ant-dropdown-link">更多
                         <a-icon type="down" /></a>
@@ -109,26 +115,19 @@
 
         </a-table>
     </div>
-
-    <!-- <purchases-modal ref="modalForm" @ok="modalFormOk"></purchases-modal> -->
+    <inventory-modal ref="inventorymodalForm" ></inventory-modal>
+    <inventory-out-modal ref="inventoryOutmodalForm" ></inventory-out-modal>
 </a-card>
 </template>
 
 <script>
-import {
-    JeecgListMixin
-} from '@/mixins/JeecgListMixin'
-// import PurchasesModal from './PurchaseModal'
+import { JeecgListMixin } from '@/mixins/JeecgListMixin'
+import InventoryModal from '../inventory/InventoryInModal'
+import InventoryOutModal from '../inventory/InventoryOutModal'
 import JDictSelectTag from '@/components/dict/JDictSelectTag.vue'
-import {
-    filterMultiDictText
-} from '@/components/dict/JDictSelectUtil'
+import { filterMultiDictText } from '@/components/dict/JDictSelectUtil'
 import JDate from '@/components/jeecg/JDate.vue'
-import {
-    getVendorList,
-    ajaxGetDictItems,
-    getWarehouseList
-} from '@/api/api'
+import { getVendorList, ajaxGetDictItems, getWarehouseList } from '@/api/api'
 
 export default {
     name: "PurchaseList",
@@ -136,7 +135,8 @@ export default {
     components: {
         JDictSelectTag,
         JDate,
-        // PurchasesModal
+        InventoryModal,
+        InventoryOutModal
     },
     data() {
         return {
@@ -267,6 +267,22 @@ export default {
                 this.$router.replace({ path:'/purchase/PurchaseModal/' + e.target.dataset.id });
             else
                 this.$router.replace({ path:'/purchase/PurchaseModal/' });
+        },
+        handleinventoryin(data){
+            var that = this;
+            that.$refs.inventorymodalForm.edit(data);                              
+            that.$refs.inventorymodalForm.disableSubmit = true;
+        },
+        handleinventoryout(data){
+            var that = this;
+            let model = {};
+            model.billType = data.billType;
+            model.sourceId = data.sourceId;
+            model.warehouseId = data.warehouseId;
+            model.putOutTime = data.putOutTime;
+
+            that.$refs.inventoryOutmodalForm.edit(model);                              
+            that.$refs.inventoryOutmodalForm.disableSubmit = true;
         }
     }
 }
