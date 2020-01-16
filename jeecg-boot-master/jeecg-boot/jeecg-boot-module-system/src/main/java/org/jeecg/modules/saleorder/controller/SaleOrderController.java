@@ -23,6 +23,8 @@ import org.jeecg.modules.basic.enums.BillType;
 import org.jeecg.modules.basic.service.BillCodeBuilderService;
 import org.jeecg.modules.basic.service.CustomerService;
 import org.jeecg.modules.basic.service.WarehouseService;
+import org.jeecg.modules.inventory.entity.InventoryOut;
+import org.jeecg.modules.inventory.service.InventoryOutService;
 import org.jeecg.modules.saleorder.entity.SaleOrder;
 import org.jeecg.modules.saleorder.entity.SaleOrderDeliveryInfo;
 import org.jeecg.modules.saleorder.service.SaleOrderDeliveryInfoService;
@@ -58,6 +60,9 @@ public class SaleOrderController {
     private SaleOrderDeliveryInfoService saleOrderDeliveryInfoService;
     @Autowired
     private BillCodeBuilderService billCodeBuilderService;
+    @Autowired
+    private InventoryOutService inventoryOutService;
+
     /**
      * 添加
      *
@@ -255,6 +260,10 @@ public class SaleOrderController {
             saleOrder.setBillStatus(BillStatus.TOSEND.getId());
         }
 
+        // 销售出库
+        InventoryOut inventoryOut = new InventoryOut(saleOrder.getId(), BillType.INVENTORYOUT.getId(), BillType.SALEORDER.getId(), saleOrder.getWarehouseId(), saleOrder.getDeliveryTime(), BillStatus.TOSEND.getId());
+        inventoryOutService.saveToInventoryOut(inventoryOut);
+        // 更新销售订单信息
         saleOrderService.updateById(saleOrder);
         saleOrderDeliveryInfoService.saveOrUpdate(cdi);
 
@@ -262,5 +271,4 @@ public class SaleOrderController {
         result.setResult(saleOrder);
         return result;
     }
-
 }

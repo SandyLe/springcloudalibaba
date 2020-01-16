@@ -21,6 +21,8 @@ public class InventoryIn extends BasicEntity {
     @ApiModelProperty("原单ID：销售退货，采购入库")
     private String sourceId;
     @ApiModelProperty("原单类型")
+    private Integer sourceBillType;
+    @ApiModelProperty("单据类型")
     private Integer billType;
     @ApiModelProperty("仓库ID")
     private String warehouseId;
@@ -83,5 +85,13 @@ public class InventoryIn extends BasicEntity {
 
     public void setBillStatus(Integer billStatus) {
         this.billStatus = billStatus;
+    }
+
+    public Integer getSourceBillType() {
+        return sourceBillType;
+    }
+
+    public void setSourceBillType(Integer sourceBillType) {
+        this.sourceBillType = sourceBillType;
     }
 }

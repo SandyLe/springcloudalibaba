@@ -11,7 +11,8 @@ public enum BillType implements AbstractEnum{
     MATERIAL(6, "material", "产品"),
     STOCKING(7, "stocking", "库存盘点"),
     INVENTORY(7, "inventory", "库存单"),
-    INVENTORYIN(8, "inventoryin", "入库单");
+    INVENTORYIN(8, "inventoryin", "入库单"),
+    INVENTORYOUT(9, "inventory_out", "出库单");
 
     private Integer id;
     private String code;
