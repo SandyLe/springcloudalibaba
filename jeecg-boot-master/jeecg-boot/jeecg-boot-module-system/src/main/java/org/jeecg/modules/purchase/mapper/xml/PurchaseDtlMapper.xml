@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="org.jeecg.modules.purchase.mapper.IPurchasedtlMapper">
+<mapper namespace="org.jeecg.modules.purchase.mapper.IPurchaseDtlMapper">
 
     <delete id="removeBySourceId">
         DELETE FROM sl_purchasedtl WHERE source_id = #{sourceId}
@@ -14,7 +14,7 @@
         )
     </delete>
     
-    <select id="queryBySourceId" resultType="org.jeecg.modules.purchase.entity.Purchasedtl">
+    <select id="queryBySourceId" resultType="org.jeecg.modules.purchase.entity.PurchaseDtl">
         SELECT * FROM sl_purchasedtl WHERE source_id = #{sourceId}
     </select>
 

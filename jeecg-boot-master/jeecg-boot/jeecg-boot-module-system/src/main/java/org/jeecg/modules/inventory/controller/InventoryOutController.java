@@ -52,13 +52,17 @@ public class InventoryOutController {
     @PostMapping(value = "/add")
     @AutoLog(value = "添加出库单")
     @ApiOperation(value = "添加出库单", notes = "添加出库单")
-    public Result<?> add(@RequestBody InventoryOut inventoryOut) {
+    public Result<?> add(@RequestBody InventoryOut inventoryOut, HttpServletRequest req) {
         if (StringUtils.isEmpty(inventoryOut.getId())) {
             inventoryOut.setCode(billCodeBuilderService.getBillCode(BillType.STOCKING.getId()));
         }
         InventoryOut existCode = inventoryOutService.getOne(new LambdaQueryWrapper<InventoryOut>().eq(InventoryOut::getCode, inventoryOut.getCode()).ne(InventoryOut::getId, inventoryOut.getId()));
         Assert.isNull(existCode, "单号已存在！");
         inventoryOutService.save(inventoryOut);
+//        if (StringUtils.isNotBlank(inventoryOut.getSourceId()) && StringUtils.isNotEmpty(inventoryOut.getSourceId())){
+//            QueryWrapper<InventoryOut> queryWrapper = QueryGenerator.initQueryWrapper(inventoryOut, req.getParameterMap());
+//            List<InventoryOut> list = inventoryOutService.list(queryWrapper);
+//        }
         Result<Object> result = Result.ok();
         result.setResult(inventoryOut);
         return result;

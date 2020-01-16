@@ -1,10 +1,10 @@
-package org.jeecg.modules.purchase.service.Impl;
+package org.jeecg.modules.purchase.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.ibatis.annotations.Param;
-import org.jeecg.modules.purchase.entity.Purchasedtl;
-import org.jeecg.modules.purchase.mapper.IPurchasedtlMapper;
-import org.jeecg.modules.purchase.service.IPurchasedtlService;
+import org.jeecg.modules.purchase.entity.PurchaseDtl;
+import org.jeecg.modules.purchase.mapper.IPurchaseDtlMapper;
+import org.jeecg.modules.purchase.service.IPurchaseDtlService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,7 +16,7 @@ import java.util.List;
  * @Version: V1.0
  */
 @Service
-public class PurchasedtlServiceImpl extends ServiceImpl<IPurchasedtlMapper, Purchasedtl> implements IPurchasedtlService {
+public class PurchaseDtlServiceImpl extends ServiceImpl<IPurchaseDtlMapper, PurchaseDtl> implements IPurchaseDtlService {
     /**
      * 根据总表ID删除详情
      * @param sourceId
@@ -35,7 +35,7 @@ public class PurchasedtlServiceImpl extends ServiceImpl<IPurchasedtlMapper, Purc
      * 根据总表ID查询详情
      * @param sourceId
      */
-    public List<Purchasedtl> queryBySourceId(@Param("sourceId")String sourceId){
+    public List<PurchaseDtl> queryBySourceId(@Param("sourceId")String sourceId){
         return baseMapper.queryBySourceId(sourceId);
     }
 }

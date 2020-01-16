@@ -2,7 +2,7 @@ package org.jeecg.modules.purchase.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
-import org.jeecg.modules.purchase.entity.Purchasedtl;
+import org.jeecg.modules.purchase.entity.PurchaseDtl;
 
 import java.util.List;
 
@@ -12,7 +12,7 @@ import java.util.List;
  * @Date: 2020/1/4 14:57
  * @Version: V1.0
  */
-public interface IPurchasedtlMapper extends BaseMapper<Purchasedtl> {
+public interface IPurchaseDtlMapper extends BaseMapper<PurchaseDtl> {
     /**
      * 根据总表ID删除详情
      * @param sourceId
@@ -28,5 +28,5 @@ public interface IPurchasedtlMapper extends BaseMapper<Purchasedtl> {
      * 根据总表ID查询详情
      * @param sourceId
      */
-    List<Purchasedtl> queryBySourceId(@Param("sourceId")String sourceId);
+    List<PurchaseDtl> queryBySourceId(@Param("sourceId")String sourceId);
 }

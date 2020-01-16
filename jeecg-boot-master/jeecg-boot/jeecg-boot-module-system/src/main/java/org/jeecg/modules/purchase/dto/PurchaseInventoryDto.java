@@ -8,7 +8,7 @@ import org.jeecg.modules.inventory.entity.InventoryIn;
  * @Date: 2020/1/15 17:33
  * @Version: V1.0
  */
-public class PurchaseInventorydto {
+public class PurchaseInventoryDto {
 
     private String msg;
 

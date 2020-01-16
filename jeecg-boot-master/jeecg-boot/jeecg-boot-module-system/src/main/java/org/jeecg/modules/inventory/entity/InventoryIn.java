@@ -12,6 +12,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 @Data
 @TableName("sl_inventory_in")
@@ -84,4 +85,17 @@ public class InventoryIn extends BasicEntity {
     public void setBillStatus(Integer billStatus) {
         this.billStatus = billStatus;
     }
+
+    @ApiModelProperty("入库单商品详情")
+    @TableField(exist=false)
+    private List<InventoryInMtl> inventoryInMtls;
+
+    public List<InventoryInMtl> getInventoryInMtls() {
+        return inventoryInMtls;
+    }
+
+    public void setInventoryInMtls(List<InventoryInMtl> inventoryInMtls) {
+        this.inventoryInMtls = inventoryInMtls;
+    }
+
 }

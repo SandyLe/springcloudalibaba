@@ -14,7 +14,7 @@ import java.util.Date;
 
 @TableName("sl_purchasereturn")
 @ApiModel(value = "Purchasereturn", description = "采购退货")
-public class Purchasereturn extends BasicEntity {
+public class PurchaseReturn extends BasicEntity {
 
     /*仓库id*/
     @Excel(name = "仓库id", width = 15)

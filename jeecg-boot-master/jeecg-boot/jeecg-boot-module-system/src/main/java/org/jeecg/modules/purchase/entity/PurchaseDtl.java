@@ -21,7 +21,7 @@ import java.util.Date;
  */
 @TableName("sl_purchasedtl")
 @ApiModel(value = "Purchasedtl", description = "采购订单明细")
-public class Purchasedtl extends BasicEntity {
+public class PurchaseDtl extends BasicEntity {
 
     /*采购订单id*/
     @ApiModelProperty("采购订单id")

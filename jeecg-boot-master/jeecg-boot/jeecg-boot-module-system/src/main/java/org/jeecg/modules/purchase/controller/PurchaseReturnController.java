@@ -10,13 +10,8 @@ import org.jeecg.common.system.base.controller.JeecgController;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.modules.basic.enums.BillType;
 import org.jeecg.modules.basic.service.BillCodeBuilderService;
-import org.jeecg.modules.purchase.dto.Purchasedtldto;
-import org.jeecg.modules.purchase.entity.Purchase;
-import org.jeecg.modules.purchase.entity.Purchasedtl;
-import org.jeecg.modules.purchase.entity.Purchasereturn;
-import org.jeecg.modules.purchase.service.IPurchaseService;
-import org.jeecg.modules.purchase.service.IPurchasedtlService;
-import org.jeecg.modules.purchase.service.IPurchasereturnService;
+import org.jeecg.modules.purchase.entity.PurchaseReturn;
+import org.jeecg.modules.purchase.service.IPurchaseReturnService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -30,29 +25,29 @@ import java.util.Arrays;
 @Api(tags = "采购退货")
 @RestController
 @RequestMapping("/purchasereturn")
-public class PurchasereturnController extends JeecgController<Purchasereturn, IPurchasereturnService> {
+public class PurchaseReturnController extends JeecgController<PurchaseReturn, IPurchaseReturnService> {
 
     @Autowired
     private BillCodeBuilderService billCodeBuilderService;
 
     @Autowired
-    private IPurchasereturnService purchasereturnService;
+    private IPurchaseReturnService purchasereturnService;
 
     @GetMapping("/getPaged")
-    public Result<?> queryPageList(Purchasereturn purchasereturn,
+    public Result<?> queryPageList(PurchaseReturn purchasereturn,
                                    @RequestParam(name = "pageNo",defaultValue = "1") Integer pageNo,
                                    @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
                                    HttpServletRequest req)
     {
-        QueryWrapper<Purchasereturn> queryWrapper = QueryGenerator.initQueryWrapper(purchasereturn, req.getParameterMap());
-        Page<Purchasereturn> page = new Page<>(pageNo, pageSize);
-        IPage<Purchasereturn> pageList = purchasereturnService.page(page, queryWrapper);
+        QueryWrapper<PurchaseReturn> queryWrapper = QueryGenerator.initQueryWrapper(purchasereturn, req.getParameterMap());
+        Page<PurchaseReturn> page = new Page<>(pageNo, pageSize);
+        IPage<PurchaseReturn> pageList = purchasereturnService.page(page, queryWrapper);
         return Result.ok(pageList);
     }
 
     @PostMapping("/add")
     @Transactional
-    public Result<?> add(@RequestBody Purchasereturn purchasereturn){
+    public Result<?> add(@RequestBody PurchaseReturn purchasereturn){
 
         purchasereturn.setCode(billCodeBuilderService.getBillCode(BillType.PURCHASERETURNORDER.getId()));
         purchasereturnService.save(purchasereturn);
@@ -66,7 +61,7 @@ public class PurchasereturnController extends JeecgController<Purchasereturn, IP
     }
 
     @PutMapping("/edit")
-    public Result<?> edit(@RequestBody Purchasereturn purchasereturn){
+    public Result<?> edit(@RequestBody PurchaseReturn purchasereturn){
         purchasereturnService.updateById(purchasereturn);
 //        if (purchasedtldto.getDetaillist().size() > 0){
 //            for (Purchasedtl item: purchasedtldto.getDetaillist()){
@@ -101,7 +96,7 @@ public class PurchasereturnController extends JeecgController<Purchasereturn, IP
 
     @GetMapping("/queryById")
     public Result<?> queryById(@RequestParam(name = "id", required = true) String id){
-        Purchasereturn purchasereturn = purchasereturnService.getById(id);
+        PurchaseReturn purchasereturn = purchasereturnService.getById(id);
 //        Purchase purchase = purchaseService.getById(id);
 //        System.out.println(purchase.getId());
         if (purchasereturn == null){
@@ -122,13 +117,13 @@ public class PurchasereturnController extends JeecgController<Purchasereturn, IP
     }
 
     @RequestMapping("/exportXls")
-    public ModelAndView exportXls(HttpServletRequest request, Purchasereturn purchasereturn){
-        return super.exportXls(request, purchasereturn,Purchasereturn.class, "采购列表");
+    public ModelAndView exportXls(HttpServletRequest request, PurchaseReturn purchasereturn){
+        return super.exportXls(request, purchasereturn, PurchaseReturn.class, "采购列表");
     }
 
     @PostMapping("importExcel")
     public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response){
-        return super.importExcel(request, response, Purchasereturn.class);
+        return super.importExcel(request, response, PurchaseReturn.class);
     }
 
 

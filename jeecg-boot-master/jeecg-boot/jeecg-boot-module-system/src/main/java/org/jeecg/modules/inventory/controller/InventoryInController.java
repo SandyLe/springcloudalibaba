@@ -17,7 +17,9 @@ import org.jeecg.modules.basic.enums.BillType;
 import org.jeecg.modules.basic.service.BillCodeBuilderService;
 import org.jeecg.modules.basic.service.WarehouseService;
 import org.jeecg.modules.inventory.entity.InventoryIn;
+import org.jeecg.modules.inventory.service.InventoryInMtlService;
 import org.jeecg.modules.inventory.service.InventoryInService;
+import org.jeecg.modules.purchase.service.IPurchaseDtlService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
@@ -37,6 +39,10 @@ public class InventoryInController {
 
     @Autowired
     private InventoryInService inventoryInService;
+    @Autowired
+    private InventoryInMtlService inventoryInMtlService;
+    @Autowired
+    private IPurchaseDtlService purchasedtlService;
     @Autowired
     private WarehouseService warehouseService;
     @Autowired

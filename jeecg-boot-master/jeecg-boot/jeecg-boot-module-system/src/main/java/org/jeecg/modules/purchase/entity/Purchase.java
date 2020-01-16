@@ -1,6 +1,7 @@
 package org.jeecg.modules.purchase.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -8,6 +9,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.jeecg.modules.basic.entity.BasicEntity;
+import org.jeecg.modules.inventory.entity.InventoryIn;
 import org.jeecgframework.poi.excel.annotation.Excel;
 import org.springframework.format.annotation.DateTimeFormat;
 import java.util.Date;
@@ -102,5 +104,18 @@ public class Purchase extends BasicEntity {
         this.totalamount = totalamount;
     }
 
+
+    /*入库单*/
+    @ApiModelProperty("入库单")
+    @TableField(exist = false)
+    private InventoryIn inventoryin;
+
+    public InventoryIn getInventoryin() {
+        return inventoryin;
+    }
+
+    public void setInventoryin(InventoryIn inventoryin) {
+        this.inventoryin = inventoryin;
+    }
 
 }

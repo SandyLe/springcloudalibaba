@@ -16,24 +16,32 @@ public class InventoryInMtl extends BasicEntity {
 
     @ApiModelProperty("入库单ID")
     private String sourceId;
+
     @ApiModelProperty("产品ID")
     private String mtlId;
+
     @TableField(exist=false)
     @ApiModelProperty("产品")
     private String material;
+
     @ApiModelProperty("出库数量")
     private BigDecimal quantity;
+
     @ApiModelProperty("单位ID")
     private String unitId;
+
     @TableField(exist=false)
     @ApiModelProperty("单位")
     private String unit;
+
     @ApiModelProperty("产品Code")
     @TableField(exist=false)
     private String mtlCode;
+
     @ApiModelProperty("规格")
     @TableField(exist=false)
     private String specification;
+
     @ApiModelProperty("条形码")
     @TableField(exist=false)
     private String barCode;

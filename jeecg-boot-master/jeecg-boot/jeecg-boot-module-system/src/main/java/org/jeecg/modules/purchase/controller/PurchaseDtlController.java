@@ -4,8 +4,8 @@ import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.base.controller.JeecgController;
-import org.jeecg.modules.purchase.entity.Purchasedtl;
-import org.jeecg.modules.purchase.service.IPurchasedtlService;
+import org.jeecg.modules.purchase.entity.PurchaseDtl;
+import org.jeecg.modules.purchase.service.IPurchaseDtlService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -23,10 +23,10 @@ import org.springframework.web.bind.annotation.RestController;
 @Api(tags = "采购列表")
 @RestController
 @RequestMapping("/purchasedtl")
-public class PurchasedtlController extends JeecgController<Purchasedtl, IPurchasedtlService> {
+public class PurchaseDtlController extends JeecgController<PurchaseDtl, IPurchaseDtlService> {
 
     @Autowired
-    private IPurchasedtlService purchasedtlService;
+    private IPurchaseDtlService purchasedtlService;
 
     @DeleteMapping("/delete")
     @Transactional

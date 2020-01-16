@@ -1,4 +1,4 @@
-package org.jeecg.modules.purchase.service.Impl;
+package org.jeecg.modules.purchase.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.jeecg.modules.purchase.entity.Purchase;
