@@ -48,7 +48,7 @@
         @change="handleTableChange">
 
         <span slot="nameAction" slot-scope="text, record">
-          <a @click="goDetail(record.sourceId)">{{record.sourceBillCode}}</a>
+          <a @click="goDetail(record.sourceId)">{{record.sourceCode}}</a>
         </span>
         <span slot="action" v-if="record.rowSts !== 6" slot-scope="text, record">
           <a v-if="record.billStatus !== 8" @click="handleStocking(record)">出库</a>
@@ -95,25 +95,35 @@
             }
           },
           {
+            title: '单号',
+            align:"center",
+            dataIndex: 'code'
+          },
+          {
             title: '仓库',
             align:"center",
             dataIndex: 'warehouse'
           },
           {
-            title: '销售订单',
+            title: '原单类型',
+            align:"center",
+            dataIndex: 'sourceBillTypeName'
+          },
+          {
+            title: '原单编号',
             align:"center",
             dataIndex: '',
             scopedSlots: { customRender: 'nameAction' }
           },
           {
-            title: '客户',
+            title: '单据类型',
             align:"center",
-            dataIndex: 'customer'
+            dataIndex: 'billTypeName'
           },
           {
-            title: '发货方式',
+            title: '出库时间',
             align:"center",
-            dataIndex: 'cdiDefaultTypeName'
+            dataIndex: 'putOutTime'
           },
           {
             title: '状态',
@@ -128,11 +138,11 @@
           }
         ],
         url: {
-          list: "/saleOrderDeliveryInfo/getPage",
-          delete: "/saleOrderDeliveryInfo/delete",
-          deleteBatch: "/saleOrderDeliveryInfo/deleteBatch",
-          exportXlsUrl: "/saleOrderDeliveryInfo/exportXls",
-          importExcelUrl: "/saleOrderDeliveryInfo/importExcel",
+          list: "/inventoryOut/getPage",
+          delete: "/inventoryOut/delete",
+          deleteBatch: "/inventoryOut/deleteBatch",
+          exportXlsUrl: "/inventoryOut/exportXls",
+          importExcelUrl: "/inventoryOut/importExcel",
         },
       }
     },
