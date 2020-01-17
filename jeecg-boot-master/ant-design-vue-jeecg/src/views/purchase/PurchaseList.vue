@@ -91,7 +91,7 @@
             </template>
 
             <span slot="action" slot-scope="text, record">
-                <a v-if="record.inventoryin!=null&&record.inventoryin.billStatus==1" @click="handleinventoryout(record.inventoryin)" :data-id="record.id">退货</a>
+                <a v-if="record.inventoryin!=null&&record.inventoryin.billStatus==1" @click="handleinventoryout(record)" :data-id="record.id">退货</a>
                 <a-divider type="vertical" v-if="record.inventoryin!=null&&record.inventoryin.billStatus==1"/>
 
                 <a v-if="record.inventoryin!=null" @click="handleinventoryin(record.inventoryin)" :data-id="record.id">入库单</a>
@@ -276,11 +276,13 @@ export default {
         handleinventoryout(data){
             var that = this;
             let model = {};
-            model.billType = data.billType;
-            model.sourceId = data.sourceId;
-            model.warehouseId = data.warehouseId;
-            model.putOutTime = data.putOutTime;
-
+            model.sourceId = data.id;
+            if(data.inventoryOut && data.inventoryOut.putOutTime)
+            {
+                model.id = data.inventoryOut.id;
+                model.putOutTime = data.inventoryOut.putOutTime;
+            }
+            
             that.$refs.inventoryOutmodalForm.edit(model);                              
             that.$refs.inventoryOutmodalForm.disableSubmit = true;
         }

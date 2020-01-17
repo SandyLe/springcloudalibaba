@@ -32,9 +32,9 @@
               label="采购单">
               {{ model.sourceId }}
               <div style="display:none;">
-              <a-input type="hidden" placeholder="请输入规格" v-decorator="[ 'sourceId', {}]" />
-              <a-input type="hidden" placeholder="原单类型" v-decorator="[ 'billType', {}]" />
-              <a-input type="hidden" placeholder="仓库" v-decorator="[ 'warehouseId', {}]" />
+              <a-input type="hidden" placeholder="源ID" v-decorator="[ 'sourceId', {}]" />
+              <!-- <a-input type="hidden" placeholder="原单类型" v-decorator="[ 'billType', {}]" />
+              <a-input type="hidden" placeholder="仓库" v-decorator="[ 'warehouseId', {}]" /> -->
               <a-input type="hidden" placeholder="id" v-decorator="[ 'id', {}]" /></div>
             </a-form-item>
           </a-col>
@@ -69,7 +69,7 @@ import 'moment/locale/zh-cn';
 moment.locale('zh-cn');
   import pick from 'lodash.pick'
   import AFormItem from "ant-design-vue/es/form/FormItem";
-  import {getWarehouseList, inventoryOutadd } from '@/api/api'
+  import {getWarehouseList, purchasereturnadd, purchasereturnedit } from '@/api/api'
 
   export default {
     name: "StockingModal",
@@ -137,14 +137,14 @@ moment.locale('zh-cn');
         })
         
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'id','sourceId' ,'billType','warehouseId','putOutTime'))
+          this.form.setFieldsValue(pick(this.model,'id', 'sourceId', 'putOutTime'))
         });
 
       },
-      mtlChange (val) {
-        this.model.warehouseId = val;
-        this.form.setFieldsValue({ 'warehouseId' : val })
-      },
+      // mtlChange (val) {
+      //   this.model.warehouseId = val;
+      //   this.form.setFieldsValue({ 'warehouseId' : val })
+      // },
       onDateChange(date, dateString) {
         // console.log(date, dateString);
         this.model.putOutTime = dateString;
@@ -163,8 +163,16 @@ moment.locale('zh-cn');
         this.form.validateFields((err, values) => {
           if (!err) {
             that.confirmLoading = true;
-            let formData = Object.assign(this.model, values);            
-            inventoryOutadd(formData).then((res)=>{
+            let formData = Object.assign(this.model, values);        
+            
+            let obj = null;
+            if(formData && formData.id){
+              obj = purchasereturnedit
+            }
+            else{
+              obj = purchasereturnadd
+            }    
+            obj(formData).then((res)=>{
               if(res.success){
                 that.$message.success(res.message);
                 that.$emit('ok');

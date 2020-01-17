@@ -168,6 +168,9 @@ const purchasedetailDelete = (params)=>deleteAction("/purchasedtl/delete",params
 const inventoryInedit = (params)=>postAction("/inventoryIn/edit",params)  //入库单编辑
 const inventoryOutadd = (params)=>postAction("/inventoryOut/add",params)  //新增出库单
 
+const purchasereturnadd = (params)=>postAction("/purchasereturn/add",params)  //新增采购退货
+const purchasereturnedit = (params)=>putAction("/purchasereturn/edit",params)  //修改采购退货
+
 export {
   // imgView,
   // doMian,
@@ -281,7 +284,9 @@ export {
   purchasequeryById,
   purchasedetailDelete,
   inventoryInedit,
-  inventoryOutadd
+  inventoryOutadd,
+  purchasereturnadd,
+  purchasereturnedit
 }
 
 
