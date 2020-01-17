@@ -22,7 +22,7 @@
             :labelCol="{span: 5}"
             :wrapperCol="{span: 19}"
             label="单号">
-            <a-input placeholder="请输入代码" v-decorator="[ 'code', {}]" />
+            <a-input placeholder="自动生成单号" :readOnly="true" v-decorator="[ 'code', {}]" />
           </a-form-item>
         </a-col>
         <a-col :md="6" :sm="6">
