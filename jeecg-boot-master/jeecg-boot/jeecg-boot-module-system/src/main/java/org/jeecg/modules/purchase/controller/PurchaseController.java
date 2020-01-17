@@ -13,8 +13,10 @@ import org.jeecg.modules.basic.enums.BillType;
 import org.jeecg.modules.basic.service.BillCodeBuilderService;
 import org.jeecg.modules.inventory.entity.InventoryIn;
 import org.jeecg.modules.inventory.entity.InventoryInMtl;
+import org.jeecg.modules.inventory.entity.InventoryOut;
 import org.jeecg.modules.inventory.service.InventoryInMtlService;
 import org.jeecg.modules.inventory.service.InventoryInService;
+import org.jeecg.modules.inventory.service.InventoryOutService;
 import org.jeecg.modules.purchase.dto.PurchaseInventoryDto;
 import org.jeecg.modules.purchase.dto.PurchaseDtlDto;
 import org.jeecg.modules.purchase.entity.Purchase;
@@ -40,9 +42,10 @@ import java.util.List;
 public class PurchaseController extends JeecgController<Purchase, IPurchaseService> {
     @Autowired
     private InventoryInService inventoryInService;
-
     @Autowired
     private InventoryInMtlService inventoryInMtlService;
+    @Autowired
+    private InventoryOutService inventoryOutService;
 
     @Autowired
     private IPurchaseService purchaseService;
@@ -64,6 +67,7 @@ public class PurchaseController extends JeecgController<Purchase, IPurchaseServi
         IPage<Purchase> pageList = purchaseService.page(page, queryWrapper);
         for (Purchase item :pageList.getRecords()){
             item.setInventoryin(inventoryInService.getOne(new LambdaQueryWrapper<InventoryIn>().eq(InventoryIn::getSourceId, item.getId())));
+            item.setInventoryOut(inventoryOutService.getOne(new LambdaQueryWrapper<InventoryOut>().eq(InventoryOut::getSourceId, item.getId())));
         }
         return Result.ok(pageList);
     }
@@ -201,6 +205,8 @@ public class PurchaseController extends JeecgController<Purchase, IPurchaseServi
         purchasedtldto.setCode(purchase.getCode());
         purchasedtldto.setCreateTime(purchase.getCreateTime());
         purchasedtldto.setDetaillist(purchasedtlService.queryBySourceId(purchase.getId()));
+        purchasedtldto.setInventoryOut(inventoryOutService.getOne(new LambdaQueryWrapper<InventoryOut>().eq(InventoryOut::getSourceId, purchase.getId())));
+
         return Result.ok(purchasedtldto);
     }
 

@@ -13,9 +13,9 @@ import java.math.BigDecimal;
  * @Date: 2020/1/4 14:33
  * @Version: V1.0
  */
-@TableName("sl_purchase_return_mtl")
-@ApiModel(value = "PurchaseReturnMtl", description = "采购订单明细")
-public class PurchaseReturnMtl extends BasicEntity {
+@TableName("sl_purchase_return_dtl")
+@ApiModel(value = "PurchaseReturnDtl", description = "采购退货明细")
+public class PurchaseReturnDtl extends BasicEntity {
 
     /*采购订单id*/
     @ApiModelProperty("采购订单id")
@@ -31,19 +31,19 @@ public class PurchaseReturnMtl extends BasicEntity {
 
     /*数量*/
     @ApiModelProperty("数量")
-    private BigDecimal quantity;
+    private String quantity;
 
     /*单价*/
     @ApiModelProperty("单价")
-    private BigDecimal price;
+    private String price;
 
     /*折扣*/
     @ApiModelProperty("折扣")
-    private BigDecimal discount;
+    private String discount;
 
     /*金额*/
     @ApiModelProperty("金额")
-    private BigDecimal amount;
+    private String amount;
 
 
     public String getSourceId() {
@@ -70,35 +70,35 @@ public class PurchaseReturnMtl extends BasicEntity {
         this.unitId = unitId;
     }
 
-    public BigDecimal getQuantity() {
+    public String getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(BigDecimal quantity) {
+    public void setQuantity(String quantity) {
         this.quantity = quantity;
     }
 
-    public BigDecimal getPrice() {
+    public String getPrice() {
         return price;
     }
 
-    public void setPrice(BigDecimal price) {
+    public void setPrice(String price) {
         this.price = price;
     }
 
-    public BigDecimal getDiscount() {
+    public String getDiscount() {
         return discount;
     }
 
-    public void setDiscount(BigDecimal discount) {
+    public void setDiscount(String discount) {
         this.discount = discount;
     }
 
-    public BigDecimal getAmount() {
+    public String getAmount() {
         return amount;
     }
 
-    public void setAmount(BigDecimal amount) {
+    public void setAmount(String amount) {
         this.amount = amount;
     }
 }

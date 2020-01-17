@@ -3,11 +3,11 @@
 <mapper namespace="org.jeecg.modules.purchase.mapper.IPurchaseDtlMapper">
 
     <delete id="removeBySourceId">
-        DELETE FROM sl_purchasedtl WHERE source_id = #{sourceId}
+        DELETE FROM sl_purchase_dtl WHERE source_id = #{sourceId}
     </delete>
 
     <delete id="removeBySourceIds">
-        DELETE FROM sl_purchasedtl WHERE source_id in (
+        DELETE FROM sl_purchase_dtl WHERE source_id in (
             <foreach item="item" index="index" collection="sourceIds" separator=",">
                 #{item}
             </foreach>
@@ -15,7 +15,7 @@
     </delete>
     
     <select id="queryBySourceId" resultType="org.jeecg.modules.purchase.entity.PurchaseDtl">
-        SELECT * FROM sl_purchasedtl WHERE source_id = #{sourceId}
+        SELECT * FROM sl_purchase_dtl WHERE source_id = #{sourceId}
     </select>
 
 </mapper>

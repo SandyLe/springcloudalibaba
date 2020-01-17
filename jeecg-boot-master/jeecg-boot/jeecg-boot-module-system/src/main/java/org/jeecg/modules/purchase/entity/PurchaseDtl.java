@@ -19,7 +19,7 @@ import java.util.Date;
  * @Date: 2020/1/4 14:33
  * @Version: V1.0
  */
-@TableName("sl_purchasedtl")
+@TableName("sl_purchase_dtl")
 @ApiModel(value = "Purchasedtl", description = "采购订单明细")
 public class PurchaseDtl extends BasicEntity {
 

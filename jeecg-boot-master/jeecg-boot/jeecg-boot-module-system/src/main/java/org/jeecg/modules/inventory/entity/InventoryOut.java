@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.jeecg.common.util.DateUtils;
 import org.jeecg.modules.basic.entity.BasicEntity;
 
 import java.math.BigDecimal;
@@ -27,7 +28,7 @@ public class InventoryOut extends BasicEntity {
     @TableField(exist=false)
     private String warehouse;
     @ApiModelProperty("出货时间")
-    private Date putOutTime;
+    private String putOutTime;
     @ApiModelProperty("订单状态")
     private Integer billStatus;
 
@@ -39,7 +40,7 @@ public class InventoryOut extends BasicEntity {
         this.billType = billType;
         this.sourceBillType = sourceBillType;
         this.warehouseId = warehouseId;
-        this.putOutTime = putOutTime;
+        this.putOutTime = DateUtils.formatTime(putOutTime);
         this.billStatus = billStatus;
     }
 
@@ -75,11 +76,11 @@ public class InventoryOut extends BasicEntity {
         this.warehouse = warehouse;
     }
 
-    public Date getPutOutTime() {
+    public String getPutOutTime() {
         return putOutTime;
     }
 
-    public void setPutOutTime(Date putOutTime) {
+    public void setPutOutTime(String putOutTime) {
         this.putOutTime = putOutTime;
     }
 

@@ -12,7 +12,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.util.Date;
 
 
-@TableName("sl_purchasereturn")
+@TableName("sl_purchase_return")
 @ApiModel(value = "Purchasereturn", description = "采购退货")
 public class PurchaseReturn extends BasicEntity {
 
@@ -33,6 +33,11 @@ public class PurchaseReturn extends BasicEntity {
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @ApiModelProperty("订单日期")
     private Date billdate;
+
+    /*原单id*/
+    @Excel(name = "原单id", width = 15)
+    @ApiModelProperty("原单id")
+    private String sourceId;
 
     public String getWarehouseId() {
         return warehouseId;
@@ -57,4 +62,13 @@ public class PurchaseReturn extends BasicEntity {
     public void setBilldate(Date billdate) {
         this.billdate = billdate;
     }
+
+    public String getSourceId() {
+        return sourceId;
+    }
+
+    public void setSourceId(String sourceId) {
+        this.sourceId = sourceId;
+    }
+
 }

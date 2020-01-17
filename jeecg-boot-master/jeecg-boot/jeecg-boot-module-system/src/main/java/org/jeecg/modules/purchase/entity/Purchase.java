@@ -10,6 +10,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.jeecg.modules.basic.entity.BasicEntity;
 import org.jeecg.modules.inventory.entity.InventoryIn;
+import org.jeecg.modules.inventory.entity.InventoryOut;
 import org.jeecgframework.poi.excel.annotation.Excel;
 import org.springframework.format.annotation.DateTimeFormat;
 import java.util.Date;
@@ -117,5 +118,14 @@ public class Purchase extends BasicEntity {
     public void setInventoryin(InventoryIn inventoryin) {
         this.inventoryin = inventoryin;
     }
-
+    /*出库单*/
+    @ApiModelProperty("出库单")
+    @TableField(exist = false)
+    private InventoryOut inventoryOut;
+    public InventoryOut getInventoryOut() {
+        return inventoryOut;
+    }
+    public void setInventoryOut(InventoryOut inventoryOut) {
+        this.inventoryOut = inventoryOut;
+    }
 }

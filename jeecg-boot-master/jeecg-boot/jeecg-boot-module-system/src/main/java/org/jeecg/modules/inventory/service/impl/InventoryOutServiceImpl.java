@@ -10,8 +10,8 @@ import org.jeecg.modules.inventory.entity.InventoryOutMtl;
 import org.jeecg.modules.inventory.mapper.InventoryOutMapper;
 import org.jeecg.modules.inventory.service.InventoryOutMtlService;
 import org.jeecg.modules.inventory.service.InventoryOutService;
-import org.jeecg.modules.purchase.entity.PurchaseReturnMtl;
-import org.jeecg.modules.purchase.service.IPurchaseReturnMtlService;
+import org.jeecg.modules.purchase.entity.PurchaseReturnDtl;
+import org.jeecg.modules.purchase.service.IPurchaseReturnDtlService;
 import org.jeecg.modules.saleorder.entity.SaleOrderMtl;
 import org.jeecg.modules.saleorder.service.SaleOrderMtlService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,13 +22,13 @@ import java.util.List;
 @Service
 public class InventoryOutServiceImpl extends ServiceImpl<InventoryOutMapper, InventoryOut>  implements InventoryOutService {
 
-    @Autowired
-    private InventoryOutMapper inventoryOutMapper;
+//    @Autowired
+//    private InventoryOutMapper inventoryOutMapper;
 
     @Autowired
     private SaleOrderMtlService saleOrderMtlService;
     @Autowired
-    private IPurchaseReturnMtlService iPurchaseReturnMtlService;
+    private IPurchaseReturnDtlService iPurchaseReturnMtlService;
     @Autowired
     private InventoryOutMtlService inventoryOutMtlService;
 
@@ -41,12 +41,12 @@ public class InventoryOutServiceImpl extends ServiceImpl<InventoryOutMapper, Inv
             List<SaleOrderMtl> saleOrderMtls = saleOrderMtlService.list(queryWrapper);
             if (CollectionUtils.isNotEmpty(saleOrderMtls)) {
                 saleOrderMtls.forEach(o ->{
-                    inventoryOutMtls.add(new InventoryOutMtl(o.getSourceId(), o.getMtlId(), o.getQuantity(), o.getUnitId()));
+                    inventoryOutMtls.add(new InventoryOutMtl(o.getSourceId(), o.getMtlId(), o.getQuantity().toString(), o.getUnitId()));
                 });
             }
         } else if (inventoryOut.getBillType() == BillType.PURCHASERETURNORDER.getId()) {
-            LambdaQueryWrapper<PurchaseReturnMtl> queryWrapper = new LambdaQueryWrapper<PurchaseReturnMtl>().eq(PurchaseReturnMtl::getSourceId, inventoryOut.getSourceId());
-            List<PurchaseReturnMtl> purchaseReturnMtls = iPurchaseReturnMtlService.list(queryWrapper);
+            LambdaQueryWrapper<PurchaseReturnDtl> queryWrapper = new LambdaQueryWrapper<PurchaseReturnDtl>().eq(PurchaseReturnDtl::getSourceId, inventoryOut.getSourceId());
+            List<PurchaseReturnDtl> purchaseReturnMtls = iPurchaseReturnMtlService.list(queryWrapper);
             if (CollectionUtils.isNotEmpty(purchaseReturnMtls)) {
                 purchaseReturnMtls.forEach(o ->{
                     inventoryOutMtls.add(new InventoryOutMtl(o.getSourceId(), o.getMtlId(), o.getQuantity(), o.getUnitId()));
