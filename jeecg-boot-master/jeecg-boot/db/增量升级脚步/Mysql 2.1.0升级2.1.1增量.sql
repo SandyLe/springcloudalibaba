@@ -634,6 +634,7 @@ CREATE TABLE `sl_inventory_in` (
 
   `bill_status` int(10) DEFAULT NULL,
   `bill_type` int(10) DEFAULT NULL,
+  `source_code` varchar(30) DEFAULT NULL,
   `source_bill_type` int(10) DEFAULT NULL,
   `source_id` varchar(30) DEFAULT NULL,
   `warehouse_id` varchar(30) DEFAULT NULL,
@@ -678,6 +679,7 @@ CREATE TABLE `sl_inventory_out` (
   `bill_type` int(10) DEFAULT NULL,
   `source_bill_type` int(10) DEFAULT NULL,
   `source_id` varchar(30) DEFAULT NULL,
+  `source_code` varchar(30) DEFAULT NULL,
   `warehouse_id` varchar(30) DEFAULT NULL,
   `put_out_time` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

@@ -32,17 +32,17 @@ public class InventoryOut extends BasicEntity {
     @ApiModelProperty("订单状态")
     private Integer billStatus;
 
-    public InventoryOut() {
-    }
-
-    public InventoryOut(String sourceId, Integer billType, Integer sourceBillType, String warehouseId, Date putOutTime, Integer billStatus) {
-        this.sourceId = sourceId;
-        this.billType = billType;
-        this.sourceBillType = sourceBillType;
-        this.warehouseId = warehouseId;
-        this.putOutTime = DateUtils.formatTime(putOutTime);
-        this.billStatus = billStatus;
-    }
+//    public InventoryOut() {
+//    }
+//
+//    public InventoryOut(String sourceId, Integer billType, Integer sourceBillType, String warehouseId, Date putOutTime, Integer billStatus) {
+//        this.sourceId = sourceId;
+//        this.billType = billType;
+//        this.sourceBillType = sourceBillType;
+//        this.warehouseId = warehouseId;
+//        this.putOutTime = DateUtils.formatTime(putOutTime);
+//        this.billStatus = billStatus;
+//    }
 
     public String getSourceId() {
         return sourceId;

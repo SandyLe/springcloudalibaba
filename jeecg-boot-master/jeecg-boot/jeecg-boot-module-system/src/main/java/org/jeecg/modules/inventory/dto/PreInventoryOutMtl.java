@@ -1,10 +1,10 @@
-package org.jeecg.modules.saleorder.dto;
+package org.jeecg.modules.inventory.dto;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import io.swagger.annotations.ApiModelProperty;
 import java.math.BigDecimal;
 
-public class SaleOrderDeliveryMtl {
+public class PreInventoryOutMtl {
 
     @ApiModelProperty("销售出库ID")
     private String billId;

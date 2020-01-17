@@ -8,6 +8,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
@@ -15,11 +16,17 @@ import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.modules.basic.entity.Material;
 import org.jeecg.modules.basic.entity.MaterialUnit;
 import org.jeecg.modules.basic.entity.Warehouse;
+import org.jeecg.modules.basic.enums.BillStatus;
 import org.jeecg.modules.basic.enums.BillType;
+import org.jeecg.modules.basic.enums.EnumConvertUtils;
 import org.jeecg.modules.basic.service.BillCodeBuilderService;
+import org.jeecg.modules.basic.service.MaterialService;
+import org.jeecg.modules.basic.service.MaterialUnitService;
 import org.jeecg.modules.basic.service.WarehouseService;
+//import org.jeecg.modules.inventory.entity.InventoryOut;
 import org.jeecg.modules.inventory.entity.InventoryOut;
 import org.jeecg.modules.inventory.service.InventoryOutService;
+import org.jeecg.modules.inventory.dto.PreInventoryOutMtl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
@@ -43,6 +50,11 @@ public class InventoryOutController {
     private WarehouseService warehouseService;
     @Autowired
     private BillCodeBuilderService billCodeBuilderService;
+    @Autowired
+    private MaterialUnitService materialUnitService;
+    @Autowired
+    private MaterialService materialService;
+
     /**
      * 添加
      *
@@ -102,9 +114,12 @@ public class InventoryOutController {
         List<String> warehouseIds = inventoryOutList.stream().map(InventoryOut::getWarehouseId).collect(Collectors.toList());
         Collection<Warehouse> warehouses = warehouseService.listByIds(warehouseIds);
         Map<String, String> warehouseMap = warehouses.stream().collect(Collectors.toMap(Warehouse:: getId, Warehouse:: getName));
-        inventoryOutList.stream().forEach(o->{
-            o.setWarehouse(warehouseMap.get(o.getWarehouseId()));
-        });
+//        inventoryOutList.stream().forEach(o->{
+//            o.setWarehouse(warehouseMap.get(o.getWarehouseId()));
+//            o.setBillTypeName(EnumConvertUtils.getName(BillType.class, o.getBillType()));
+//            o.setSourceBillTypeName(EnumConvertUtils.getName(BillType.class, o.getSourceBillType()));
+//            o.setBillStatusName(EnumConvertUtils.getName(BillStatus.class, o.getBillStatus()));
+//        });
 
         log.info("查询当前页：" + pageList.getCurrent());
         log.info("查询当前页数量：" + pageList.getSize());
@@ -167,6 +182,53 @@ public class InventoryOutController {
     public Result<?> queryById(@ApiParam(name = "id", value = "示例id", required = true) @RequestParam(name = "id", required = true) String id) {
         InventoryOut inventoryOut = inventoryOutService.getById(id);
         return Result.ok(inventoryOut);
+    }
+
+    /**
+     * 获取待发货产品列表
+     *
+     * @param id
+     * @param sourceId
+     * @return
+     */
+    @ApiOperation(value = "获取销售订单待发货产品列表", notes = "获取销售订单待发货产品列表")
+    @GetMapping(value = "/mtl/getList")
+    public Result<?> getList(@ApiParam(name = "id", value = "出库单信息ID", required = true) @RequestParam(name = "id", required = true) String id,
+                             @ApiParam(name = "sourceId", value = "原单id", required = true) @RequestParam(name = "sourceId", required = true) String sourceId) {
+        List<PreInventoryOutMtl> list = inventoryOutService.getDeliveryMtlList(id, sourceId);
+        if (CollectionUtils.isNotEmpty(list)) {
+            List<String> mtlIds = list.stream().map(PreInventoryOutMtl::getMtlId).collect(Collectors.toList());
+            List<String> unitIds = list.stream().map(PreInventoryOutMtl::getUnitId).collect(Collectors.toList());
+            Collection<Material> materials = materialService.listByIds(mtlIds);
+            Collection<MaterialUnit> units = materialUnitService.listByIds(unitIds);
+            Map<String, String> mtlNameMap = materials.stream().collect(Collectors.toMap(Material::getId, Material::getName));
+            Map<String, String> mtlCodeMap = materials.stream().collect(Collectors.toMap(Material::getId, Material::getCode));
+            Map<String, String> mtlSpectxMap = materials.stream().collect(Collectors.toMap(Material::getId, Material::getSpecification));
+            Map<String, String> unitMap = units.stream().collect(Collectors.toMap(MaterialUnit::getId, MaterialUnit::getName));
+            list.stream().forEach(o->{
+                o.setUnit(unitMap.get(o.getUnitId()));
+                o.setMtl(mtlNameMap.get(o.getMtlId()));
+                o.setMtlCode(mtlCodeMap.get(o.getMtlId()));
+                o.setSpecification(mtlSpectxMap.get(o.getMtlId()));
+            });
+        }
+        return Result.ok(list);
+    }
+
+    /**
+     * 修改
+     *
+     * @param mtls
+     * @return
+     */
+    @PostMapping(value = "/mtls/stockout")
+    @AutoLog(value = "修改销售订单发货信息")
+    @ApiOperation(value = "修改销售订单发货信息", notes = "修改销售订单发货信息")
+    public Result<?> edit(@RequestBody List<PreInventoryOutMtl> mtls){
+        if (CollectionUtils.isNotEmpty(mtls)) {
+            inventoryOutService.stockOut(mtls);
+        }
+        return Result.ok();
     }
 
 }
