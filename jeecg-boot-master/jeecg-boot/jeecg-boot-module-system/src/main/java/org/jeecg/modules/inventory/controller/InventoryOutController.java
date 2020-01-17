@@ -114,12 +114,12 @@ public class InventoryOutController {
         List<String> warehouseIds = inventoryOutList.stream().map(InventoryOut::getWarehouseId).collect(Collectors.toList());
         Collection<Warehouse> warehouses = warehouseService.listByIds(warehouseIds);
         Map<String, String> warehouseMap = warehouses.stream().collect(Collectors.toMap(Warehouse:: getId, Warehouse:: getName));
-//        inventoryOutList.stream().forEach(o->{
-//            o.setWarehouse(warehouseMap.get(o.getWarehouseId()));
-//            o.setBillTypeName(EnumConvertUtils.getName(BillType.class, o.getBillType()));
-//            o.setSourceBillTypeName(EnumConvertUtils.getName(BillType.class, o.getSourceBillType()));
-//            o.setBillStatusName(EnumConvertUtils.getName(BillStatus.class, o.getBillStatus()));
-//        });
+        inventoryOutList.stream().forEach(o->{
+            o.setWarehouse(warehouseMap.get(o.getWarehouseId()));
+            o.setBillTypeName(EnumConvertUtils.getName(BillType.class, o.getBillType()));
+            o.setSourceBillTypeName(EnumConvertUtils.getName(BillType.class, o.getSourceBillType()));
+            o.setBillStatusName(EnumConvertUtils.getName(BillStatus.class, o.getBillStatus()));
+        });
 
         log.info("查询当前页：" + pageList.getCurrent());
         log.info("查询当前页数量：" + pageList.getSize());

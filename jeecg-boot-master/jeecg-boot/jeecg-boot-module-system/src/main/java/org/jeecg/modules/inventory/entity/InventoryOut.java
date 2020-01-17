@@ -18,10 +18,16 @@ public class InventoryOut extends BasicEntity {
 
     @ApiModelProperty("原单ID：销售出库，采购退货")
     private String sourceId;
+    @ApiModelProperty("原单Code：销售出库，采购退货")
+    private String sourceCode;
     @ApiModelProperty("原单类型")
     private Integer sourceBillType;
+    @TableField(exist=false)
+    private String sourceBillTypeName;
     @ApiModelProperty("单据类型")
     private Integer billType;
+    @TableField(exist=false)
+    private String billTypeName;
     @ApiModelProperty("仓库ID")
     private String warehouseId;
     @ApiModelProperty("仓库")
@@ -31,18 +37,21 @@ public class InventoryOut extends BasicEntity {
     private String putOutTime;
     @ApiModelProperty("订单状态")
     private Integer billStatus;
+    @TableField(exist=false)
+    private String billStatusName;
 
-//    public InventoryOut() {
-//    }
-//
-//    public InventoryOut(String sourceId, Integer billType, Integer sourceBillType, String warehouseId, Date putOutTime, Integer billStatus) {
-//        this.sourceId = sourceId;
-//        this.billType = billType;
-//        this.sourceBillType = sourceBillType;
-//        this.warehouseId = warehouseId;
-//        this.putOutTime = DateUtils.formatTime(putOutTime);
-//        this.billStatus = billStatus;
-//    }
+    public InventoryOut() {
+    }
+
+    public InventoryOut(String sourceId, String sourceCode, Integer billType, Integer sourceBillType, String warehouseId, Date putOutTime, Integer billStatus) {
+        this.sourceId = sourceId;
+        this.billType = billType;
+        this.sourceCode = sourceCode;
+        this.sourceBillType = sourceBillType;
+        this.warehouseId = warehouseId;
+        this.putOutTime = DateUtils.formatTime(putOutTime);
+        this.billStatus = billStatus;
+    }
 
     public String getSourceId() {
         return sourceId;
@@ -98,5 +107,29 @@ public class InventoryOut extends BasicEntity {
 
     public void setSourceBillType(Integer sourceBillType) {
         this.sourceBillType = sourceBillType;
+    }
+
+    public String getSourceBillTypeName() {
+        return sourceBillTypeName;
+    }
+
+    public void setSourceBillTypeName(String sourceBillTypeName) {
+        this.sourceBillTypeName = sourceBillTypeName;
+    }
+
+    public String getBillTypeName() {
+        return billTypeName;
+    }
+
+    public void setBillTypeName(String billTypeName) {
+        this.billTypeName = billTypeName;
+    }
+
+    public String getBillStatusName() {
+        return billStatusName;
+    }
+
+    public void setBillStatusName(String billStatusName) {
+        this.billStatusName = billStatusName;
     }
 }
