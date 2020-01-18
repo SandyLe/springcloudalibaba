@@ -11,6 +11,8 @@ import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.modules.basic.entity.CustomerType;
+import org.jeecg.modules.basic.enums.BillType;
+import org.jeecg.modules.basic.service.BillCodeBuilderService;
 import org.jeecg.modules.basic.service.CustomerTypeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -27,6 +29,8 @@ public class CustomerTypeController {
 
     @Autowired
     private CustomerTypeService customerTypeService;
+    @Autowired
+    private BillCodeBuilderService billCodeBuilderService;
 
     /**
      * 分页列表查询
@@ -76,6 +80,7 @@ public class CustomerTypeController {
     @AutoLog(value = "添加客户类型")
     @ApiOperation(value = "添加客户类型", notes = "添加客户类型")
     public Result<?> add(@RequestBody CustomerType customerType) {
+        customerType.setCode(billCodeBuilderService.getBillCode(BillType.CUSTOMERTYPE.getId()));
         customerTypeService.save(customerType);
         return Result.ok("添加成功！");
     }

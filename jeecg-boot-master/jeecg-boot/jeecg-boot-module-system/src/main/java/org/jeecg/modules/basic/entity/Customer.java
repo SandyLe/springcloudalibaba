@@ -38,6 +38,8 @@ public class Customer extends BasicEntity {
     private String nickName;
     @ApiModelProperty("性别")
     private String gender;
+    @TableField(exist=false)
+    private String genderName;
     @ApiModelProperty("生日")
     private String birthday;
     @ApiModelProperty("联系人")
@@ -58,6 +60,8 @@ public class Customer extends BasicEntity {
     private BigDecimal discount;
     @ApiModelProperty("折扣类型")
     private String discountTypeId;
+    @TableField(exist=false)
+    private String discountType;
     @ApiModelProperty("省")
     private String province;
     @ApiModelProperty("市")
@@ -68,6 +72,8 @@ public class Customer extends BasicEntity {
     private String address;
     @ApiModelProperty("开票信息")
     private String billingInfo;
+    @TableField(exist=false)
+    private String fullAddress;
 
     public String getCustomerTypeId() {
         return customerTypeId;
@@ -283,5 +289,29 @@ public class Customer extends BasicEntity {
 
     public void setBillingInfo(String billingInfo) {
         this.billingInfo = billingInfo;
+    }
+
+    public String getGenderName() {
+        return genderName;
+    }
+
+    public void setGenderName(String genderName) {
+        this.genderName = genderName;
+    }
+
+    public String getDiscountType() {
+        return discountType;
+    }
+
+    public void setDiscountType(String discountType) {
+        this.discountType = discountType;
+    }
+
+    public String getFullAddress() {
+        return fullAddress;
+    }
+
+    public void setFullAddress(String fullAddress) {
+        this.fullAddress = fullAddress;
     }
 }

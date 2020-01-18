@@ -14,13 +14,14 @@ import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.system.query.QueryGenerator;
+import org.jeecg.common.system.vo.DictModel;
 import org.jeecg.modules.basic.dto.CustomerEditDto;
-import org.jeecg.modules.basic.entity.Customer;
-import org.jeecg.modules.basic.entity.CustomerDeliveryInfo;
-import org.jeecg.modules.basic.entity.CustomerSource;
-import org.jeecg.modules.basic.entity.CustomerType;
+import org.jeecg.modules.basic.entity.*;
 import org.jeecg.modules.basic.enums.BillType;
+import org.jeecg.modules.basic.enums.EnumConvertUtils;
+import org.jeecg.modules.basic.enums.RowSts;
 import org.jeecg.modules.basic.service.*;
+import org.jeecg.modules.system.service.ISysDictService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
@@ -48,6 +49,12 @@ public class CustomerController {
     private CustomerTypeService customerTypeService;
     @Autowired
     private BillCodeBuilderService billCodeBuilderService;
+    @Autowired
+    private ISysDictService iSysDictService;
+    @Autowired
+    private AreaService areaService;
+    @Autowired
+    private LogisticsCompanyService logisticsCompanyService;
 
     /**
      * 获取所有数据
@@ -189,6 +196,18 @@ public class CustomerController {
     @ApiOperation(value = "通过ID查询客户", notes = "通过ID查询客户")
     public Result<?> queryById(@ApiParam(name = "id", value = "示例id", required = true) @RequestParam(name = "id", required = true) String id) {
         Customer customer = customerService.getById(id);
+        CustomerSource source = customerSourceService.getById(customer.getCustomerSourceId());
+        CustomerType type = customerTypeService.getById(customer.getCustomerTypeId());
+        customer.setCustomerSource(null != source ? source.getName() : null);
+        customer.setCustomerType(null != type ? type.getName() : null);
+        customer.setRowStsName(EnumConvertUtils.getName(RowSts.class, customer.getRowSts()));
+        if (null != customer.getGender()) {
+            customer.setGenderName(iSysDictService.queryDictTextByKey("sex", customer.getGender()));
+        }
+        if (StringUtils.isNotBlank(customer.getDiscountTypeId())) {
+            customer.setDiscountType(iSysDictService.queryDictTextByKey("discount_type", customer.getDiscountTypeId()));
+        }
+        customer.setFullAddress(getFullAddress(customer.getProvince(), customer.getCity(), customer.getDistrict(), customer.getAddress()));
         return Result.ok(customer);
     }
 
@@ -196,6 +215,30 @@ public class CustomerController {
     @ApiModelProperty(value = "查询收货信息", notes = "查询收货信息")
     public Result<?> getDeliveryInfo(CustomerDeliveryInfo info, HttpServletRequest req){
         CustomerDeliveryInfo result = customerDeliveryInfoService.getOne(QueryGenerator.initQueryWrapper(info, req.getParameterMap()));
+        result.setCdiDefaultTypeName(iSysDictService.queryDictTextByKey("delivery_type", result.getCdiDefaultType()));
+        result.setCdiFullAddress(getFullAddress(result.getCdiProvince(), result.getCdiCity(), result.getCdiDistrict(), result.getCdiAddress()));
+        if (StringUtils.isNotBlank(result.getCdiLogistics())){
+            LogisticsCompany lc = logisticsCompanyService.getById(result.getCdiLogistics());
+            result.setCdiLogisticsName(lc.getName());
+        }
         return Result.ok(result);
+    }
+
+    private String getFullAddress(String provinceId, String cityId, String districtId, String address) {
+
+        StringBuilder stringBuilder = new StringBuilder();
+        if (StringUtils.isNotBlank(provinceId)) {
+            Area province = areaService.getById(provinceId);
+            stringBuilder.append(null != province ? province.getName() : "");
+        }
+        if (StringUtils.isNotBlank(cityId)) {
+            Area city = areaService.getById(cityId);
+            stringBuilder.append(null != city ? city.getName() : "");
+        }
+        if (StringUtils.isNotBlank(districtId)) {
+            Area district = areaService.getById(districtId);
+            stringBuilder.append(null != district ? district.getName() : "");
+        }
+        return stringBuilder.toString();
     }
 }

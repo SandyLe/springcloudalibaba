@@ -1,5 +1,6 @@
 package org.jeecg.modules.basic.entity;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import org.jeecg.common.system.base.entity.JeecgEntity;
@@ -15,6 +16,8 @@ public class BasicEntity extends JeecgEntity {
 
     @ApiModelProperty("数据状态")
     private Integer rowSts;
+    @TableField(exist=false)
+    private String rowStsName;
 
     @ApiModelProperty("排序")
     private Integer sort;
@@ -60,5 +63,13 @@ public class BasicEntity extends JeecgEntity {
 
     public void setSort(Integer sort) {
         this.sort = sort;
+    }
+
+    public String getRowStsName() {
+        return rowStsName;
+    }
+
+    public void setRowStsName(String rowStsName) {
+        this.rowStsName = rowStsName;
     }
 }
