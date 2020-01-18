@@ -26,18 +26,7 @@
               :labelCol="labelCol"
               :wrapperCol="wrapperCol"
               label="代码">
-              <a-input placeholder="后台自动生成代码" :readOnly="true" v-decorator="[ 'code', validatorRules.code]" />
-            </a-form-item>
-          </a-col>
-        </a-row>
-        <a-row>
-          <a-col :md="24" :sm="24">
-            <a-form-item
-              :labelCol="hlabelCol"
-              :wrapperCol="hwrapperCol"
-              label="是否启用分类价格"
-              label-width="4">
-              <j-dict-select-tag v-decorator="['priceFlag', {}]" placeholder="是否启用分类价格" :type="'radio'" :triggerChange="true" dictCode="price_flag"/>
+              <a-input placeholder="请输入代码" v-decorator="[ 'code', validatorRules.code]" />
             </a-form-item>
           </a-col>
         </a-row>
@@ -60,10 +49,9 @@
 <script>
   import pick from 'lodash.pick'
   import AFormItem from "ant-design-vue/es/form/FormItem";
-  import JDictSelectTag from '@/components/dict/JDictSelectTag.vue'
-  import {addCustomerType,editCustomerType,duplicateCheck } from '@/api/api'
+  import {addLogisticsCompany,editLogisticsCompany,duplicateCheck } from '@/api/api'
   export default {
-    name: "CustomerTypeModal",
+    name: "LogisticsCompanyModal",
     data() {
       return {
         title: "操作",
@@ -97,12 +85,12 @@
         }
       }
     },
-    components: {AFormItem,JDictSelectTag},
+    components: {AFormItem},
     created () {
     },
     methods: {
       add () {
-        this.edit({priceFlag:'0'});
+        this.edit({});
       },
       edit (record) {
         this.form.resetFields();
@@ -117,7 +105,7 @@
         }
 
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'name', 'code','content','priceFlag'))
+          this.form.setFieldsValue(pick(this.model,'name', 'code','content'))
         });
       },
       close () {
@@ -133,10 +121,11 @@
             let formData = Object.assign(this.model, values);
             let obj;
             console.log(formData)
+            debugger
             if(!this.model.id){
-              obj=addCustomerType(formData);
+              obj=addLogisticsCompany(formData);
             }else{
-              obj=editCustomerType(formData);
+              obj=editLogisticsCompany(formData);
             }
             obj.then((res)=>{
               if(res.success){

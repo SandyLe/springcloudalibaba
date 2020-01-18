@@ -39,7 +39,7 @@
                 :labelCol="labelCol"
                 :wrapperCol="wrapperCol"
                 label="代码">
-                <a-input placeholder="请输入代码" v-decorator="[ 'code', validatorRules.code]" />
+                <a-input placeholder="后台自动生成" :readOnly="true" v-decorator="[ 'code', validatorRules.code]" />
               </a-form-item>
             </a-col>
             <a-col :md="6" :sm="6">
@@ -390,9 +390,9 @@
                   :wrapperCol="wrapperCol"
                   label="物流"
                   label-width="4">
-                  <a-select v-decorator="['cdiLogistics', {}]" placeholder="物流" style="width: 10%">
+                  <a-select v-decorator="['cdiLogistics', {}]" placeholder="物流">
                     <a-select-option value="">请选择</a-select-option>
-                    <a-select-option v-for="(item, key) in sourceList" :key="key" :value="item.id">
+                    <a-select-option v-for="(item, key) in cdiLogisticsCompanyList" :key="key" :value="item.id">
                     <span style="display: inline-block;width: 100%" :title=" item.name || item.code ">
                       {{ item.name || item.code }}
                     </span>
@@ -485,7 +485,7 @@
   import moment from 'moment'
   import AFormItem from "ant-design-vue/es/form/FormItem";
   import JDictSelectTag from '@/components/dict/JDictSelectTag.vue'
-  import {saveCustomer,duplicateCheck, getCustomerTypeList, getCustomerSourceList, getAreaList, getDeliveryInfo} from '@/api/api'
+  import {saveCustomer,duplicateCheck, getCustomerTypeList, getCustomerSourceList, getAreaList, getLogisticsCompanyList, getDeliveryInfo} from '@/api/api'
   export default {
     name: "Customer",
     data() {
@@ -504,7 +504,6 @@
           sm: { span: 16 },
         },
         hlabelCol: {
-          xs: { span: 24 },
           xs: { span: 24 },
           sm: { span: 2 },
         },
@@ -540,7 +539,8 @@
         cityList: [],
         districtList:[],
         cdiCityList: [],
-        cdiDistrictList:[]
+        cdiDistrictList:[],
+        cdiLogisticsCompanyList:[]
       }
     },
     components: {AFormItem,JDictSelectTag},
@@ -647,6 +647,13 @@
                     }
                   })
                 }
+                getLogisticsCompanyList({}).then((res) => {
+                  if (res.success) {
+                    if(res.result && res.result.length>0){
+                      this.cdiLogisticsCompanyList = res.result;
+                    }
+                  }
+                })
                 this.$nextTick(() => {
                   this.form.setFieldsValue(pick(that.model,'cdiDefaultType','cdiDescription','cdiLinkman','cdiPhone','cdiDeliveryAddress','cdiCarLicense',
                     'cdiRecipients','cdiRecipientsPhone','cdiProvince','cdiCity','cdiDistrict','cdiAddress','cdiLogistics','cdiBranch','cdiTel','cdiId'));

@@ -125,6 +125,7 @@ const addWarehouse = (params)=>postAction("/warehouse/add",params)
 const editWarehouse = (params)=>postAction("/warehouse/edit",params)
 const getWarehouseList = (params)=>getAction("/warehouse/getList",params)
 const getAreaList = (params)=>getAction("/area/getList",params)
+const getAreaOne = (params)=>getAction("/area/getOne",params)
 const getCustomerOne = (params)=>getAction("/customer/getOne",params)
 const saveCustomer = (params)=>postAction("/customer/save",params)
 const getCustomerList =  (params)=>getAction("/customer/getList",params)
@@ -170,6 +171,9 @@ const inventoryOutadd = (params)=>postAction("/inventoryOut/add",params)  //新�
 
 const purchasereturnadd = (params)=>postAction("/purchasereturn/add",params)  //新增采购退货
 const purchasereturnedit = (params)=>putAction("/purchasereturn/edit",params)  //修改采购退货
+const addLogisticsCompany = (params)=>postAction("/logisticsCompany/add",params)
+const editLogisticsCompany = (params)=>postAction("/logisticsCompany/edit",params)
+const getLogisticsCompanyList = (params)=>getAction("/logisticsCompany/getList",params)
 
 export {
   // imgView,
@@ -240,6 +244,7 @@ export {
   editWarehouse,
   getWarehouseList,
   getAreaList,
+  getAreaOne,
   saveCustomer,
   getCustomerOne,
   getDeliveryInfo,
@@ -286,7 +291,10 @@ export {
   inventoryInedit,
   inventoryOutadd,
   purchasereturnadd,
-  purchasereturnedit
+  purchasereturnedit,
+  addLogisticsCompany,
+  editLogisticsCompany,
+  getLogisticsCompanyList
 }
 
 

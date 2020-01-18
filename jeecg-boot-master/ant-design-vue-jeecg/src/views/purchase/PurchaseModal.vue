@@ -13,24 +13,24 @@
                     </a-form-item>
                 </a-col>
                 <a-col :span="12">
-                    <a-form-item label="仓库" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                        <a-select v-decorator="['warehouseId', {}]" placeholder="请选择仓库">
-                            <a-select-option v-for="(item, key) in dictOptions.warehouse" :key="key" :value="item.id">
-                                {{ item.name }}
-                            </a-select-option>
-                        </a-select>
-                    </a-form-item>
+                  <a-form-item label="采购单号" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                    <a-input v-decorator="[ 'code', {}]" readOnly="true" placeholder="后台自动生成"></a-input>
+                  </a-form-item>
                 </a-col>
             </a-row>
             <a-row>
+              <a-col :span="12">
+                <a-form-item label="仓库" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                  <a-select v-decorator="['warehouseId', {}]" placeholder="请选择仓库">
+                    <a-select-option v-for="(item, key) in dictOptions.warehouse" :key="key" :value="item.id">
+                      {{ item.name }}
+                    </a-select-option>
+                  </a-select>
+                </a-form-item>
+              </a-col>
                 <a-col :span="12">
                     <a-form-item label="结算账户" :labelCol="labelCol" :wrapperCol="wrapperCol">
                         <a-input v-decorator="[ 'account', {}]" placeholder="请输入结算账户" />
-                    </a-form-item>
-                </a-col>
-                <a-col :span="12">
-                    <a-form-item label="备注" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                        <a-input v-decorator="[ 'content', {}]" placeholder="请输入备注"></a-input>
                     </a-form-item>
                 </a-col>
             </a-row>
@@ -44,24 +44,31 @@
                     <a-form-item label="总金额" :labelCol="labelCol" :wrapperCol="wrapperCol">
                         <a-input-number v-decorator="[ 'totalamount', {}]" placeholder="请输入总金额" style="width:100%"/>
                         <div style="display:none;">
-                            <a-input v-decorator="[ 'id', {}]" placeholder="实体主键" type="hidden" /> 
-                            <a-input v-decorator="[ 'code', {}]" placeholder="代码" type="hidden"/>                        
+                            <a-input v-decorator="[ 'id', {}]" placeholder="实体主键" type="hidden" />
+                            <a-input v-decorator="[ 'code', {}]" placeholder="代码" type="hidden"/>
                         </div>
                     </a-form-item>
                 </a-col>
             </a-row>
+          <a-row>
+            <a-col :span="24">
+              <a-form-item label="备注" :labelCol="hlabelCol" :wrapperCol="hwrapperCol">
+                <a-input v-decorator="[ 'content', {}]" placeholder="请输入备注"></a-input>
+              </a-form-item>
+            </a-col>
+          </a-row>
             <a-row>
                 <a-col :span="24">
                     <a-card>
                         <form :autoFormCreate="(form) => this.form = form">
                             <a-table :columns="columns" :dataSource="tabledata" :pagination="false" rowKey="id">
                                 <template v-for="(col, i) in ['mtlId', 'unitId','quantity', 'price', 'discount', 'amount', 'content', 'action']" :slot="col" slot-scope="text, record, index">
-                                    <a-select v-if="['mtlId','unitId'].indexOf(columns[i].dataIndex) > -1" v-decorator="[record[columns[i].dataIndex], {}]" 
+                                    <a-select v-if="['mtlId','unitId'].indexOf(columns[i].dataIndex) > -1" v-decorator="[record[columns[i].dataIndex], {}]"
                                         @change="e => handleChange(e, record.key, col)" :placeholder="'请选择'+columns[i].title" :value="record[columns[i].dataIndex]">
                                         <a-select-option v-for="(item, key) in columns[i].list" :key="key" :value="item.id">
                                             {{ item.name }}
                                         </a-select-option>
-                                    </a-select>                                    
+                                    </a-select>
                                     <a-input :key="col" v-else style="margin: -5px 0" :value="text" :placeholder="columns[i].title" @change="e => handleChange(e.target.value, record.key, col)" />
                                     <!-- <template v-else>{{ text }}</template> -->
                                 </template>
@@ -82,7 +89,7 @@
                                         </span>
                                     </template>
                                     <span v-else>
-                                        <!-- <a @click="toggle(record.key)">编辑</a> 
+                                        <!-- <a @click="toggle(record.key)">编辑</a>
                                         <a-divider type="vertical" /> -->
                                         <a-popconfirm title="是否要删除此行？" :data-id="record.id" @confirm="remove(record.key,record.id)">
                                             <a>删除</a>
@@ -105,17 +112,17 @@
               </a-col>
             </a-row>
         </a-form>
-        
-        
+
+
     </a-card>
     <footer-tool-bar>
         <a-button type="primary" @click="handleOk">保存</a-button>
         <router-view :key="this.$route.path"></router-view>
         <a-button :style="{marginLeft:'20px'}" @click="backToList">返回</a-button>
     </footer-tool-bar>
-    
+
 </div>
-    
+
 </template>
 
 <script>
@@ -168,6 +175,14 @@ export default {
                 sm: {
                     span: 16
                 }
+            },
+            hlabelCol: {
+              xs: { span: 24 },
+              sm: { span: 2 },
+            },
+            hwrapperCol: {
+              xs: { span: 24 },
+              sm: { span: 16 },
             },
             confirmLoading: false,
             validatorRules: {
@@ -273,7 +288,7 @@ export default {
         this.initDictConfig();
         this.newMember();
         this.add();
-     
+
     },
     watch: {
         // 如果 `data` 发生改变，这个函数就会运行
@@ -350,7 +365,7 @@ export default {
         add() {
             if(this.$route.params.id){
                 purchasequeryById({"id":this.$route.params.id}).then((res)=>{
-                    if (res.result) {                        
+                    if (res.result) {
                         if(res.result.detaillist){
                             this.tabledata = res.result.detaillist;
                             for(let i=0;i < this.tabledata.length ; i++){
@@ -408,7 +423,7 @@ export default {
                                     that.$refs.inventorymodalForm.add();
                                 } else {
                                     that.$refs.inventorymodalForm.edit(res.result.inventory);
-                                }                                
+                                }
                                 that.$refs.inventorymodalForm.disableSubmit = false;
 
                                 // this.$router.replace({
@@ -480,7 +495,7 @@ export default {
             target.editable = false
             target.isNew = false
         },
-        backToList() {            
+        backToList() {
             // console.log(this.$route.matched);
             this.$route.matched.splice(this.$route.matched.length-1 ,1);
             this.$router.replace({ path:'/purchase/PurchaseList' });
