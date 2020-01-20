@@ -10,6 +10,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
@@ -88,16 +89,18 @@ public class CustomerController {
 
         IPage<Customer> pageList = customerService.page(page, queryWrapper);
         List<Customer> customerList = pageList.getRecords();
-        List<String> customerTypeIds = customerList.stream().map(Customer::getCustomerTypeId).collect(Collectors.toList());
-        List<String> customerSourceIds = customerList.stream().map(Customer::getCustomerSourceId).collect(Collectors.toList());
-        Collection<CustomerType> customerTypes = customerTypeService.listByIds(customerTypeIds);
-        Collection<CustomerSource> customerSources = customerSourceService.listByIds(customerSourceIds);
-        Map<String, String> customerTypeMap = customerTypes.stream().collect(Collectors.toMap(CustomerType::getId, CustomerType::getName));
-        Map<String, String> customerSourceMap = customerSources.stream().collect(Collectors.toMap(CustomerSource:: getId, CustomerSource:: getName));
-        customerList.stream().forEach(o->{
-            o.setCustomerSource(customerSourceMap.get(o.getCustomerSourceId()));
-            o.setCustomerType(customerTypeMap.get(o.getCustomerTypeId()));
-        });
+        if (CollectionUtils.isNotEmpty(customerList)) {
+            List<String> customerTypeIds = customerList.stream().map(Customer::getCustomerTypeId).collect(Collectors.toList());
+            List<String> customerSourceIds = customerList.stream().map(Customer::getCustomerSourceId).collect(Collectors.toList());
+            Collection<CustomerType> customerTypes = customerTypeService.listByIds(customerTypeIds);
+            Collection<CustomerSource> customerSources = customerSourceService.listByIds(customerSourceIds);
+            Map<String, String> customerTypeMap = customerTypes.stream().collect(Collectors.toMap(CustomerType::getId, CustomerType::getName));
+            Map<String, String> customerSourceMap = customerSources.stream().collect(Collectors.toMap(CustomerSource:: getId, CustomerSource:: getName));
+            customerList.stream().forEach(o->{
+                o.setCustomerSource(customerSourceMap.get(o.getCustomerSourceId()));
+                o.setCustomerType(customerTypeMap.get(o.getCustomerTypeId()));
+            });
+        }
 
         log.info("查询当前页：" + pageList.getCurrent());
         log.info("查询当前页数量：" + pageList.getSize());

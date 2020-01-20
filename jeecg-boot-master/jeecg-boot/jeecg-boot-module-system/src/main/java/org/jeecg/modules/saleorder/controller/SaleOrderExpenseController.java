@@ -7,6 +7,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.system.query.QueryGenerator;
@@ -77,15 +78,16 @@ public class SaleOrderExpenseController {
                           HttpServletRequest req) {
         QueryWrapper<SaleOrderExpense> queryWrapper = QueryGenerator.initQueryWrapper(saleOrderExpense, req.getParameterMap());
         Page<SaleOrderExpense> page = new Page<SaleOrderExpense>(pageNo, pageSize);
-
         IPage<SaleOrderExpense> pageList = saleOrderExpenseService.page(page, queryWrapper);
         List<SaleOrderExpense> saleOrderList = pageList.getRecords();
-        List<String> expenseIds = saleOrderList.stream().map(SaleOrderExpense::getExpenseId).collect(Collectors.toList());
-        Collection<Expense> expenses = expenseService.listByIds(expenseIds);
-        Map<String, String> expenseMap = expenses.stream().collect(Collectors.toMap(Expense::getId, Expense::getName));
-        saleOrderList.stream().forEach(o->{
-            o.setExpense(expenseMap.get(o.getExpenseId()));
-        });
+        if (CollectionUtils.isNotEmpty(saleOrderList)) {
+            List<String> expenseIds = saleOrderList.stream().map(SaleOrderExpense::getExpenseId).collect(Collectors.toList());
+            Collection<Expense> expenses = expenseService.listByIds(expenseIds);
+            Map<String, String> expenseMap = expenses.stream().collect(Collectors.toMap(Expense::getId, Expense::getName));
+            saleOrderList.stream().forEach(o->{
+                o.setExpense(expenseMap.get(o.getExpenseId()));
+            });
+        }
 
         log.info("查询当前页：" + pageList.getCurrent());
         log.info("查询当前页数量：" + pageList.getSize());

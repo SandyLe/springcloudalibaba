@@ -9,6 +9,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
@@ -116,23 +117,25 @@ public class SaleOrderController {
 
         IPage<SaleOrder> pageList = saleOrderService.page(page, queryWrapper);
         List<SaleOrder> saleOrderList = pageList.getRecords();
-        List<String> customerIds = saleOrderList.stream().map(SaleOrder::getCustomerId).collect(Collectors.toList());
-        List<String> warehouseIds = saleOrderList.stream().map(SaleOrder::getWarehouseId).collect(Collectors.toList());
-        Collection<Customer> customers = customerService.listByIds(customerIds);
-        Collection<Warehouse> warehouses = warehouseService.listByIds(warehouseIds);
-        Collection<DictModel> sysDict = iSysDictService.queryDictItemsByCode("receipt_type");
-        Collection<DictModel> channelDicts = iSysDictService.queryDictItemsByCode("channel");
-        Map<String, String> customerMap = customers.stream().collect(Collectors.toMap(Customer::getId, Customer::getName));
-        Map<String, String> warehouseMap = warehouses.stream().collect(Collectors.toMap(Warehouse:: getId, Warehouse:: getName));
-        Map<String, String> dictModelMap = sysDict.stream().collect(Collectors.toMap(DictModel::getValue, DictModel::getText));
-        Map<String, String> channelMap = channelDicts.stream().collect(Collectors.toMap(DictModel::getValue, DictModel::getText));
-        saleOrderList.stream().forEach(o->{
-            o.setWarehouse(warehouseMap.get(o.getWarehouseId()));
-            o.setCustomer(customerMap.get(o.getCustomerId()));
-            o.setReceiptTypeName(dictModelMap.get(o.getReceiptType()));
-            o.setChannel(channelMap.get(o.getChannelId()));
-            o.setBillStatusName(BillStatus.getName(o.getBillStatus()));
-        });
+        if (CollectionUtils.isNotEmpty(saleOrderList)) {
+            List<String> customerIds = saleOrderList.stream().map(SaleOrder::getCustomerId).collect(Collectors.toList());
+            List<String> warehouseIds = saleOrderList.stream().map(SaleOrder::getWarehouseId).collect(Collectors.toList());
+            Collection<Customer> customers = customerService.listByIds(customerIds);
+            Collection<Warehouse> warehouses = warehouseService.listByIds(warehouseIds);
+            Collection<DictModel> sysDict = iSysDictService.queryDictItemsByCode("receipt_type");
+            Collection<DictModel> channelDicts = iSysDictService.queryDictItemsByCode("channel");
+            Map<String, String> customerMap = customers.stream().collect(Collectors.toMap(Customer::getId, Customer::getName));
+            Map<String, String> warehouseMap = warehouses.stream().collect(Collectors.toMap(Warehouse:: getId, Warehouse:: getName));
+            Map<String, String> dictModelMap = sysDict.stream().collect(Collectors.toMap(DictModel::getValue, DictModel::getText));
+            Map<String, String> channelMap = channelDicts.stream().collect(Collectors.toMap(DictModel::getValue, DictModel::getText));
+            saleOrderList.stream().forEach(o->{
+                o.setWarehouse(warehouseMap.get(o.getWarehouseId()));
+                o.setCustomer(customerMap.get(o.getCustomerId()));
+                o.setReceiptTypeName(dictModelMap.get(o.getReceiptType()));
+                o.setChannel(channelMap.get(o.getChannelId()));
+                o.setBillStatusName(BillStatus.getName(o.getBillStatus()));
+            });
+        }
 
         log.info("查询当前页：" + pageList.getCurrent());
         log.info("查询当前页数量：" + pageList.getSize());
@@ -219,6 +222,12 @@ public class SaleOrderController {
     @ApiOperation(value = "通过ID查询销售订单", notes = "通过ID查询销售订单")
     public Result<?> queryById(@ApiParam(name = "id", value = "示例id", required = true) @RequestParam(name = "id", required = true) String id) {
         SaleOrder saleOrder = saleOrderService.getById(id);
+        if (null != saleOrder) {
+            if (StringUtils.isNotBlank(saleOrder.getCustomerId())) {
+                Customer customer = customerService.getById(saleOrder.getCustomerId());
+                saleOrder.setCustomer(null != customer ? customer.getName() : null);
+            }
+        }
         return Result.ok(saleOrder);
     }
 

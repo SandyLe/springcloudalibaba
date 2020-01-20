@@ -8,6 +8,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
@@ -62,20 +63,22 @@ public class MaterialController {
         Page<Material> page = new Page<Material>(pageNo, pageSize);
         IPage<Material> pageList = materialService.page(page, queryWrapper);
         List<Material> result = pageList.getRecords();
-        List<String> brandIds = result.stream().map(Material::getBrandId).collect(Collectors.toList());;
-        List<String> typeIds = result.stream().map(Material::getTypeId).collect(Collectors.toList());
-        List<String> unitIds = result.stream().map(Material::getUnitId).collect(Collectors.toList());
-        Collection<MaterialBrand> brands = materialBrandService.listByIds(brandIds);
-        Collection<MaterialType> types = materialTypeService.listByIds(typeIds);
-        Collection<MaterialUnit> units = materialUnitService.listByIds(unitIds);
-        Map<String, String> brandIdNameMap = brands.stream().collect(Collectors.toMap(MaterialBrand::getId, MaterialBrand::getName));
-        Map<String, String> typeIdNameMap = types.stream().collect(Collectors.toMap(MaterialType::getId, MaterialType::getName));
-        Map<String, String> unitIdNameMap = units.stream().collect(Collectors.toMap(MaterialUnit::getId, MaterialUnit::getName));
-        result.stream().forEach(o->{
-            o.setBrand(brandIdNameMap.get(o.getBrandId()));
-            o.setType(typeIdNameMap.get(o.getTypeId()));
-            o.setUnit(unitIdNameMap.get(o.getUnitId()));
-        });
+        if (CollectionUtils.isNotEmpty(result)) {
+            List<String> brandIds = result.stream().map(Material::getBrandId).collect(Collectors.toList());;
+            List<String> typeIds = result.stream().map(Material::getTypeId).collect(Collectors.toList());
+            List<String> unitIds = result.stream().map(Material::getUnitId).collect(Collectors.toList());
+            Collection<MaterialBrand> brands = materialBrandService.listByIds(brandIds);
+            Collection<MaterialType> types = materialTypeService.listByIds(typeIds);
+            Collection<MaterialUnit> units = materialUnitService.listByIds(unitIds);
+            Map<String, String> brandIdNameMap = brands.stream().collect(Collectors.toMap(MaterialBrand::getId, MaterialBrand::getName));
+            Map<String, String> typeIdNameMap = types.stream().collect(Collectors.toMap(MaterialType::getId, MaterialType::getName));
+            Map<String, String> unitIdNameMap = units.stream().collect(Collectors.toMap(MaterialUnit::getId, MaterialUnit::getName));
+            result.stream().forEach(o->{
+                o.setBrand(brandIdNameMap.get(o.getBrandId()));
+                o.setType(typeIdNameMap.get(o.getTypeId()));
+                o.setUnit(unitIdNameMap.get(o.getUnitId()));
+            });
+        }
         log.info("查询当前页：" + pageList.getCurrent());
         log.info("查询当前页数量：" + pageList.getSize());
         log.info("查询结果数量：" + pageList.getRecords().size());
@@ -169,6 +172,20 @@ public class MaterialController {
     @ApiOperation(value = "通过ID查询产品", notes = "通过ID查询产品")
     public Result<?> queryById(@ApiParam(name = "id", value = "示例id", required = true) @RequestParam(name = "id", required = true) String id) {
         Material material = materialService.getById(id);
+        if (null != material) {
+            if (StringUtils.isNotBlank(material.getTypeId())) {
+                MaterialType materialType = materialTypeService.getById(material.getTypeId());
+                material.setType(null != materialType ? materialType.getName() : null);
+            }
+            if (StringUtils.isNotBlank(material.getBrandId())) {
+                MaterialBrand materialBrand = materialBrandService.getById(material.getBrandId());
+                material.setBrand(null != materialBrand ? materialBrand.getName() : null);
+            }
+            if (StringUtils.isNotBlank(material.getUnitId())) {
+                MaterialUnit materialUnit = materialUnitService.getById(material.getUnitId());
+                material.setUnit(null != materialUnit ? materialUnit.getName() : null);
+            }
+        }
         return Result.ok(material);
     }
 }
