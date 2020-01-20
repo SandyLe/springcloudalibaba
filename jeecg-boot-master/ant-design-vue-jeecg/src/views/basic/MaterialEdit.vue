@@ -4,16 +4,16 @@
       <detail-list title="基本信息">
         <detail-list-item term="产品名称">{{material.name}}</detail-list-item>
         <detail-list-item term="产品编码">{{material.code}}</detail-list-item>
-        <detail-list-item term="状态">{{material.rowSts}}2</detail-list-item>
+        <detail-list-item term="状态">{{material.rowStsName}}</detail-list-item>
         <detail-list-item term="产品规格">{{material.specification}}</detail-list-item>
         <detail-list-item term="产品类型">{{material.type}}</detail-list-item>
         <detail-list-item term="产品品牌">{{material.brand}}</detail-list-item>
       </detail-list>
       <a-divider style="margin-bottom: 32px"/>
       <detail-list title="其他信息">
-        <detail-list-item term="库存上限">{{material.nickName}}</detail-list-item>
-        <detail-list-item term="库存下限">{{material.birthday}}</detail-list-item>
-        <detail-list-item term="单位">{{material.linkman}}</detail-list-item>
+        <detail-list-item term="库存上限">{{material.uplimit}}</detail-list-item>
+        <detail-list-item term="库存下限">{{material.downlimit}}</detail-list-item>
+        <detail-list-item term="单位">{{material.unit}}</detail-list-item>
       </detail-list>
       <a-divider style="margin-bottom: 32px"/>
 

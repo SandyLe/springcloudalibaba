@@ -20,8 +20,8 @@
 
           <template v-if="toggleSearchStatus">
             <a-col :md="6" :sm="8">
-              <a-form-item label="联系人">
-                <j-input placeholder="输入联系人" v-model="queryParam.linkman"></j-input>
+              <a-form-item label="规格">
+                <j-input placeholder="输入规格" v-model="queryParam.specification"></j-input>
               </a-form-item>
             </a-col>
           </template>
@@ -93,7 +93,7 @@
             </a>
             <a-menu slot="overlay">
               <a-menu-item>
-                <a href="javascript:;" @click="handleDetail(record)">详情</a>
+                <a href="javascript:;" @click="goDetail(record.id)">详情</a>
               </a-menu-item>
 
               <a-menu-item>

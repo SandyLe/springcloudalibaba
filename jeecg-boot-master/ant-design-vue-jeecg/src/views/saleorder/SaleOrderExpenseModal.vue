@@ -26,7 +26,7 @@
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
-          label="产品">
+          label="费用名称">
           <a-select v-decorator="['expenseId', {}]" placeholder="请选择费用名称" showSearch optionFilterProp="children"
                     notFoundContent="没有匹配的费用名称"  >
             <a-select-option value="">请选择</a-select-option>
