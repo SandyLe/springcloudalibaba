@@ -50,16 +50,17 @@
           <a @click="goDetail(record.id)">{{record.code}}</a>
         </span>
         <span slot="action" slot-scope="text, record">
-          <a @click="handleEditSaleOrder(record.id)">编辑</a>
-
-          <a-divider type="vertical" />
+          <span v-if="record.billStatus < 1">
+            <a @click="handleEditSaleOrder(record.id)">编辑</a>
+            <a-divider type="vertical" />
+          </span>
           <a-dropdown>
             <a class="ant-dropdown-link">
               更多 <a-icon type="down" />
             </a>
             <a-menu slot="overlay">
               <a-menu-item>
-                <a @click="handlePerssion(record.id)">授权</a>
+                <a @click="handleInvalid(record.id)">作废</a>
               </a-menu-item>
               <a-menu-item>
                 <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
@@ -181,8 +182,14 @@
       searchReset () {
 
       },
+      goDetail (id) {
+        this.$router.push({ name: "saleorder-saleOrderEdit", query: {"id": id, "unEditable": true}})
+      },
       handleEditSaleOrder (id) {
-        this.$router.push({ name: "saleorder-saleOrderEdit", query: {"id": id}})
+        this.$router.push({ name: "saleorder-saleOrderEdit", query: {"id": id, "unEditable": false}})
+      },
+      handleInvalid (id) {
+
       }
     }
   }

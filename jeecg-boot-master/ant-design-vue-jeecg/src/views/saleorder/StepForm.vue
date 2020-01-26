@@ -52,6 +52,7 @@
         }
       },
       finish () {
+        this.$route.query.unEditable = true
         this.currentTab = 0
       }
     }

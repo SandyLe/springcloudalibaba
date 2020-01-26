@@ -74,7 +74,7 @@
       <div>
         <a-card class="card" title="其他费用" :bordered="true">
           <!-- 操作按钮区域 -->
-          <div class="table-operator" style="border-top: 5px">
+          <div class="table-operator" style="border-top: 5px" v-if = "!unEditable">
             <a-button @click="handleAddExpense" type="primary" icon="plus">添加费用</a-button>
             <a-dropdown v-if="selectedRowKeys.length > 0">
               <a-menu slot="overlay">
@@ -101,22 +101,22 @@
             :loading="loading2"
             :rowSelection="{selectedRowKeys: selectedRowKeys2, onChange: onSelectChange2}"
             @change="handleTableChange2">
-           <span slot="action" slot-scope="text, record">
-           <a @click="handleEdit2(record)">编辑</a>
-          <a-divider type="vertical"/>
-          <a-dropdown>
-            <a class="ant-dropdown-link">
-              更多 <a-icon type="down"/>
-            </a>
-            <a-menu slot="overlay">
-              <a-menu-item>
-                <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete2(record.id)">
-                  <a>删除</a>
-                </a-popconfirm>
-              </a-menu-item>
-            </a-menu>
-          </a-dropdown>
-        </span>
+           <span slot="action" slot-scope="text, record" v-if = "!unEditable">
+            <a @click="handleEdit2(record)">编辑</a>
+            <a-divider type="vertical"/>
+            <a-dropdown>
+              <a class="ant-dropdown-link">
+                更多 <a-icon type="down"/>
+              </a>
+              <a-menu slot="overlay">
+                <a-menu-item>
+                  <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete2(record.id)">
+                    <a>删除</a>
+                  </a-popconfirm>
+                </a-menu-item>
+              </a-menu>
+            </a-dropdown>
+          </span>
           </a-table>
         </a-card>
       </div>
@@ -144,7 +144,7 @@
             :labelCol="{span: 5}"
             :wrapperCol="{span: 19}"
             class="stepFormText">
-            <a-input placeholder="请输入实收金额" v-decorator="[ 'payamount', {}]" />
+            <a-input placeholder="请输入实收金额" v-decorator="[ 'payamount', {}]" :disabled="unEditable" />
           </a-form-item>
         </a-card>
       </div>
@@ -300,7 +300,8 @@
           list2: '/saleOrderExpense/getPage',
           delete2: '/saleOrderExpense/delete',
           deleteBatch2: '/saleOrderExpense/deleteBatch',
-        }
+        },
+        unEditable: true
       }
     },
     methods: {
@@ -490,7 +491,9 @@
         })
       },
       nextStep () {
-        this.handleOk()
+        if (!this.unEditable) {
+          this.handleOk();
+        }
         this.$emit('nextStep')
       },
       prevStep () {
@@ -513,6 +516,7 @@
         })
       }
       this.loadData2();
+      this.unEditable = this.$route.query.unEditable;
     }
   }
 </script>

@@ -9,7 +9,7 @@
             label="客户">
             <a-select v-decorator="['customerId', {}]" placeholder="请选择客户"  showSearch
                       optionFilterProp="children"
-                      notFoundContent="无法找到" >
+                      notFoundContent="无法找到" :disabled="unEditable" >
               <a-select-option value="">请选择</a-select-option>
               <a-select-option v-for="(item, key) in customerList" :key="key" :value="item.id">
                 {{ item.name || item.code }}
@@ -22,7 +22,7 @@
             :labelCol="{span: 5}"
             :wrapperCol="{span: 19}"
             label="单号">
-            <a-input placeholder="自动生成单号" :readOnly="true" v-decorator="[ 'code', {}]" />
+            <a-input placeholder="自动生成单号" :readOnly="true" v-decorator="[ 'code', {}]" :disabled="unEditable" />
           </a-form-item>
         </a-col>
         <a-col :md="6" :sm="6">
@@ -30,7 +30,7 @@
             :labelCol="{span: 5}"
             :wrapperCol="{span: 19}"
             label="渠道">
-            <j-dict-select-tag v-decorator="['channelId', {}]" placeholder="请选择销售渠道" :type="'select'" style="width: 60%" :triggerChange="true" dictCode="channel"/>
+            <j-dict-select-tag v-decorator="['channelId', {}]" placeholder="请选择销售渠道" :type="'select'" style="width: 60%" :triggerChange="true" dictCode="channel" :disabled="unEditable" :readOnly = "unEditable" />
           </a-form-item>
         </a-col>
         <a-col :md="6" :sm="6">
@@ -38,7 +38,7 @@
             :labelCol="{span: 5}"
             :wrapperCol="{span: 19}"
             label="订单日期">
-            <a-date-picker showTime format='YYYY-MM-DD HH:mm:ss' v-decorator="[ 'billDate', {}]"/>
+            <a-date-picker showTime format='YYYY-MM-DD HH:mm:ss' v-decorator="[ 'billDate', {}]" :readOnly = "unEditable" :disabled="unEditable" />
           </a-form-item>
         </a-col>
       </a-row>
@@ -49,7 +49,7 @@
             :labelCol="{span: 2}"
             :wrapperCol="{span: 22}"
           >
-            <a-input placeholder="请输入备注" v-decorator="[ 'content', {}]" />
+            <a-input placeholder="请输入备注" v-decorator="[ 'content', {}]" :readOnly = "unEditable" />
           </a-form-item>
         </a-col>
       </a-row>
@@ -58,7 +58,7 @@
       <a-row>
         <a-col>
           <!-- 操作按钮区域 -->
-          <div class="table-operator" style="border-top: 5px">
+          <div class="table-operator" style="border-top: 5px" v-if = "!unEditable">
             <a-button @click="handleAddMtl" type="primary" icon="plus">添加产品</a-button>
             <a-dropdown v-if="selectedRowKeys.length > 0">
               <a-menu slot="overlay">
@@ -98,7 +98,7 @@
               <span slot="nameAction" slot-scope="text, record">
                 <a @click="goDetail(record.mtlId)">{{record.mtl}}</a>
               </span>
-              <span slot="action" slot-scope="text, record">
+              <span slot="action" slot-scope="text, record" v-if = "!unEditable">
                 <a @click="handleEditMtl(record)">编辑</a>
                 <a-divider type="vertical"/>
 
@@ -244,7 +244,8 @@
           list: "/saleOrderMtl/getPage",
           delete: "/saleOrderMtl/delete",
           deleteBatch: "/saleOrderMtl/deleteBatch"
-        }
+        },
+        unEditable: true
       }
     },
     methods: {
@@ -339,7 +340,9 @@
       nextStep () {
         debugger
         this.mainId = this.$route.query.id;
-        this.saveSaleOrder(this.mainId);
+        if (!this.unEditable) {
+          this.saveSaleOrder(this.mainId);
+        }
         this.$emit('nextStep')
       }
     },
@@ -357,6 +360,7 @@
           }
         })
       }
+      this.unEditable = this.$route.query.unEditable;
     }
   }
 </script>

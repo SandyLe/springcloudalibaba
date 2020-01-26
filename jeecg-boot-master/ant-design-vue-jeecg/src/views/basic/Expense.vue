@@ -31,7 +31,7 @@
 
     <!-- 操作按钮区域 -->
     <div class="table-operator" style="border-top: 5px">
-      <a-button @click="handleAdd" type="primary" icon="plus">添加产品类型</a-button>
+      <a-button @click="handleAdd" type="primary" icon="plus">添加费用类型</a-button>
 
       <a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
