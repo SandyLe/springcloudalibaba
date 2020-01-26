@@ -227,6 +227,10 @@ public class SaleOrderController {
                 Customer customer = customerService.getById(saleOrder.getCustomerId());
                 saleOrder.setCustomer(null != customer ? customer.getName() : null);
             }
+            if (StringUtils.isNotBlank(saleOrder.getWarehouseId())) {
+                Warehouse warehouse = warehouseService.getById(saleOrder.getWarehouseId());
+                saleOrder.setWarehouse(null != warehouse ? warehouse.getName() : null);
+            }
         }
         return Result.ok(saleOrder);
     }

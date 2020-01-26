@@ -18,6 +18,7 @@ import org.jeecg.modules.basic.entity.Warehouse;
 import org.jeecg.modules.basic.enums.AbstractEnum;
 import org.jeecg.modules.basic.enums.DiscountType;
 import org.jeecg.modules.basic.enums.EnumConvertUtils;
+import org.jeecg.modules.basic.enums.RowSts;
 import org.jeecg.modules.basic.service.CustomerService;
 import org.jeecg.modules.basic.service.MaterialService;
 import org.jeecg.modules.basic.service.MaterialUnitService;
@@ -57,6 +58,9 @@ public class SaleOrderMtlController {
     @AutoLog(value = "添加销售订单")
     @ApiOperation(value = "添加销售订单", notes = "添加销售订单")
     public Result<?> add(@RequestBody SaleOrderMtl saleOrderMtl) {
+        if (null == saleOrderMtl.getRowSts()) {
+            saleOrderMtl.setRowSts(RowSts.EFFECTIVE.getId());
+        }
         saleOrderMtlService.saveSaleOrderMtl(saleOrderMtl);
         return Result.ok("添加成功！");
     }

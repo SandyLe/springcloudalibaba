@@ -183,7 +183,7 @@ public class MaterialPriceController {
 
         Customer customer = customerService.getById(customerId);
         MaterialPrice materialPrice = materialPriceService.getMtlPrice(customer.getCustomerTypeId(), mtlId, unitId);
-        dto.setPrice(materialPrice.getPrice());
+        dto.setPrice(null != materialPrice ? materialPrice.getPrice() : null);
         return Result.ok(dto);
     }
 }

@@ -4,14 +4,13 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import org.jeecg.common.system.base.entity.JeecgEntity;
+import org.jeecg.modules.basic.entity.BasicEntity;
 
 import java.math.BigDecimal;
-import java.util.Date;
 
 @Data
 @TableName("sl_sale_order_mtl")
-public class SaleOrderMtl extends JeecgEntity {
+public class SaleOrderMtl extends BasicEntity {
 
     @ApiModelProperty("销售订单ID")
     private String sourceId;
