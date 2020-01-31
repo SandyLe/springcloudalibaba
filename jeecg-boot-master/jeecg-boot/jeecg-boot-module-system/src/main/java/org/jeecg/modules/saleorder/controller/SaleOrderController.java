@@ -28,7 +28,9 @@ import org.jeecg.modules.inventory.entity.InventoryOut;
 import org.jeecg.modules.inventory.service.InventoryOutService;
 import org.jeecg.modules.saleorder.entity.SaleOrder;
 import org.jeecg.modules.saleorder.entity.SaleOrderDeliveryInfo;
+import org.jeecg.modules.saleorder.entity.SaleOrderMtl;
 import org.jeecg.modules.saleorder.service.SaleOrderDeliveryInfoService;
+import org.jeecg.modules.saleorder.service.SaleOrderMtlService;
 import org.jeecg.modules.saleorder.service.SaleOrderService;
 import org.jeecg.modules.system.service.ISysDictService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,6 +65,8 @@ public class SaleOrderController {
     private BillCodeBuilderService billCodeBuilderService;
     @Autowired
     private InventoryOutService inventoryOutService;
+    @Autowired
+    private SaleOrderMtlService saleOrderMtlService;
 
     /**
      * 添加
@@ -283,5 +287,42 @@ public class SaleOrderController {
         Result<Object> result = Result.ok();
         result.setResult(saleOrder);
         return result;
+    }
+
+    /**
+     * 作废
+     *
+     * @param saleOrder
+     * @return
+     */
+    @PostMapping(value = "/disable")
+    @AutoLog(value = "修改销售订单")
+    @ApiOperation(value = "修改销售订单", notes = "修改销售订单")
+    public Result<?> disable(@RequestBody SaleOrder saleOrder){
+
+        SaleOrder existed = saleOrderService.getById(saleOrder.getId());
+        Assert.notNull(existed, "销售订单不存在！");
+        existed.setBillStatus(BillStatus.INVALID.getId());
+        saleOrderService.updateById(existed);
+
+        List<SaleOrderMtl> saleOrderMtls = saleOrderMtlService.list(new LambdaQueryWrapper<SaleOrderMtl>().eq(SaleOrderMtl::getSourceId, saleOrder.getId()));
+        if (CollectionUtils.isNotEmpty(saleOrderMtls)) {
+            saleOrderMtls.stream().forEach(o->{o.setBillStatus(BillStatus.INVALID.getId());});
+            saleOrderMtlService.updateBatchById(saleOrderMtls);
+        }
+
+        SaleOrderDeliveryInfo info = saleOrderDeliveryInfoService.getOne(new LambdaQueryWrapper<SaleOrderDeliveryInfo>().eq(SaleOrderDeliveryInfo::getSourceId, saleOrder.getId()));
+        if (null != info) {
+            info.setBillStatus(BillStatus.INVALID.getId());
+            saleOrderDeliveryInfoService.updateById(info);
+        }
+
+        List<InventoryOut> inventoryOuts = inventoryOutService.list(new LambdaQueryWrapper<InventoryOut>().eq(InventoryOut::getSourceId, saleOrder.getId()));
+        if (CollectionUtils.isNotEmpty(inventoryOuts)) {
+            inventoryOuts.stream().forEach(o->{o.setBillStatus(BillStatus.INVALID.getId());});
+            inventoryOutService.updateBatchById(inventoryOuts);
+        }
+
+        return Result.ok("修改成功！");
     }
 }

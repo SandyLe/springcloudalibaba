@@ -43,6 +43,8 @@ public class SaleOrderMtl extends BasicEntity {
     private String discountTypeName;
     @ApiModelProperty("金额")
     private BigDecimal amount;
+    @ApiModelProperty("订单状态")
+    private Integer billStatus;
 
     public String getMtlId() {
         return mtlId;
@@ -146,5 +148,13 @@ public class SaleOrderMtl extends BasicEntity {
 
     public void setMtlCode(String mtlCode) {
         this.mtlCode = mtlCode;
+    }
+
+    public Integer getBillStatus() {
+        return billStatus;
+    }
+
+    public void setBillStatus(Integer billStatus) {
+        this.billStatus = billStatus;
     }
 }

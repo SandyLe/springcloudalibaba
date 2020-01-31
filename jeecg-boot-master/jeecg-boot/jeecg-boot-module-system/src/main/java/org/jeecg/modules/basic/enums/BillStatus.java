@@ -11,7 +11,10 @@ public enum BillStatus implements AbstractEnum{
     TOINSTALL(5, "待安装"),
     DOWN(6, "已完成"),
     PARTICIALSTOCK(7, "部分出库"),
-    STOCKED(8, "出库完成");
+    STOCKED(8, "出库完成"),
+    TOSTOCKIN(10, "待入库"),
+    PARTICIALSTOCKIN(11, "部分入库"),
+    ALLSTOCKINED(12, "已入库");
 
     private Integer id;
     private String name;

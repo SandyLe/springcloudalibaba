@@ -1,6 +1,5 @@
 package org.jeecg.modules.purchase.controller;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -18,13 +17,13 @@ import org.jeecg.modules.inventory.service.InventoryOutMtlService;
 import org.jeecg.modules.inventory.service.InventoryOutService;
 import org.jeecg.modules.purchase.dto.PurchaseReturnInDto;
 import org.jeecg.modules.purchase.entity.Purchase;
-import org.jeecg.modules.purchase.entity.PurchaseDtl;
+import org.jeecg.modules.purchase.entity.PurchaseMtl;
 import org.jeecg.modules.purchase.entity.PurchaseReturn;
-import org.jeecg.modules.purchase.entity.PurchaseReturnDtl;
-import org.jeecg.modules.purchase.service.IPurchaseDtlService;
-import org.jeecg.modules.purchase.service.IPurchaseReturnDtlService;
-import org.jeecg.modules.purchase.service.IPurchaseReturnService;
-import org.jeecg.modules.purchase.service.IPurchaseService;
+import org.jeecg.modules.purchase.entity.PurchaseReturnMtl;
+import org.jeecg.modules.purchase.service.PurchaseMtlService;
+import org.jeecg.modules.purchase.service.PurchaseReturnMtlService;
+import org.jeecg.modules.purchase.service.PurchaseReturnService;
+import org.jeecg.modules.purchase.service.PurchaseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -32,29 +31,26 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.math.BigDecimal;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 @Slf4j
 @Api(tags = "采购退货")
 @RestController
 @RequestMapping("/purchasereturn")
-public class PurchaseReturnController extends JeecgController<PurchaseReturn, IPurchaseReturnService> {
+public class PurchaseReturnController extends JeecgController<PurchaseReturn, PurchaseReturnService> {
 
     @Autowired
     private BillCodeBuilderService billCodeBuilderService;
 
     @Autowired
-    private IPurchaseService purchaseService;
+    private PurchaseService purchaseService;
     @Autowired
-    private IPurchaseDtlService purchaseDtlService;
-
+    private PurchaseMtlService purchaseMtlService;
     @Autowired
-    private IPurchaseReturnService purchasereturnService;
+    private PurchaseReturnService purchaseReturnService;
     @Autowired
-    private IPurchaseReturnDtlService purchaseReturnDtlService;
+    private PurchaseReturnMtlService purchaseReturnMtlService;
 
     @Autowired
     private InventoryOutService inventoryOutService;
@@ -69,7 +65,7 @@ public class PurchaseReturnController extends JeecgController<PurchaseReturn, IP
     {
         QueryWrapper<PurchaseReturn> queryWrapper = QueryGenerator.initQueryWrapper(purchasereturn, req.getParameterMap());
         Page<PurchaseReturn> page = new Page<>(pageNo, pageSize);
-        IPage<PurchaseReturn> pageList = purchasereturnService.page(page, queryWrapper);
+        IPage<PurchaseReturn> pageList = purchaseReturnService.page(page, queryWrapper);
         return Result.ok(pageList);
     }
 
@@ -86,7 +82,7 @@ public class PurchaseReturnController extends JeecgController<PurchaseReturn, IP
             rtn.setAmount(purchase.getTotalamount());
             rtn.setSourceId(purchase.getId());
             rtn.setBilldate(DateUtils.getDate());
-            purchasereturnService.save(rtn);
+            purchaseReturnService.save(rtn);
 
             //出库单
             String stockcode = billCodeBuilderService.getBillCode(BillType.STOCKING.getId());
@@ -100,11 +96,11 @@ public class PurchaseReturnController extends JeecgController<PurchaseReturn, IP
             inventoryOut.setBillStatus(0);
             inventoryOutService.save(inventoryOut);
 
-            List<PurchaseDtl> list = purchaseDtlService.queryBySourceId(purchase.getId());
+            List<PurchaseMtl> list = purchaseMtlService.queryBySourceId(purchase.getId());
             if (list.size() > 0){
-                for (PurchaseDtl item:list){
+                for (PurchaseMtl item:list){
                     // 退货商品表
-                    PurchaseReturnDtl purchaseReturnDtl = new PurchaseReturnDtl();
+                    PurchaseReturnMtl purchaseReturnDtl = new PurchaseReturnMtl();
                     purchaseReturnDtl.setSourceId(rtn.getId());
                     purchaseReturnDtl.setCode(code);
                     purchaseReturnDtl.setMtlId(item.getMtlId());
@@ -113,7 +109,7 @@ public class PurchaseReturnController extends JeecgController<PurchaseReturn, IP
                     purchaseReturnDtl.setPrice(item.getPrice());
                     purchaseReturnDtl.setDiscount(item.getDiscount());
                     purchaseReturnDtl.setAmount(item.getAmount());
-                    purchaseReturnDtlService.save(purchaseReturnDtl);
+                    purchaseReturnMtlService.save(purchaseReturnDtl);
 
                     //退货单商品详情
                     InventoryOutMtl inventoryOutMtl = new InventoryOutMtl();
@@ -143,7 +139,7 @@ public class PurchaseReturnController extends JeecgController<PurchaseReturn, IP
     @DeleteMapping("/delete")
     @Transactional
     public Result<?> delete(@RequestParam(name = "id", required = true) String id){
-        purchasereturnService.removeById(id);
+        purchaseReturnService.removeById(id);
 //        purchaseService.removeById(id);
 //        purchasedtlService.removeBySourceId(id);
         return Result.ok("删除成功!");
@@ -152,7 +148,7 @@ public class PurchaseReturnController extends JeecgController<PurchaseReturn, IP
     @DeleteMapping("/deleteBatch")
     @Transactional
     public Result<?> deleteBatch(@RequestParam(name = "ids", required = true) String ids){
-        purchasereturnService.removeByIds(Arrays.asList(ids.split(",")));
+        purchaseReturnService.removeByIds(Arrays.asList(ids.split(",")));
 //        purchaseService.removeByIds(Arrays.asList(ids.split(",")));
 //        purchasedtlService.removeBySourceIds(Arrays.asList(ids.split(",")));
         return Result.ok("批量删除成功!");
@@ -160,7 +156,7 @@ public class PurchaseReturnController extends JeecgController<PurchaseReturn, IP
 
     @GetMapping("/queryById")
     public Result<?> queryById(@RequestParam(name = "id", required = true) String id){
-        PurchaseReturn purchasereturn = purchasereturnService.getById(id);
+        PurchaseReturn purchasereturn = purchaseReturnService.getById(id);
 //        Purchase purchase = purchaseService.getById(id);
 //        System.out.println(purchase.getId());
         if (purchasereturn == null){

@@ -456,6 +456,7 @@ CREATE TABLE `sl_sale_order_mtl` (
   `quantity` decimal(10,0) DEFAULT NULL,
   `price` decimal(10,0) DEFAULT NULL,
   `discount` decimal(10,0) DEFAULT NULL,
+  `bill_status` int(2) DEFAULT NULL,
   `amount` decimal(10,0) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 

@@ -1,17 +1,11 @@
 package org.jeecg.modules.purchase.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import org.jeecg.modules.basic.entity.BasicEntity;
-import org.springframework.format.annotation.DateTimeFormat;
-import lombok.Data;
 
-import java.io.Serializable;
-import java.util.Date;
+import java.math.BigDecimal;
 
 /**
  * @Description:
@@ -19,9 +13,9 @@ import java.util.Date;
  * @Date: 2020/1/4 14:33
  * @Version: V1.0
  */
-@TableName("sl_purchase_dtl")
-@ApiModel(value = "Purchasedtl", description = "采购订单明细")
-public class PurchaseDtl extends BasicEntity {
+@TableName("sl_purchase_return_mtl")
+@ApiModel(value = "PurchaseReturnMtl", description = "采购退货明细")
+public class PurchaseReturnMtl extends BasicEntity {
 
     /*采购订单id*/
     @ApiModelProperty("采购订单id")
@@ -37,7 +31,7 @@ public class PurchaseDtl extends BasicEntity {
 
     /*数量*/
     @ApiModelProperty("数量")
-    private String quantity;
+    private BigDecimal quantity;
 
     /*单价*/
     @ApiModelProperty("单价")
@@ -76,11 +70,11 @@ public class PurchaseDtl extends BasicEntity {
         this.unitId = unitId;
     }
 
-    public String getQuantity() {
+    public BigDecimal getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(String quantity) {
+    public void setQuantity(BigDecimal quantity) {
         this.quantity = quantity;
     }
 

@@ -9,6 +9,6 @@ import org.jeecg.modules.purchase.entity.Purchase;
  * @Date: 2019/12/27 16:09
  * @Version: V1.0
  */
-public interface IPurchaseMapper extends BaseMapper<Purchase> {
+public interface PurchaseMapper extends BaseMapper<Purchase> {
 
 }

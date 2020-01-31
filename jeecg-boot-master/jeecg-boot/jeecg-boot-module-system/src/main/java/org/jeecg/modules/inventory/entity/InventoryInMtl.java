@@ -16,6 +16,8 @@ public class InventoryInMtl extends BasicEntity {
 
     @ApiModelProperty("入库单ID")
     private String sourceId;
+    @ApiModelProperty("原单ID")
+    private String sourceBillId;
 
     @ApiModelProperty("产品ID")
     private String mtlId;
@@ -45,6 +47,18 @@ public class InventoryInMtl extends BasicEntity {
     @ApiModelProperty("条形码")
     @TableField(exist=false)
     private String barCode;
+
+    public InventoryInMtl() {
+    }
+
+    public InventoryInMtl(String sourceId, String sourceBillId, String mtlId, BigDecimal quantity, String unitId, Integer rowSts) {
+        this.sourceId = sourceId;
+        this.sourceBillId = sourceBillId;
+        this.mtlId = mtlId;
+        this.quantity = quantity;
+        this.unitId = unitId;
+        this.setRowSts(rowSts);
+    }
 
     public String getSourceId() {
         return sourceId;
@@ -116,5 +130,13 @@ public class InventoryInMtl extends BasicEntity {
 
     public void setBarCode(String barCode) {
         this.barCode = barCode;
+    }
+
+    public String getSourceBillId() {
+        return sourceBillId;
+    }
+
+    public void setSourceBillId(String sourceBillId) {
+        this.sourceBillId = sourceBillId;
     }
 }

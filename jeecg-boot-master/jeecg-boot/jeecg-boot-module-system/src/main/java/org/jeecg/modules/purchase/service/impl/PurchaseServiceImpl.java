@@ -2,8 +2,8 @@ package org.jeecg.modules.purchase.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.jeecg.modules.purchase.entity.Purchase;
-import org.jeecg.modules.purchase.mapper.IPurchaseMapper;
-import org.jeecg.modules.purchase.service.IPurchaseService;
+import org.jeecg.modules.purchase.mapper.PurchaseMapper;
+import org.jeecg.modules.purchase.service.PurchaseService;
 import org.springframework.stereotype.Service;
 
 /**
@@ -13,5 +13,5 @@ import org.springframework.stereotype.Service;
  * @Version: V1.0
  */
 @Service
-public class PurchaseServiceImpl extends ServiceImpl<IPurchaseMapper, Purchase> implements IPurchaseService {
+public class PurchaseServiceImpl extends ServiceImpl<PurchaseMapper, Purchase> implements PurchaseService {
 }

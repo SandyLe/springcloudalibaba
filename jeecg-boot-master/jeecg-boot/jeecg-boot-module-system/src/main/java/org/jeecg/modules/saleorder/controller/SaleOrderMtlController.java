@@ -7,6 +7,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.EnumUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
@@ -91,26 +92,29 @@ public class SaleOrderMtlController {
     @GetMapping(value = "/getPage")
     public Result<?> list(SaleOrderMtl saleOrderMtl, @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo, @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
                           HttpServletRequest req) {
+
         QueryWrapper<SaleOrderMtl> queryWrapper = QueryGenerator.initQueryWrapper(saleOrderMtl, req.getParameterMap());
         Page<SaleOrderMtl> page = new Page<SaleOrderMtl>(pageNo, pageSize);
 
         IPage<SaleOrderMtl> pageList = saleOrderMtlService.page(page, queryWrapper);
         List<SaleOrderMtl> saleOrderList = pageList.getRecords();
-        List<String> mtlIds = saleOrderList.stream().map(SaleOrderMtl::getMtlId).collect(Collectors.toList());
-        List<String> unitIds = saleOrderList.stream().map(SaleOrderMtl::getUnitId).collect(Collectors.toList());
-        Collection<Material> materials = materialService.listByIds(mtlIds);
-        Collection<MaterialUnit> warehouses = materialUnitService.listByIds(unitIds);
-        Map<String, String> mtlMap = materials.stream().collect(Collectors.toMap(Material::getId, Material::getName));
-        Map<String, String> mtlCodeMap = materials.stream().collect(Collectors.toMap(Material::getId, Material::getCode));
-        Map<String, String> mtlSpecMap = materials.stream().collect(Collectors.toMap(Material::getId, Material::getSpecification));
-        Map<String, String> unitMap = warehouses.stream().collect(Collectors.toMap(MaterialUnit:: getId, MaterialUnit:: getName));
-        saleOrderList.stream().forEach(o->{
-            o.setUnit(unitMap.get(o.getUnitId()));
-            o.setMtl(mtlMap.get(o.getMtlId()));
-            o.setMtlCode(mtlCodeMap.get(o.getMtlId()));
-            o.setSpecification(mtlSpecMap.get(o.getMtlId()));
-            o.setDiscountTypeName(EnumConvertUtils.getName(DiscountType.class, o.getDiscountType()));
-        });
+        if (CollectionUtils.isNotEmpty(saleOrderList)) {
+            List<String> mtlIds = saleOrderList.stream().map(SaleOrderMtl::getMtlId).collect(Collectors.toList());
+            List<String> unitIds = saleOrderList.stream().map(SaleOrderMtl::getUnitId).collect(Collectors.toList());
+            Collection<Material> materials = materialService.listByIds(mtlIds);
+            Collection<MaterialUnit> warehouses = materialUnitService.listByIds(unitIds);
+            Map<String, String> mtlMap = materials.stream().collect(Collectors.toMap(Material::getId, Material::getName));
+            Map<String, String> mtlCodeMap = materials.stream().collect(Collectors.toMap(Material::getId, Material::getCode));
+            Map<String, String> mtlSpecMap = materials.stream().collect(Collectors.toMap(Material::getId, Material::getSpecification));
+            Map<String, String> unitMap = warehouses.stream().collect(Collectors.toMap(MaterialUnit:: getId, MaterialUnit:: getName));
+            saleOrderList.stream().forEach(o->{
+                o.setUnit(unitMap.get(o.getUnitId()));
+                o.setMtl(mtlMap.get(o.getMtlId()));
+                o.setMtlCode(mtlCodeMap.get(o.getMtlId()));
+                o.setSpecification(mtlSpecMap.get(o.getMtlId()));
+                o.setDiscountTypeName(EnumConvertUtils.getName(DiscountType.class, o.getDiscountType()));
+            });
+        }
 
         log.info("查询当前页：" + pageList.getCurrent());
         log.info("查询当前页数量：" + pageList.getSize());

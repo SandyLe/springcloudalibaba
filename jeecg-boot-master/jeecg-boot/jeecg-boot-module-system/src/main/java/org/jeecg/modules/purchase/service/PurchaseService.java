@@ -9,5 +9,5 @@ import org.jeecg.modules.purchase.entity.Purchase;
  * @Date: 2019/12/27 16:13
  * @Version: V1.0
  */
-public interface IPurchaseService extends IService<Purchase> {
+public interface PurchaseService extends IService<Purchase> {
 }

@@ -17,13 +17,10 @@ import org.jeecg.modules.inventory.service.InventoryLogService;
 import org.jeecg.modules.inventory.service.InventoryOutMtlService;
 import org.jeecg.modules.inventory.service.InventoryOutService;
 import org.jeecg.modules.inventory.service.InventoryService;
-import org.jeecg.modules.purchase.entity.PurchaseReturnDtl;
-import org.jeecg.modules.purchase.entity.PurchaseReturnDtl;
-import org.jeecg.modules.purchase.service.IPurchaseReturnDtlService;
-import org.jeecg.modules.purchase.service.IPurchaseReturnDtlService;
+import org.jeecg.modules.purchase.entity.PurchaseReturnMtl;
+import org.jeecg.modules.purchase.service.PurchaseReturnMtlService;
 import org.jeecg.modules.inventory.dto.PreInventoryOutMtl;
 import org.jeecg.modules.saleorder.entity.SaleOrder;
-import org.jeecg.modules.saleorder.entity.SaleOrderDeliveryInfo;
 import org.jeecg.modules.saleorder.entity.SaleOrderMtl;
 import org.jeecg.modules.saleorder.service.SaleOrderMtlService;
 import org.jeecg.modules.saleorder.service.SaleOrderService;
@@ -45,7 +42,7 @@ public class InventoryOutServiceImpl extends ServiceImpl<InventoryOutMapper, Inv
     @Autowired
     private SaleOrderMtlService saleOrderMtlService;
     @Autowired
-    private IPurchaseReturnDtlService iPurchaseReturnMtlService;
+    private PurchaseReturnMtlService iPurchaseReturnMtlService;
     @Autowired
     private InventoryOutMtlService inventoryOutMtlService;
     @Autowired
@@ -83,33 +80,35 @@ public class InventoryOutServiceImpl extends ServiceImpl<InventoryOutMapper, Inv
     @Override
     public String saveToInventoryOut (InventoryOut inventoryOut) {
 
+        // 保存主表
+        save(inventoryOut);
+
         List<InventoryOutMtl> inventoryOutMtls = Lists.newArrayList();
-        if (inventoryOut.getBillType() == BillType.SALEORDER.getId()) {
+        if (inventoryOut.getSourceBillType() == BillType.SALEORDER.getId()) {
             LambdaQueryWrapper<SaleOrderMtl> queryWrapper = new LambdaQueryWrapper<SaleOrderMtl>().eq(SaleOrderMtl::getSourceId, inventoryOut.getSourceId());
             List<SaleOrderMtl> saleOrderMtls = saleOrderMtlService.list(queryWrapper);
             if (CollectionUtils.isNotEmpty(saleOrderMtls)) {
                 saleOrderMtls.forEach(o ->{
-                    inventoryOutMtls.add(new InventoryOutMtl(o.getSourceId(), o.getMtlId(), o.getQuantity().toString(), o.getUnitId()));
+                    inventoryOutMtls.add(new InventoryOutMtl(o.getId(), o.getSourceId(), o.getMtlId(), o.getQuantity(), o.getUnitId()));
                 });
             }
-        } else if (inventoryOut.getBillType() == BillType.PURCHASERETURNORDER.getId()) {
-            LambdaQueryWrapper<PurchaseReturnDtl> queryWrapper = new LambdaQueryWrapper<PurchaseReturnDtl>().eq(PurchaseReturnDtl::getSourceId, inventoryOut.getSourceId());
-            List<PurchaseReturnDtl> purchaseReturnMtls = iPurchaseReturnMtlService.list(queryWrapper);
+        } else if (inventoryOut.getSourceBillType() == BillType.PURCHASERETURNORDER.getId()) {
+            LambdaQueryWrapper<PurchaseReturnMtl> queryWrapper = new LambdaQueryWrapper<PurchaseReturnMtl>().eq(PurchaseReturnMtl::getSourceId, inventoryOut.getSourceId());
+            List<PurchaseReturnMtl> purchaseReturnMtls = iPurchaseReturnMtlService.list(queryWrapper);
             if (CollectionUtils.isNotEmpty(purchaseReturnMtls)) {
                 purchaseReturnMtls.forEach(o ->{
-                    inventoryOutMtls.add(new InventoryOutMtl(o.getSourceId(), o.getMtlId(), o.getQuantity(), o.getUnitId()));
+                    inventoryOutMtls.add(new InventoryOutMtl(o.getId(), o.getSourceId(), o.getMtlId(), o.getQuantity(), o.getUnitId()));
                 });
             }
         }
         inventoryOutMtlService.saveBatch(inventoryOutMtls);
-        save(inventoryOut);
         return inventoryOut.getId();
     }
 
     @Override
     public List<PreInventoryOutMtl> getDeliveryMtlList(String id, String sourceId) {
         List<PreInventoryOutMtl> preInventoryOutMtls = Lists.newArrayList();
-        LambdaQueryWrapper<InventoryOutMtl> querySaleMtlWrapper = new QueryWrapper<InventoryOutMtl>().lambda().eq(InventoryOutMtl::getSourceId, sourceId);
+        LambdaQueryWrapper<InventoryOutMtl> querySaleMtlWrapper = new QueryWrapper<InventoryOutMtl>().lambda().eq(InventoryOutMtl::getSourceId, id);
         LambdaQueryWrapper<InventoryLog> queryInventoryLogWrapper = new QueryWrapper<InventoryLog>().lambda().eq(InventoryLog::getSourceId, sourceId);
         List<InventoryOutMtl> inventoryOutMtls = inventoryOutMtlService.list(querySaleMtlWrapper);
         List<InventoryLog> inventoryLogs = inventoryLogService.list(queryInventoryLogWrapper);
@@ -118,7 +117,7 @@ public class InventoryOutServiceImpl extends ServiceImpl<InventoryOutMapper, Inv
             mtlDeliveryQtyMap.put(o.getMtlId(), null == mtlDeliveryQtyMap.get(o.getMtlId()) ? o.getOptAmount() : mtlDeliveryQtyMap.get(o.getMtlId()).add(o.getOptAmount()));
         });
         inventoryOutMtls.forEach(o->{
-            BigDecimal tempAmout = new BigDecimal(o.getQuantity());
+            BigDecimal tempAmout = o.getQuantity();
             if (null != mtlDeliveryQtyMap.get(o.getMtlId())) {
                 tempAmout = tempAmout.subtract(mtlDeliveryQtyMap.get(o.getMtlId()));
             }

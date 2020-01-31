@@ -2,9 +2,10 @@ package org.jeecg.modules.basic.enums;
 
 public enum RowSts implements AbstractEnum{
 
+    INVALID(-1, "失效"),
     NEW(0, "草稿"),
     EFFECTIVE(1, "有效"),
-    INVALID(2, "失效");
+    DELETED(2, "删除");
 
     private Integer id;
     private String name;

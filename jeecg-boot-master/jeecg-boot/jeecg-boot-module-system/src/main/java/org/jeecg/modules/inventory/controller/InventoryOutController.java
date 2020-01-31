@@ -224,7 +224,7 @@ public class InventoryOutController {
     @PostMapping(value = "/mtls/stockout")
     @AutoLog(value = "修改销售订单发货信息")
     @ApiOperation(value = "修改销售订单发货信息", notes = "修改销售订单发货信息")
-    public Result<?> edit(@RequestBody List<PreInventoryOutMtl> mtls){
+    public Result<?> stockout(@RequestBody List<PreInventoryOutMtl> mtls){
         if (CollectionUtils.isNotEmpty(mtls)) {
             inventoryOutService.stockOut(mtls);
         }

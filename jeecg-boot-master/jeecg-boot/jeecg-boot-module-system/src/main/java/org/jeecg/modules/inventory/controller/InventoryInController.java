@@ -14,12 +14,13 @@ import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.modules.basic.entity.Warehouse;
 import org.jeecg.modules.basic.enums.BillType;
+import org.jeecg.modules.basic.enums.RowSts;
 import org.jeecg.modules.basic.service.BillCodeBuilderService;
 import org.jeecg.modules.basic.service.WarehouseService;
 import org.jeecg.modules.inventory.entity.InventoryIn;
 import org.jeecg.modules.inventory.service.InventoryInMtlService;
 import org.jeecg.modules.inventory.service.InventoryInService;
-import org.jeecg.modules.purchase.service.IPurchaseDtlService;
+import org.jeecg.modules.purchase.service.PurchaseMtlService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
@@ -42,7 +43,7 @@ public class InventoryInController {
     @Autowired
     private InventoryInMtlService inventoryInMtlService;
     @Autowired
-    private IPurchaseDtlService purchasedtlService;
+    private PurchaseMtlService purchaseMtlService;
     @Autowired
     private WarehouseService warehouseService;
     @Autowired
@@ -96,7 +97,7 @@ public class InventoryInController {
                           HttpServletRequest req) {
         QueryWrapper<InventoryIn> queryWrapper = QueryGenerator.initQueryWrapper(inventoryIn, req.getParameterMap());
         Page<InventoryIn> page = new Page<InventoryIn>(pageNo, pageSize);
-
+        queryWrapper.eq("row_sts", RowSts.EFFECTIVE.getId());
         IPage<InventoryIn> pageList = inventoryInService.page(page, queryWrapper);
         List<InventoryIn> inventoryInList = pageList.getRecords();
         List<String> warehouseIds = inventoryInList.stream().map(InventoryIn::getWarehouseId).collect(Collectors.toList());

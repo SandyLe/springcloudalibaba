@@ -16,10 +16,12 @@ public class InventoryOutMtl extends BasicEntity {
 
     @ApiModelProperty("出库单ID")
     private String sourceId;
+    @ApiModelProperty("原单ID")
+    private String sourceBillId;
     @ApiModelProperty("产品ID")
     private String mtlId;
     @ApiModelProperty("出库数量")
-    private String quantity;
+    private BigDecimal quantity;
     @ApiModelProperty("单位ID")
     private String unitId;
 
@@ -42,8 +44,9 @@ public class InventoryOutMtl extends BasicEntity {
     public InventoryOutMtl() {
     }
 
-    public InventoryOutMtl(String sourceId, String mtlId, String quantity, String unitId) {
+    public InventoryOutMtl(String sourceId, String sourceBillId, String mtlId, BigDecimal quantity, String unitId) {
         this.sourceId = sourceId;
+        this.sourceBillId = sourceBillId;
         this.mtlId = mtlId;
         this.quantity = quantity;
         this.unitId = unitId;
@@ -73,11 +76,11 @@ public class InventoryOutMtl extends BasicEntity {
         this.material = material;
     }
 
-    public String getQuantity() {
+    public BigDecimal getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(String quantity) {
+    public void setQuantity(BigDecimal quantity) {
         this.quantity = quantity;
     }
 
@@ -119,5 +122,13 @@ public class InventoryOutMtl extends BasicEntity {
 
     public void setBarCode(String barCode) {
         this.barCode = barCode;
+    }
+
+    public String getSourceBillId() {
+        return sourceBillId;
+    }
+
+    public void setSourceBillId(String sourceBillId) {
+        this.sourceBillId = sourceBillId;
     }
 }
