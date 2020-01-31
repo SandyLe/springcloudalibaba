@@ -50,7 +50,7 @@
           <a @click="goDetail(record.id)">{{record.code}}</a>
         </span>
         <span slot="action" slot-scope="text, record">
-          <span v-if="record.billStatus < 1">
+          <span v-if="record.billStatus < 1 && record.billStatus != -1">
             <a @click="handleEditSaleOrder(record.id)">编辑</a>
             <a-divider type="vertical" />
           </span>
@@ -59,8 +59,10 @@
               更多 <a-icon type="down" />
             </a>
             <a-menu slot="overlay">
-              <a-menu-item>
-                <a @click="handleInvalid(record.id)">作废</a>
+              <a-menu-item  v-if="record.billStatus < 4 && record.billStatus != -1">
+                <a-popconfirm title="确定作废吗?" @confirm="() => handleInvalid(record)">
+                  <a>作废</a>
+                </a-popconfirm>
               </a-menu-item>
               <a-menu-item>
                 <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
@@ -81,6 +83,7 @@
   import SaleOrderModal from './SaleOrderMtlModal'
   import JInput from '@/components/jeecg/JInput'
   import {JeecgListMixin} from '@/mixins/JeecgListMixin'
+  import {disableSaleOrder} from '@/api/api'
   export default {
     name: "",
     mixins: [JeecgListMixin],
@@ -188,8 +191,16 @@
       handleEditSaleOrder (id) {
         this.$router.push({ name: "saleorder-saleOrderEdit", query: {"id": id, "unEditable": false}})
       },
-      handleInvalid (id) {
-
+      handleInvalid (record) {
+        disableSaleOrder(record).then((res)=>{
+          if(res.success){
+            this.$message.success(res.message);
+            this.$emit('ok');
+          }else{
+            this.$message.warning(res.message);
+          }
+        }).finally(() => {
+        })
       }
     }
   }

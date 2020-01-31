@@ -26,7 +26,7 @@
               :labelCol="labelCol"
               :wrapperCol="wrapperCol"
               label="代码">
-              <a-input placeholder="请输入代码" v-decorator="[ 'code', validatorRules.code]" />
+              <a-input placeholder="后台编号器自动生成代码" v-decorator="[ 'code', validatorRules.code]" :readOnly="true" />
             </a-form-item>
           </a-col>
           <a-col :md="8" :sm="8">

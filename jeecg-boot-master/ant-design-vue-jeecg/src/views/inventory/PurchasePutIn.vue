@@ -99,25 +99,29 @@
             dataIndex: 'warehouse'
           },
           {
-            title: '产品',
+            title: '入库单号',
             align:"center",
-            dataIndex: '',
-            scopedSlots: { customRender: 'nameAction' }
+            dataIndex: 'code'
           },
           {
-            title: '盘点数量',
+            title: '原单类型',
             align:"center",
-            dataIndex: 'stockAmount'
+            dataIndex: 'sourceBillTypeName'
           },
           {
-            title: '盘点前数量',
+            title: '原单编号',
             align:"center",
-            dataIndex: 'beforeAmount'
+            dataIndex: 'sourceCode'
           },
           {
-            title: '单位',
+            title: '入库时间',
             align:"center",
-            dataIndex: 'unit'
+            dataIndex: 'putInTime'
+          },
+          {
+            title: '状态',
+            align:"center",
+            dataIndex: 'billStatusName'
           },
           {
             title: '操作',
@@ -127,11 +131,11 @@
           }
         ],
         url: {
-          list: "/stocking/getPage",
-          delete: "/stocking/delete",
-          deleteBatch: "/stocking/deleteBatch",
-          exportXlsUrl: "/stocking/exportXls",
-          importExcelUrl: "/stocking/importExcel",
+          list: "/inventoryIn/getPage",
+          delete: "/inventoryIn/delete",
+          deleteBatch: "/inventoryIn/deleteBatch",
+          exportXlsUrl: "/inventoryIn/exportXls",
+          importExcelUrl: "/inventoryIn/importExcel",
         },
       }
     },

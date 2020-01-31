@@ -14,7 +14,7 @@
                 </a-col>
                 <a-col :span="12">
                   <a-form-item label="采购单号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                    <a-input v-decorator="[ 'code', {}]" readOnly="true" placeholder="后台自动生成"></a-input>
+                    <a-input v-decorator="[ 'code', {}]" :Only="true" placeholder="后台自动生成"></a-input>
                   </a-form-item>
                 </a-col>
             </a-row>

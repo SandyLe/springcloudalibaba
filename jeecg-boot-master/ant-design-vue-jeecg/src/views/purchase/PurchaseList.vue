@@ -96,10 +96,10 @@
 
                 <a v-if="record.inventoryin!=null" @click="handleinventoryin(record.inventoryin)" :data-id="record.id">入库单</a>
                 <a-divider type="vertical" v-if="record.inventoryin!=null"/>
-                
+
                 <a v-if="!(record.inventoryin!=null&&record.inventoryin.billStatus==1)" @click="diyhandleEdit" :data-id="record.id">编辑</a>
                 <a-divider type="vertical" v-if="!(record.inventoryin!=null&&record.inventoryin.billStatus==1)"/>
-                
+
                 <a-dropdown>
                     <a class="ant-dropdown-link">更多
                         <a-icon type="down" /></a>
@@ -153,6 +153,11 @@ export default {
                         return parseInt(index) + 1;
                     }
                 },
+              {
+                title: '采购单号',
+                align: "center",
+                dataIndex: 'code'
+              },
                 {
                     title: '供应商',
                     align: "center",
@@ -219,7 +224,7 @@ export default {
                 }
             ],
             url: {
-                list: "/purchase/getPaged",
+                list: "/purchase/getPage",
                 delete: "/purchase/delete",
                 deleteBatch: "/purchase/deleteBatch",
                 exportXlsUrl: "/purchase/exportXls",
@@ -262,7 +267,7 @@ export default {
                 }
             });
         },
-        diyhandleEdit(e){ 
+        diyhandleEdit(e){
             if(e.target.dataset.id)
                 this.$router.replace({ path:'/purchase/PurchaseModal/' + e.target.dataset.id });
             else
@@ -270,7 +275,7 @@ export default {
         },
         handleinventoryin(data){
             var that = this;
-            that.$refs.inventorymodalForm.edit(data);                              
+            that.$refs.inventorymodalForm.edit(data);
             that.$refs.inventorymodalForm.disableSubmit = true;
         },
         handleinventoryout(data){
@@ -282,8 +287,8 @@ export default {
                 model.id = data.inventoryOut.id;
                 model.putOutTime = data.inventoryOut.putOutTime;
             }
-            
-            that.$refs.inventoryOutmodalForm.edit(model);                              
+
+            that.$refs.inventoryOutmodalForm.edit(model);
             that.$refs.inventoryOutmodalForm.disableSubmit = true;
         }
     }

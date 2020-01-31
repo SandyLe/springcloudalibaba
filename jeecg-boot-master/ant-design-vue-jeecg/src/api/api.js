@@ -101,6 +101,7 @@ const editSaleOrder = (params)=>postAction("/saleOrder/edit",params)
 const checkout = (params)=>postAction("/saleOrder/checkout",params)
 const getSaleOrderOne = (params)=>getAction("/saleOrder/getOne",params)
 const delivery = (params)=>postAction("/saleOrder/delivery",params)
+const disableSaleOrder = (params)=>postAction("/saleOrder/disable",params)
 const getSaleOrderDeliveryInfo = (params)=>getAction("/saleOrderDeliveryInfo/getList",params)
 const getDeliveryMtls = (params)=>getAction("/inventoryOut/mtl/getList",params)
 const deliveryStockOut = (params)=>postAction("/inventoryOut/mtls/stockout",params)
@@ -164,7 +165,7 @@ const getAllUser = (params)=>getAction("/sys/user/getAll",params)
 
 //采购
 const purchasequeryById = (params)=>getAction("/purchase/queryById",params)
-const purchasedetailDelete = (params)=>deleteAction("/purchasedtl/delete",params)
+const purchasedetailDelete = (params)=>deleteAction("/purchaseMtl/delete",params)
 
 const inventoryInedit = (params)=>postAction("/inventoryIn/edit",params)  //入库单编辑
 const inventoryOutadd = (params)=>postAction("/inventoryOut/add",params)  //新增出库单
@@ -226,6 +227,7 @@ export {
   addSaleOrder,
   editSaleOrder,
   getSaleOrderOne,
+  disableSaleOrder,
   addCustomerType,
   editCustomerType,
   getCustomerTypeList,

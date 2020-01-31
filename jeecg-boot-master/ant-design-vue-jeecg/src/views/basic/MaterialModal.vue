@@ -112,6 +112,16 @@
             </a-form-item>
           </a-col>
         </a-row>
+        <a-row>
+          <a-col :md="6" :sm="6">
+            <a-form-item
+              :labelCol="labelCol"
+              :wrapperCol="wrapperCol"
+              label="条形码">
+              <a-input placeholder="请输入条形码" v-decorator="[ 'barCode', validatorRules.barCode]" />
+            </a-form-item>
+          </a-col>
+        </a-row>
       </a-form>
     </a-spin>
   </a-modal>
@@ -206,7 +216,7 @@
         }
 
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'name', 'code','specification','brandId','typeId','uplimit','downlimit','unitId'))
+          this.form.setFieldsValue(pick(this.model,'name', 'code','specification','brandId','typeId','uplimit','downlimit','unitId','barCode'))
         });
       },
       close () {

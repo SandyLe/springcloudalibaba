@@ -24,13 +24,13 @@
     <a-spin :spinning="confirmLoading">
       <a-form :form="form">
         <a-row>
-          
+
           <a-col :md="6" :sm="6">
             <a-form-item
               :labelCol="labelCol"
               :wrapperCol="wrapperCol"
-              label="采购单">
-              {{ model.sourceId }}
+              label="原单编号">
+              <a-input type="text" :readOnly="true" v-decorator="[ 'sourceCode', {}]" />
               <a-input type="hidden" placeholder="请输入规格" v-decorator="[ 'sourceId', {}]" />
             </a-form-item>
           </a-col>
@@ -55,9 +55,9 @@
               :labelCol="labelCol"
               :wrapperCol="wrapperCol"
               label="入库时间">
-              <a-date-picker format="YYYY-MM-DD HH:mm:ss" 
-                            placeholder="请输入入库时间" showTime                            
-                            style="width: 100%" @change="onDateChange" 
+              <a-date-picker format="YYYY-MM-DD HH:mm:ss"
+                            placeholder="请输入入库时间" showTime
+                            style="width: 100%" @change="onDateChange"
                             :defaultValue="!model.putInTime ? null :moment( model.putInTime, 'YYYY-MM-DD HH:mm:ss')" name="putInTime" id="putInTime"/>
             </a-form-item>
           </a-col>
@@ -140,7 +140,7 @@ moment.locale('zh-cn');
           }
         })
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'id','sourceId' ,'billStatus','putInTime','warehouseId','billType'))
+          this.form.setFieldsValue(pick(this.model,'id','sourceId' ,'sourceCode' ,'sourceBillType' ,'billStatus','putInTime','warehouseId','billType'))
         });
 
       },
@@ -166,7 +166,6 @@ moment.locale('zh-cn');
           if (!err) {
             that.confirmLoading = true;
             let formData = Object.assign(this.model, values);
-            
             inventoryInedit(formData).then((res)=>{
               if(res.success){
                 that.$message.success(res.message);
@@ -177,6 +176,9 @@ moment.locale('zh-cn');
             }).finally(() => {
               that.confirmLoading = false;
               that.close();
+              if (formData.sourceBillType === 4) {
+                that.$router.replace({ path:'/purchase/PurchaseList' });
+              }
             })
           }
         })

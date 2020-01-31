@@ -50,7 +50,7 @@
         <span slot="nameAction" slot-scope="text, record">
           <a @click="goDetail(record.sourceId)">{{record.sourceCode}}</a>
         </span>
-        <span slot="action" v-if="record.rowSts !== 6" slot-scope="text, record">
+        <span slot="action" v-if="record.billStatus !== -1" slot-scope="text, record">
           <a v-if="record.billStatus !== 8" @click="handleStocking(record)">出库</a>
           <a-divider type="vertical" />
           <a @click="viewInventoryLog(record)">出库记录</a>
