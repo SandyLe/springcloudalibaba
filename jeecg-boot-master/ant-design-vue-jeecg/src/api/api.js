@@ -104,7 +104,9 @@ const delivery = (params)=>postAction("/saleOrder/delivery",params)
 const disableSaleOrder = (params)=>postAction("/saleOrder/disable",params)
 const getSaleOrderDeliveryInfo = (params)=>getAction("/saleOrderDeliveryInfo/getList",params)
 const getDeliveryMtls = (params)=>getAction("/inventoryOut/mtl/getList",params)
+const getPutInMtls = (params)=>getAction("/inventoryIn/mtl/getList",params)
 const deliveryStockOut = (params)=>postAction("/inventoryOut/mtls/stockout",params)
+const putStockIn = (params)=>postAction("/inventoryIn/mtls/stockin",params)
 const addSaleMtlOrder = (params)=>postAction("/saleOrderMtl/add",params)
 const editSaleMtlOrder = (params)=>postAction("/saleOrderMtl/edit",params)
 const addCustomerType = (params)=>postAction("/customerType/add",params)
@@ -278,6 +280,7 @@ export {
   delivery,
   getSaleOrderDeliveryInfo,
   getDeliveryMtls,
+  getPutInMtls,
   addStocking,
   editStocking,
   handleStocking,
@@ -287,6 +290,7 @@ export {
   addBillCodeBuilder,
   editBillCodeBuilder,
   deliveryStockOut,
+  putStockIn,
   viewInventoryLog,
   purchasequeryById,
   purchasedetailDelete,

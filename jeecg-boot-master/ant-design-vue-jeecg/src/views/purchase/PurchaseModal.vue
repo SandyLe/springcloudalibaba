@@ -394,51 +394,58 @@ export default {
             this.visible = false
         },
         handleOk() {
-            const that = this
-            // 触发表单验证
-            this.form.validateFields((err, values) => {
-                if (!err) {
-                    that.confirmLoading = true
-                    let httpurl = ''
-                    let method = ''
-                    if (!this.model.id) {
-                        httpurl += this.url.add
-                        method = 'post'
-                    } else {
-                        httpurl += this.url.edit
-                        method = 'put'
-                    }
-                    let formData = Object.assign(this.model, values)
-                    formData.detaillist = that.tabledata;
-                    console.log('表单提交数据', formData)
-                    httpAction(httpurl, formData, method)
-                        .then(res => {
-                            console.log(res);
-                            if (res.success) {
-                                that.$message.success(res.message)
-                                that.$emit('ok')
-                                that.hasaddmain = true;
+          const that = this
+          // 触发表单验证
 
-                                if (!that.model.id) {
-                                    that.$refs.inventorymodalForm.add();
-                                } else {
-                                    that.$refs.inventorymodalForm.edit(res.result.inventory);
-                                }
-                                that.$refs.inventorymodalForm.disableSubmit = false;
+          this.form.validateFields((err, values) => {
+              if (!err) {
+                  that.confirmLoading = true
+                  let httpurl = ''
+                  let method = ''
+                  if (!this.model.id) {
+                      httpurl += this.url.add
+                      method = 'post'
+                  } else {
+                      httpurl += this.url.edit
+                      method = 'put'
+                  }
+                  let formData = Object.assign(this.model, values)
+                  formData.detaillist = that.tabledata;
+                  console.log('表单提交数据', formData)
+                  httpAction(httpurl, formData, method)
+                      .then(res => {
+                          console.log(res);
+                          if (res.success) {
+                              that.$message.success(res.message)
+                              that.$emit('ok')
+                              that.hasaddmain = true;
+                              debugger
+                              that.$emit('close')
 
-                                // this.$router.replace({
-                                //     path: '/purchase/PurchaseList'
-                                // });
-                            } else {
-                                that.$message.warning(res.message)
-                            }
-                        })
-                        .finally(() => {
-                            that.confirmLoading = false
-                            that.close()
-                        })
-                }
-            })
+                              /*
+                              if (!that.model.id) {
+                                  that.$refs.inventorymodalForm.add();
+                              } else {
+                                  that.$refs.inventorymodalForm.edit(res.result.inventory);
+                              }
+                              that.$refs.inventorymodalForm.disableSubmit = false;*/
+                              //
+
+                              // this.$router.replace({
+                              //     path: '/purchase/PurchaseList'
+                              // });
+                          } else {
+                              that.$message.warning(res.message)
+                          }
+                      })
+                      .finally(() => {
+                          that.confirmLoading = false
+                          that.close()
+                          that.$parent.closeRouteViewTab(this.$route.path)
+                          that.$router.push({ path:'/purchase/PurchaseList' });
+                      })
+              }
+          })
         },
         handleCancel() {
             this.close()

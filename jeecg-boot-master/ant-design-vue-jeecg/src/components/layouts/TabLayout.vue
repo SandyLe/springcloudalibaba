@@ -21,7 +21,7 @@
     <div style="margin: 12px 12px 0;">
       <transition name="page-toggle">
         <keep-alive v-if="multipage">
-          <router-view v-if="reloadFlag"/>
+          <router-view v-if="reloadFlag" :closeTab="closeTab"/>
         </keep-alive>
         <template v-else>
           <router-view v-if="reloadFlag"/>
@@ -125,6 +125,9 @@
       }
     },
     methods: {
+      closeTab(key) {
+        this.remove(key)
+      },
       changePage(key) {
         this.activePage = key
       },
@@ -137,6 +140,7 @@
         this[action](key)
       },
       remove(key) {
+        debugger
         if (key == indexKey) {
           this.$message.warning('首页不能关闭!')
           return
@@ -188,6 +192,7 @@
       },
       /* update_begin author:wuxianquan date:20190828 for: 关闭当前tab页，供子页面调用->望菜单能配置外链，直接弹出新页面而不是嵌入iframe #428 */
       closeCurrent(){
+        debugger
         this.remove(this.activePage);
       },
       /* update_end author:wuxianquan date:20190828 for: 关闭当前tab页，供子页面调用->望菜单能配置外链，直接弹出新页面而不是嵌入iframe #428 */

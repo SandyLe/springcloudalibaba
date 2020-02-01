@@ -21,7 +21,7 @@
           </a-row>
         </div>
         <div slot="action">
-          <a-button type="primary" @click="finish">查看订单</a-button>
+          <a-button type="primary" @click="finish">完成</a-button>
           <a-button style="margin-left: 8px" @click="toOrderList">订单列表</a-button>
         </div>
       </result>
@@ -50,11 +50,11 @@
       },
       toOrderList () {
         this.$router.push('/saleorder/SaleOrder')
+        this.$parent.$parent.closeRouteViewTab(this.$route.fullPath)
       }
     },
     mounted() {
       if (this.$route.query.id) {
-        debugger
         getSaleOrderOne({id:this.$route.query.id}).then((res) => {
           if (res.success) {
             this.saleOrder = res.result;

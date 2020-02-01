@@ -50,37 +50,37 @@
         <span slot="nameAction" slot-scope="text, record">
           <a @click="goDetail(record.mtlId)">{{record.material}}</a>
         </span>
-        <span slot="action" v-if="record.rowSts !== 6" slot-scope="text, record">
-          <a @click="handleEdit(record)">编辑</a>
+        <span slot="action" v-if="record.billStatus !== -1" slot-scope="text, record">
+          <a v-if="record.billStatus !== 8" @click="handleStocking(record)">入库</a>
           <a-divider type="vertical" />
-          <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
-            <a>删除</a>
-          </a-popconfirm>
-          <a-divider type="vertical" />
-          <a v-if="record.rowSts !== 6" @click="handleStocking(record)">盘点</a>
+          <a @click="viewInventoryLog(record)">入库记录</a>
         </span>
       </a-table>
     </div>
 
     <stocking-modal ref="modalForm" @ok="modalFormOk"></stocking-modal>
+    <purchase-put-in-modal ref="purchasePutInModal" :putInMtls="putInMtls" @ok="modalFormOk"></purchase-put-in-modal>
   </a-card>
 </template>
 
 <script>
   import StockingModal from './StockingModal'
+  import PurchasePutInModal from './PurchasePutInModal'
   import JInput from '@/components/jeecg/JInput'
   import {JeecgListMixin} from '@/mixins/JeecgListMixin'
-  import {handleStocking} from '@/api/api'
+  import {handleStocking, getPutInMtls} from '@/api/api'
   export default {
     name: "PurchasePutIn",
     mixins: [JeecgListMixin],
     components: {
       JInput,
-      StockingModal
+      StockingModal,
+      PurchasePutInModal
     },
     data () {
       return {
         queryParam:{},
+        putInMtls: [],
         columns: [
 
           {
@@ -146,29 +146,16 @@
         }
       },
       handleStocking (record) {
-        let that = this;
-        let content = "是否确认盘点 " + record.warehouse + " 中 " + record.material + " 库存数量？"
-        if(record.beforeAmount !== record.stockAmount){
-          content = "❌ 盘点数量与库存数量有差距，" + content;
-        } else {
-          content = "✅" + content;
+        this.putInMtls = [];
+        if (record.id && record.sourceId) {
+          getPutInMtls({sourceId: record.sourceId, id:record.id}).then((res) => {
+            if (res.success) {
+              this.putInMtls = res.result;
+            }
+          })
         }
-        this.$confirm({
-          title: "确认盘点",
-          content: content,
-          onOk: function () {
-            handleStocking({id:record.id}).then((res) => {
-              if (res.success) {
-                that.$message.success(res.message);
-                that.loadData();
-                that.onClearSelected();
-              } else {
-                that.$message.warning(res.message);
-              }
-            })
-          }
-        });
-
+        this.$refs.purchasePutInModal.edit(record);
+        this.$refs.purchasePutInModal.title = "待入库列表";
       },
       searchQuery () {
 
