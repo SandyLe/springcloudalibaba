@@ -85,7 +85,7 @@ public class PurchaseReturnController extends JeecgController<PurchaseReturn, Pu
             purchaseReturnService.save(rtn);
 
             //出库单
-            String stockcode = billCodeBuilderService.getBillCode(BillType.STOCKING.getId());
+            String stockcode = billCodeBuilderService.getBillCode(BillType.STOREOUT.getId());
             InventoryOut inventoryOut = new InventoryOut();
             inventoryOut.setSourceId(purchase.getId());
             inventoryOut.setCode(stockcode);

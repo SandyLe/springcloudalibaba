@@ -99,7 +99,7 @@ public class PurchaseController extends JeecgController<Purchase, PurchaseServic
             inventoryIn.setBillType(BillType.STOREIN.getId());
             inventoryIn.setRowSts(RowSts.EFFECTIVE.getId());
             inventoryIn.setSourceBillType(BillType.PURCHASEORDER.getId());
-            inventoryIn.setCode(billCodeBuilderService.getBillCode(BillType.STOCKING.getId()));
+            inventoryIn.setCode(billCodeBuilderService.getBillCode(BillType.STOREIN.getId()));
             inventoryInService.saveToInventoryIn(inventoryIn);
         }
 
@@ -142,7 +142,7 @@ public class PurchaseController extends JeecgController<Purchase, PurchaseServic
             inventoryIn.setBillType(BillType.STOREIN.getId());
             inventoryIn.setRowSts(RowSts.EFFECTIVE.getId());
             inventoryIn.setSourceBillType(BillType.PURCHASEORDER.getId());
-            inventoryIn.setCode(billCodeBuilderService.getBillCode(BillType.STOCKING.getId()));
+            inventoryIn.setCode(billCodeBuilderService.getBillCode(BillType.STOREIN.getId()));
             inventoryInService.saveToInventoryIn(inventoryIn);
             dto.setInventory(inventoryIn);
         }

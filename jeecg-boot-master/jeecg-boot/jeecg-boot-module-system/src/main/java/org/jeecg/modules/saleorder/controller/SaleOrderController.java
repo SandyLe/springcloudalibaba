@@ -278,7 +278,7 @@ public class SaleOrderController {
         }
 
         // 销售出库
-        InventoryOut inventoryOut = new InventoryOut(saleOrder.getId(),saleOrder.getCode(), BillType.STOCKING.getId(), BillType.SALEORDER.getId(), saleOrder.getWarehouseId(), saleOrder.getDeliveryTime(), BillStatus.TOSEND.getId());
+        InventoryOut inventoryOut = new InventoryOut(saleOrder.getId(),saleOrder.getCode(), BillType.STOREOUT.getId(), BillType.SALEORDER.getId(), saleOrder.getWarehouseId(), saleOrder.getDeliveryTime(), BillStatus.TOSEND.getId());
         inventoryOutService.saveToInventoryOut(inventoryOut);
         // 更新销售订单信息
         saleOrderService.updateById(saleOrder);

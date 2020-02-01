@@ -59,7 +59,7 @@ public class InventoryOutServiceImpl extends ServiceImpl<InventoryOutMapper, Inv
         InventoryOut info = getById(mtls.get(0).getBillId());
         if (null != info) {
             for (PreInventoryOutMtl mtl : mtls) {
-                InventoryLog inventoryLog = new InventoryLog(mtl.getSourceId(), BillType.SALEORDER.getId(), mtl.getMtlId(),
+                InventoryLog inventoryLog = new InventoryLog(mtl.getSourceId(), info.getSourceBillType(), mtl.getMtlId(),
                         info.getWarehouseId(), null, mtl.getQuantity(), null, mtl.getUnitId(), InventoryOperation.SALEOUT.getId());
                 inventoryService.updateInventory(inventoryLog);
             }
@@ -89,7 +89,7 @@ public class InventoryOutServiceImpl extends ServiceImpl<InventoryOutMapper, Inv
             List<SaleOrderMtl> saleOrderMtls = saleOrderMtlService.list(queryWrapper);
             if (CollectionUtils.isNotEmpty(saleOrderMtls)) {
                 saleOrderMtls.forEach(o ->{
-                    inventoryOutMtls.add(new InventoryOutMtl(o.getId(), o.getSourceId(), o.getMtlId(), o.getQuantity(), o.getUnitId()));
+                    inventoryOutMtls.add(new InventoryOutMtl(inventoryOut.getId(), o.getSourceId(), o.getMtlId(), o.getQuantity(), o.getUnitId()));
                 });
             }
         } else if (inventoryOut.getSourceBillType() == BillType.PURCHASERETURNORDER.getId()) {
@@ -97,7 +97,7 @@ public class InventoryOutServiceImpl extends ServiceImpl<InventoryOutMapper, Inv
             List<PurchaseReturnMtl> purchaseReturnMtls = iPurchaseReturnMtlService.list(queryWrapper);
             if (CollectionUtils.isNotEmpty(purchaseReturnMtls)) {
                 purchaseReturnMtls.forEach(o ->{
-                    inventoryOutMtls.add(new InventoryOutMtl(o.getId(), o.getSourceId(), o.getMtlId(), o.getQuantity(), o.getUnitId()));
+                    inventoryOutMtls.add(new InventoryOutMtl(inventoryOut.getId(), o.getSourceId(), o.getMtlId(), o.getQuantity(), o.getUnitId()));
                 });
             }
         }
@@ -108,7 +108,7 @@ public class InventoryOutServiceImpl extends ServiceImpl<InventoryOutMapper, Inv
     @Override
     public List<PreInventoryOutMtl> getDeliveryMtlList(String id, String sourceId) {
         List<PreInventoryOutMtl> preInventoryOutMtls = Lists.newArrayList();
-        LambdaQueryWrapper<InventoryOutMtl> querySaleMtlWrapper = new QueryWrapper<InventoryOutMtl>().lambda().eq(InventoryOutMtl::getSourceId, id);
+        LambdaQueryWrapper<InventoryOutMtl> querySaleMtlWrapper = new QueryWrapper<InventoryOutMtl>().lambda().eq(InventoryOutMtl::getSourceBillId, sourceId);
         LambdaQueryWrapper<InventoryLog> queryInventoryLogWrapper = new QueryWrapper<InventoryLog>().lambda().eq(InventoryLog::getSourceId, sourceId);
         List<InventoryOutMtl> inventoryOutMtls = inventoryOutMtlService.list(querySaleMtlWrapper);
         List<InventoryLog> inventoryLogs = inventoryLogService.list(queryInventoryLogWrapper);

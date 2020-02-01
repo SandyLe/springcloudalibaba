@@ -1,10 +1,13 @@
 package org.jeecg.modules.purchase.entity;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import org.jeecg.modules.basic.entity.BasicEntity;
+import org.jeecg.modules.basic.enums.BillStatus;
+import org.jeecg.modules.basic.enums.EnumConvertUtils;
 import org.jeecgframework.poi.excel.annotation.Excel;
 import org.springframework.format.annotation.DateTimeFormat;
 import java.util.Date;
@@ -50,6 +53,11 @@ public class Purchase extends BasicEntity {
     @Excel(name = "总金额",width = 20)
     @ApiModelProperty("总金额")
     private String totalamount;
+    @ApiModelProperty("订单状态")
+    private Integer billStatus;
+    @ApiModelProperty("订单状态")
+    @TableField(exist=false)
+    private String billStatusName;
 
     public String getVendorId() {
         return vendorId;
@@ -99,4 +107,22 @@ public class Purchase extends BasicEntity {
         this.totalamount = totalamount;
     }
 
+    public Integer getBillStatus() {
+        return billStatus;
+    }
+
+    public void setBillStatus(Integer billStatus) {
+        this.billStatus = billStatus;
+    }
+
+    public String getBillStatusName() {
+        if (null != billStatus) {
+            return EnumConvertUtils.getName(BillStatus.class, billStatus);
+        }
+        return billStatusName;
+    }
+
+    public void setBillStatusName(String billStatusName) {
+        this.billStatusName = billStatusName;
+    }
 }
