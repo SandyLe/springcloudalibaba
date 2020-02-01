@@ -97,7 +97,7 @@
                 <a v-if="record.inventoryin!=null" @click="handleinventoryin(record.inventoryin)" :data-id="record.id">入库单</a>
                 <a-divider type="vertical" v-if="record.inventoryin!=null"/>
 
-                <a v-if="!(record.inventoryin!=null&&record.inventoryin.billStatus==1)" @click="diyhandleEdit" :data-id="record.id">编辑</a>
+                <a v-if="record.billStatus<11" @click="diyhandleEdit" :data-id="record.id">编辑</a>
                 <a-divider type="vertical" v-if="!(record.inventoryin!=null&&record.inventoryin.billStatus==1)"/>
 
                 <a-dropdown>
@@ -210,9 +210,9 @@ export default {
                     // }
                 },
                 {
-                    title: '备注',
+                    title: '状态',
                     align: "center",
-                    dataIndex: 'content'
+                    dataIndex: 'billStatusName'
                 },
                 {
                     title: '操作',
