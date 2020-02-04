@@ -116,7 +116,7 @@
 
     </a-card>
     <footer-tool-bar>
-        <a-button type="primary" @click="handleOk">保存</a-button>
+        <a-button v-if="unEditable" type="primary" @click="handleOk">保存</a-button>
         <router-view :key="this.$route.path"></router-view>
         <a-button :style="{marginLeft:'20px'}" @click="backToList">返回</a-button>
     </footer-tool-bar>
@@ -281,7 +281,8 @@ export default {
                     }
                 }
             ],
-            tabledata: []
+            tabledata: [],
+            unEditable: true
         }
     },
     created() {
@@ -505,8 +506,14 @@ export default {
         backToList() {
             // console.log(this.$route.matched);
             this.$route.matched.splice(this.$route.matched.length-1 ,1);
+            this.$parent.closeRouteViewTab(this.$route.fullPath)
             this.$router.replace({ path:'/purchase/PurchaseList' });
         }
+    },
+    mounted() {
+      if (this.$route.query.unEditable === false) {
+        this.unEditable = this.$route.query.unEditable;
+      }
     }
 }
 </script>

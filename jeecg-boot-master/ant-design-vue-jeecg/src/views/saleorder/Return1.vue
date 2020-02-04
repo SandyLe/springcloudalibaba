@@ -1,8 +1,26 @@
 <template>
   <div>
-    <a-form :form="saleOrderForm">
-      <a-row>
+    <a-form :form="saleOrderReturnForm">
+      <a-row :gutter="24">
         <a-col :md="6" :sm="6">
+          <a-form-item
+            :labelCol="{span: 5}"
+            :wrapperCol="{span: 19}"
+            label="原单编号">
+            <!--<a-input placeholder="请输入账号查询" v-model="queryParam.username"></a-input>-->
+            <a-input placeholder="输入原销售单号" ref=saleOrderNo v-decorator="[ 'sourceCode', {}]" ></a-input>
+            <a-input v-decorator="[ 'sourceId', {}]" ref=saleOrderId placeholder="原单ID" type="hidden" />
+          </a-form-item>
+        </a-col>
+        <a-col :md="2" :sm="12">
+          <a-form-item
+            :labelCol="{span: 5}"
+            :wrapperCol="{span: 19}"
+            label="">
+            <a-button type="primary" @click="searchSaleOrder" icon="search">查询</a-button>
+          </a-form-item>
+        </a-col>
+        <a-col :md="6" :sm="12">
           <a-form-item
             :labelCol="{span: 5}"
             :wrapperCol="{span: 19}"
@@ -25,7 +43,7 @@
             <a-input placeholder="自动生成单号" :readOnly="true" v-decorator="[ 'code', {}]" :disabled="unEditable" />
           </a-form-item>
         </a-col>
-        <a-col :md="6" :sm="6">
+        <a-col :md="4" :sm="6">
           <a-form-item
             :labelCol="{span: 5}"
             :wrapperCol="{span: 19}"
@@ -33,6 +51,8 @@
             <j-dict-select-tag v-decorator="['channelId', {}]" placeholder="请选择销售渠道" :type="'select'" style="width: 60%" :triggerChange="true" dictCode="channel" :disabled="unEditable" :readOnly = "unEditable" />
           </a-form-item>
         </a-col>
+      </a-row>
+      <a-row>
         <a-col :md="6" :sm="6">
           <a-form-item
             :labelCol="{span: 5}"
@@ -41,9 +61,7 @@
             <a-date-picker showTime format='YYYY-MM-DD HH:mm:ss' v-decorator="[ 'billDate', {}]" :readOnly = "unEditable" :disabled="unEditable" />
           </a-form-item>
         </a-col>
-      </a-row>
-      <a-row>
-        <a-col :md="24" :sm="24">
+        <a-col :md="18" :sm="18">
           <a-form-item
             label="备注"
             :labelCol="{span: 2}"
@@ -128,7 +146,7 @@
 
           <!-- 表单区域 -->
 
-          <sale-order-mtl-modal ref="saleOrderMtlModal" :saleOrder = "saleOrder" @ok="modalFormOk"></sale-order-mtl-modal>
+          <sale-order-return-mtl-modal ref="saleOrderReturnMtlModal" :saleOrder = "saleOrder" @ok="modalFormOk"></sale-order-return-mtl-modal>
           <!-- 表单区域 -->
         </a-col>
       </a-row>
@@ -141,24 +159,26 @@
 </template>
 
 <script>
-  import SaleOrderMtlModal from './SaleOrderMtlModal'
+  import JInput from '@/components/jeecg/JInput'
+  import SaleOrderReturnMtlModal from './SaleOrderReturnMtlModal'
   import pick from 'lodash.pick'
   import moment from 'moment'
   import JDictSelectTag from '@/components/dict/JDictSelectTag.vue'
-  import {addSaleOrder, editSaleOrder, getCustomerList, getSaleOrderOne, getSaleOrderMtlList } from '@/api/api'
+  import {addSaleOrderReturn, editSaleOrderReturn, getCustomerList, getSaleOrderReturnOne, getSaleOrderReturnMtlList, getSaleOrderByCode} from '@/api/api'
   import {JeecgListMixin} from '@/mixins/JeecgListMixin'
   export default {
-    name: "Step1",
+    name: "Return1",
     mixins: [JeecgListMixin],
     components: {
-      SaleOrderMtlModal,
-      JDictSelectTag
+      SaleOrderReturnMtlModal,
+      JDictSelectTag,
+      JInput
     },
     data () {
       return {
         saleOrder: {},
         dateFormat:"YYYY-MM-DD HH:mm:ss",
-        saleOrderForm: this.$form.createForm(this),
+        saleOrderReturnForm: this.$form.createForm(this),
         mainId: 0,
         labelCol: {
           xs: { span: 24 },
@@ -241,9 +261,9 @@
         selectedRowKeys: [],
         selectedRows: [],
         url: {
-          list: "/saleOrderMtl/getPage",
-          delete: "/saleOrderMtl/delete",
-          deleteBatch: "/saleOrderMtl/deleteBatch"
+          list: "/saleOrderReturnMtl/getPage",
+          delete: "/saleOrderReturnMtl/delete",
+          deleteBatch: "/saleOrderReturnMtl/deleteBatch"
         },
         unEditable: true
       }
@@ -260,10 +280,11 @@
       },
       moment,
       add () {
-        this.edit({'gender':'1','cdiDefaultType':''});
+        this.edit({});
       },
       edit (record) {
-        this.saleOrderForm.resetFields();
+        console.log(record)
+        this.saleOrderReturnForm.resetFields();
         this.model = Object.assign({}, record);
         this.visible = true;
         //编辑页面禁止修改角色编码
@@ -273,17 +294,16 @@
           this.roleDisabled = false;
         }
         this.$nextTick(() => {
-          console.log(this.model)
-          debugger
-          this.saleOrderForm.setFieldsValue(pick(this.model,'name', 'code','content','customerId','channelId','billDate'))
+          this.saleOrderReturnForm.setFieldsValue(pick(this.model,'name', 'code','content','customerId','channelId','billDate','sourceId','sourceCode'))
           //时间格式化
-          this.saleOrderForm.setFieldsValue({billDate: this.model.billDate ? moment(this.model.billDate) : null})
+          this.saleOrderReturnForm.setFieldsValue({billDate: this.model.billDate ? moment(this.model.billDate) : null})
         });
       },
-      saveSaleOrder(id) {
+      saveSaleOrderReturn(id) {
         const that = this;
         // 触发表单验证
-        this.saleOrderForm.validateFields((err, values) => {
+        this.saleOrderReturnForm.validateFields((err, values) => {
+          console.log(values)
           debugger
           if (!err) {
             that.confirmLoading = true;
@@ -299,14 +319,13 @@
             let obj;
             if(this.model){
               if (values.id) {
-                obj=editSaleOrder(formData);
+                obj=editSaleOrderReturn(formData);
               }else{
-                obj=addSaleOrder(formData);
+                obj=addSaleOrderReturn(formData);
               }
             }
             obj.then((res)=>{
               if(res.success){
-                debugger
                 this.$route.query.id = res.result.id;
                 that.saleOrder = res.result;
                 // that.$message.success(res.message);
@@ -322,30 +341,47 @@
         })
       },
       handleAddMtl () {
-        debugger
         this.mainId = this.$route.query.id;
-        console.log(this.mainId)
         if (!this.mainId) {
-          this.saveSaleOrder(this.mainId);
+          this.saveSaleOrderReturn(this.mainId);
         }
-        this.$refs.saleOrderMtlModal.add();
-        this.$refs.saleOrderMtlModal.title = "新增";
+        let saleOrderId = this.$refs.saleOrderId.value;
+        this.$refs.saleOrderReturnMtlModal.add({sourceBillId: saleOrderId});
+        this.$refs.saleOrderReturnMtlModal.title = "新增";
       },
       handleEditMtl (record) {
-        debugger
-        this.$refs.saleOrderMtlModal.edit(record);
-        this.$refs.saleOrderMtlModal.title = "编辑";
+        let saleOrderId = this.$refs.saleOrderId.value;
+        record.sourceBillId = saleOrderId;
+        this.$refs.saleOrderReturnMtlModal.edit(record);
+        this.$refs.saleOrderReturnMtlModal.title = "编辑";
       },
       goDetail(id) {
         this.$router.push({ name: "material-materialEdit", query: {"id": id}})
       },
       nextStep () {
-        debugger
         this.mainId = this.$route.query.id;
         if (!this.unEditable) {
-          this.saveSaleOrder(this.mainId);
+          this.saveSaleOrderReturn(this.mainId);
         }
         this.$emit('nextStep')
+      },
+      searchSaleOrder () {
+
+        let saleOrderNo = this.$refs.saleOrderNo.value;
+        if (saleOrderNo) {
+          getSaleOrderByCode({code:saleOrderNo}).then((res) => {
+            if (res.success) {
+              let saleOrder = res.result;
+              saleOrder.sourceCode = saleOrderNo;
+              saleOrder.sourceId = saleOrder.id;
+              saleOrder.code = null;
+              saleOrder.id = null;
+              this.edit(saleOrder)
+            }
+          })
+        } else {
+          this.$message.warning('请输入原单编号！');
+        }
       }
     },
     mounted() {
@@ -355,7 +391,7 @@
         }
       })
       if (this.$route.query.id) {
-        getSaleOrderOne({id:this.$route.query.id}).then((res) => {
+        getSaleOrderReturnOne({id:this.$route.query.id}).then((res) => {
           if (res.success) {
             this.saleOrder = res.result;
             this.edit(res.result);

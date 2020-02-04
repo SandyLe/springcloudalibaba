@@ -76,6 +76,14 @@
 
         <a-table ref="table" size="middle" bordered rowKey="id" :columns="columns" :dataSource="dataSource" :pagination="ipagination" :loading="loading" :rowSelection="{fixed:true,selectedRowKeys: selectedRowKeys, onChange: onSelectChange}" @change="handleTableChange">
 
+            <span slot="nameAction" slot-scope="text, record">
+              <a-tooltip placement="topLeft">
+                <template slot="title">
+                  <span>{{record.code}}</span>
+                </template>
+                <a @click="goDetail(record.id)">{{record.code}}</a>
+              </a-tooltip>
+            </span>
             <template slot="htmlSlot" slot-scope="text">
                 <div v-html="text"></div>
             </template>
@@ -153,11 +161,12 @@ export default {
                         return parseInt(index) + 1;
                     }
                 },
-              {
-                title: '采购单号',
-                align: "center",
-                dataIndex: 'code'
-              },
+                {
+                  title: '采购单号',
+                  align: "center",
+                  dataIndex: '',
+                  scopedSlots: { customRender: 'nameAction' }
+                },
                 {
                     title: '供应商',
                     align: "center",
@@ -272,6 +281,9 @@ export default {
                 this.$router.replace({ path:'/purchase/PurchaseModal/' + e.target.dataset.id });
             else
                 this.$router.replace({ path:'/purchase/PurchaseModal/' });
+        },
+        goDetail(id) {
+          this.$router.replace({ path:'/purchase/PurchaseModal/' + id, query: {"unEditable": false} });
         },
         handleinventoryin(data){
             var that = this;

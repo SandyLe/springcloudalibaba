@@ -80,12 +80,10 @@
       </a-table>
     </div>
 
-    <saleOrder-modal ref="modalForm" @ok="modalFormOk"></saleOrder-modal>
   </a-card>
 </template>
 
 <script>
-  import SaleOrderModal from './SaleOrderMtlModal'
   import JInput from '@/components/jeecg/JInput'
   import {JeecgListMixin} from '@/mixins/JeecgListMixin'
   import {disableSaleOrder} from '@/api/api'
@@ -94,7 +92,6 @@
     mixins: [JeecgListMixin],
     components: {
       JInput,
-      SaleOrderModal
     },
     data () {
       return {
@@ -175,11 +172,11 @@
           }
         ],
         url: {
-          list: "/saleOrder/getPage",
-          delete: "/saleOrder/delete",
-          deleteBatch: "/saleOrder/deleteBatch",
-          exportXlsUrl: "/saleOrder/exportXls",
-          importExcelUrl: "/saleOrder/importExcel",
+          list: "/saleOrderReturn/getPage",
+          delete: "/saleOrderReturn/delete",
+          deleteBatch: "/saleOrderReturn/deleteBatch",
+          exportXlsUrl: "/saleOrderReturn/exportXls",
+          importExcelUrl: "/saleOrderReturn/importExcel",
         },
       }
     },
@@ -191,10 +188,10 @@
 
       },
       goDetail (id) {
-        this.$router.push({ name: "saleorder-saleOrderEdit", query: {"id": id, "unEditable": true}})
+        this.$router.push({ name: "saleorder-saleOrderReturnEdit", query: {"id": id, "unEditable": true}})
       },
       handleEditSaleOrder (id) {
-        this.$router.push({ name: "saleorder-saleOrderEdit", query: {"id": id, "unEditable": false}})
+        this.$router.push({ name: "saleorder-saleOrderReturnEdit", query: {"id": id, "unEditable": false}})
       },
       handleInvalid (record) {
         disableSaleOrder(record).then((res)=>{

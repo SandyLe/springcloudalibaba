@@ -140,7 +140,6 @@
         this[action](key)
       },
       remove(key) {
-        debugger
         if (key == indexKey) {
           this.$message.warning('首页不能关闭!')
           return

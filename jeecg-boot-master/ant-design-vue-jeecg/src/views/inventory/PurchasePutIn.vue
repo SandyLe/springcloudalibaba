@@ -51,7 +51,7 @@
           <a @click="goDetail(record.mtlId)">{{record.material}}</a>
         </span>
         <span slot="action" v-if="record.billStatus !== -1" slot-scope="text, record">
-          <a v-if="record.billStatus !== 8" @click="handleStocking(record)">入库</a>
+          <a v-if="record.billStatus !== 12" @click="handleStocking(record)">入库</a>
           <a-divider type="vertical" />
           <a @click="viewInventoryLog(record)">入库记录</a>
         </span>
@@ -60,27 +60,29 @@
 
     <stocking-modal ref="modalForm" @ok="modalFormOk"></stocking-modal>
     <purchase-put-in-modal ref="purchasePutInModal" :putInMtls="putInMtls" @ok="modalFormOk"></purchase-put-in-modal>
+    <inventory-log-modal ref="inventoryLogModal" :inventoryLogs="inventoryLogs" @ok="modalFormOk"></inventory-log-modal>
   </a-card>
 </template>
 
 <script>
-  import StockingModal from './StockingModal'
+  import InventoryLogModal from './InventoryLogModal'
   import PurchasePutInModal from './PurchasePutInModal'
   import JInput from '@/components/jeecg/JInput'
   import {JeecgListMixin} from '@/mixins/JeecgListMixin'
-  import {handleStocking, getPutInMtls} from '@/api/api'
+  import {handleStocking, viewInventoryLog, getPutInMtls} from '@/api/api'
   export default {
     name: "PurchasePutIn",
     mixins: [JeecgListMixin],
     components: {
       JInput,
-      StockingModal,
+      InventoryLogModal,
       PurchasePutInModal
     },
     data () {
       return {
         queryParam:{},
         putInMtls: [],
+        inventoryLogs: [],
         columns: [
 
           {
@@ -156,6 +158,18 @@
         }
         this.$refs.purchasePutInModal.edit(record);
         this.$refs.purchasePutInModal.title = "待入库列表";
+      },
+      viewInventoryLog (record) {
+        this.inventoryLogs = [];
+        if (record.id && record.sourceId) {
+          viewInventoryLog({sourceId: record.sourceId}).then((res) => {
+            if (res.success) {
+              this.inventoryLogs = res.result;
+            }
+          })
+        }
+        this.$refs.inventoryLogModal.edit(record);
+        this.$refs.inventoryLogModal.title = "入库记录";
       },
       searchQuery () {
 

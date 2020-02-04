@@ -174,7 +174,7 @@
           })
         }
         this.$refs.inventoryLogModal.edit(record);
-        this.$refs.inventoryLogModal.title = "出库记录列表";
+        this.$refs.inventoryLogModal.title = "出库记录";
       },
       searchQuery () {
 

@@ -167,7 +167,7 @@
   import {checkout, getSaleOrderOne, getSaleOrderMtlList } from '@/api/api'
   import JDictSelectTag from '@/components/dict/JDictSelectTag.vue'
   export default {
-    name: "Step2",
+    name: "Return2",
     mixins: [JeecgListMixin],
     components: {
       SaleOrderExpenseModal,

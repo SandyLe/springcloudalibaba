@@ -100,6 +100,7 @@ const addSaleOrder = (params)=>postAction("/saleOrder/add",params)
 const editSaleOrder = (params)=>postAction("/saleOrder/edit",params)
 const checkout = (params)=>postAction("/saleOrder/checkout",params)
 const getSaleOrderOne = (params)=>getAction("/saleOrder/getOne",params)
+const getSaleOrderByCode = (params)=>getAction("/saleOrder/getOneByCode",params)
 const delivery = (params)=>postAction("/saleOrder/delivery",params)
 const disableSaleOrder = (params)=>postAction("/saleOrder/disable",params)
 const getSaleOrderDeliveryInfo = (params)=>getAction("/saleOrderDeliveryInfo/getList",params)
@@ -109,6 +110,8 @@ const deliveryStockOut = (params)=>postAction("/inventoryOut/mtls/stockout",para
 const putStockIn = (params)=>postAction("/inventoryIn/mtls/stockin",params)
 const addSaleMtlOrder = (params)=>postAction("/saleOrderMtl/add",params)
 const editSaleMtlOrder = (params)=>postAction("/saleOrderMtl/edit",params)
+const getlSaleMtlList = (params)=>getAction("/saleOrderMtl/getList",params)
+const getlSaleMtlOneByMtlId = (params)=>getAction("/saleOrderMtl/mtl/getOne",params)
 const addCustomerType = (params)=>postAction("/customerType/add",params)
 const editCustomerType = (params)=>postAction("/customerType/edit",params)
 const getCustomerTypeList = (params)=>getAction("/customerType/getList",params)
@@ -178,6 +181,15 @@ const addLogisticsCompany = (params)=>postAction("/logisticsCompany/add",params)
 const editLogisticsCompany = (params)=>postAction("/logisticsCompany/edit",params)
 const getLogisticsCompanyList = (params)=>getAction("/logisticsCompany/getList",params)
 
+// 销售退货
+const addSaleOrderReturn = (params)=>postAction("/saleOrderReturn/add",params)
+const editSaleOrderReturn = (params)=>postAction("/saleOrderReturn/edit",params)
+const saleOrderReturncheckIn = (params)=>postAction("/saleOrderReturn/checkIn",params)
+const getSaleOrderReturnOne = (params)=>getAction("/saleOrderReturn/getOne",params)
+const addSaleMtlOrderReturn = (params)=>postAction("/saleOrderReturnMtl/add",params)
+const editSaleMtlOrderReturn = (params)=>postAction("/saleOrderReturnMtl/edit",params)
+
+
 export {
   // imgView,
   // doMian,
@@ -229,6 +241,7 @@ export {
   addSaleOrder,
   editSaleOrder,
   getSaleOrderOne,
+  getSaleOrderByCode,
   disableSaleOrder,
   addCustomerType,
   editCustomerType,
@@ -270,6 +283,8 @@ export {
   getCustomerList,
   addSaleMtlOrder,
   editSaleMtlOrder,
+  getlSaleMtlList,
+  getlSaleMtlOneByMtlId,
   getDiscountTypeList,
   getMtlPrice,
   addExpense,
@@ -300,7 +315,13 @@ export {
   purchasereturnedit,
   addLogisticsCompany,
   editLogisticsCompany,
-  getLogisticsCompanyList
+  getLogisticsCompanyList,
+  addSaleOrderReturn,
+  editSaleOrderReturn,
+  saleOrderReturncheckIn,
+  getSaleOrderReturnOne,
+  addSaleMtlOrderReturn,
+  editSaleMtlOrderReturn
 }
 
 

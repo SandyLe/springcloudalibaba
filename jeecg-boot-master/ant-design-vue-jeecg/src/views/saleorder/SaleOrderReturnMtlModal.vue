@@ -32,9 +32,9 @@
               <a-select v-decorator="['mtlId', {}]" placeholder="请选择产品" showSearch optionFilterProp="children"
                         @change="mtlChange" notFoundContent="没有匹配的产品"  >
                 <a-select-option value="">请选择</a-select-option>
-                <a-select-option v-for="(item, key) in mtlList" :key="key" :value="item.id">
-                    <span style="display: inline-block;width: 100%" :title=" item.name || item.code ">
-                      {{ item.name || item.code }}
+                <a-select-option v-for="(item, key) in mtlList" :key="key" :value="item.mtlId">
+                    <span style="display: inline-block;width: 100%" :title=" item.mtl || item.mtlCode ">
+                      {{ item.mtl || item.mtlCode }}
                     </span>
                 </a-select-option>
               </a-select>
@@ -122,10 +122,10 @@
 
   import pick from 'lodash.pick'
   import AFormItem from "ant-design-vue/es/form/FormItem";
-  import {addSaleMtlOrder,editSaleMtlOrder,getMaterialList,duplicateCheck,getDiscountTypeList,getMaterialSelfUnitList,getMtlPrice } from '@/api/api'
+  import {addSaleMtlOrderReturn,editSaleMtlOrderReturn,getlSaleMtlList,getlSaleMtlOneByMtlId,getDiscountTypeList,getMaterialSelfUnitList,getMtlPrice } from '@/api/api'
 
   export default {
-    name: "SaleOrderMtlModal",
+    name: "SaleOrderReturnMtlModal",
     props: {
       saleOrder: {
         type: Object,
@@ -174,8 +174,8 @@
     created () {
     },
     methods: {
-      add () {
-        this.edit({});
+      add (record) {
+        this.edit(record);
       },
       edit (record) {
         this.form.resetFields();
@@ -183,7 +183,7 @@
         this.model = Object.assign({}, record);
         this.visible = true;
         let that = this;
-        getMaterialList().then((res) => {
+        getlSaleMtlList({sourceId: record.sourceBillId}).then((res) => {
           if (res.success) {
             that.mtlList = res.result;
           }
@@ -208,22 +208,20 @@
 
       },
       mtlChange (val) {
-        debugger
         getMaterialSelfUnitList({addSelf:true,sourceId:val}).then((res) => {
           if (res.success) {
             this.unitList = res.result;
           }
         })
-
-        getMtlPrice({customerId:this.saleOrder.customerId, mtlId:val, unitId:this.unitId}).then((res) => {
+        getlSaleMtlOneByMtlId({sourceId: this.model.sourceBillId, mtlId: val}).then((res) => {
           if (res.success) {
-            const mtlPrice = res.result;
-            this.model.mtlCode = mtlPrice.mtlCode;
-            this.model.unitId = mtlPrice.unitId;
-            this.model.specification = mtlPrice.specification;
-            this.model.price = mtlPrice.price;
+            const record = res.result;
+            record.id = null;
+            record.createBy = null;
+            record.createTime = null;
+            this.model = Object.assign({}, record);
             this.$nextTick(() => {
-              this.form.setFieldsValue(pick(this.model,'mtlCode','specification','unitId','price'))
+              this.form.setFieldsValue(pick(this.model,'mtlId', 'mtlCode','specification','unitId','price','discount','quantity','discountType'))
             });
           }
         })
@@ -246,9 +244,9 @@
             let obj;
             console.log(formData)
             if(!this.model.id){
-              obj=addSaleMtlOrder(formData);
+              obj=addSaleMtlOrderReturn(formData);
             }else{
-              obj=editSaleMtlOrder(formData);
+              obj=editSaleMtlOrderReturn(formData);
             }
             obj.then((res)=>{
               if(res.success){
