@@ -1,5 +1,6 @@
 package org.jeecg.modules.saleorder.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -76,8 +77,18 @@ public class SaleOrderMtlController {
     @GetMapping(value = "/getList")
     public Result<?> getList(SaleOrderMtl saleOrderMtl, HttpServletRequest req) {
         QueryWrapper<SaleOrderMtl> queryWrapper = QueryGenerator.initQueryWrapper(saleOrderMtl, req.getParameterMap());
-        List<SaleOrderMtl> list = saleOrderMtlService.list(queryWrapper);
-        return Result.ok(list);
+        List<SaleOrderMtl> saleOrderMtlList = saleOrderMtlService.list(queryWrapper);
+        List<String> mtlIds = saleOrderMtlList.stream().map(SaleOrderMtl::getMtlId).collect(Collectors.toList());
+        Collection<Material> materials = materialService.listByIds(mtlIds);
+        Map<String, String> mtlMap = materials.stream().collect(Collectors.toMap(Material::getId, Material::getName));
+        Map<String, String> mtlCodeMap = materials.stream().collect(Collectors.toMap(Material::getId, Material::getCode));
+        Map<String, String> mtlSpecMap = materials.stream().collect(Collectors.toMap(Material::getId, Material::getSpecification));
+        saleOrderMtlList.stream().forEach(o->{
+            o.setMtl(mtlMap.get(o.getMtlId()));
+            o.setMtlCode(mtlCodeMap.get(o.getMtlId()));
+            o.setSpecification(mtlSpecMap.get(o.getMtlId()));
+        });
+        return Result.ok(saleOrderMtlList);
     }
     /**
      * 分页列表查询
@@ -174,6 +185,30 @@ public class SaleOrderMtlController {
     @ApiOperation(value = "通过ID查询销售订单", notes = "通过ID查询销售订单")
     public Result<?> queryById(@ApiParam(name = "id", value = "示例id", required = true) @RequestParam(name = "id", required = true) String id) {
         SaleOrderMtl saleOrderMtl = saleOrderMtlService.getById(id);
+        return Result.ok(saleOrderMtl);
+    }
+
+    /**
+     * 通过mtlId查询
+     *
+     * @param mtlId
+     * @return
+     */
+    @GetMapping(value = "/mtl/getOne")
+    @ApiOperation(value = "通过ID查询销售订单", notes = "通过ID查询销售订单")
+    public Result<?> queryById(@ApiParam(name = "mtlId", value = "mtlId", required = true) @RequestParam(name = "mtlId", required = true) String mtlId,
+                               @ApiParam(name = "sourceId", value = "sourceId", required = true) @RequestParam(name = "sourceId", required = true) String sourceId) {
+        LambdaQueryWrapper<SaleOrderMtl> lambdaQueryWrapper = new LambdaQueryWrapper<SaleOrderMtl>().eq(SaleOrderMtl::getSourceId, sourceId)
+                .eq(SaleOrderMtl::getMtlId, mtlId).eq(SaleOrderMtl::getRowSts, RowSts.EFFECTIVE.getId());
+        SaleOrderMtl saleOrderMtl = saleOrderMtlService.getOne(lambdaQueryWrapper);
+        if (null != saleOrderMtl) {
+            Material material = materialService.getById(saleOrderMtl.getMtlId());
+            if (null != material) {
+                saleOrderMtl.setMtlCode(material.getCode());
+                saleOrderMtl.setMtl(material.getName());
+                saleOrderMtl.setSpecification(material.getSpecification());
+            }
+        }
         return Result.ok(saleOrderMtl);
     }
 }

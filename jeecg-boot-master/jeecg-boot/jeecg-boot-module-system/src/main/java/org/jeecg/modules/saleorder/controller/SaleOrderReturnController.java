@@ -63,7 +63,7 @@ public class SaleOrderReturnController {
     public Result<?> add(@RequestBody SaleOrderReturn saleOrderReturn) {
 
         saleOrderReturn.setBillStatus(BillStatus.NEW.getId());
-        saleOrderReturn.setCode(billCodeBuilderService.getBillCode(BillType.SALEORDER.getId()));
+        saleOrderReturn.setCode(billCodeBuilderService.getBillCode(BillType.SALERETURNORDER.getId()));
         SaleOrderReturn exists = saleOrderReturnService.getOne(new LambdaQueryWrapper<SaleOrderReturn>().eq(SaleOrderReturn::getCode, saleOrderReturn.getCode()).ne(SaleOrderReturn::getId, saleOrderReturn.getId()));
         Assert.isNull(exists, "单号已存在！");
         saleOrderReturnService.save(saleOrderReturn);

@@ -240,6 +240,29 @@ public class SaleOrderController {
     }
 
     /**
+     * 通过code查询
+     *
+     * @param code
+     * @return
+     */
+    @GetMapping(value = "/getOneByCode")
+    @ApiOperation(value = "通过Code查询销售订单", notes = "通过Code查询销售订单")
+    public Result<?> queryByCode(@ApiParam(name = "code", value = "示例code", required = true) @RequestParam(name = "code", required = true) String code) {
+        SaleOrder saleOrder = saleOrderService.getOne(new LambdaQueryWrapper<SaleOrder>().eq(SaleOrder::getCode, code));
+        if (null != saleOrder) {
+            if (StringUtils.isNotBlank(saleOrder.getCustomerId())) {
+                Customer customer = customerService.getById(saleOrder.getCustomerId());
+                saleOrder.setCustomer(null != customer ? customer.getName() : null);
+            }
+            if (StringUtils.isNotBlank(saleOrder.getWarehouseId())) {
+                Warehouse warehouse = warehouseService.getById(saleOrder.getWarehouseId());
+                saleOrder.setWarehouse(null != warehouse ? warehouse.getName() : null);
+            }
+        }
+        return Result.ok(saleOrder);
+    }
+
+    /**
      * 发货
      *
      * @param deliveryEditDto
