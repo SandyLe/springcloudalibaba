@@ -1,5 +1,6 @@
 package org.jeecg.modules.purchase.entity;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
@@ -38,6 +39,11 @@ public class PurchaseReturn extends BasicEntity {
     @Excel(name = "原单id", width = 15)
     @ApiModelProperty("原单id")
     private String sourceId;
+    @ApiModelProperty("订单状态")
+    private Integer billStatus;
+    @ApiModelProperty("订单状态")
+    @TableField(exist=false)
+    private String billStatusName;
 
     public String getWarehouseId() {
         return warehouseId;
@@ -71,4 +77,19 @@ public class PurchaseReturn extends BasicEntity {
         this.sourceId = sourceId;
     }
 
+    public Integer getBillStatus() {
+        return billStatus;
+    }
+
+    public void setBillStatus(Integer billStatus) {
+        this.billStatus = billStatus;
+    }
+
+    public String getBillStatusName() {
+        return billStatusName;
+    }
+
+    public void setBillStatusName(String billStatusName) {
+        this.billStatusName = billStatusName;
+    }
 }

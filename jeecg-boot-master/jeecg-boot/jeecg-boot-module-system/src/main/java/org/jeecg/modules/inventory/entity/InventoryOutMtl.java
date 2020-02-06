@@ -18,6 +18,10 @@ public class InventoryOutMtl extends BasicEntity {
     private String sourceId;
     @ApiModelProperty("原单ID")
     private String sourceBillId;
+    @ApiModelProperty("原单类型")
+    private Integer sourceBillType;
+    @TableField(exist=false)
+    private String sourceBillTypeName;
     @ApiModelProperty("产品ID")
     private String mtlId;
     @ApiModelProperty("出库数量")
@@ -44,9 +48,10 @@ public class InventoryOutMtl extends BasicEntity {
     public InventoryOutMtl() {
     }
 
-    public InventoryOutMtl(String sourceId, String sourceBillId, String mtlId, BigDecimal quantity, String unitId) {
+    public InventoryOutMtl(String sourceId, String sourceBillId, Integer sourceBillType, String mtlId, BigDecimal quantity, String unitId) {
         this.sourceId = sourceId;
         this.sourceBillId = sourceBillId;
+        this.sourceBillType = sourceBillType;
         this.mtlId = mtlId;
         this.quantity = quantity;
         this.unitId = unitId;

@@ -1,5 +1,6 @@
 package org.jeecg.modules.saleorder.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -60,8 +61,16 @@ public class SaleOrderExpenseController {
     @GetMapping(value = "/getList")
     public Result<?> getList(SaleOrderExpense saleOrderExpense, HttpServletRequest req) {
         QueryWrapper<SaleOrderExpense> queryWrapper = QueryGenerator.initQueryWrapper(saleOrderExpense, req.getParameterMap());
-        List<SaleOrderExpense> list = saleOrderExpenseService.list(queryWrapper);
-        return Result.ok(list);
+        List<SaleOrderExpense> saleOrderExpenses = saleOrderExpenseService.list(queryWrapper);
+        if (CollectionUtils.isNotEmpty(saleOrderExpenses)) {
+            List<String> expenseIds = saleOrderExpenses.stream().map(SaleOrderExpense::getExpenseId).collect(Collectors.toList());
+            Collection<Expense> expenses = expenseService.listByIds(expenseIds);
+            Map<String, String> expenseMap = expenses.stream().collect(Collectors.toMap(Expense::getId, Expense::getName));
+            saleOrderExpenses.stream().forEach(o->{
+                o.setExpense(expenseMap.get(o.getExpenseId()));
+            });
+        }
+        return Result.ok(saleOrderExpenses);
     }
     /**
      * 分页列表查询
@@ -147,6 +156,22 @@ public class SaleOrderExpenseController {
     @ApiOperation(value = "通过ID查询销售订单", notes = "通过ID查询销售订单")
     public Result<?> queryById(@ApiParam(name = "id", value = "示例id", required = true) @RequestParam(name = "id", required = true) String id) {
         SaleOrderExpense saleOrderExpense = saleOrderExpenseService.getById(id);
+        return Result.ok(saleOrderExpense);
+    }
+
+    /**
+     * 通过id查询
+     *
+     * @param sourceId
+     * @return
+     */
+    @GetMapping(value = "/expense/getOne")
+    @ApiOperation(value = "通过ID查询销售订单", notes = "通过ID查询销售订单")
+    public Result<?> queryByExpenseId(@ApiParam(name = "sourceId", value = "sourceId", required = true) @RequestParam(name = "sourceId", required = true) String sourceId,
+                                      @ApiParam(name = "expenseId", value = "expenseId", required = true) @RequestParam(name = "expenseId", required = true) String expenseId) {
+        LambdaQueryWrapper<SaleOrderExpense> lambdaQueryWrapper = new LambdaQueryWrapper<SaleOrderExpense>().eq(SaleOrderExpense::getSourceId, sourceId)
+                .eq(SaleOrderExpense::getExpenseId, expenseId);
+        SaleOrderExpense saleOrderExpense = saleOrderExpenseService.getOne(lambdaQueryWrapper);
         return Result.ok(saleOrderExpense);
     }
 }

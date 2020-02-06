@@ -17,9 +17,11 @@ import org.jeecg.modules.inventory.service.InventoryLogService;
 import org.jeecg.modules.inventory.service.InventoryOutMtlService;
 import org.jeecg.modules.inventory.service.InventoryOutService;
 import org.jeecg.modules.inventory.service.InventoryService;
+import org.jeecg.modules.purchase.entity.PurchaseReturn;
 import org.jeecg.modules.purchase.entity.PurchaseReturnMtl;
 import org.jeecg.modules.purchase.service.PurchaseReturnMtlService;
 import org.jeecg.modules.inventory.dto.PreInventoryOutMtl;
+import org.jeecg.modules.purchase.service.PurchaseReturnService;
 import org.jeecg.modules.saleorder.entity.SaleOrder;
 import org.jeecg.modules.saleorder.entity.SaleOrderMtl;
 import org.jeecg.modules.saleorder.service.SaleOrderMtlService;
@@ -51,6 +53,8 @@ public class InventoryOutServiceImpl extends ServiceImpl<InventoryOutMapper, Inv
     private InventoryService inventoryService;
     @Autowired
     private InventoryLogService inventoryLogService;
+    @Autowired
+    private PurchaseReturnService purchaseReturnService;
 
     @Override
     @Transactional
@@ -64,15 +68,27 @@ public class InventoryOutServiceImpl extends ServiceImpl<InventoryOutMapper, Inv
                 inventoryService.updateInventory(inventoryLog);
             }
             List<PreInventoryOutMtl> deliveryMtls = getDeliveryMtlList(info.getId(), info.getSourceId());
-            SaleOrder saleOrder = saleOrderService.getById(info.getSourceId());
-            if (CollectionUtils.isNotEmpty(deliveryMtls)) {
-                saleOrder.setBillStatus(BillStatus.PARTICIALSTOCK.getId());
-                info.setBillStatus(BillStatus.PARTICIALSTOCK.getId());
-            } else {
-                saleOrder.setBillStatus(BillStatus.STOCKED.getId());
-                info.setBillStatus(BillStatus.STOCKED.getId());
+            if (mtls.get(0).getSourceBillType() == BillType.SALEORDER.getId()) {
+                SaleOrder saleOrder = saleOrderService.getById(info.getSourceId());
+                if (CollectionUtils.isNotEmpty(deliveryMtls)) {
+                    saleOrder.setBillStatus(BillStatus.PARTICIALSTOCK.getId());
+                    info.setBillStatus(BillStatus.PARTICIALSTOCK.getId());
+                } else {
+                    saleOrder.setBillStatus(BillStatus.STOCKED.getId());
+                    info.setBillStatus(BillStatus.STOCKED.getId());
+                }
+                saleOrderService.updateById(saleOrder);
+            } else if (mtls.get(0).getSourceBillType() == BillType.PURCHASERETURNORDER.getId()) {
+                PurchaseReturn purchaseReturn = purchaseReturnService.getById(info.getSourceId());
+                if (CollectionUtils.isNotEmpty(deliveryMtls)) {
+                    purchaseReturn.setBillStatus(BillStatus.PARTICIALSTOCK.getId());
+                    info.setBillStatus(BillStatus.PARTICIALSTOCK.getId());
+                } else {
+                    purchaseReturn.setBillStatus(BillStatus.STOCKED.getId());
+                    info.setBillStatus(BillStatus.STOCKED.getId());
+                }
+                purchaseReturnService.updateById(purchaseReturn);
             }
-            saleOrderService.updateById(saleOrder);
             updateById(info);
         }
         return true;
@@ -89,7 +105,7 @@ public class InventoryOutServiceImpl extends ServiceImpl<InventoryOutMapper, Inv
             List<SaleOrderMtl> saleOrderMtls = saleOrderMtlService.list(queryWrapper);
             if (CollectionUtils.isNotEmpty(saleOrderMtls)) {
                 saleOrderMtls.forEach(o ->{
-                    inventoryOutMtls.add(new InventoryOutMtl(inventoryOut.getId(), o.getSourceId(), o.getMtlId(), o.getQuantity(), o.getUnitId()));
+                    inventoryOutMtls.add(new InventoryOutMtl(inventoryOut.getId(), o.getSourceId(), inventoryOut.getSourceBillType(), o.getMtlId(), o.getQuantity(), o.getUnitId()));
                 });
             }
         } else if (inventoryOut.getSourceBillType() == BillType.PURCHASERETURNORDER.getId()) {
@@ -97,7 +113,7 @@ public class InventoryOutServiceImpl extends ServiceImpl<InventoryOutMapper, Inv
             List<PurchaseReturnMtl> purchaseReturnMtls = iPurchaseReturnMtlService.list(queryWrapper);
             if (CollectionUtils.isNotEmpty(purchaseReturnMtls)) {
                 purchaseReturnMtls.forEach(o ->{
-                    inventoryOutMtls.add(new InventoryOutMtl(inventoryOut.getId(), o.getSourceId(), o.getMtlId(), o.getQuantity(), o.getUnitId()));
+                    inventoryOutMtls.add(new InventoryOutMtl(inventoryOut.getId(), o.getSourceId(), inventoryOut.getSourceBillType(), o.getMtlId(), o.getQuantity(), o.getUnitId()));
                 });
             }
         }

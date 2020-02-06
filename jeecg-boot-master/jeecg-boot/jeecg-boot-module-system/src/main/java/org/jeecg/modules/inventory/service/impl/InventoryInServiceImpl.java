@@ -22,8 +22,10 @@ import org.jeecg.modules.purchase.entity.Purchase;
 import org.jeecg.modules.purchase.entity.PurchaseMtl;
 import org.jeecg.modules.purchase.service.PurchaseMtlService;
 import org.jeecg.modules.purchase.service.PurchaseService;
+import org.jeecg.modules.saleorder.entity.SaleOrderReturn;
 import org.jeecg.modules.saleorder.entity.SaleOrderReturnMtl;
 import org.jeecg.modules.saleorder.service.SaleOrderReturnMtlService;
+import org.jeecg.modules.saleorder.service.SaleOrderReturnService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -54,19 +56,21 @@ public class InventoryInServiceImpl extends ServiceImpl<InventoryInMapper, Inven
     private InventoryService inventoryService;
     @Autowired
     private PurchaseService purchaseService;
+    @Autowired
+    private SaleOrderReturnService saleOrderReturnService;
 
     @Override
     public List<PreInventoryOutMtl> getDeliveryMtlList(String id, String sourceId) {
         List<PreInventoryOutMtl> preInventoryOutMtls = Lists.newArrayList();
         LambdaQueryWrapper<InventoryInMtl> querySaleMtlWrapper = new QueryWrapper<InventoryInMtl>().lambda().eq(InventoryInMtl::getSourceBillId, sourceId).eq(InventoryInMtl::getRowSts, RowSts.EFFECTIVE.getId());
         LambdaQueryWrapper<InventoryLog> queryInventoryLogWrapper = new QueryWrapper<InventoryLog>().lambda().eq(InventoryLog::getSourceId, sourceId);
-        List<InventoryInMtl> inventoryOutMtls = inventoryInMtlService.list(querySaleMtlWrapper);
+        List<InventoryInMtl> inventoryInMtls = inventoryInMtlService.list(querySaleMtlWrapper);
         List<InventoryLog> inventoryLogs = inventoryLogService.list(queryInventoryLogWrapper);
         Map<String, BigDecimal> mtlDeliveryQtyMap = new HashMap<>();
         inventoryLogs.stream().forEach(o->{
             mtlDeliveryQtyMap.put(o.getMtlId(), null == mtlDeliveryQtyMap.get(o.getMtlId()) ? o.getOptAmount() : mtlDeliveryQtyMap.get(o.getMtlId()).add(o.getOptAmount()));
         });
-        inventoryOutMtls.forEach(o->{
+        inventoryInMtls.forEach(o->{
             BigDecimal tempAmout = o.getQuantity();
             if (null != mtlDeliveryQtyMap.get(o.getMtlId())) {
                 tempAmout = tempAmout.subtract(mtlDeliveryQtyMap.get(o.getMtlId()));
@@ -75,6 +79,7 @@ public class InventoryInServiceImpl extends ServiceImpl<InventoryInMapper, Inven
                 PreInventoryOutMtl preInventoryOutMtl = new PreInventoryOutMtl();
                 preInventoryOutMtl.setBillId(id);
                 preInventoryOutMtl.setSourceId(sourceId);
+                preInventoryOutMtl.setSourceBillType(o.getSourceBillType());
                 preInventoryOutMtl.setMtlId(o.getMtlId());
                 preInventoryOutMtl.setQuantity(tempAmout);
                 preInventoryOutMtl.setUnitId(o.getUnitId());
@@ -97,7 +102,7 @@ public class InventoryInServiceImpl extends ServiceImpl<InventoryInMapper, Inven
             List<PurchaseMtl> purchaseDtls = purchaseMtlService.list(queryWrapper);
             if (CollectionUtils.isNotEmpty(purchaseDtls)) {
                 purchaseDtls.forEach(o ->{
-                    inventoryInMtls.add(new InventoryInMtl(inventoryIn.getId(), o.getSourceId(), o.getMtlId(), o.getQuantity(), o.getUnitId(), RowSts.EFFECTIVE.getId()));
+                    inventoryInMtls.add(new InventoryInMtl(inventoryIn.getId(), o.getSourceId(), inventoryIn.getSourceBillType(), o.getMtlId(), o.getQuantity(), o.getUnitId(), RowSts.EFFECTIVE.getId()));
                 });
             }
         } else if (inventoryIn.getSourceBillType() == BillType.SALERETURNORDER.getId()) {
@@ -105,7 +110,7 @@ public class InventoryInServiceImpl extends ServiceImpl<InventoryInMapper, Inven
             List<SaleOrderReturnMtl> saleOrderReturnMtls = saleOrderReturnMtlService.list(queryWrapper);
             if (CollectionUtils.isNotEmpty(saleOrderReturnMtls)) {
                 saleOrderReturnMtls.forEach(o ->{
-                    inventoryInMtls.add(new InventoryInMtl(inventoryIn.getId(), o.getSourceId(), o.getMtlId(), o.getQuantity(), o.getUnitId(), RowSts.EFFECTIVE.getId()));
+                    inventoryInMtls.add(new InventoryInMtl(inventoryIn.getId(), o.getSourceId(), inventoryIn.getSourceBillType(), o.getMtlId(), o.getQuantity(), o.getUnitId(), RowSts.EFFECTIVE.getId()));
                 });
             }
         }
@@ -124,16 +129,28 @@ public class InventoryInServiceImpl extends ServiceImpl<InventoryInMapper, Inven
                 inventoryService.updateInventory(inventoryLog);
             }
             List<PreInventoryOutMtl> deliveryMtls = getDeliveryMtlList(info.getId(), info.getSourceId());
-            Purchase purchase = purchaseService.getById(info.getSourceId());
-            if (CollectionUtils.isNotEmpty(deliveryMtls)) {
-                purchase.setBillStatus(BillStatus.PARTICIALSTOCKIN.getId());
-                info.setBillStatus(BillStatus.PARTICIALSTOCKIN.getId());
-            } else {
-                purchase.setBillStatus(BillStatus.ALLSTOCKINED.getId());
-                info.setBillStatus(BillStatus.ALLSTOCKINED.getId());
+            if (mtls.get(0).getSourceBillType() == BillType.PURCHASEORDER.getId()) {
+                Purchase purchase = purchaseService.getById(info.getSourceId());
+                if (CollectionUtils.isNotEmpty(deliveryMtls)) {
+                    purchase.setBillStatus(BillStatus.PARTICIALSTOCKIN.getId());
+                    info.setBillStatus(BillStatus.PARTICIALSTOCKIN.getId());
+                } else {
+                    purchase.setBillStatus(BillStatus.ALLSTOCKINED.getId());
+                    info.setBillStatus(BillStatus.ALLSTOCKINED.getId());
+                }
+                purchaseService.updateById(purchase);
+            } else if (mtls.get(0).getSourceBillType() == BillType.SALERETURNORDER.getId()) {
+                SaleOrderReturn saleOrderReturn = saleOrderReturnService.getById(info.getSourceId());
+                if (CollectionUtils.isNotEmpty(deliveryMtls)) {
+                    saleOrderReturn.setBillStatus(BillStatus.PARTICIALSTOCKIN.getId());
+                    info.setBillStatus(BillStatus.PARTICIALSTOCKIN.getId());
+                } else {
+                    saleOrderReturn.setBillStatus(BillStatus.ALLSTOCKINED.getId());
+                    info.setBillStatus(BillStatus.ALLSTOCKINED.getId());
+                }
+                saleOrderReturnService.updateById(saleOrderReturn);
             }
             info.setPutInTime(new Date());
-            purchaseService.updateById(purchase);
             updateById(info);
         }
         return true;

@@ -10,6 +10,10 @@ public class PreInventoryOutMtl {
     private String billId;
     @ApiModelProperty("销售订单ID")
     private String sourceId;
+    @ApiModelProperty("原单类型")
+    private Integer sourceBillType;
+    @TableField(exist=false)
+    private String sourceBillTypeName;
     @ApiModelProperty("产品ID")
     private String mtlId;
     @ApiModelProperty("产品")
@@ -99,5 +103,21 @@ public class PreInventoryOutMtl {
 
     public void setMtlCode(String mtlCode) {
         this.mtlCode = mtlCode;
+    }
+
+    public Integer getSourceBillType() {
+        return sourceBillType;
+    }
+
+    public void setSourceBillType(Integer sourceBillType) {
+        this.sourceBillType = sourceBillType;
+    }
+
+    public String getSourceBillTypeName() {
+        return sourceBillTypeName;
+    }
+
+    public void setSourceBillTypeName(String sourceBillTypeName) {
+        this.sourceBillTypeName = sourceBillTypeName;
     }
 }

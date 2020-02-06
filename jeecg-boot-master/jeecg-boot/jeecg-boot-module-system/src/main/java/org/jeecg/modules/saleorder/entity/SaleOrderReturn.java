@@ -47,7 +47,7 @@ public class SaleOrderReturn extends BasicEntity {
     private BigDecimal otheramount;
     @ApiModelProperty("总金额")
     private BigDecimal totalamount;
-    @ApiModelProperty("已付金额")
+    @ApiModelProperty("已退金额")
     private BigDecimal payamount;
 
     public String getCustomerId() {

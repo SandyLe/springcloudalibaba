@@ -181,13 +181,13 @@ public class InventoryInController {
     }
 
     /**
-     * 获取待发货产品列表
+     * 获取待入库产品列表
      *
      * @param id
      * @param sourceId
      * @return
      */
-    @ApiOperation(value = "获取采购订单待发货产品列表", notes = "获取采购订单待发货产品列表")
+    @ApiOperation(value = "获取采购订单待入库产品列表", notes = "获取采购订单待入库产品列表")
     @GetMapping(value = "/mtl/getList")
     public Result<?> getList(@ApiParam(name = "id", value = "出库单信息ID", required = true) @RequestParam(name = "id", required = true) String id,
                              @ApiParam(name = "sourceId", value = "原单id", required = true) @RequestParam(name = "sourceId", required = true) String sourceId) {
@@ -220,7 +220,7 @@ public class InventoryInController {
     @PostMapping(value = "/mtls/stockin")
     @AutoLog(value = "修改采购订单发货信息")
     @ApiOperation(value = "修改采购订单发货信息", notes = "修改采购订单发货信息")
-    public Result<?> stockout(@RequestBody List<PreInventoryOutMtl> mtls){
+    public Result<?> stockin(@RequestBody List<PreInventoryOutMtl> mtls){
         if (CollectionUtils.isNotEmpty(mtls)) {
             inventoryInService.stockIn(mtls);
         }
