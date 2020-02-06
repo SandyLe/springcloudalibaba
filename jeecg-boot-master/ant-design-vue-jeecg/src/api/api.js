@@ -154,6 +154,8 @@ const editExpense = (params)=>postAction("/expense/edit",params)
 const getExpenseList = (params)=>getAction("/expense/getList",params)
 const addSaleOrderExpense = (params)=>postAction("/saleOrderExpense/add",params)
 const editSaleOrderExpense = (params)=>postAction("/saleOrderExpense/edit",params)
+const getSaleOrderExpenseList = (params)=>getAction("/saleOrderExpense/getList",params)
+const getSaleOrderExpenseOne = (params)=>getAction("/saleOrderExpense/expense/getOne",params)
 const addStocking = (params)=>postAction("/stocking/add",params)
 const editStocking = (params)=>postAction("/stocking/edit",params)
 const handleStocking = (params)=>postAction("/stocking/handleStocking",params)
@@ -188,6 +190,9 @@ const saleOrderReturncheckIn = (params)=>postAction("/saleOrderReturn/checkIn",p
 const getSaleOrderReturnOne = (params)=>getAction("/saleOrderReturn/getOne",params)
 const addSaleMtlOrderReturn = (params)=>postAction("/saleOrderReturnMtl/add",params)
 const editSaleMtlOrderReturn = (params)=>postAction("/saleOrderReturnMtl/edit",params)
+const getSaleOrderReturnMtlList = (params)=>getAction("/saleOrderReturnMtl/getList",params)
+const addSaleOrderReturnExpense = (params)=>postAction("/saleOrderReturnExpense/add",params)
+const editSaleOrderReturnExpense = (params)=>postAction("/saleOrderReturnExpense/edit",params)
 
 
 export {
@@ -292,6 +297,7 @@ export {
   getExpenseList,
   addSaleOrderExpense,
   editSaleOrderExpense,
+  getSaleOrderExpenseList,
   delivery,
   getSaleOrderDeliveryInfo,
   getDeliveryMtls,
@@ -321,7 +327,11 @@ export {
   saleOrderReturncheckIn,
   getSaleOrderReturnOne,
   addSaleMtlOrderReturn,
-  editSaleMtlOrderReturn
+  editSaleMtlOrderReturn,
+  getSaleOrderReturnMtlList,
+  getSaleOrderExpenseOne,
+  addSaleOrderReturnExpense,
+  editSaleOrderReturnExpense
 }
 
 

@@ -12,7 +12,7 @@
         :wrapperCol="{span: 19}"
         class="stepFormText"
       >
-        {{this.saleOrder.code}}
+        {{this.saleOrderReturn.code}}
       </a-form-item>
       <a-form-item
         label="客户"
@@ -20,7 +20,7 @@
         :wrapperCol="{span: 19}"
         class="stepFormText"
       >
-        {{this.saleOrder.customer}}
+        {{this.saleOrderReturn.customer}}
       </a-form-item>
       <a-form-item
         label="单据时间"
@@ -28,7 +28,7 @@
         :wrapperCol="{span: 19}"
         class="stepFormText"
       >
-        {{this.saleOrder.billDate}}
+        {{this.saleOrderReturn.billDate}}
       </a-form-item>
       <a-form-item
         label="金额"
@@ -36,7 +36,7 @@
         :wrapperCol="{span: 19}"
         class="stepFormText"
       >
-        {{this.saleOrder.totalamount}}
+        {{this.saleOrderReturn.totalamount}}
       </a-form-item>
       <div style="margin-top: 15px">
         <a-table
@@ -128,19 +128,19 @@
             :wrapperCol="{span: 19}"
             class="stepFormText"
           >
-            {{this.saleOrder.totalamount}}
+            {{this.saleOrderReturn.totalamount}}
           </a-form-item>
           <a-form-item
-            label="收款方式"
+            label="退款方式"
             :labelCol="{span: 5}"
             :wrapperCol="{span: 19}"
             class="stepFormText"
           >
-            <j-dict-select-tag v-decorator="['receiptType', {}]" @change="deliveryChange" placeholder="请选择收款方式" :type="'select'" :triggerChange="true" dictCode="receipt_type"/>
+            <j-dict-select-tag v-decorator="['receiptType', {}]" @change="deliveryChange" placeholder="请选择退款方式" :type="'select'" :triggerChange="true" dictCode="receipt_type"/>
           </a-form-item>
 
           <a-form-item
-            label="实收金额"
+            label="实退金额"
             :labelCol="{span: 5}"
             :wrapperCol="{span: 19}"
             class="stepFormText">
@@ -149,33 +149,33 @@
         </a-card>
       </div>
       <a-form-item :wrapperCol="{span: 19, offset: 5}">
-        <!--<a-button :loading="loading" @click="nextStep">提交</a-button>-->
+        <!--<a-button :loading="loading" @click="finish">提交</a-button>-->
         <a-button style="margin-left: 8px" @click="prevStep">上一步</a-button>
-        <a-button style="margin-left: 8px" type="primary" @click="nextStep">下一步</a-button>
+        <a-button style="margin-left: 8px" type="primary" @click="finish">完成</a-button>
       </a-form-item>
     </a-form>
 
-    <sale-order-expense-modal ref="saleOrderExpenseModal" :saleOrder = "saleOrder" @ok="modalFormOk2" v-on:listenToTotalamont="showTotalMount"></sale-order-expense-modal>
+    <sale-order-return-expense-modal ref="saleOrderReturnExpenseModal" :saleOrderReturn = "saleOrderReturn" @ok="modalFormOk2" v-on:listenToTotalamont="showTotalMount"></sale-order-return-expense-modal>
   </div>
 </template>
 
 <script>
   import pick from 'lodash.pick'
-  import SaleOrderExpenseModal from './SaleOrderExpenseModal'
+  import SaleOrderReturnExpenseModal from './SaleOrderReturnExpenseModal'
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import { deleteAction, postAction, getAction } from '@/api/manage'
-  import {checkout, getSaleOrderOne, getSaleOrderMtlList } from '@/api/api'
+  import {editSaleOrderReturn, getSaleOrderReturnOne, getSaleOrderReturnMtlList } from '@/api/api'
   import JDictSelectTag from '@/components/dict/JDictSelectTag.vue'
   export default {
     name: "Return2",
     mixins: [JeecgListMixin],
     components: {
-      SaleOrderExpenseModal,
+      SaleOrderReturnExpenseModal,
       JDictSelectTag
     },
     data() {
       return {
-        saleOrder: {},
+        saleOrderReturn: {},
         model1: {},
         model2: {},
         currentRoleId: '',
@@ -296,10 +296,10 @@
           }],
         form: this.$form.createForm(this),
         url: {
-          list: "/saleOrderMtl/getPage",
-          list2: '/saleOrderExpense/getPage',
-          delete2: '/saleOrderExpense/delete',
-          deleteBatch2: '/saleOrderExpense/deleteBatch',
+          list: "/saleOrderReturnMtl/getPage",
+          list2: '/saleOrderReturnExpense/getPage',
+          delete2: '/saleOrderReturnExpense/delete',
+          deleteBatch2: '/saleOrderReturnExpense/deleteBatch',
         },
         unEditable: true
       }
@@ -358,10 +358,9 @@
         return str
       },
       handleEdit2: function(record) {
-        debugger
-        this.$refs.saleOrderExpenseModal.title = '编辑'
-        this.$refs.saleOrderExpenseModal.roleDisabled = true
-        this.$refs.saleOrderExpenseModal.edit(record)
+        this.$refs.saleOrderReturnExpenseModal.title = '编辑'
+        this.$refs.saleOrderReturnExpenseModal.roleDisabled = true
+        this.$refs.saleOrderReturnExpenseModal.edit(record)
       },
       modalFormOk2() {
         // 新增/修改 成功时，重载列表
@@ -454,11 +453,11 @@
         this.loadData2()
       },
       handleAddExpense(){
-        this.$refs.saleOrderExpenseModal.add();
-        this.$refs.saleOrderExpenseModal.title = "新增";
+        this.$refs.saleOrderReturnExpenseModal.add();
+        this.$refs.saleOrderReturnExpenseModal.title = "新增";
       },
       showTotalMount(data){
-        this.saleOrder.totalamount = data;
+        this.saleOrderReturn.totalamount = data;
       },
       handleOk () {
         const that = this;
@@ -467,16 +466,17 @@
           if (!err) {
             that.confirmLoading = true;
             values.sourceId = this.$route.query.id;
+            values.billStatus = 13;//
             let formData = Object.assign(this.model, values);
             let obj;
             console.log(formData)
             if(this.model.id){
-              obj=checkout(formData);
+              obj=editSaleOrderReturn(formData);
             }
             obj.then((res)=>{
               if(res.success){
-                that.saleOrder.totalamount = res.result;
-                console.log(that.saleOrder.totalamount)
+                that.saleOrderReturn.totalamount = res.result;
+                console.log(that.saleOrderReturn.totalamount)
                 debugger
                 that.$message.success(res.message);
                 that.$emit('ok');
@@ -490,11 +490,11 @@
           }
         })
       },
-      nextStep () {
+      finish () {
         if (!this.unEditable) {
           this.handleOk();
         }
-        this.$emit('nextStep')
+        this.$emit('finish')
       },
       prevStep () {
         this.$emit('prevStep')
@@ -504,10 +504,10 @@
       if (this.$route.query.id) {
         debugger
         console.log(this.form)
-        getSaleOrderOne({id:this.$route.query.id}).then((res) => {
+        getSaleOrderReturnOne({id:this.$route.query.id}).then((res) => {
           if (res.success) {
-            this.saleOrder = res.result;
-            this.model = Object.assign({}, this.saleOrder);
+            this.saleOrderReturn = res.result;
+            this.model = Object.assign({}, this.saleOrderReturn);
             // this.model.payamount = this.model.totalamount; // 默认填充
             this.$nextTick(() => {
               this.form.setFieldsValue(pick(this.model,'payamount','receiptType'))
