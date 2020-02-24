@@ -21,7 +21,9 @@ public class PurchaseReturn extends BasicEntity {
     @Excel(name = "供应商", width = 15)
     @ApiModelProperty("供应商")
     private String vendorId;
+    @TableField(exist=false)
     private String vendor;
+    @TableField(exist=false)
     private String warehouse;
 
     /*仓库id*/
