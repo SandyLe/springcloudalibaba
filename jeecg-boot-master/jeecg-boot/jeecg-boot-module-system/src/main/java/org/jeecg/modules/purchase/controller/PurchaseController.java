@@ -190,6 +190,17 @@ public class PurchaseController extends JeecgController<Purchase, PurchaseServic
         return Result.ok(purchasedtldto);
     }
 
+    @GetMapping("/getOneByCode")
+    public Result<?> queryByCode(@RequestParam(name = "code", required = true) String code){
+
+        LambdaQueryWrapper<Purchase> lambdaQueryWrapper = new LambdaQueryWrapper<Purchase>().eq(Purchase::getCode, code);
+        Purchase purchase = purchaseService.getOne(lambdaQueryWrapper);
+        if (purchase == null){
+            return Result.ok("未找到对应数据");
+        }
+        return Result.ok(purchase);
+    }
+
     @RequestMapping("/exportXls")
     public ModelAndView exportXls(HttpServletRequest request, Purchase purchase){
         return super.exportXls(request, purchase,Purchase.class, "采购列表");

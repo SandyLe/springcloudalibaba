@@ -20,7 +20,7 @@ import java.util.Date;
  */
 @TableName("sl_purchase")
 @ApiModel(value = "Purchase", description = "采购订单")
-public class Purchase extends BasicEntity {
+public class  Purchase extends BasicEntity {
 
     /*供应商*/
     @Excel(name = "供应商", width = 15)

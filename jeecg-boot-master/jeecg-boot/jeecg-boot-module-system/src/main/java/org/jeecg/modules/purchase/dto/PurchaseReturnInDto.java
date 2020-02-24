@@ -1,8 +1,9 @@
 package org.jeecg.modules.purchase.dto;
 
 import io.swagger.annotations.ApiModelProperty;
+import org.jeecg.modules.purchase.entity.PurchaseReturnMtl;
 
-import java.util.Date;
+import java.util.List;
 
 /**
  * @Description:
@@ -20,6 +21,8 @@ public class PurchaseReturnInDto {
 
     @ApiModelProperty("出货时间")
     private String putOutTime;
+
+    private List<PurchaseReturnMtl> detaillist;
 
     public String getId() {
         return id;
@@ -43,5 +46,13 @@ public class PurchaseReturnInDto {
 
     public void setSourceId(String sourceId) {
         this.sourceId = sourceId;
+    }
+
+    public List<PurchaseReturnMtl> getDetaillist() {
+        return detaillist;
+    }
+
+    public void setDetaillist(List<PurchaseReturnMtl> detaillist) {
+        this.detaillist = detaillist;
     }
 }

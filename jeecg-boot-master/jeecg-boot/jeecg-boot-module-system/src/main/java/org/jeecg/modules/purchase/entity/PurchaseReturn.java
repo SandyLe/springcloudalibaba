@@ -17,11 +17,17 @@ import java.util.Date;
 @ApiModel(value = "Purchasereturn", description = "采购退货")
 public class PurchaseReturn extends BasicEntity {
 
+    /*供应商*/
+    @Excel(name = "供应商", width = 15)
+    @ApiModelProperty("供应商")
+    private String vendorId;
+    private String vendor;
+    private String warehouse;
+
     /*仓库id*/
     @Excel(name = "仓库id", width = 15)
     @ApiModelProperty("仓库id")
     private String warehouseId;
-
 
     /*金额*/
     @Excel(name = "金额",width = 20)
@@ -91,5 +97,29 @@ public class PurchaseReturn extends BasicEntity {
 
     public void setBillStatusName(String billStatusName) {
         this.billStatusName = billStatusName;
+    }
+
+    public String getVendorId() {
+        return vendorId;
+    }
+
+    public void setVendorId(String vendorId) {
+        this.vendorId = vendorId;
+    }
+
+    public String getVendor() {
+        return vendor;
+    }
+
+    public void setVendor(String vendor) {
+        this.vendor = vendor;
+    }
+
+    public String getWarehouse() {
+        return warehouse;
+    }
+
+    public void setWarehouse(String warehouse) {
+        this.warehouse = warehouse;
     }
 }

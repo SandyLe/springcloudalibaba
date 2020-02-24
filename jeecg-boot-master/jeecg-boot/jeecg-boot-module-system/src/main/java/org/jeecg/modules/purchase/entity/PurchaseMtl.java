@@ -1,6 +1,7 @@
 package org.jeecg.modules.purchase.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -31,6 +32,9 @@ public class PurchaseMtl extends BasicEntity {
     /*产品id*/
     @ApiModelProperty("产品id")
     private String mtlId;
+    @ApiModelProperty("产品")
+    @TableField(exist=false)
+    private String mtl;
 
     /*单位*/
     @ApiModelProperty("单位")
@@ -107,5 +111,13 @@ public class PurchaseMtl extends BasicEntity {
 
     public void setAmount(String amount) {
         this.amount = amount;
+    }
+
+    public String getMtl() {
+        return mtl;
+    }
+
+    public void setMtl(String mtl) {
+        this.mtl = mtl;
     }
 }
