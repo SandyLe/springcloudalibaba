@@ -173,6 +173,10 @@ const getAllUser = (params)=>getAction("/sys/user/getAll",params)
 //采购
 const purchasequeryById = (params)=>getAction("/purchase/queryById",params)
 const purchasedetailDelete = (params)=>deleteAction("/purchaseMtl/delete",params)
+const getPurchaseByCode = (params)=>getAction("/purchase/getOneByCode",params)//采购订单
+const getPurchaseMtlList = (params)=>getAction("/purchaseMtl/getList",params)//采购订单
+const getPurchaseMtlOne = (params)=>getAction("/purchaseMtl/getPurchaseMtlOne",params)//采购订单产品
+
 
 const inventoryInedit = (params)=>postAction("/inventoryIn/edit",params)  //入库单编辑
 const inventoryOutadd = (params)=>postAction("/inventoryOut/add",params)  //新增出库单
@@ -182,7 +186,6 @@ const purchasereturnedit = (params)=>putAction("/purchasereturn/edit",params)  /
 const addLogisticsCompany = (params)=>postAction("/logisticsCompany/add",params)
 const editLogisticsCompany = (params)=>postAction("/logisticsCompany/edit",params)
 const getLogisticsCompanyList = (params)=>getAction("/logisticsCompany/getList",params)
-
 // 销售退货
 const addSaleOrderReturn = (params)=>postAction("/saleOrderReturn/add",params)
 const editSaleOrderReturn = (params)=>postAction("/saleOrderReturn/edit",params)
@@ -319,6 +322,7 @@ export {
   inventoryOutadd,
   purchasereturnadd,
   purchasereturnedit,
+  getPurchaseByCode,
   addLogisticsCompany,
   editLogisticsCompany,
   getLogisticsCompanyList,
@@ -331,7 +335,9 @@ export {
   getSaleOrderReturnMtlList,
   getSaleOrderExpenseOne,
   addSaleOrderReturnExpense,
-  editSaleOrderReturnExpense
+  editSaleOrderReturnExpense,
+  getPurchaseMtlList,
+  getPurchaseMtlOne
 }
 
 
