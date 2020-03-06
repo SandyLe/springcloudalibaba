@@ -180,7 +180,6 @@
       },
       edit (record) {
         console.log(this.$route.query.id)
-        debugger
         this.form.resetFields();
         this.model = Object.assign({}, record);
         this.visible = true;
@@ -210,7 +209,6 @@
 
       },
       mtlChange (val) {
-        debugger
         getMaterialSelfUnitList({addSelf:true,sourceId:val}).then((res) => {
           if (res.success) {
             this.unitList = res.result;

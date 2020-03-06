@@ -404,7 +404,6 @@
         })
       },
       setDeliveryInfo (billId) {
-        debugger
         let that = this;
         getSaleOrderDeliveryInfo({sourceId:billId}).then((res) => {
           if (res.success) {
@@ -473,7 +472,6 @@
     },
     mounted() {
       if (this.$route.query.id) {
-        debugger
         console.log(this.form)
         getSaleOrderOne({id:this.$route.query.id}).then((res) => {
           if (res.success) {

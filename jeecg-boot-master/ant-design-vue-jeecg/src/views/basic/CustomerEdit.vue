@@ -158,9 +158,7 @@
         getCustomerOne({id:this.$route.query.id}).then((res) => {
           if (res.success) {
             this.customer = res.result;
-            debugger
             const address = this.getFullAddress1(this.customer.province,this.customer.city,this.customer.district,this.customer.address);
-            debugger
             console.log(address)
           }
         })

@@ -83,7 +83,7 @@
             </template>
 
             <span slot="action" slot-scope="text, record">
-                <a @click="handleEdit(record)">编辑</a>
+                <a @click="diyhandleEdit(record)">编辑</a>
 
                 <a-divider type="vertical" />
                 <a-dropdown>
@@ -199,22 +199,13 @@ export default {
     },
     methods: {
       diyhandleEdit(e){
-        if(e.target.dataset.id)
-          this.$router.replace({ path:'/purchase/PurchaseReturnModal/' + e.target.dataset.id });
-        else
-          this.$router.replace({ path:'/purchase/PurchaseReturnModal/' });
-      },
-      initDictConfig() {
-          initDictOptions('').then((res) => {
-              if (res.success) {
-                  this.$set(this.dictOptions, 'vendorId', res.result)
-              }
-          })
+        if(e.id){
+          this.$router.replace({ path:'/purchase/PurchasereturnModal/' + e.id });
+        }
+        else{
+          this.$router.replace({ path:'/purchase/PurchasereturnModal/' });
+        }
       }
     }
 }
 </script>
-
-<style scoped>
-@import '~@assets/less/common.less'
-</style>

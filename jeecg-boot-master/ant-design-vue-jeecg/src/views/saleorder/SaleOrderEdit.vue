@@ -111,7 +111,6 @@
           getCustomerOne({id:this.$route.query.id}).then((res) => {
             if (res.success) {
               this.customer = res.result;
-              debugger
             }
           })
           getCustomerTypeList().then((res) => {
@@ -125,12 +124,10 @@
     create: {
       '$route' (to, from) {
         console.log(this.$route.query.id)
-        debugger
         if (this.$route.query.id) {
           getCustomerOne({id:this.$route.query.id}).then((res) => {
             if (res.success) {
               this.customer = res.result;
-              debugger
             }
           })
 
@@ -154,7 +151,6 @@
         getCustomerOne({id:this.$route.query.id}).then((res) => {
           if (res.success) {
             this.customer = res.result;
-            debugger
           }
         })
 

@@ -174,7 +174,6 @@
         /**
         // 触发表单验证
         this.form.validateFields((err, values) => {
-          debugger
           if (!err) {
             that.confirmLoading = true;
             console.log(this.model)

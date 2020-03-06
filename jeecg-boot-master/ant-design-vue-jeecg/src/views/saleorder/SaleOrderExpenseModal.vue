@@ -107,7 +107,6 @@
       },
       edit (record) {
         console.log(this.$route.query.id)
-        debugger
         this.form.resetFields();
         record.sourceId = this.$route.query.id;
         this.model = Object.assign({}, record);
@@ -146,7 +145,6 @@
               if(res.success){
                 that.saleOrder.totalamount = res.result;
                 console.log(that.saleOrder.totalamount)
-                debugger
                 this.$emit("listenToTotalamont",that.saleOrder.totalamount);
                 that.$message.success(res.message);
                 that.$emit('ok');

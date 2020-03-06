@@ -181,8 +181,10 @@ const getPurchaseMtlOne = (params)=>getAction("/purchaseMtl/getPurchaseMtlOne",p
 const inventoryInedit = (params)=>postAction("/inventoryIn/edit",params)  //入库单编辑
 const inventoryOutadd = (params)=>postAction("/inventoryOut/add",params)  //新增出库单
 
+const purchaseReturnQueryById = (params)=>getAction("/purchasereturn/queryById",params)
 const purchasereturnadd = (params)=>postAction("/purchasereturn/add",params)  //新增采购退货
 const purchasereturnedit = (params)=>putAction("/purchasereturn/edit",params)  //修改采购退货
+const purchaseReturnDetailDelete = (params)=>deleteAction("/purchaseReturnMtl/delete",params)
 const addLogisticsCompany = (params)=>postAction("/logisticsCompany/add",params)
 const editLogisticsCompany = (params)=>postAction("/logisticsCompany/edit",params)
 const getLogisticsCompanyList = (params)=>getAction("/logisticsCompany/getList",params)
@@ -337,7 +339,9 @@ export {
   addSaleOrderReturnExpense,
   editSaleOrderReturnExpense,
   getPurchaseMtlList,
-  getPurchaseMtlOne
+  getPurchaseMtlOne,
+  purchaseReturnQueryById,
+  purchaseReturnDetailDelete
 }
 
 

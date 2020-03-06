@@ -208,7 +208,6 @@
 
       },
       mtlChange (val) {
-        debugger
         getMaterialSelfUnitList({addSelf:true,sourceId:val}).then((res) => {
           if (res.success) {
             this.unitList = res.result;

@@ -304,7 +304,6 @@
         // 触发表单验证
         this.saleOrderReturnForm.validateFields((err, values) => {
           console.log(values)
-          debugger
           if (!err) {
             that.confirmLoading = true;
             if(!values.billDate){

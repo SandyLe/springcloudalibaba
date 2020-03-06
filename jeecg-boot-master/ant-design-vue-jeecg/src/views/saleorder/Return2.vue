@@ -367,7 +367,6 @@
         this.loadData2()
       },
       loadData2(arg) {
-        debugger
         if (!this.url.list2) {
           this.$message.error('请设置url.list2属性!')
           return
@@ -380,7 +379,6 @@
         params.roleId = this.currentRoleId
         this.loading2 = true
         getAction(this.url.list2, params).then((res) => {
-          debugger
           if (res.success) {
             this.dataSource2 = res.result.records
             this.ipagination2.total = res.result.total
@@ -477,7 +475,6 @@
               if(res.success){
                 that.saleOrderReturn.totalamount = res.result;
                 console.log(that.saleOrderReturn.totalamount)
-                debugger
                 that.$message.success(res.message);
                 that.$emit('ok');
               }else{
@@ -502,7 +499,6 @@
     },
     mounted() {
       if (this.$route.query.id) {
-        debugger
         console.log(this.form)
         getSaleOrderReturnOne({id:this.$route.query.id}).then((res) => {
           if (res.success) {

@@ -420,7 +420,6 @@ export default {
                               that.$message.success(res.message)
                               that.$emit('ok')
                               that.hasaddmain = true;
-                              debugger
                               that.$emit('close')
 
                               /*

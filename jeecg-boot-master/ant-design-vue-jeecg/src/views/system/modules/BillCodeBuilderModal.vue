@@ -152,7 +152,6 @@
       },
       edit (record) {
         console.log(record)
-        debugger
         this.form.resetFields();
         this.model = Object.assign({}, record);
         this.visible = true;

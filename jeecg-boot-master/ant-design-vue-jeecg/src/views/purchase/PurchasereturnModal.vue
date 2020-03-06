@@ -56,13 +56,16 @@
         </a-row>
         <a-row>
           <a-col :span="12">
-            <a-form-item label="实付金额" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input-number v-decorator="[ 'payamount', {}]" placeholder="请输入实付金额" style="width:100%" />
+            <a-form-item
+              :labelCol="{span: 5}"
+              :wrapperCol="{span: 19}"
+              label="出库时间">
+              <a-date-picker showTime format='YYYY-MM-DD HH:mm:ss' v-decorator="[ 'putOutTime', {}]"/>
             </a-form-item>
           </a-col>
           <a-col :span="12">
             <a-form-item label="总金额" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input-number v-decorator="[ 'totalamount', {}]" placeholder="请输入总金额" style="width:100%"/>
+              <a-input-number v-decorator="[ 'amount', {}]" placeholder="请输入总金额" style="width:100%" :disabled="true"/>
               <div style="display:none;">
                 <a-input v-decorator="[ 'id', {}]" placeholder="实体主键" type="hidden" />
                 <a-input v-decorator="[ 'code', {}]" placeholder="代码" type="hidden"/>
@@ -150,6 +153,7 @@
   import {
     httpAction
   } from '@/api/manage'
+  import moment from 'moment'
   import pick from 'lodash.pick'
   import JDate from '@/components/jeecg/JDate'
   import JDictSelectTag from '@/components/dict/JDictSelectTag'
@@ -162,8 +166,8 @@
     getPurchaseMtlList,
     getMaterialList,
     getMaterialUnitList,
-    purchasequeryById,
-    purchasedetailDelete,
+    purchaseReturnQueryById,
+    purchaseReturnDetailDelete,
     getPurchaseByCode,
     getPurchaseMtlOne
   } from '@/api/api'
@@ -178,6 +182,7 @@
     data() {
       return {
         hasaddmain: false,
+        dateFormat:"YYYY-MM-DD HH:mm:ss",
         form: this.$form.createForm(this),
         title: '操作',
         width: '80%',
@@ -313,7 +318,6 @@
       this.initDictConfig();
       this.newMember();
       this.add();
-
     },
     watch: {
       // 如果 `data` 发生改变，这个函数就会运行
@@ -328,8 +332,8 @@
               datatotalamount += parseFloat(target.quantity) * parseFloat(target.price);
           }
         });
-        this.model.totalamount = datatotalamount;
-        this.form.setFieldsValue({ 'totalamount' :datatotalamount })
+        this.model.amount = datatotalamount;
+        this.form.setFieldsValue({ 'amount' :datatotalamount })
       }
     },
     methods: {
@@ -384,14 +388,13 @@
             }
             this.columns[2].list = res.result;
             this.$set(this.dictOptions, 2, this.columns[2])
-            debugger
             // this.$set(this.dictOptions, 'materialunitlist', res.result)
           }
         });
       },
       add() {
         if(this.$route.params.id){
-          purchasequeryById({"id":this.$route.params.id}).then((res)=>{
+          purchaseReturnQueryById({"id":this.$route.params.id}).then((res)=>{
             if (res.result) {
               if(res.result.detaillist){
                 this.tabledata = res.result.detaillist;
@@ -412,7 +415,8 @@
         this.visible = true
         this.$nextTick(() => {
           this.form.setFieldsValue(
-            pick(this.model, 'id', 'code', 'vendorId', 'content', 'warehouseId', 'account', 'payamount', 'totalamount','sourceCode', 'sourceId')
+            pick(this.model, 'id', 'code', 'vendorId', 'content', 'warehouseId', 'account', 'amount', 'sourceCode', 'sourceId'),
+          this.form.setFieldsValue({putOutTime: this.model.putOutTime ? moment(this.model.putOutTime) : null})
           )
         })
       },
@@ -427,8 +431,7 @@
               purchaseReturn.sourceId = purchaseReturn.id;
               purchaseReturn.code = null;
               purchaseReturn.id = null;
-              purchaseReturn.payamount = null;
-              purchaseReturn.totalamount = null;
+              purchaseReturn.amount = null;
               this.sourceId = purchaseReturn.sourceId;
               const that = this;
               //产品
@@ -455,6 +458,7 @@
           this.$message.warning('请输入原单编号！');
         }
       },
+      moment,
       close() {
         this.$emit('close')
         this.visible = false
@@ -474,6 +478,11 @@
             } else {
               httpurl += this.url.edit
               method = 'put'
+            }
+            if(!values.putOutTime){
+              values.putOutTime = '';
+            }else{
+              values.putOutTime = values.putOutTime.format(this.dateFormat);
             }
             let formData = Object.assign(this.model, values)
             formData.detaillist = that.tabledata;
@@ -517,7 +526,7 @@
       },
       popupCallback(row) {
         this.form.setFieldsValue(
-          pick(row, 'code', 'vendorId', 'content', 'warehouseId', 'account', 'payamount', 'totalamount')
+          pick(row, 'code', 'vendorId', 'content', 'warehouseId', 'account', 'amount', 'putOutTime', 'sourceCode', 'sourceId')
         )
       },
       newMember() {
@@ -531,7 +540,6 @@
         })
       },
       handleChange(value, key, column) {
-        debugger
         let newData = [...this.tabledata]
         const target = newData.filter(item => key === item.key)[0]
         if (target) {
@@ -573,7 +581,7 @@
         const newData = this.tabledata.filter(item => item.key !== key)
         this.tabledata = newData;
         if(id){
-          purchasedetailDelete({"id" : id}).then((res) => {
+          purchaseReturnDetailDelete({"id" : id}).then((res) => {
             if (res.success) {
             }
           });
@@ -585,10 +593,10 @@
         target.isNew = false
       },
       backToList() {
-        // console.log(this.$route.matched);
+        console.log(this.$route.matched);
         this.$route.matched.splice(this.$route.matched.length-1 ,1);
-        this.$parent.closeRouteViewTab(this.$route.fullPath)
-        this.$router.replace({ path:'/purchase/PurchaseList' });
+        this.$parent.closeTab(this.$route.fullPath)
+        this.$router.replace({ path:'/purchase/PurchasereturnList' });
       }
     },
     mounted() {

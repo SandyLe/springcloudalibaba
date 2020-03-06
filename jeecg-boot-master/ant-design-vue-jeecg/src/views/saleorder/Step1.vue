@@ -274,7 +274,6 @@
         }
         this.$nextTick(() => {
           console.log(this.model)
-          debugger
           this.saleOrderForm.setFieldsValue(pick(this.model,'name', 'code','content','customerId','channelId','billDate'))
           //时间格式化
           this.saleOrderForm.setFieldsValue({billDate: this.model.billDate ? moment(this.model.billDate) : null})
@@ -284,7 +283,6 @@
         const that = this;
         // 触发表单验证
         this.saleOrderForm.validateFields((err, values) => {
-          debugger
           if (!err) {
             that.confirmLoading = true;
             if(!values.billDate){
@@ -306,7 +304,6 @@
             }
             obj.then((res)=>{
               if(res.success){
-                debugger
                 this.$route.query.id = res.result.id;
                 that.saleOrder = res.result;
                 // that.$message.success(res.message);
@@ -322,7 +319,6 @@
         })
       },
       handleAddMtl () {
-        debugger
         this.mainId = this.$route.query.id;
         console.log(this.mainId)
         if (!this.mainId) {
@@ -332,7 +328,6 @@
         this.$refs.saleOrderMtlModal.title = "新增";
       },
       handleEditMtl (record) {
-        debugger
         this.$refs.saleOrderMtlModal.edit(record);
         this.$refs.saleOrderMtlModal.title = "编辑";
       },
@@ -340,7 +335,6 @@
         this.$router.push({ name: "material-materialEdit", query: {"id": id}})
       },
       nextStep () {
-        debugger
         this.mainId = this.$route.query.id;
         if (!this.unEditable) {
           this.saveSaleOrder(this.mainId);
