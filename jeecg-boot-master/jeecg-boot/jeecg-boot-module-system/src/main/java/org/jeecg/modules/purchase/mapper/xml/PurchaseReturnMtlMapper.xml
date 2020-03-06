@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.purchase.mapper.PurchaseReturnMtlMapper">
+
+    <select id="queryBySourceId" resultType="org.jeecg.modules.purchase.entity.PurchaseReturnMtl">
+        SELECT * FROM sl_purchase_return_mtl WHERE source_id = #{sourceId}
+    </select>
+
+</mapper>

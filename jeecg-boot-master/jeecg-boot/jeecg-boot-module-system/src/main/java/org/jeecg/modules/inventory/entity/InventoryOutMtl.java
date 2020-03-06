@@ -48,13 +48,14 @@ public class InventoryOutMtl extends BasicEntity {
     public InventoryOutMtl() {
     }
 
-    public InventoryOutMtl(String sourceId, String sourceBillId, Integer sourceBillType, String mtlId, BigDecimal quantity, String unitId) {
+    public InventoryOutMtl(String sourceId, String sourceBillId, Integer sourceBillType, String mtlId, BigDecimal quantity, String unitId, Integer rowSts) {
         this.sourceId = sourceId;
         this.sourceBillId = sourceBillId;
         this.sourceBillType = sourceBillType;
         this.mtlId = mtlId;
         this.quantity = quantity;
         this.unitId = unitId;
+        this.setRowSts(rowSts);
     }
 
     public String getSourceId() {

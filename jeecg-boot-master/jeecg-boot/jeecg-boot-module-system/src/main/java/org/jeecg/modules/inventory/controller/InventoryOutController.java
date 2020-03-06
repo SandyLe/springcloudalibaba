@@ -19,6 +19,7 @@ import org.jeecg.modules.basic.entity.Warehouse;
 import org.jeecg.modules.basic.enums.BillStatus;
 import org.jeecg.modules.basic.enums.BillType;
 import org.jeecg.modules.basic.enums.EnumConvertUtils;
+import org.jeecg.modules.basic.enums.RowSts;
 import org.jeecg.modules.basic.service.BillCodeBuilderService;
 import org.jeecg.modules.basic.service.MaterialService;
 import org.jeecg.modules.basic.service.MaterialUnitService;
@@ -108,7 +109,7 @@ public class InventoryOutController {
                           HttpServletRequest req) {
         QueryWrapper<InventoryOut> queryWrapper = QueryGenerator.initQueryWrapper(inventoryOut, req.getParameterMap());
         Page<InventoryOut> page = new Page<InventoryOut>(pageNo, pageSize);
-
+        queryWrapper.eq("row_sts", RowSts.EFFECTIVE.getId());
         IPage<InventoryOut> pageList = inventoryOutService.page(page, queryWrapper);
         List<InventoryOut> inventoryOutList = pageList.getRecords();
         List<String> warehouseIds = inventoryOutList.stream().map(InventoryOut::getWarehouseId).collect(Collectors.toList());

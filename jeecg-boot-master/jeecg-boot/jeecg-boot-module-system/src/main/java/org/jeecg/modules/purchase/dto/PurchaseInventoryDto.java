@@ -1,6 +1,7 @@
 package org.jeecg.modules.purchase.dto;
 
 import org.jeecg.modules.inventory.entity.InventoryIn;
+import org.jeecg.modules.inventory.entity.InventoryOut;
 
 /**
  * @Description:
@@ -29,4 +30,14 @@ public class PurchaseInventoryDto {
     }
 
     private InventoryIn inventory;
+
+    private InventoryOut inventoryOut;
+
+    public InventoryOut getInventoryOut() {
+        return inventoryOut;
+    }
+
+    public void setInventoryOut(InventoryOut inventoryOut) {
+        this.inventoryOut = inventoryOut;
+    }
 }

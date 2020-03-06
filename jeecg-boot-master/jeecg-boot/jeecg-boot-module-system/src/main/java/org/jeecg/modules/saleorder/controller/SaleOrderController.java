@@ -21,6 +21,7 @@ import org.jeecg.modules.basic.entity.Customer;
 import org.jeecg.modules.basic.entity.Warehouse;
 import org.jeecg.modules.basic.enums.BillStatus;
 import org.jeecg.modules.basic.enums.BillType;
+import org.jeecg.modules.basic.enums.RowSts;
 import org.jeecg.modules.basic.service.BillCodeBuilderService;
 import org.jeecg.modules.basic.service.CustomerService;
 import org.jeecg.modules.basic.service.WarehouseService;
@@ -302,6 +303,7 @@ public class SaleOrderController {
 
         // 销售出库
         InventoryOut inventoryOut = new InventoryOut(saleOrder.getId(),saleOrder.getCode(), BillType.STOREOUT.getId(), BillType.SALEORDER.getId(), saleOrder.getWarehouseId(), saleOrder.getDeliveryTime(), BillStatus.TOSEND.getId());
+        inventoryOut.setRowSts(RowSts.EFFECTIVE.getId());
         inventoryOutService.saveToInventoryOut(inventoryOut);
         // 更新销售订单信息
         saleOrderService.updateById(saleOrder);

@@ -21,10 +21,16 @@ public class PurchaseReturn extends BasicEntity {
     @Excel(name = "供应商", width = 15)
     @ApiModelProperty("供应商")
     private String vendorId;
+    @ApiModelProperty("原单编号")
+    private String sourceCode;
     @TableField(exist=false)
     private String vendor;
     @TableField(exist=false)
     private String warehouse;
+    /*结算账户*/
+    @Excel(name = "结算账户",width = 20)
+    @ApiModelProperty("结算账户")
+    private String account;
 
     /*仓库id*/
     @Excel(name = "仓库id", width = 15)
@@ -123,5 +129,21 @@ public class PurchaseReturn extends BasicEntity {
 
     public void setWarehouse(String warehouse) {
         this.warehouse = warehouse;
+    }
+
+    public String getAccount() {
+        return account;
+    }
+
+    public void setAccount(String account) {
+        this.account = account;
+    }
+
+    public String getSourceCode() {
+        return sourceCode;
+    }
+
+    public void setSourceCode(String sourceCode) {
+        this.sourceCode = sourceCode;
     }
 }

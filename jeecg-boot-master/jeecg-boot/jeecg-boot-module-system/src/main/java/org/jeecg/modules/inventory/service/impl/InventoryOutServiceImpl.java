@@ -8,6 +8,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.jeecg.modules.basic.enums.BillStatus;
 import org.jeecg.modules.basic.enums.BillType;
 import org.jeecg.modules.basic.enums.InventoryOperation;
+import org.jeecg.modules.basic.enums.RowSts;
 import org.jeecg.modules.inventory.entity.InventoryLog;
 import org.jeecg.modules.inventory.entity.InventoryOut;
 
@@ -105,7 +106,7 @@ public class InventoryOutServiceImpl extends ServiceImpl<InventoryOutMapper, Inv
             List<SaleOrderMtl> saleOrderMtls = saleOrderMtlService.list(queryWrapper);
             if (CollectionUtils.isNotEmpty(saleOrderMtls)) {
                 saleOrderMtls.forEach(o ->{
-                    inventoryOutMtls.add(new InventoryOutMtl(inventoryOut.getId(), o.getSourceId(), inventoryOut.getSourceBillType(), o.getMtlId(), o.getQuantity(), o.getUnitId()));
+                    inventoryOutMtls.add(new InventoryOutMtl(inventoryOut.getId(), o.getSourceId(), inventoryOut.getSourceBillType(), o.getMtlId(), o.getQuantity(), o.getUnitId(), RowSts.EFFECTIVE.getId()));
                 });
             }
         } else if (inventoryOut.getSourceBillType() == BillType.PURCHASERETURNORDER.getId()) {
@@ -113,7 +114,7 @@ public class InventoryOutServiceImpl extends ServiceImpl<InventoryOutMapper, Inv
             List<PurchaseReturnMtl> purchaseReturnMtls = iPurchaseReturnMtlService.list(queryWrapper);
             if (CollectionUtils.isNotEmpty(purchaseReturnMtls)) {
                 purchaseReturnMtls.forEach(o ->{
-                    inventoryOutMtls.add(new InventoryOutMtl(inventoryOut.getId(), o.getSourceId(), inventoryOut.getSourceBillType(), o.getMtlId(), o.getQuantity(), o.getUnitId()));
+                    inventoryOutMtls.add(new InventoryOutMtl(inventoryOut.getId(), o.getSourceId(), inventoryOut.getSourceBillType(), o.getMtlId(), o.getQuantity(), o.getUnitId(), RowSts.EFFECTIVE.getId()));
                 });
             }
         }
@@ -124,7 +125,7 @@ public class InventoryOutServiceImpl extends ServiceImpl<InventoryOutMapper, Inv
     @Override
     public List<PreInventoryOutMtl> getDeliveryMtlList(String id, String sourceId) {
         List<PreInventoryOutMtl> preInventoryOutMtls = Lists.newArrayList();
-        LambdaQueryWrapper<InventoryOutMtl> querySaleMtlWrapper = new QueryWrapper<InventoryOutMtl>().lambda().eq(InventoryOutMtl::getSourceBillId, sourceId);
+        LambdaQueryWrapper<InventoryOutMtl> querySaleMtlWrapper = new QueryWrapper<InventoryOutMtl>().lambda().eq(InventoryOutMtl::getSourceBillId, sourceId).eq(InventoryOutMtl::getRowSts, RowSts.EFFECTIVE.getId());
         LambdaQueryWrapper<InventoryLog> queryInventoryLogWrapper = new QueryWrapper<InventoryLog>().lambda().eq(InventoryLog::getSourceId, sourceId);
         List<InventoryOutMtl> inventoryOutMtls = inventoryOutMtlService.list(querySaleMtlWrapper);
         List<InventoryLog> inventoryLogs = inventoryLogService.list(queryInventoryLogWrapper);
@@ -142,11 +143,36 @@ public class InventoryOutServiceImpl extends ServiceImpl<InventoryOutMapper, Inv
                 preInventoryOutMtl.setBillId(id);
                 preInventoryOutMtl.setSourceId(sourceId);
                 preInventoryOutMtl.setMtlId(o.getMtlId());
+                preInventoryOutMtl.setSourceBillType(o.getSourceBillType());
                 preInventoryOutMtl.setQuantity(tempAmout);
                 preInventoryOutMtl.setUnitId(o.getUnitId());
                 preInventoryOutMtls.add(preInventoryOutMtl);
             }
         });
         return preInventoryOutMtls;
+    }
+
+    @Override
+    public InventoryOut queryBySourceId(String sourceId) {
+
+        return this.baseMapper.queryBySourceId(sourceId);
+    }
+
+    @Override
+    public void deleteBySourceId(String sourceId) {
+
+        InventoryOut exist = getOne(new LambdaQueryWrapper<InventoryOut>().eq(InventoryOut::getSourceId, sourceId).eq(InventoryOut::getRowSts, RowSts.EFFECTIVE.getId()));
+        if (null != exist) {
+            exist.setRowSts(RowSts.DELETED.getId());
+            updateById(exist);
+
+            List<InventoryOutMtl> inventoryInMtls = inventoryOutMtlService.list(new LambdaQueryWrapper<InventoryOutMtl>().eq(InventoryOutMtl::getSourceId, exist.getId()));
+            if (CollectionUtils.isNotEmpty(inventoryInMtls)) {
+                inventoryInMtls.stream().forEach(o->{
+                    o.setRowSts(RowSts.DELETED.getId());
+                });
+                inventoryOutMtlService.updateBatchById(inventoryInMtls);
+            }
+        }
     }
 }

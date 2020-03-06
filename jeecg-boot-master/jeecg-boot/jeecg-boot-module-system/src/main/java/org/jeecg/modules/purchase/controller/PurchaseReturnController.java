@@ -16,6 +16,7 @@ import org.jeecg.modules.basic.entity.Vendor;
 import org.jeecg.modules.basic.entity.Warehouse;
 import org.jeecg.modules.basic.enums.BillStatus;
 import org.jeecg.modules.basic.enums.BillType;
+import org.jeecg.modules.basic.enums.RowSts;
 import org.jeecg.modules.basic.service.BillCodeBuilderService;
 import org.jeecg.modules.basic.service.VendorService;
 import org.jeecg.modules.basic.service.WarehouseService;
@@ -23,6 +24,8 @@ import org.jeecg.modules.inventory.entity.InventoryOut;
 import org.jeecg.modules.inventory.entity.InventoryOutMtl;
 import org.jeecg.modules.inventory.service.InventoryOutMtlService;
 import org.jeecg.modules.inventory.service.InventoryOutService;
+import org.jeecg.modules.purchase.dto.PurchaseDtlDto;
+import org.jeecg.modules.purchase.dto.PurchaseInventoryDto;
 import org.jeecg.modules.purchase.dto.PurchaseReturnInDto;
 import org.jeecg.modules.purchase.entity.Purchase;
 import org.jeecg.modules.purchase.entity.PurchaseReturnMtl;
@@ -110,9 +113,13 @@ public class PurchaseReturnController extends JeecgController<PurchaseReturn, Pu
             String code = billCodeBuilderService.getBillCode(BillType.PURCHASERETURNORDER.getId());
             rtn.setCode(code);
             rtn.setWarehouseId(purchase.getWarehouseId());
-            rtn.setAmount(purchase.getTotalamount());
+            rtn.setAmount(dto.getAmount());
             rtn.setSourceId(purchase.getId());
+            rtn.setSourceCode(purchase.getCode());
             rtn.setBilldate(DateUtils.getDate());
+            rtn.setVendorId(purchase.getVendorId());
+            rtn.setBillStatus(BillStatus.NEW.getId());
+            rtn.setAccount(purchase.getAccount());
             purchaseReturnService.save(rtn);
 
             List<PurchaseReturnMtl> list = dto.getDetaillist();
@@ -139,22 +146,55 @@ public class PurchaseReturnController extends JeecgController<PurchaseReturn, Pu
             inventoryOut.setBillType(BillType.STOREOUT.getId());
             inventoryOut.setSourceBillType(BillType.PURCHASERETURNORDER.getId());
             inventoryOut.setWarehouseId(purchase.getWarehouseId());
+            inventoryOut.setRowSts(RowSts.EFFECTIVE.getId());
             inventoryOut.setPutOutTime(dto.getPutOutTime());
-            inventoryOut.setBillStatus(0);
+            inventoryOut.setBillStatus(BillStatus.TOSEND.getId());
             inventoryOutService.saveToInventoryOut(inventoryOut);
         }
         return Result.ok("退货成功");
     }
 
     @PutMapping("/edit")
-    public Result<?> edit(@RequestBody PurchaseReturnInDto dto){
-        InventoryOut inventoryOut = inventoryOutService.getById(dto.getId());
-        if (inventoryOut != null){
-            inventoryOut.setPutOutTime(dto.getPutOutTime());
-            inventoryOutService.updateById(inventoryOut);
-            return Result.ok("编辑成功");
+    public Result<?> edit(@RequestBody PurchaseReturnInDto purchasedtldto){
+        PurchaseInventoryDto dto = new PurchaseInventoryDto();
+        dto.setMsg("编辑失败");
+
+        // 采购退货主表
+        purchaseReturnService.updateById(purchasedtldto);
+        if (purchasedtldto.getDetaillist().size() > 0){
+            for (PurchaseReturnMtl item: purchasedtldto.getDetaillist()){
+                //采购商品详情
+                if (item.getId() != null && item.getId().length() > 0)
+                    purchaseReturnMtlService.updateById(item);
+                else{
+                    item.setSourceId(purchasedtldto.getId());
+                    purchaseReturnMtlService.save(item);
+                }
+            }
         }
-        return Result.ok("编辑失败");
+
+        // 出库单主表
+        inventoryOutService.deleteBySourceId(purchasedtldto.getId());
+
+        if (StringUtils.isNotBlank(purchasedtldto.getWarehouseId())) {
+
+            // 出库单主表
+            InventoryOut inventoryOut = new InventoryOut();
+            inventoryOut.setBillStatus(BillStatus.TOSEND.getId());
+            inventoryOut.setWarehouseId(purchasedtldto.getWarehouseId());
+            inventoryOut.setPutOutTime(purchasedtldto.getPutOutTime());
+            inventoryOut.setSourceCode(purchasedtldto.getCode());
+            inventoryOut.setSourceId(purchasedtldto.getId());
+            inventoryOut.setBillType(BillType.STOREOUT.getId());
+            inventoryOut.setRowSts(RowSts.EFFECTIVE.getId());
+            inventoryOut.setSourceBillType(BillType.PURCHASERETURNORDER.getId());
+            inventoryOut.setCode(billCodeBuilderService.getBillCode(BillType.STOREOUT.getId()));
+            inventoryOutService.saveToInventoryOut(inventoryOut);
+            dto.setInventoryOut(inventoryOut);
+        }
+        dto.setMsg("编辑成功");
+
+        return Result.ok(dto);
     }
 
     @DeleteMapping("/delete")
@@ -178,12 +218,27 @@ public class PurchaseReturnController extends JeecgController<PurchaseReturn, Pu
     @GetMapping("/queryById")
     public Result<?> queryById(@RequestParam(name = "id", required = true) String id){
         PurchaseReturn purchasereturn = purchaseReturnService.getById(id);
-//        Purchase purchase = purchaseService.getById(id);
-//        System.out.println(purchase.getId());
         if (purchasereturn == null){
             return Result.ok("未找到对应数据");
         }
-        return Result.ok(purchasereturn);
+        PurchaseReturnInDto purchasedtldto = new PurchaseReturnInDto();
+        purchasedtldto.setSourceId(purchasereturn.getSourceId());
+        purchasedtldto.setSourceCode(purchasereturn.getSourceCode());
+        purchasedtldto.setId(purchasereturn.getId());
+        purchasedtldto.setVendorId(purchasereturn.getVendorId());
+        purchasedtldto.setContent(purchasereturn.getContent());
+        purchasedtldto.setWarehouseId(purchasereturn.getWarehouseId());
+        purchasedtldto.setAccount(purchasereturn.getAccount());
+        purchasedtldto.setBilldate(purchasereturn.getBilldate());
+        purchasedtldto.setAmount(purchasereturn.getAmount());
+        purchasedtldto.setCode(purchasereturn.getCode());
+        purchasedtldto.setCreateTime(purchasereturn.getCreateTime());
+        purchasedtldto.setDetaillist(purchaseReturnMtlService.queryBySourceId(purchasereturn.getId()));
+
+        InventoryOut inventoryOut = inventoryOutService.queryBySourceId(purchasereturn.getId());
+        purchasedtldto.setPutOutTime(null != inventoryOut ? inventoryOut.getPutOutTime() : null);
+
+        return Result.ok(purchasedtldto);
     }
 
     @RequestMapping("/exportXls")
