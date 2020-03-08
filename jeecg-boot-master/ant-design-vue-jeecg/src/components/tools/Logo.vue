@@ -21,7 +21,7 @@
     props: {
       title: {
         type: String,
-        default: 'Jeecg-Boot Pro',
+        default: 'WENJIANG ERP',
         required: false
       },
       showTitle: {

@@ -156,11 +156,11 @@
             handleStocking({id:record.id}).then((res) => {
               if (res.success) {
                 that.$message.success(res.message);
-                that.loadData();
-                that.onClearSelected();
               } else {
                 that.$message.warning(res.message);
               }
+              that.loadData();
+              that.onClearSelected();
             })
           }
         });

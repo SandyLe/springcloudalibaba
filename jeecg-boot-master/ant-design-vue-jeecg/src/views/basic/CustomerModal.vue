@@ -47,7 +47,7 @@
                 :labelCol="labelCol"
                 :wrapperCol="wrapperCol"
                 label="客户类型">
-                <a-select v-decorator="['customerTypeId', {}]" placeholder="请选择类型列表">
+                <a-select v-decorator="['customerTypeId', validatorRules.customerTypeId]" placeholder="请选择类型列表">
                   <a-select-option value="">请选择</a-select-option>
                   <a-select-option v-for="(item, key) in typeList" :key="key" :value="item.id">
                     <span style="display: inline-block;width: 100%" :title=" item.name || item.code ">
@@ -516,7 +516,13 @@
         validatorRules: {
           name: {
             rules: [
-              { min: 0, max: 126, message: '长度不超过 126 个字符', trigger: 'blur' }
+              { min: 1, max: 126, message: '长度不超过 126 个字符', trigger: 'blur' },
+              {required: true, message: '名称不能为空!'}
+            ]
+          },
+          customerTypeId: {
+            rules: [
+              {required: true, message: '请选择客户类型!'}
             ]
           }
         },

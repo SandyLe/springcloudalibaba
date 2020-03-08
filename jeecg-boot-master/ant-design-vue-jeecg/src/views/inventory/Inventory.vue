@@ -52,8 +52,8 @@
           <a @click="goDetail(record.mtlId)">{{record.material}}</a>
         </span>
         <span slot="action" slot-scope="text, record">
-          <a @click="handleEdit(record.id)">编辑</a>
-          <!--
+          <!-- <a @click="handleEdit(record.id)">编辑</a>
+
                     <a-divider type="vertical" />
                     <a-dropdown>
                       <a class="ant-dropdown-link">

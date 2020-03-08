@@ -361,6 +361,7 @@
                 that.saleOrder.totalamount = res.result;
                 that.$message.success(res.message);
                 that.$emit('ok');
+                that.$emit('nextStep')
               }else{
                 that.$message.warning(res.message);
               }
@@ -463,17 +464,15 @@
       nextStep () {
         if (!this.unEditable) {
           this.handleOk();
+        } else {
+          this.$emit('nextStep')
         }
-        this.$emit('nextStep')
       },
       prevStep () {
         this.$emit('prevStep')
-      }
-    },
-    mounted() {
-      if (this.$route.query.id) {
-        console.log(this.form)
-        getSaleOrderOne({id:this.$route.query.id}).then((res) => {
+      },
+      updateInfo(saleOrderId) {
+        getSaleOrderOne({id: saleOrderId}).then((res) => {
           if (res.success) {
             this.saleOrder = res.result;
             this.model = Object.assign({}, this.saleOrder);
@@ -485,12 +484,17 @@
             });
           }
         })
-        this.setDeliveryInfo(this.$route.query.id);
+        this.setDeliveryInfo(saleOrderId);
         getWarehouseList('').then((res) => {
           if (res.success) {
             this.warehouseList = res.result;
           }
         });
+      }
+    },
+    mounted() {
+      if (this.$route.query.id) {
+        this.updateInfo(this.$route.query.id);
       }
       this.unEditable = this.$route.query.unEditable;
     }
