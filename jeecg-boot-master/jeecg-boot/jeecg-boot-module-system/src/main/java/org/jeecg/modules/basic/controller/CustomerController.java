@@ -14,6 +14,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
+import org.jeecg.common.aspect.annotation.PermissionData;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.DictModel;
 import org.jeecg.modules.basic.dto.CustomerEditDto;
@@ -82,6 +83,7 @@ public class CustomerController {
      */
     @ApiOperation(value = "获取客户数据列表", notes = "获取所有客户数据列表")
     @GetMapping(value = "/getPage")
+    @PermissionData
     public Result<?> list(Customer customer, @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo, @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
                           HttpServletRequest req) {
         QueryWrapper<Customer> queryWrapper = QueryGenerator.initQueryWrapper(customer, req.getParameterMap());
@@ -121,12 +123,14 @@ public class CustomerController {
         Customer customer = new Customer();
         BeanUtils.copyProperties(customer, customerEditDto);
         customer.setId(customerEditDto.getId());
+        Customer exists = null;
         if (StringUtils.isEmpty(customerEditDto.getId())) {
             customer.setCode(billCodeBuilderService.getBillCode(BillType.CUSTOMER.getId()));
+            exists = customerService.getOne(new LambdaQueryWrapper<Customer>().eq(Customer::getCode, customer.getCode()).ne(Customer::getId, "-1"));
         } else {
             customer.setCode(customerEditDto.getCode());
+            exists = customerService.getOne(new LambdaQueryWrapper<Customer>().eq(Customer::getCode, customer.getCode()).ne(Customer::getId, customer.getId()));
         }
-        Customer exists = customerService.getOne(new LambdaQueryWrapper<Customer>().eq(Customer::getCode, customer.getCode()).ne(Customer::getId, customer.getId()));
         Assert.isNull(exists, "编号已存在！");
         customerService.saveOrUpdate(customer);
         CustomerDeliveryInfo cdi = new CustomerDeliveryInfo();
@@ -241,6 +245,9 @@ public class CustomerController {
         if (StringUtils.isNotBlank(districtId)) {
             Area district = areaService.getById(districtId);
             stringBuilder.append(null != district ? district.getName() : "");
+        }
+        if (StringUtils.isNotBlank(address)) {
+            stringBuilder.append(address);
         }
         return stringBuilder.toString();
     }

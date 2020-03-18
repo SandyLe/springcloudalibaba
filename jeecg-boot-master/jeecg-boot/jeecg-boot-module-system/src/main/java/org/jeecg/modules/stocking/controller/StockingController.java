@@ -201,9 +201,6 @@ public class StockingController {
     @ApiOperation(value = "通过ID查询盘点单", notes = "通过ID查询盘点单")
     public Result<?> handleStocking(@RequestBody Stocking stocking) {
         String msg = stockingService.handleStocking(stocking.getId());
-        if (StringUtils.isNotBlank(msg)){
-            return Result.error(msg);
-        }
         return Result.ok("操作成功！");
     }
 

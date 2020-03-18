@@ -116,7 +116,7 @@ public class SaleOrderMtlController {
             Collection<MaterialUnit> warehouses = materialUnitService.listByIds(unitIds);
             Map<String, String> mtlMap = materials.stream().collect(Collectors.toMap(Material::getId, Material::getName));
             Map<String, String> mtlCodeMap = materials.stream().collect(Collectors.toMap(Material::getId, Material::getCode));
-            Map<String, String> mtlSpecMap = materials.stream().collect(Collectors.toMap(Material::getId, Material::getSpecification));
+            Map<String, String> mtlSpecMap = materials.stream().filter(o->null != o.getSpecification()).collect(Collectors.toMap(Material::getId, Material::getSpecification));
             Map<String, String> unitMap = warehouses.stream().collect(Collectors.toMap(MaterialUnit:: getId, MaterialUnit:: getName));
             saleOrderList.stream().forEach(o->{
                 o.setUnit(unitMap.get(o.getUnitId()));

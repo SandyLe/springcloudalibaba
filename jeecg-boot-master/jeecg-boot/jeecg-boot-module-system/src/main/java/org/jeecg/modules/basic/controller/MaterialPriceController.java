@@ -175,14 +175,14 @@ public class MaterialPriceController {
                                  @ApiParam(name = "unitId", value = "单位id", required = true) @RequestParam(name = "unitId", required = false) String unitId) {
         SaleOrderMtlPriceDto dto = new SaleOrderMtlPriceDto();
         Material material = materialService.getById(mtlId);
-        dto.setMtlCode(mtlId);
+        dto.setMtlId(mtlId);
         dto.setMtlCode(material.getCode());
         dto.setMtlName(material.getName());
         dto.setSpecification(material.getSpecification());
         dto.setUnitId(StringUtils.isNotBlank(unitId) ? unitId : material.getUnitId());
 
         Customer customer = customerService.getById(customerId);
-        MaterialPrice materialPrice = materialPriceService.getMtlPrice(customer.getCustomerTypeId(), mtlId, unitId);
+        MaterialPrice materialPrice = materialPriceService.getMtlPrice(customer.getCustomerTypeId(), mtlId, dto.getUnitId());
         dto.setPrice(null != materialPrice ? materialPrice.getPrice() : null);
         return Result.ok(dto);
     }

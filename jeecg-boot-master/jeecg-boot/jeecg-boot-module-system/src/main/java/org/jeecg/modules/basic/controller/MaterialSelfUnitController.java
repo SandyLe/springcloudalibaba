@@ -101,7 +101,7 @@ public class MaterialSelfUnitController {
         String sourceId = req.getParameter("sourceId");
         if(StringUtils.isNotBlank(addSelf) && "true".equals(addSelf) && StringUtils.isNotBlank(sourceId)){
             Material material = materialService.getById(sourceId);
-            if (StringUtils.isNotBlank(material.getUnitId())) {
+            if (StringUtils.isNotBlank(material.getUnitId()) && !unitIds.contains(material.getUnitId())) {
                 MaterialSelfUnit msu = new MaterialSelfUnit();
                 msu.setUnitId(material.getUnitId());
                 MaterialUnit materialUnit = materialUnitService.getById(material.getUnitId());
