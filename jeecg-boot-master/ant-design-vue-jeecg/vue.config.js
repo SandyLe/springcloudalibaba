@@ -1,4 +1,8 @@
 const path = require('path')
+const CompressionWebpackPlugin = require('compression-webpack-plugin')
+const productionGzipExtensions = ['js', 'css']
+const webpack = require('webpack')
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
 function resolve(dir) {
   return path.join(__dirname, dir)
@@ -15,13 +19,31 @@ module.exports = {
   productionSourceMap: true,
 
   //打包app时放开该配置
-  publicPath:'./',
-  configureWebpack: config => {
-    //生产环境取消 console.log
-    if (process.env.NODE_ENV === 'production') {
-      config.optimization.minimizer[0].options.terserOptions.compress.drop_console = true
-    }
-  },
+  publicPath:'/',
+  configureWebpack: {
+    plugins: [
+      // Ignore all locale files of moment.js
+      new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
+      new UglifyJsPlugin({
+        uglifyOptions: {
+          compress: {
+            drop_debugger: true,
+            drop_console: true
+          }
+        },
+        sourceMap: false,
+        parallel: true
+      }),
+      // 配置compression-webpack-plugin压缩
+      new CompressionWebpackPlugin({
+        algorithm: 'gzip',
+        test: new RegExp('\\.(' + productionGzipExtensions.join('|') + ')$'),
+        threshold: 10240,
+        minRatio: 0.8
+      })
+    ]
+  }
+  ,
   chainWebpack: (config) => {
     config.resolve.alias
       .set('@$', resolve('src'))
