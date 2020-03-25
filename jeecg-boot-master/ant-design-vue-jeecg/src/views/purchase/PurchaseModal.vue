@@ -299,11 +299,12 @@ export default {
             this.tabledata.forEach(function(target){
                 if (target.quantity && target.price) {
                     if (target.discount)
-                        datatotalamount += parseFloat(target.quantity) * parseFloat(target.price) - parseFloat(target.discount);
+                        datatotalamount += parseFloat(target.quantity).toFixed(2) * parseFloat(target.price).toFixed(2) - parseFloat(target.discount).toFixed(2);
                     else
-                        datatotalamount += parseFloat(target.quantity) * parseFloat(target.price);
+                        datatotalamount += parseFloat(target.quantity) * parseFloat(target.price).toFixed(2);
                 }
             });
+            datatotalamount = Math.round(datatotalamount*100)/100;
             this.model.totalamount = datatotalamount;
             this.form.setFieldsValue({ 'totalamount' :datatotalamount })
         }
@@ -472,9 +473,9 @@ export default {
                 target[column] = value;
                 if (target.quantity && target.price) {
                     if (target.discount)
-                        target['amount'] = parseFloat(target.quantity) * parseFloat(target.price) - parseFloat(target.discount);
+                        target['amount'] = Math.round((parseFloat(target.quantity) * parseFloat(target.price) - parseFloat(target.discount)) * 100);
                     else
-                        target['amount'] = parseFloat(target.quantity) * parseFloat(target.price);
+                        target['amount'] = Math.round( (parseFloat(target.quantity) * parseFloat(target.price)) * 100)/100;
                 }
                 this.tabledata = newData
             }
