@@ -8,6 +8,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.system.query.QueryGenerator;
@@ -98,7 +99,7 @@ public class SaleOrderReturnMtlController {
             Collection<MaterialUnit> warehouses = materialUnitService.listByIds(unitIds);
             Map<String, String> mtlMap = materials.stream().collect(Collectors.toMap(Material::getId, Material::getName));
             Map<String, String> mtlCodeMap = materials.stream().collect(Collectors.toMap(Material::getId, Material::getCode));
-            Map<String, String> mtlSpecMap = materials.stream().collect(Collectors.toMap(Material::getId, Material::getSpecification));
+            Map<String, String> mtlSpecMap = materials.stream().filter(o-> StringUtils.isNotBlank(o.getSpecification())).collect(Collectors.toMap(Material::getId, Material::getSpecification));
             Map<String, String> unitMap = warehouses.stream().collect(Collectors.toMap(MaterialUnit:: getId, MaterialUnit:: getName));
             saleOrderList.stream().forEach(o->{
                 o.setUnit(unitMap.get(o.getUnitId()));

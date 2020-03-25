@@ -103,7 +103,7 @@ public class InventoryOutMtlController {
         Collection<MaterialUnit> units = materialUnitService.listByIds(unitIds);
         Map<String, String> materialMap = materials.stream().collect(Collectors.toMap(Material::getId, Material::getName));
         Map<String, String> mtlCodeMap = materials.stream().collect(Collectors.toMap(Material::getId, Material::getCode));
-        Map<String, String> specMap = materials.stream().collect(Collectors.toMap(Material::getId, Material::getSpecification));
+        Map<String, String> specMap = materials.stream().filter(o->StringUtils.isNotBlank(o.getSpecification())).collect(Collectors.toMap(Material::getId, Material::getSpecification));
         Map<String, String> barCodeMap = materials.stream().collect(Collectors.toMap(Material::getId, Material::getBarCode));
         Map<String, String> unitMap = units.stream().collect(Collectors.toMap(MaterialUnit::getId, MaterialUnit::getName));
         inventoryOutMtlList.stream().forEach(o->{
