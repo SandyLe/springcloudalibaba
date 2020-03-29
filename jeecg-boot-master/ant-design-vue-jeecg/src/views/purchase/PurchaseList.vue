@@ -6,7 +6,7 @@
             <a-row :gutter="24">
                 <a-col :md="6" :sm="8">
                     <a-form-item label="供应商">
-                        <a-select v-decorator="['queryParam.vendorId', {}]" placeholder="请输入供应商">
+                        <a-select v-model="queryParam.vendorId" placeholder="请输入供应商">
                             <a-select-option value="">请选择</a-select-option>
                             <a-select-option v-for="(item, key) in dictOptions.vendorId" :key="key" :value="item.id">
                                 {{ item.name }}
@@ -16,7 +16,7 @@
                 </a-col>
                 <a-col :md="12" :sm="16">
                     <a-form-item label="仓库">
-                        <a-select v-decorator="['queryParam.warehouseId', {}]" placeholder="请输入仓库">
+                        <a-select v-model="queryParam.warehouseId" placeholder="请输入仓库">
                             <a-select-option value="">请选择</a-select-option>
                             <a-select-option v-for="(item, key) in dictOptions.warehouse" :key="key" :value="item.id">
                                 {{ item.name }}

@@ -143,6 +143,7 @@ const addMaterial = (params)=>postAction("/material/add",params)
 const editMaterial = (params)=>postAction("/material/edit",params)
 const getMaterialOne = (params)=>getAction("/material/getOne",params)
 const getMaterialList = (params)=>getAction("/material/getList",params)
+const searchMaterial = (params)=>getAction("/material/search",params)
 const getMaterialSelfUnitList = (params)=>getAction("/materialSelfUnit/getList",params)
 const addMaterialSelfUnit = (params)=>postAction("/materialSelfUnit/add",params)
 const editMaterialSelfUnit = (params)=>postAction("/materialSelfUnit/edit",params)
@@ -288,6 +289,7 @@ export {
   addMaterialSelfUnit,
   editMaterialSelfUnit,
   getMaterialList,
+  searchMaterial,
   addMaterialPrice,
   editMaterialPrice,
   getCustomerList,

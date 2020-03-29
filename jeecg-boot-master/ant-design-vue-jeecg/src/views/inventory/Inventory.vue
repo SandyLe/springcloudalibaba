@@ -6,9 +6,15 @@
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
           <a-col :md="6" :sm="12">
-            <a-form-item label="账号">
-              <!--<a-input placeholder="请输入账号查询" v-model="queryParam.username"></a-input>-->
-              <j-input placeholder="输入账号模糊查询" v-model="queryParam.username"></j-input>
+            <a-form-item label="产品">
+              <a-select v-model="queryParam.mtlId" placeholder="请选择产品"  showSearch
+                        optionFilterProp="children"
+                        notFoundContent="无法找到，回车[Enter]搜索试试" @keyup.enter.native="searchMtl" >
+                <a-select-option value="">请选择</a-select-option>
+                <a-select-option v-for="(item, key) in mtlList" :key="key" :value="item.id">
+                  {{ item.name || item.code }}
+                </a-select-option>
+              </a-select>
             </a-form-item>
           </a-col>
 
@@ -81,6 +87,7 @@
 <script>
   import JInput from '@/components/jeecg/JInput'
   import {JeecgListMixin} from '@/mixins/JeecgListMixin'
+  import {searchMaterial} from '@/api/api'
   export default {
     name: "",
     mixins: [JeecgListMixin],
@@ -90,6 +97,7 @@
     data () {
       return {
         queryParam:{},
+        mtlList:[],
         columns: [
 
           {
@@ -150,12 +158,21 @@
       }
     },
     methods: {
-      searchQuery () {
-
-      },
-      searchReset () {
-
+      searchMtl (e) {
+        console.log(e.target.valueOf().value)
+        searchMaterial({"keyword":e.target.valueOf().value}).then((res) => {
+          if (res.success) {
+            this.mtlList = res.result;
+          }
+        })
       }
+    },
+    mounted() {
+      searchMaterial().then((res) => {
+        if (res.success) {
+          this.mtlList = res.result;
+        }
+      })
     }
   }
 </script>
