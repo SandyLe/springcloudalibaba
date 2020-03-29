@@ -38,6 +38,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Api(tags = "采购列表")
@@ -80,12 +81,13 @@ public class PurchaseController extends JeecgController<Purchase, PurchaseServic
         //采购单子表
         List<InventoryInMtl> detaillist = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(purchasedtldto.getDetaillist())){
-            purchasedtldto.getDetaillist().stream().forEach(o->{
+            List<PurchaseMtl> mtls = purchasedtldto.getDetaillist().stream().filter(o->StringUtils.isNotBlank(o.getMtlId())).collect(Collectors.toList());
+            mtls.stream().forEach(o->{
                 //采购商品详情
                 o.setCode(code);
                 o.setSourceId(purchasedtldto.getId());
             });
-            purchaseMtlService.saveBatch(purchasedtldto.getDetaillist());
+            purchaseMtlService.saveBatch(mtls);
         }
         if (StringUtils.isNotBlank(purchasedtldto.getWarehouseId())) {
 

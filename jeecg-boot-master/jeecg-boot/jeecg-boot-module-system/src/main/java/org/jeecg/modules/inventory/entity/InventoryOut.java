@@ -49,7 +49,9 @@ public class InventoryOut extends BasicEntity {
         this.sourceCode = sourceCode;
         this.sourceBillType = sourceBillType;
         this.warehouseId = warehouseId;
-        this.putOutTime = DateUtils.formatTime(putOutTime);
+        if (null != putOutTime) {
+            this.putOutTime = DateUtils.formatTime(putOutTime);
+        }
         this.billStatus = billStatus;
     }
 

@@ -61,11 +61,11 @@ public class SaleOrderController {
     @Autowired
     private ISysDictService iSysDictService;
     @Autowired
+    private InventoryOutService inventoryOutService;
+    @Autowired
     private SaleOrderDeliveryInfoService saleOrderDeliveryInfoService;
     @Autowired
     private BillCodeBuilderService billCodeBuilderService;
-    @Autowired
-    private InventoryOutService inventoryOutService;
     @Autowired
     private SaleOrderMtlService saleOrderMtlService;
 
@@ -273,45 +273,10 @@ public class SaleOrderController {
     @AutoLog(value = "发货")
     @ApiOperation(value = "发货", notes = "发货")
     public Result<?> edit(@RequestBody DeliveryEditDto deliveryEditDto) throws Exception {
-        String billId = deliveryEditDto.getId();
-        SaleOrder saleOrder = saleOrderService.getById(billId);
-        saleOrder.setWarehouseId(deliveryEditDto.getWarehouseId());
-        saleOrder.setDeliveryTime(deliveryEditDto.getDeliveryTime());
-        saleOrder.setInstallTime(deliveryEditDto.getInstallTime());
 
-        SaleOrderDeliveryInfo cdi = new SaleOrderDeliveryInfo();
-        BeanUtils.copyProperties(cdi,deliveryEditDto);
-        cdi.setCdiSourceId(saleOrder.getCustomerId());
-        cdi.setSourceId(saleOrder.getId());
-        cdi.setSourceBillCode(saleOrder.getCode());
-        cdi.setWarehouseId(saleOrder.getWarehouseId());
-        cdi.setId(deliveryEditDto.getCdiId());
+        saleOrderService.delivery(deliveryEditDto);
 
-        cdi.setCreateBy(deliveryEditDto.getCdiCreateBy());
-        cdi.setCreateTime(deliveryEditDto.getCdiCreateTime());
-        cdi.setUpdateBy(deliveryEditDto.getCdiUpdateBy());
-        cdi.setUpdateTime(deliveryEditDto.getCdiUpdateTime());
-        cdi.setCode(deliveryEditDto.getCdiCode());
-        cdi.setName(deliveryEditDto.getCdiName());
-        cdi.setRowSts(deliveryEditDto.getCdiRowSts());
-        cdi.setSort(deliveryEditDto.getCdiSort());
-        cdi.setCode(deliveryEditDto.getCdiContent());
-        if (StringUtils.isEmpty(cdi.getId())) {
-            cdi.setBillStatus(BillStatus.TOSEND.getId());
-            saleOrder.setBillStatus(BillStatus.TOSEND.getId());
-        }
-
-        // 销售出库
-        InventoryOut inventoryOut = new InventoryOut(saleOrder.getId(),saleOrder.getCode(), BillType.STOREOUT.getId(), BillType.SALEORDER.getId(), saleOrder.getWarehouseId(), saleOrder.getDeliveryTime(), BillStatus.TOSEND.getId());
-        inventoryOut.setRowSts(RowSts.EFFECTIVE.getId());
-        inventoryOutService.saveToInventoryOut(inventoryOut);
-        // 更新销售订单信息
-        saleOrderService.updateById(saleOrder);
-        saleOrderDeliveryInfoService.saveOrUpdate(cdi);
-
-        Result<Object> result = Result.ok();
-        result.setResult(saleOrder);
-        return result;
+        return Result.ok();
     }
 
     /**

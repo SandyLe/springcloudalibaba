@@ -188,4 +188,22 @@ public class MaterialController {
         }
         return Result.ok(material);
     }
+
+    /**
+     * 搜索产品
+     *
+     * @param keyword
+     * @return
+     */
+    @ApiOperation(value = "搜索", notes = "搜索")
+    @GetMapping(value = "/search")
+    public Result<?> search(@ApiParam(name = "keyword", value = "关键词", required = true) @RequestParam(name = "keyword", required = false) String keyword) {
+        LambdaQueryWrapper<Material> queryWrapper = new LambdaQueryWrapper<Material>();
+        if (StringUtils.isNotBlank(keyword)) {
+            queryWrapper.like(Material::getName, keyword).or().like(Material::getCode, keyword).or().like(Material::getSpecification, keyword);
+        }
+        queryWrapper.orderByDesc(Material::getCreateTime).last("limit 0,20");
+        List<Material> list = materialService.list(queryWrapper);
+        return Result.ok(list);
+    }
 }

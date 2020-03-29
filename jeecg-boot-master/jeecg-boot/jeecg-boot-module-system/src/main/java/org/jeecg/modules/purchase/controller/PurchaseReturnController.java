@@ -147,7 +147,9 @@ public class PurchaseReturnController extends JeecgController<PurchaseReturn, Pu
             inventoryOut.setSourceBillType(BillType.PURCHASERETURNORDER.getId());
             inventoryOut.setWarehouseId(purchase.getWarehouseId());
             inventoryOut.setRowSts(RowSts.EFFECTIVE.getId());
-            inventoryOut.setPutOutTime(dto.getPutOutTime());
+            if (StringUtils.isNotBlank(dto.getPutOutTime())){
+                inventoryOut.setPutOutTime(dto.getPutOutTime());
+            }
             inventoryOut.setBillStatus(BillStatus.TOSEND.getId());
             inventoryOutService.saveToInventoryOut(inventoryOut);
         }
