@@ -9,7 +9,7 @@
             <a-form-item label="产品">
               <a-select v-model="queryParam.mtlId" placeholder="请选择产品"  showSearch
                         optionFilterProp="children"
-                        notFoundContent="无法找到，回车[Enter]搜索试试" @keyup.enter.native="searchMtl" >
+                        notFoundContent="无法找到，输入关键词Enter搜索" @keyup.enter.native="searchMtl" >
                 <a-select-option value="">请选择</a-select-option>
                 <a-select-option v-for="(item, key) in mtlList" :key="key" :value="item.id">
                   {{ item.name || item.code }}
@@ -159,7 +159,6 @@
     },
     methods: {
       searchMtl (e) {
-        console.log(e.target.valueOf().value)
         searchMaterial({"keyword":e.target.valueOf().value}).then((res) => {
           if (res.success) {
             this.mtlList = res.result;

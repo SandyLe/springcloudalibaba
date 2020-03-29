@@ -61,10 +61,12 @@
                 <a-col :span="24">
                     <a-card>
                         <form :autoFormCreate="(form) => this.form = form">
-                            <a-table :columns="columns" :dataSource="tabledata" :pagination="false" rowKey="id">
-                                <template v-for="(col, i) in ['mtlId', 'unitId','quantity', 'price', 'discount', 'amount', 'content', 'action']" :slot="col" slot-scope="text, record, index">
-                                    <a-select v-if="['mtlId','unitId'].indexOf(columns[i].dataIndex) > -1" v-decorator="[record[columns[i].dataIndex], {}]"
-                                        @change="e => handleChange(e, record.key, col)" :placeholder="'请选择'+columns[i].title" :value="record[columns[i].dataIndex]">
+                            <a-table :columns="columns" :dataSource="tabledata" :pagination="false" rowKey="id" ref="mtltable">
+                                <template v-for="(col, i) in ['mtlId', 'unitId','quantity', 'price', 'discount', 'amount', 'content', 'action']" :slot="col" clearable slot-scope="text, record, index">
+                                    <a-select v-if="['mtlId','unitId'].indexOf(columns[i].dataIndex) > -1" v-decorator="[record[columns[i].dataIndex], {}]" showSearch
+                                              optionFilterProp="children" notFoundContent="无法找到，输入关键词回车[Enter]搜索试试" @keyup.enter.native="e => searchData(e, col, record.key)"
+                                              @change="e => handleChange(e, record.key, col)" :placeholder="'请选择'+columns[i].title" :value="record[columns[i].dataIndex]" ref="sel">
+                                        <a-select-option value="">请选择</a-select-option>
                                         <a-select-option v-for="(item, key) in columns[i].list" :key="key" :value="item.id">
                                             {{ item.name }}
                                         </a-select-option>
@@ -139,7 +141,7 @@ import {
     getVendorList,
     ajaxGetDictItems,
     getWarehouseList,
-    getMaterialList,
+    searchMaterial,
     getMaterialUnitList,
     purchasequeryById,
     purchasedetailDelete
@@ -336,7 +338,7 @@ export default {
                 }
             });
             //产品
-            getMaterialList('').then((res) => {
+            searchMaterial('').then((res) => {
                 if (res.success) {
                     if (res.result && res.result.length > 0) {
                         res.result.forEach(function (option) {
@@ -508,6 +510,29 @@ export default {
             this.$route.matched.splice(this.$route.matched.length-1 ,1);
             this.$parent.closeRouteViewTab(this.$route.fullPath)
             this.$router.replace({ path:'/purchase/PurchaseList' });
+        },
+        searchData(e, col, key) {
+          if (col === 'mtlId') {
+            const that = this;
+            searchMaterial({"keyword":e.target.valueOf().value}).then((res) => {
+              if (res.success) {
+                if (res.result && res.result.length > 0) {
+                  res.result.forEach(function (option) {
+                    option.value = option.id;
+                    option.text = option.name;
+                  })
+                }
+                that.columns[0].list = res.result;
+                that.$set(that.dictOptions, 0, that.columns[0])
+
+                const newData = [...this.tabledata]
+                const target = newData.filter(item => key === item.key)[0]
+                target.editable = true
+                that.tabledata = newData;
+                // this.$set(this.dictOptions, 'materiallist', res.result)
+              }
+            });
+          }
         }
     },
     mounted() {

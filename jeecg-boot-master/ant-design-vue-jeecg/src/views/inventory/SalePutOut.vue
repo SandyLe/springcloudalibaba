@@ -6,9 +6,9 @@
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
           <a-col :md="6" :sm="12">
-            <a-form-item label="账号">
+            <a-form-item label="原单编号">
               <!--<a-input placeholder="请输入账号查询" v-model="queryParam.username"></a-input>-->
-              <j-input placeholder="输入账号模糊查询" v-model="queryParam.username"></j-input>
+              <j-input placeholder="输入原单编号模糊查询" v-model="queryParam.sourceCode"></j-input>
             </a-form-item>
           </a-col>
 
@@ -175,12 +175,6 @@
         }
         this.$refs.inventoryLogModal.edit(record);
         this.$refs.inventoryLogModal.title = "出库记录";
-      },
-      searchQuery () {
-
-      },
-      searchReset () {
-
       }
     }
   }
