@@ -10,17 +10,20 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
+import org.jeecg.common.aspect.annotation.PermissionData;
 import org.jeecg.common.system.query.QueryGenerator;
+import org.jeecg.common.system.vo.DictModel;
 import org.jeecg.modules.basic.dto.CustomerEditDto;
-import org.jeecg.modules.basic.entity.Customer;
-import org.jeecg.modules.basic.entity.CustomerDeliveryInfo;
-import org.jeecg.modules.basic.entity.CustomerSource;
-import org.jeecg.modules.basic.entity.CustomerType;
+import org.jeecg.modules.basic.entity.*;
 import org.jeecg.modules.basic.enums.BillType;
+import org.jeecg.modules.basic.enums.EnumConvertUtils;
+import org.jeecg.modules.basic.enums.RowSts;
 import org.jeecg.modules.basic.service.*;
+import org.jeecg.modules.system.service.ISysDictService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
@@ -48,6 +51,12 @@ public class CustomerController {
     private CustomerTypeService customerTypeService;
     @Autowired
     private BillCodeBuilderService billCodeBuilderService;
+    @Autowired
+    private ISysDictService iSysDictService;
+    @Autowired
+    private AreaService areaService;
+    @Autowired
+    private LogisticsCompanyService logisticsCompanyService;
 
     /**
      * 获取所有数据
@@ -74,6 +83,7 @@ public class CustomerController {
      */
     @ApiOperation(value = "获取客户数据列表", notes = "获取所有客户数据列表")
     @GetMapping(value = "/getPage")
+    @PermissionData
     public Result<?> list(Customer customer, @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo, @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
                           HttpServletRequest req) {
         QueryWrapper<Customer> queryWrapper = QueryGenerator.initQueryWrapper(customer, req.getParameterMap());
@@ -81,16 +91,18 @@ public class CustomerController {
 
         IPage<Customer> pageList = customerService.page(page, queryWrapper);
         List<Customer> customerList = pageList.getRecords();
-        List<String> customerTypeIds = customerList.stream().map(Customer::getCustomerTypeId).collect(Collectors.toList());
-        List<String> customerSourceIds = customerList.stream().map(Customer::getCustomerSourceId).collect(Collectors.toList());
-        Collection<CustomerType> customerTypes = customerTypeService.listByIds(customerTypeIds);
-        Collection<CustomerSource> customerSources = customerSourceService.listByIds(customerSourceIds);
-        Map<String, String> customerTypeMap = customerTypes.stream().collect(Collectors.toMap(CustomerType::getId, CustomerType::getName));
-        Map<String, String> customerSourceMap = customerSources.stream().collect(Collectors.toMap(CustomerSource:: getId, CustomerSource:: getName));
-        customerList.stream().forEach(o->{
-            o.setCustomerSource(customerSourceMap.get(o.getCustomerSourceId()));
-            o.setCustomerType(customerTypeMap.get(o.getCustomerTypeId()));
-        });
+        if (CollectionUtils.isNotEmpty(customerList)) {
+            List<String> customerTypeIds = customerList.stream().map(Customer::getCustomerTypeId).collect(Collectors.toList());
+            List<String> customerSourceIds = customerList.stream().map(Customer::getCustomerSourceId).collect(Collectors.toList());
+            Collection<CustomerType> customerTypes = customerTypeService.listByIds(customerTypeIds);
+            Collection<CustomerSource> customerSources = customerSourceService.listByIds(customerSourceIds);
+            Map<String, String> customerTypeMap = customerTypes.stream().collect(Collectors.toMap(CustomerType::getId, CustomerType::getName));
+            Map<String, String> customerSourceMap = customerSources.stream().collect(Collectors.toMap(CustomerSource:: getId, CustomerSource:: getName));
+            customerList.stream().forEach(o->{
+                o.setCustomerSource(customerSourceMap.get(o.getCustomerSourceId()));
+                o.setCustomerType(customerTypeMap.get(o.getCustomerTypeId()));
+            });
+        }
 
         log.info("查询当前页：" + pageList.getCurrent());
         log.info("查询当前页数量：" + pageList.getSize());
@@ -111,12 +123,14 @@ public class CustomerController {
         Customer customer = new Customer();
         BeanUtils.copyProperties(customer, customerEditDto);
         customer.setId(customerEditDto.getId());
+        Customer exists = null;
         if (StringUtils.isEmpty(customerEditDto.getId())) {
             customer.setCode(billCodeBuilderService.getBillCode(BillType.CUSTOMER.getId()));
+            exists = customerService.getOne(new LambdaQueryWrapper<Customer>().eq(Customer::getCode, customer.getCode()).ne(Customer::getId, "-1"));
         } else {
             customer.setCode(customerEditDto.getCode());
+            exists = customerService.getOne(new LambdaQueryWrapper<Customer>().eq(Customer::getCode, customer.getCode()).ne(Customer::getId, customer.getId()));
         }
-        Customer exists = customerService.getOne(new LambdaQueryWrapper<Customer>().eq(Customer::getCode, customer.getCode()).ne(Customer::getId, customer.getId()));
         Assert.isNull(exists, "编号已存在！");
         customerService.saveOrUpdate(customer);
         CustomerDeliveryInfo cdi = new CustomerDeliveryInfo();
@@ -189,6 +203,18 @@ public class CustomerController {
     @ApiOperation(value = "通过ID查询客户", notes = "通过ID查询客户")
     public Result<?> queryById(@ApiParam(name = "id", value = "示例id", required = true) @RequestParam(name = "id", required = true) String id) {
         Customer customer = customerService.getById(id);
+        CustomerSource source = customerSourceService.getById(customer.getCustomerSourceId());
+        CustomerType type = customerTypeService.getById(customer.getCustomerTypeId());
+        customer.setCustomerSource(null != source ? source.getName() : null);
+        customer.setCustomerType(null != type ? type.getName() : null);
+        customer.setRowStsName(EnumConvertUtils.getName(RowSts.class, customer.getRowSts()));
+        if (null != customer.getGender()) {
+            customer.setGenderName(iSysDictService.queryDictTextByKey("sex", customer.getGender()));
+        }
+        if (StringUtils.isNotBlank(customer.getDiscountTypeId())) {
+            customer.setDiscountType(iSysDictService.queryDictTextByKey("discount_type", customer.getDiscountTypeId()));
+        }
+        customer.setFullAddress(getFullAddress(customer.getProvince(), customer.getCity(), customer.getDistrict(), customer.getAddress()));
         return Result.ok(customer);
     }
 
@@ -196,6 +222,33 @@ public class CustomerController {
     @ApiModelProperty(value = "查询收货信息", notes = "查询收货信息")
     public Result<?> getDeliveryInfo(CustomerDeliveryInfo info, HttpServletRequest req){
         CustomerDeliveryInfo result = customerDeliveryInfoService.getOne(QueryGenerator.initQueryWrapper(info, req.getParameterMap()));
+        result.setCdiDefaultTypeName(iSysDictService.queryDictTextByKey("delivery_type", result.getCdiDefaultType()));
+        result.setCdiFullAddress(getFullAddress(result.getCdiProvince(), result.getCdiCity(), result.getCdiDistrict(), result.getCdiAddress()));
+        if (StringUtils.isNotBlank(result.getCdiLogistics())){
+            LogisticsCompany lc = logisticsCompanyService.getById(result.getCdiLogistics());
+            result.setCdiLogisticsName(lc.getName());
+        }
         return Result.ok(result);
+    }
+
+    private String getFullAddress(String provinceId, String cityId, String districtId, String address) {
+
+        StringBuilder stringBuilder = new StringBuilder();
+        if (StringUtils.isNotBlank(provinceId)) {
+            Area province = areaService.getById(provinceId);
+            stringBuilder.append(null != province ? province.getName() : "");
+        }
+        if (StringUtils.isNotBlank(cityId)) {
+            Area city = areaService.getById(cityId);
+            stringBuilder.append(null != city ? city.getName() : "");
+        }
+        if (StringUtils.isNotBlank(districtId)) {
+            Area district = areaService.getById(districtId);
+            stringBuilder.append(null != district ? district.getName() : "");
+        }
+        if (StringUtils.isNotBlank(address)) {
+            stringBuilder.append(address);
+        }
+        return stringBuilder.toString();
     }
 }

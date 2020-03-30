@@ -121,7 +121,6 @@
             let formData = Object.assign(this.model, values);
             let obj;
             console.log(formData)
-            debugger
             if(!this.model.id){
               obj=addExpense(formData);
             }else{

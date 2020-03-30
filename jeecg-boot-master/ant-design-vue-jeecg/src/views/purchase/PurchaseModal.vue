@@ -13,24 +13,24 @@
                     </a-form-item>
                 </a-col>
                 <a-col :span="12">
-                    <a-form-item label="仓库" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                        <a-select v-decorator="['warehouseId', {}]" placeholder="请选择仓库">
-                            <a-select-option v-for="(item, key) in dictOptions.warehouse" :key="key" :value="item.id">
-                                {{ item.name }}
-                            </a-select-option>
-                        </a-select>
-                    </a-form-item>
+                  <a-form-item label="采购单号" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                    <a-input v-decorator="[ 'code', {}]" :readOnly="true" placeholder="后台自动生成"></a-input>
+                  </a-form-item>
                 </a-col>
             </a-row>
             <a-row>
+              <a-col :span="12">
+                <a-form-item label="仓库" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                  <a-select v-decorator="['warehouseId', {}]" placeholder="请选择仓库">
+                    <a-select-option v-for="(item, key) in dictOptions.warehouse" :key="key" :value="item.id">
+                      {{ item.name }}
+                    </a-select-option>
+                  </a-select>
+                </a-form-item>
+              </a-col>
                 <a-col :span="12">
                     <a-form-item label="结算账户" :labelCol="labelCol" :wrapperCol="wrapperCol">
                         <a-input v-decorator="[ 'account', {}]" placeholder="请输入结算账户" />
-                    </a-form-item>
-                </a-col>
-                <a-col :span="12">
-                    <a-form-item label="备注" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                        <a-input v-decorator="[ 'content', {}]" placeholder="请输入备注"></a-input>
                     </a-form-item>
                 </a-col>
             </a-row>
@@ -44,24 +44,33 @@
                     <a-form-item label="总金额" :labelCol="labelCol" :wrapperCol="wrapperCol">
                         <a-input-number v-decorator="[ 'totalamount', {}]" placeholder="请输入总金额" style="width:100%"/>
                         <div style="display:none;">
-                            <a-input v-decorator="[ 'id', {}]" placeholder="实体主键" type="hidden" /> 
-                            <a-input v-decorator="[ 'code', {}]" placeholder="代码" type="hidden"/>                        
+                            <a-input v-decorator="[ 'id', {}]" placeholder="实体主键" type="hidden" />
+                            <a-input v-decorator="[ 'code', {}]" placeholder="代码" type="hidden"/>
                         </div>
                     </a-form-item>
                 </a-col>
             </a-row>
+          <a-row>
+            <a-col :span="24">
+              <a-form-item label="备注" :labelCol="hlabelCol" :wrapperCol="hwrapperCol">
+                <a-input v-decorator="[ 'content', {}]" placeholder="请输入备注"></a-input>
+              </a-form-item>
+            </a-col>
+          </a-row>
             <a-row>
                 <a-col :span="24">
                     <a-card>
                         <form :autoFormCreate="(form) => this.form = form">
-                            <a-table :columns="columns" :dataSource="tabledata" :pagination="false" rowKey="id">
-                                <template v-for="(col, i) in ['mtlId', 'unitId','quantity', 'price', 'discount', 'amount', 'content', 'action']" :slot="col" slot-scope="text, record, index">
-                                    <a-select v-if="['mtlId','unitId'].indexOf(columns[i].dataIndex) > -1" v-decorator="[record[columns[i].dataIndex], {}]" 
-                                        @change="e => handleChange(e, record.key, col)" :placeholder="'请选择'+columns[i].title" :value="record[columns[i].dataIndex]">
+                            <a-table :columns="columns" :dataSource="tabledata" :pagination="false" rowKey="id" ref="mtltable">
+                                <template v-for="(col, i) in ['mtlId', 'unitId','quantity', 'price', 'discount', 'amount', 'content', 'action']" :slot="col" clearable slot-scope="text, record, index">
+                                    <a-select v-if="['mtlId','unitId'].indexOf(columns[i].dataIndex) > -1" v-decorator="[record[columns[i].dataIndex], {}]" showSearch
+                                              optionFilterProp="children" notFoundContent="无法找到，输入关键词回车[Enter]搜索试试" @keyup.enter.native="e => searchData(e, col, record.key)"
+                                              @change="e => handleChange(e, record.key, col)" :placeholder="'请选择'+columns[i].title" :value="record[columns[i].dataIndex]" ref="sel">
+                                        <a-select-option value="">请选择</a-select-option>
                                         <a-select-option v-for="(item, key) in columns[i].list" :key="key" :value="item.id">
                                             {{ item.name }}
                                         </a-select-option>
-                                    </a-select>                                    
+                                    </a-select>
                                     <a-input :key="col" v-else style="margin: -5px 0" :value="text" :placeholder="columns[i].title" @change="e => handleChange(e.target.value, record.key, col)" />
                                     <!-- <template v-else>{{ text }}</template> -->
                                 </template>
@@ -82,7 +91,7 @@
                                         </span>
                                     </template>
                                     <span v-else>
-                                        <!-- <a @click="toggle(record.key)">编辑</a> 
+                                        <!-- <a @click="toggle(record.key)">编辑</a>
                                         <a-divider type="vertical" /> -->
                                         <a-popconfirm title="是否要删除此行？" :data-id="record.id" @confirm="remove(record.key,record.id)">
                                             <a>删除</a>
@@ -105,17 +114,17 @@
               </a-col>
             </a-row>
         </a-form>
-        
-        
+
+
     </a-card>
     <footer-tool-bar>
-        <a-button type="primary" @click="handleOk">保存</a-button>
+        <a-button v-if="unEditable" type="primary" @click="handleOk">保存</a-button>
         <router-view :key="this.$route.path"></router-view>
         <a-button :style="{marginLeft:'20px'}" @click="backToList">返回</a-button>
     </footer-tool-bar>
-    
+
 </div>
-    
+
 </template>
 
 <script>
@@ -132,7 +141,7 @@ import {
     getVendorList,
     ajaxGetDictItems,
     getWarehouseList,
-    getMaterialList,
+    searchMaterial,
     getMaterialUnitList,
     purchasequeryById,
     purchasedetailDelete
@@ -168,6 +177,14 @@ export default {
                 sm: {
                     span: 16
                 }
+            },
+            hlabelCol: {
+              xs: { span: 24 },
+              sm: { span: 2 },
+            },
+            hwrapperCol: {
+              xs: { span: 24 },
+              sm: { span: 16 },
             },
             confirmLoading: false,
             validatorRules: {
@@ -266,14 +283,15 @@ export default {
                     }
                 }
             ],
-            tabledata: []
+            tabledata: [],
+            unEditable: true
         }
     },
     created() {
         this.initDictConfig();
         this.newMember();
         this.add();
-     
+
     },
     watch: {
         // 如果 `data` 发生改变，这个函数就会运行
@@ -283,11 +301,12 @@ export default {
             this.tabledata.forEach(function(target){
                 if (target.quantity && target.price) {
                     if (target.discount)
-                        datatotalamount += parseFloat(target.quantity) * parseFloat(target.price) - parseFloat(target.discount);
+                        datatotalamount += parseFloat(target.quantity).toFixed(2) * parseFloat(target.price).toFixed(2) - parseFloat(target.discount).toFixed(2);
                     else
-                        datatotalamount += parseFloat(target.quantity) * parseFloat(target.price);
+                        datatotalamount += parseFloat(target.quantity) * parseFloat(target.price).toFixed(2);
                 }
             });
+            datatotalamount = Math.round(datatotalamount*100)/100;
             this.model.totalamount = datatotalamount;
             this.form.setFieldsValue({ 'totalamount' :datatotalamount })
         }
@@ -319,7 +338,7 @@ export default {
                 }
             });
             //产品
-            getMaterialList('').then((res) => {
+            searchMaterial('').then((res) => {
                 if (res.success) {
                     if (res.result && res.result.length > 0) {
                         res.result.forEach(function (option) {
@@ -350,7 +369,7 @@ export default {
         add() {
             if(this.$route.params.id){
                 purchasequeryById({"id":this.$route.params.id}).then((res)=>{
-                    if (res.result) {                        
+                    if (res.result) {
                         if(res.result.detaillist){
                             this.tabledata = res.result.detaillist;
                             for(let i=0;i < this.tabledata.length ; i++){
@@ -379,51 +398,57 @@ export default {
             this.visible = false
         },
         handleOk() {
-            const that = this
-            // 触发表单验证
-            this.form.validateFields((err, values) => {
-                if (!err) {
-                    that.confirmLoading = true
-                    let httpurl = ''
-                    let method = ''
-                    if (!this.model.id) {
-                        httpurl += this.url.add
-                        method = 'post'
-                    } else {
-                        httpurl += this.url.edit
-                        method = 'put'
-                    }
-                    let formData = Object.assign(this.model, values)
-                    formData.detaillist = that.tabledata;
-                    console.log('表单提交数据', formData)
-                    httpAction(httpurl, formData, method)
-                        .then(res => {
-                            console.log(res);
-                            if (res.success) {
-                                that.$message.success(res.message)
-                                that.$emit('ok')
-                                that.hasaddmain = true;
+          const that = this
+          // 触发表单验证
 
-                                if (!that.model.id) {
-                                    that.$refs.inventorymodalForm.add();
-                                } else {
-                                    that.$refs.inventorymodalForm.edit(res.result.inventory);
-                                }                                
-                                that.$refs.inventorymodalForm.disableSubmit = false;
+          this.form.validateFields((err, values) => {
+              if (!err) {
+                  that.confirmLoading = true
+                  let httpurl = ''
+                  let method = ''
+                  if (!this.model.id) {
+                      httpurl += this.url.add
+                      method = 'post'
+                  } else {
+                      httpurl += this.url.edit
+                      method = 'put'
+                  }
+                  let formData = Object.assign(this.model, values)
+                  formData.detaillist = that.tabledata;
+                  console.log('表单提交数据', formData)
+                  httpAction(httpurl, formData, method)
+                      .then(res => {
+                          console.log(res);
+                          if (res.success) {
+                              that.$message.success(res.message)
+                              that.$emit('ok')
+                              that.hasaddmain = true;
+                              that.$emit('close')
 
-                                // this.$router.replace({
-                                //     path: '/purchase/PurchaseList'
-                                // });
-                            } else {
-                                that.$message.warning(res.message)
-                            }
-                        })
-                        .finally(() => {
-                            that.confirmLoading = false
-                            that.close()
-                        })
-                }
-            })
+                              /*
+                              if (!that.model.id) {
+                                  that.$refs.inventorymodalForm.add();
+                              } else {
+                                  that.$refs.inventorymodalForm.edit(res.result.inventory);
+                              }
+                              that.$refs.inventorymodalForm.disableSubmit = false;*/
+                              //
+
+                              // this.$router.replace({
+                              //     path: '/purchase/PurchaseList'
+                              // });
+                          } else {
+                              that.$message.warning(res.message)
+                          }
+                      })
+                      .finally(() => {
+                          that.confirmLoading = false
+                          that.close()
+                          that.$parent.closeRouteViewTab(this.$route.path)
+                          that.$router.push({ path:'/purchase/PurchaseList' });
+                      })
+              }
+          })
         },
         handleCancel() {
             this.close()
@@ -450,9 +475,9 @@ export default {
                 target[column] = value;
                 if (target.quantity && target.price) {
                     if (target.discount)
-                        target['amount'] = parseFloat(target.quantity) * parseFloat(target.price) - parseFloat(target.discount);
+                        target['amount'] = Math.round((parseFloat(target.quantity) * parseFloat(target.price) - parseFloat(target.discount)) * 100);
                     else
-                        target['amount'] = parseFloat(target.quantity) * parseFloat(target.price);
+                        target['amount'] = Math.round( (parseFloat(target.quantity) * parseFloat(target.price)) * 100)/100;
                 }
                 this.tabledata = newData
             }
@@ -480,11 +505,40 @@ export default {
             target.editable = false
             target.isNew = false
         },
-        backToList() {            
+        backToList() {
             // console.log(this.$route.matched);
             this.$route.matched.splice(this.$route.matched.length-1 ,1);
+            this.$parent.closeRouteViewTab(this.$route.fullPath)
             this.$router.replace({ path:'/purchase/PurchaseList' });
+        },
+        searchData(e, col, key) {
+          if (col === 'mtlId') {
+            const that = this;
+            searchMaterial({"keyword":e.target.valueOf().value}).then((res) => {
+              if (res.success) {
+                if (res.result && res.result.length > 0) {
+                  res.result.forEach(function (option) {
+                    option.value = option.id;
+                    option.text = option.name;
+                  })
+                }
+                that.columns[0].list = res.result;
+                that.$set(that.dictOptions, 0, that.columns[0])
+
+                const newData = [...this.tabledata]
+                const target = newData.filter(item => key === item.key)[0]
+                target.editable = true
+                that.tabledata = newData;
+                // this.$set(this.dictOptions, 'materiallist', res.result)
+              }
+            });
+          }
         }
+    },
+    mounted() {
+      if (this.$route.query.unEditable === false) {
+        this.unEditable = this.$route.query.unEditable;
+      }
     }
 }
 </script>

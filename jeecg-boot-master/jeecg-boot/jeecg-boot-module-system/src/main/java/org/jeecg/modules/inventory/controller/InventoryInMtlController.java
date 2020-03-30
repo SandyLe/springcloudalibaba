@@ -56,7 +56,7 @@ public class InventoryInMtlController {
     @ApiOperation(value = "添加入库单", notes = "添加入库单")
     public Result<?> add(@RequestBody InventoryInMtl inventoryInMtl) {
         if (StringUtils.isEmpty(inventoryInMtl.getId())) {
-            inventoryInMtl.setCode(billCodeBuilderService.getBillCode(BillType.STOCKING.getId()));
+            inventoryInMtl.setCode(billCodeBuilderService.getBillCode(BillType.STOREIN.getId()));
         }
         InventoryInMtl existCode = inventoryInMtlService.getOne(new LambdaQueryWrapper<InventoryInMtl>().eq(InventoryInMtl::getCode, inventoryInMtl.getCode()).ne(InventoryInMtl::getId, inventoryInMtl.getId()));
         Assert.isNull(existCode, "单号已存在！");
@@ -103,7 +103,7 @@ public class InventoryInMtlController {
         Collection<MaterialUnit> units = materialUnitService.listByIds(unitIds);
         Map<String, String> materialMap = materials.stream().collect(Collectors.toMap(Material::getId, Material::getName));
         Map<String, String> mtlCodeMap = materials.stream().collect(Collectors.toMap(Material::getId, Material::getCode));
-        Map<String, String> specMap = materials.stream().collect(Collectors.toMap(Material::getId, Material::getSpecification));
+        Map<String, String> specMap = materials.stream().filter(o->StringUtils.isNotBlank(o.getSpecification())).collect(Collectors.toMap(Material::getId, Material::getSpecification));
         Map<String, String> barCodeMap = materials.stream().collect(Collectors.toMap(Material::getId, Material::getBarCode));
         Map<String, String> unitMap = units.stream().collect(Collectors.toMap(MaterialUnit::getId, MaterialUnit::getName));
         inventoryInMtlList.stream().forEach(o->{

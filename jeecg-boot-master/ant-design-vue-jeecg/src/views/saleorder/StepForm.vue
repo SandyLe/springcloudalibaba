@@ -52,7 +52,9 @@
         }
       },
       finish () {
+        this.$route.query.unEditable = true
         this.currentTab = 0
+        this.$parent.closeRouteViewTab(this.$route.fullPath)
       }
     }
   }

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.purchase.mapper.PurchaseMtlMapper">
+
+    <delete id="removeBySourceId">
+        DELETE FROM sl_purchase_mtl WHERE source_id = #{sourceId}
+    </delete>
+
+    <delete id="removeBySourceIds">
+        DELETE FROM sl_purchase_mtl WHERE source_id in (
+            <foreach item="item" index="index" collection="sourceIds" separator=",">
+                #{item}
+            </foreach>
+        )
+    </delete>
+
+    <select id="queryBySourceId" resultType="org.jeecg.modules.purchase.entity.PurchaseMtl">
+        SELECT * FROM sl_purchase_mtl WHERE source_id = #{sourceId}
+    </select>
+
+</mapper>

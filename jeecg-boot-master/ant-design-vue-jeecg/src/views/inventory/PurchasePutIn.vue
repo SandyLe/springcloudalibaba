@@ -6,9 +6,9 @@
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
           <a-col :md="6" :sm="12">
-            <a-form-item label="账号">
+            <a-form-item label="原单编号">
               <!--<a-input placeholder="请输入账号查询" v-model="queryParam.username"></a-input>-->
-              <j-input placeholder="输入账号模糊查询" v-model="queryParam.username"></j-input>
+              <j-input placeholder="输入原单编号模糊查询" v-model="queryParam.sourceCode"></j-input>
             </a-form-item>
           </a-col>
 
@@ -50,37 +50,39 @@
         <span slot="nameAction" slot-scope="text, record">
           <a @click="goDetail(record.mtlId)">{{record.material}}</a>
         </span>
-        <span slot="action" v-if="record.rowSts !== 6" slot-scope="text, record">
-          <a @click="handleEdit(record)">编辑</a>
+        <span slot="action" v-if="record.billStatus !== -1" slot-scope="text, record">
+          <a v-if="record.billStatus !== 12" @click="handleStocking(record)">入库</a>
           <a-divider type="vertical" />
-          <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
-            <a>删除</a>
-          </a-popconfirm>
-          <a-divider type="vertical" />
-          <a v-if="record.rowSts !== 6" @click="handleStocking(record)">盘点</a>
+          <a @click="viewInventoryLog(record)">入库记录</a>
         </span>
       </a-table>
     </div>
 
     <stocking-modal ref="modalForm" @ok="modalFormOk"></stocking-modal>
+    <purchase-put-in-modal ref="purchasePutInModal" :putInMtls="putInMtls" @ok="modalFormOk"></purchase-put-in-modal>
+    <inventory-log-modal ref="inventoryLogModal" :inventoryLogs="inventoryLogs" @ok="modalFormOk"></inventory-log-modal>
   </a-card>
 </template>
 
 <script>
-  import StockingModal from './StockingModal'
+  import InventoryLogModal from './InventoryLogModal'
+  import PurchasePutInModal from './PurchasePutInModal'
   import JInput from '@/components/jeecg/JInput'
   import {JeecgListMixin} from '@/mixins/JeecgListMixin'
-  import {handleStocking} from '@/api/api'
+  import {handleStocking, viewInventoryLog, getPutInMtls} from '@/api/api'
   export default {
     name: "PurchasePutIn",
     mixins: [JeecgListMixin],
     components: {
       JInput,
-      StockingModal
+      InventoryLogModal,
+      PurchasePutInModal
     },
     data () {
       return {
         queryParam:{},
+        putInMtls: [],
+        inventoryLogs: [],
         columns: [
 
           {
@@ -99,25 +101,29 @@
             dataIndex: 'warehouse'
           },
           {
-            title: '产品',
+            title: '入库单号',
             align:"center",
-            dataIndex: '',
-            scopedSlots: { customRender: 'nameAction' }
+            dataIndex: 'code'
           },
           {
-            title: '盘点数量',
+            title: '原单类型',
             align:"center",
-            dataIndex: 'stockAmount'
+            dataIndex: 'sourceBillTypeName'
           },
           {
-            title: '盘点前数量',
+            title: '原单编号',
             align:"center",
-            dataIndex: 'beforeAmount'
+            dataIndex: 'sourceCode'
           },
           {
-            title: '单位',
+            title: '入库时间',
             align:"center",
-            dataIndex: 'unit'
+            dataIndex: 'putInTime'
+          },
+          {
+            title: '状态',
+            align:"center",
+            dataIndex: 'billStatusName'
           },
           {
             title: '操作',
@@ -127,11 +133,11 @@
           }
         ],
         url: {
-          list: "/stocking/getPage",
-          delete: "/stocking/delete",
-          deleteBatch: "/stocking/deleteBatch",
-          exportXlsUrl: "/stocking/exportXls",
-          importExcelUrl: "/stocking/importExcel",
+          list: "/inventoryIn/getPage",
+          delete: "/inventoryIn/delete",
+          deleteBatch: "/inventoryIn/deleteBatch",
+          exportXlsUrl: "/inventoryIn/exportXls",
+          importExcelUrl: "/inventoryIn/importExcel",
         },
       }
     },
@@ -142,35 +148,28 @@
         }
       },
       handleStocking (record) {
-        let that = this;
-        let content = "是否确认盘点 " + record.warehouse + " 中 " + record.material + " 库存数量？"
-        if(record.beforeAmount !== record.stockAmount){
-          content = "❌ 盘点数量与库存数量有差距，" + content;
-        } else {
-          content = "✅" + content;
+        this.putInMtls = [];
+        if (record.id && record.sourceId) {
+          getPutInMtls({sourceId: record.sourceId, id:record.id}).then((res) => {
+            if (res.success) {
+              this.putInMtls = res.result;
+            }
+          })
         }
-        this.$confirm({
-          title: "确认盘点",
-          content: content,
-          onOk: function () {
-            handleStocking({id:record.id}).then((res) => {
-              if (res.success) {
-                that.$message.success(res.message);
-                that.loadData();
-                that.onClearSelected();
-              } else {
-                that.$message.warning(res.message);
-              }
-            })
-          }
-        });
-
+        this.$refs.purchasePutInModal.edit(record);
+        this.$refs.purchasePutInModal.title = "待入库列表";
       },
-      searchQuery () {
-
-      },
-      searchReset () {
-
+      viewInventoryLog (record) {
+        this.inventoryLogs = [];
+        if (record.id && record.sourceId) {
+          viewInventoryLog({sourceId: record.sourceId}).then((res) => {
+            if (res.success) {
+              this.inventoryLogs = res.result;
+            }
+          })
+        }
+        this.$refs.inventoryLogModal.edit(record);
+        this.$refs.inventoryLogModal.title = "入库记录";
       }
     }
   }

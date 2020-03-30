@@ -6,7 +6,7 @@
             <a-row :gutter="24">
                 <a-col :md="6" :sm="8">
                     <a-form-item label="供应商">
-                        <a-select v-decorator="['queryParam.vendorId', {}]" placeholder="请输入供应商">
+                        <a-select v-model="queryParam.vendorId" placeholder="请输入供应商">
                             <a-select-option value="">请选择</a-select-option>
                             <a-select-option v-for="(item, key) in dictOptions.vendorId" :key="key" :value="item.id">
                                 {{ item.name }}
@@ -16,7 +16,7 @@
                 </a-col>
                 <a-col :md="12" :sm="16">
                     <a-form-item label="仓库">
-                        <a-select v-decorator="['queryParam.warehouseId', {}]" placeholder="请输入仓库">
+                        <a-select v-model="queryParam.warehouseId" placeholder="请输入仓库">
                             <a-select-option value="">请选择</a-select-option>
                             <a-select-option v-for="(item, key) in dictOptions.warehouse" :key="key" :value="item.id">
                                 {{ item.name }}
@@ -76,6 +76,14 @@
 
         <a-table ref="table" size="middle" bordered rowKey="id" :columns="columns" :dataSource="dataSource" :pagination="ipagination" :loading="loading" :rowSelection="{fixed:true,selectedRowKeys: selectedRowKeys, onChange: onSelectChange}" @change="handleTableChange">
 
+            <span slot="nameAction" slot-scope="text, record">
+              <a-tooltip placement="topLeft">
+                <template slot="title">
+                  <span>{{record.code}}</span>
+                </template>
+                <a @click="goDetail(record.id)">{{record.code}}</a>
+              </a-tooltip>
+            </span>
             <template slot="htmlSlot" slot-scope="text">
                 <div v-html="text"></div>
             </template>
@@ -91,9 +99,15 @@
             </template>
 
             <span slot="action" slot-scope="text, record">
-                <a @click="diyhandleEdit" :data-id="record.id">编辑</a>
+                <a v-if="record.inventoryin!=null&&record.inventoryin.billStatus==1" @click="handleinventoryout(record)" :data-id="record.id">退货</a>
+                <a-divider type="vertical" v-if="record.inventoryin!=null&&record.inventoryin.billStatus==1"/>
 
-                <a-divider type="vertical" />
+                <a v-if="record.inventoryin!=null" @click="handleinventoryin(record.inventoryin)" :data-id="record.id">入库单</a>
+                <a-divider type="vertical" v-if="record.inventoryin!=null"/>
+
+                <a v-if="record.billStatus<11" @click="diyhandleEdit" :data-id="record.id">编辑</a>
+                <a-divider type="vertical" v-if="!(record.inventoryin!=null&&record.inventoryin.billStatus==1)"/>
+
                 <a-dropdown>
                     <a class="ant-dropdown-link">更多
                         <a-icon type="down" /></a>
@@ -109,26 +123,19 @@
 
         </a-table>
     </div>
-
-    <!-- <purchases-modal ref="modalForm" @ok="modalFormOk"></purchases-modal> -->
+    <inventory-modal ref="inventorymodalForm" ></inventory-modal>
+    <inventory-out-modal ref="inventoryOutmodalForm" ></inventory-out-modal>
 </a-card>
 </template>
 
 <script>
-import {
-    JeecgListMixin
-} from '@/mixins/JeecgListMixin'
-// import PurchasesModal from './PurchaseModal'
+import { JeecgListMixin } from '@/mixins/JeecgListMixin'
+import InventoryModal from '../inventory/InventoryInModal'
+import InventoryOutModal from '../inventory/InventoryOutModal'
 import JDictSelectTag from '@/components/dict/JDictSelectTag.vue'
-import {
-    filterMultiDictText
-} from '@/components/dict/JDictSelectUtil'
+import { filterMultiDictText } from '@/components/dict/JDictSelectUtil'
 import JDate from '@/components/jeecg/JDate.vue'
-import {
-    getVendorList,
-    ajaxGetDictItems,
-    getWarehouseList
-} from '@/api/api'
+import { getVendorList, ajaxGetDictItems, getWarehouseList } from '@/api/api'
 
 export default {
     name: "PurchaseList",
@@ -136,7 +143,8 @@ export default {
     components: {
         JDictSelectTag,
         JDate,
-        // PurchasesModal
+        InventoryModal,
+        InventoryOutModal
     },
     data() {
         return {
@@ -152,6 +160,12 @@ export default {
                     customRender: function (t, r, index) {
                         return parseInt(index) + 1;
                     }
+                },
+                {
+                  title: '采购单号',
+                  align: "center",
+                  dataIndex: '',
+                  scopedSlots: { customRender: 'nameAction' }
                 },
                 {
                     title: '供应商',
@@ -205,9 +219,9 @@ export default {
                     // }
                 },
                 {
-                    title: '备注',
+                    title: '状态',
                     align: "center",
-                    dataIndex: 'content'
+                    dataIndex: 'billStatusName'
                 },
                 {
                     title: '操作',
@@ -219,7 +233,7 @@ export default {
                 }
             ],
             url: {
-                list: "/purchase/getPaged",
+                list: "/purchase/getPage",
                 delete: "/purchase/delete",
                 deleteBatch: "/purchase/deleteBatch",
                 exportXlsUrl: "/purchase/exportXls",
@@ -262,11 +276,32 @@ export default {
                 }
             });
         },
-        diyhandleEdit(e){ 
+        diyhandleEdit(e){
             if(e.target.dataset.id)
                 this.$router.replace({ path:'/purchase/PurchaseModal/' + e.target.dataset.id });
             else
                 this.$router.replace({ path:'/purchase/PurchaseModal/' });
+        },
+        goDetail(id) {
+          this.$router.replace({ path:'/purchase/PurchaseModal/' + id, query: {"unEditable": false} });
+        },
+        handleinventoryin(data){
+            var that = this;
+            that.$refs.inventorymodalForm.edit(data);
+            that.$refs.inventorymodalForm.disableSubmit = true;
+        },
+        handleinventoryout(data){
+            var that = this;
+            let model = {};
+            model.sourceId = data.id;
+            if(data.inventoryOut && data.inventoryOut.putOutTime)
+            {
+                model.id = data.inventoryOut.id;
+                model.putOutTime = data.inventoryOut.putOutTime;
+            }
+
+            that.$refs.inventoryOutmodalForm.edit(model);
+            that.$refs.inventoryOutmodalForm.disableSubmit = true;
         }
     }
 }

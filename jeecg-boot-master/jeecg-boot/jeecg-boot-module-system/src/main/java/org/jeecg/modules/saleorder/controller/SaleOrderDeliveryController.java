@@ -13,8 +13,6 @@ import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.DictModel;
 import org.jeecg.modules.basic.entity.Customer;
-import org.jeecg.modules.basic.entity.Material;
-import org.jeecg.modules.basic.entity.MaterialUnit;
 import org.jeecg.modules.basic.entity.Warehouse;
 import org.jeecg.modules.basic.enums.BillStatus;
 import org.jeecg.modules.basic.enums.EnumConvertUtils;
@@ -22,7 +20,6 @@ import org.jeecg.modules.basic.service.CustomerService;
 import org.jeecg.modules.basic.service.MaterialService;
 import org.jeecg.modules.basic.service.MaterialUnitService;
 import org.jeecg.modules.basic.service.WarehouseService;
-import org.jeecg.modules.saleorder.dto.SaleOrderDeliveryMtl;
 import org.jeecg.modules.saleorder.entity.SaleOrderDeliveryInfo;
 import org.jeecg.modules.saleorder.service.SaleOrderDeliveryInfoService;
 import org.jeecg.modules.system.service.ISysDictService;
@@ -172,54 +169,5 @@ public class SaleOrderDeliveryController {
     public Result<?> queryById(@ApiParam(name = "id", value = "示例id", required = true) @RequestParam(name = "id", required = true) String id) {
         SaleOrderDeliveryInfo saleOrderDeliveryInfo = saleOrderDeliveryInfoService.getById(id);
         return Result.ok(saleOrderDeliveryInfo);
-    }
-
-
-    /**
-     * 获取待发货产品列表
-     *
-     * @param id
-     * @param sourceId
-     * @return
-     */
-    @ApiOperation(value = "获取销售订单待发货产品列表", notes = "获取销售订单待发货产品列表")
-    @GetMapping(value = "/mtl/getList")
-    public Result<?> getList(@ApiParam(name = "id", value = "发货信息ID", required = true) @RequestParam(name = "id", required = true) String id,
-                             @ApiParam(name = "sourceId", value = "原单id", required = true) @RequestParam(name = "sourceId", required = true) String sourceId) {
-        List<SaleOrderDeliveryMtl> list = saleOrderDeliveryInfoService.getDeliveryMtlList(id, sourceId);
-        if (CollectionUtils.isNotEmpty(list)) {
-            List<String> mtlIds = list.stream().map(SaleOrderDeliveryMtl::getMtlId).collect(Collectors.toList());
-            List<String> unitIds = list.stream().map(SaleOrderDeliveryMtl::getUnitId).collect(Collectors.toList());
-            Collection<Material> materials = materialService.listByIds(mtlIds);
-            Collection<MaterialUnit> units = materialUnitService.listByIds(unitIds);
-            Map<String, String> mtlNameMap = materials.stream().collect(Collectors.toMap(Material::getId, Material::getName));
-            Map<String, String> mtlCodeMap = materials.stream().collect(Collectors.toMap(Material::getId, Material::getCode));
-            Map<String, String> mtlSpectxMap = materials.stream().collect(Collectors.toMap(Material::getId, Material::getSpecification));
-            Map<String, String> unitMap = units.stream().collect(Collectors.toMap(MaterialUnit::getId, MaterialUnit::getName));
-            list.stream().forEach(o->{
-                o.setUnit(unitMap.get(o.getUnitId()));
-                o.setMtl(mtlNameMap.get(o.getMtlId()));
-                o.setMtlCode(mtlCodeMap.get(o.getMtlId()));
-                o.setSpecification(mtlSpectxMap.get(o.getMtlId()));
-            });
-        }
-        return Result.ok(list);
-    }
-
-
-    /**
-     * 修改
-     *
-     * @param mtls
-     * @return
-     */
-    @PostMapping(value = "/mtls/stockout")
-    @AutoLog(value = "修改销售订单发货信息")
-    @ApiOperation(value = "修改销售订单发货信息", notes = "修改销售订单发货信息")
-    public Result<?> edit(@RequestBody List<SaleOrderDeliveryMtl> mtls){
-        if (CollectionUtils.isNotEmpty(mtls)) {
-            saleOrderDeliveryInfoService.stockOut(mtls);
-        }
-        return Result.ok();
     }
 }

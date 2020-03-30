@@ -27,7 +27,7 @@
           </a-select>
         </detail-list-item>
         <detail-list-item term="客户编码">{{customer.code}}</detail-list-item>
-        <detail-list-item term="状态">{{customer.rowSts}}2</detail-list-item>
+        <detail-list-item term="状态">{{customer.rowSts}}</detail-list-item>
         <detail-list-item term="客户类型">{{customer.customerTypeId}}</detail-list-item>
         <detail-list-item term="客户来源">{{customer.customerSourceId}}</detail-list-item>
         <detail-list-item term="性别">{{customer.gender}}</detail-list-item>
@@ -111,7 +111,6 @@
           getCustomerOne({id:this.$route.query.id}).then((res) => {
             if (res.success) {
               this.customer = res.result;
-              debugger
             }
           })
           getCustomerTypeList().then((res) => {
@@ -125,12 +124,10 @@
     create: {
       '$route' (to, from) {
         console.log(this.$route.query.id)
-        debugger
         if (this.$route.query.id) {
           getCustomerOne({id:this.$route.query.id}).then((res) => {
             if (res.success) {
               this.customer = res.result;
-              debugger
             }
           })
 
@@ -154,7 +151,6 @@
         getCustomerOne({id:this.$route.query.id}).then((res) => {
           if (res.success) {
             this.customer = res.result;
-            debugger
           }
         })
 

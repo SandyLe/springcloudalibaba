@@ -115,7 +115,7 @@ public class StockingController {
         Collection<MaterialUnit> units = materialUnitService.listByIds(unitIds);
         Map<String, String> materialMap = materials.stream().collect(Collectors.toMap(Material::getId, Material::getName));
         Map<String, String> mtlCodeMap = materials.stream().collect(Collectors.toMap(Material::getId, Material::getCode));
-        Map<String, String> specMap = materials.stream().collect(Collectors.toMap(Material::getId, Material::getSpecification));
+        Map<String, String> specMap = materials.stream().filter(o->StringUtils.isNotBlank(o.getSpecification())).collect(Collectors.toMap(Material::getId, Material::getSpecification));
         Map<String, String> barCodeMap = materials.stream().collect(Collectors.toMap(Material::getId, Material::getBarCode));
         Map<String, String> warehouseMap = warehouses.stream().collect(Collectors.toMap(Warehouse:: getId, Warehouse:: getName));
         Map<String, String> unitMap = units.stream().collect(Collectors.toMap(MaterialUnit::getId, MaterialUnit::getName));
@@ -201,9 +201,6 @@ public class StockingController {
     @ApiOperation(value = "通过ID查询盘点单", notes = "通过ID查询盘点单")
     public Result<?> handleStocking(@RequestBody Stocking stocking) {
         String msg = stockingService.handleStocking(stocking.getId());
-        if (StringUtils.isNotBlank(msg)){
-            return Result.error(msg);
-        }
         return Result.ok("操作成功！");
     }
 

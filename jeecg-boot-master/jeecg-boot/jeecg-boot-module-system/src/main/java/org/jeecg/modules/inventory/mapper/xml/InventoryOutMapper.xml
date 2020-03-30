@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.inventory.mapper.InventoryOutMapper">
+
+    <select id="queryBySourceId" resultType="org.jeecg.modules.inventory.entity.InventoryOut">
+        SELECT * FROM sl_inventory_out WHERE source_id = #{sourceId} AND row_sts = 1
+    </select>
+
+</mapper>

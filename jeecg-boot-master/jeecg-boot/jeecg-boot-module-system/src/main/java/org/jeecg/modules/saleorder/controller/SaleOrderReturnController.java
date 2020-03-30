@@ -17,9 +17,12 @@ import org.jeecg.modules.basic.entity.Customer;
 import org.jeecg.modules.basic.entity.Warehouse;
 import org.jeecg.modules.basic.enums.BillStatus;
 import org.jeecg.modules.basic.enums.BillType;
+import org.jeecg.modules.basic.enums.RowSts;
 import org.jeecg.modules.basic.service.BillCodeBuilderService;
 import org.jeecg.modules.basic.service.CustomerService;
 import org.jeecg.modules.basic.service.WarehouseService;
+import org.jeecg.modules.inventory.entity.InventoryIn;
+import org.jeecg.modules.inventory.service.InventoryInService;
 import org.jeecg.modules.saleorder.entity.SaleOrderReturn;
 import org.jeecg.modules.saleorder.service.SaleOrderReturnService;
 import org.jeecg.modules.system.service.ISysDictService;
@@ -29,10 +32,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -51,6 +51,8 @@ public class SaleOrderReturnController {
     private ISysDictService iSysDictService;
     @Autowired
     private BillCodeBuilderService billCodeBuilderService;
+    @Autowired
+    private InventoryInService inventoryInService;
     /**
      * 添加
      *
@@ -63,7 +65,7 @@ public class SaleOrderReturnController {
     public Result<?> add(@RequestBody SaleOrderReturn saleOrderReturn) {
 
         saleOrderReturn.setBillStatus(BillStatus.NEW.getId());
-        saleOrderReturn.setCode(billCodeBuilderService.getBillCode(BillType.SALEORDER.getId()));
+        saleOrderReturn.setCode(billCodeBuilderService.getBillCode(BillType.SALERETURNORDER.getId()));
         SaleOrderReturn exists = saleOrderReturnService.getOne(new LambdaQueryWrapper<SaleOrderReturn>().eq(SaleOrderReturn::getCode, saleOrderReturn.getCode()).ne(SaleOrderReturn::getId, saleOrderReturn.getId()));
         Assert.isNull(exists, "单号已存在！");
         saleOrderReturnService.save(saleOrderReturn);
@@ -145,21 +147,38 @@ public class SaleOrderReturnController {
         saleOrderReturn.setOtheramount(exists.getOtheramount());
         saleOrderReturn.setTotalamount(exists.getTotalamount());
         saleOrderReturnService.updateById(saleOrderReturn);
+        if (saleOrderReturn.getBillStatus() == BillStatus.REFUND.getId()) {
+
+            // 入库单主表
+            InventoryIn inventoryIn = new InventoryIn();
+            inventoryIn.setBillStatus(BillStatus.TOSTOCKIN.getId());
+            inventoryIn.setWarehouseId(saleOrderReturn.getWarehouseId());
+            inventoryIn.setPutInTime(new Date());
+            inventoryIn.setSourceCode(saleOrderReturn.getCode());
+            inventoryIn.setSourceId(saleOrderReturn.getId());
+            inventoryIn.setBillType(BillType.STOREIN.getId());
+            inventoryIn.setRowSts(RowSts.EFFECTIVE.getId());
+            inventoryIn.setSourceBillType(BillType.SALERETURNORDER.getId());
+            inventoryIn.setCode(billCodeBuilderService.getBillCode(BillType.STOREIN.getId()));
+            inventoryInService.saveToInventoryIn(inventoryIn);
+
+        }
+
         Result<Object> result = Result.ok();
         result.setResult(saleOrderReturn);
         return result;
     }
 
     /**
-     * 收款
+     * 退款
      *
      * @param saleOrderReturn
      * @return
      */
-    @PostMapping(value = "/checkout")
+    @PostMapping(value = "/checkin")
     @AutoLog(value = "修改销售退货")
     @ApiOperation(value = "修改销售退货", notes = "修改销售退货")
-    public Result<?> checkout(@RequestBody SaleOrderReturn saleOrderReturn){
+    public Result<?> checkin(@RequestBody SaleOrderReturn saleOrderReturn){
         if (null != saleOrderReturn.getTotalamount() && null != saleOrderReturn.getPayamount() && saleOrderReturn.getPayamount().compareTo(BigDecimal.ZERO) > 0) {
             saleOrderReturn.setBillStatus(saleOrderReturn.getTotalamount().compareTo(saleOrderReturn.getPayamount()) <= 0 ? BillStatus.PAID.getId() : BillStatus.PARTICIALPAYMENT.getId());
         }
@@ -206,6 +225,8 @@ public class SaleOrderReturnController {
     @ApiOperation(value = "通过ID查询销售退货", notes = "通过ID查询销售退货")
     public Result<?> queryById(@ApiParam(name = "id", value = "示例id", required = true) @RequestParam(name = "id", required = true) String id) {
         SaleOrderReturn saleOrderReturn = saleOrderReturnService.getById(id);
+        Customer customer = customerService.getById(saleOrderReturn.getCustomerId());
+        saleOrderReturn.setCustomer(null != customer ? customer.getName() : null);
         return Result.ok(saleOrderReturn);
     }
 

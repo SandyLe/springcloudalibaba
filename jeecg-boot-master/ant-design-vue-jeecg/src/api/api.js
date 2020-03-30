@@ -100,12 +100,18 @@ const addSaleOrder = (params)=>postAction("/saleOrder/add",params)
 const editSaleOrder = (params)=>postAction("/saleOrder/edit",params)
 const checkout = (params)=>postAction("/saleOrder/checkout",params)
 const getSaleOrderOne = (params)=>getAction("/saleOrder/getOne",params)
+const getSaleOrderByCode = (params)=>getAction("/saleOrder/getOneByCode",params)
 const delivery = (params)=>postAction("/saleOrder/delivery",params)
+const disableSaleOrder = (params)=>postAction("/saleOrder/disable",params)
 const getSaleOrderDeliveryInfo = (params)=>getAction("/saleOrderDeliveryInfo/getList",params)
-const getDeliveryMtls = (params)=>getAction("/saleOrderDeliveryInfo/mtl/getList",params)
-const deliveryStockOut = (params)=>postAction("/saleOrderDeliveryInfo/mtls/stockout",params)
+const getDeliveryMtls = (params)=>getAction("/inventoryOut/mtl/getList",params)
+const getPutInMtls = (params)=>getAction("/inventoryIn/mtl/getList",params)
+const deliveryStockOut = (params)=>postAction("/inventoryOut/mtls/stockout",params)
+const putStockIn = (params)=>postAction("/inventoryIn/mtls/stockin",params)
 const addSaleMtlOrder = (params)=>postAction("/saleOrderMtl/add",params)
 const editSaleMtlOrder = (params)=>postAction("/saleOrderMtl/edit",params)
+const getlSaleMtlList = (params)=>getAction("/saleOrderMtl/getList",params)
+const getlSaleMtlOneByMtlId = (params)=>getAction("/saleOrderMtl/mtl/getOne",params)
 const addCustomerType = (params)=>postAction("/customerType/add",params)
 const editCustomerType = (params)=>postAction("/customerType/edit",params)
 const getCustomerTypeList = (params)=>getAction("/customerType/getList",params)
@@ -125,6 +131,7 @@ const addWarehouse = (params)=>postAction("/warehouse/add",params)
 const editWarehouse = (params)=>postAction("/warehouse/edit",params)
 const getWarehouseList = (params)=>getAction("/warehouse/getList",params)
 const getAreaList = (params)=>getAction("/area/getList",params)
+const getAreaOne = (params)=>getAction("/area/getOne",params)
 const getCustomerOne = (params)=>getAction("/customer/getOne",params)
 const saveCustomer = (params)=>postAction("/customer/save",params)
 const getCustomerList =  (params)=>getAction("/customer/getList",params)
@@ -136,6 +143,7 @@ const addMaterial = (params)=>postAction("/material/add",params)
 const editMaterial = (params)=>postAction("/material/edit",params)
 const getMaterialOne = (params)=>getAction("/material/getOne",params)
 const getMaterialList = (params)=>getAction("/material/getList",params)
+const searchMaterial = (params)=>getAction("/material/search",params)
 const getMaterialSelfUnitList = (params)=>getAction("/materialSelfUnit/getList",params)
 const addMaterialSelfUnit = (params)=>postAction("/materialSelfUnit/add",params)
 const editMaterialSelfUnit = (params)=>postAction("/materialSelfUnit/edit",params)
@@ -147,6 +155,8 @@ const editExpense = (params)=>postAction("/expense/edit",params)
 const getExpenseList = (params)=>getAction("/expense/getList",params)
 const addSaleOrderExpense = (params)=>postAction("/saleOrderExpense/add",params)
 const editSaleOrderExpense = (params)=>postAction("/saleOrderExpense/edit",params)
+const getSaleOrderExpenseList = (params)=>getAction("/saleOrderExpense/getList",params)
+const getSaleOrderExpenseOne = (params)=>getAction("/saleOrderExpense/expense/getOne",params)
 const addStocking = (params)=>postAction("/stocking/add",params)
 const editStocking = (params)=>postAction("/stocking/edit",params)
 const handleStocking = (params)=>postAction("/stocking/handleStocking",params)
@@ -163,8 +173,33 @@ const getAllUser = (params)=>getAction("/sys/user/getAll",params)
 
 //采购
 const purchasequeryById = (params)=>getAction("/purchase/queryById",params)
-const purchasedetailDelete = (params)=>deleteAction("/purchasedtl/delete",params)
-const inventoryInedit = (params)=>postAction("/inventoryIn/edit",params)
+const purchasedetailDelete = (params)=>deleteAction("/purchaseMtl/delete",params)
+const getPurchaseByCode = (params)=>getAction("/purchase/getOneByCode",params)//采购订单
+const getPurchaseMtlList = (params)=>getAction("/purchaseMtl/getList",params)//采购订单
+const getPurchaseMtlOne = (params)=>getAction("/purchaseMtl/getPurchaseMtlOne",params)//采购订单产品
+
+
+const inventoryInedit = (params)=>postAction("/inventoryIn/edit",params)  //入库单编辑
+const inventoryOutadd = (params)=>postAction("/inventoryOut/add",params)  //新增出库单
+
+const purchaseReturnQueryById = (params)=>getAction("/purchasereturn/queryById",params)
+const purchasereturnadd = (params)=>postAction("/purchasereturn/add",params)  //新增采购退货
+const purchasereturnedit = (params)=>putAction("/purchasereturn/edit",params)  //修改采购退货
+const purchaseReturnDetailDelete = (params)=>deleteAction("/purchaseReturnMtl/delete",params)
+const addLogisticsCompany = (params)=>postAction("/logisticsCompany/add",params)
+const editLogisticsCompany = (params)=>postAction("/logisticsCompany/edit",params)
+const getLogisticsCompanyList = (params)=>getAction("/logisticsCompany/getList",params)
+// 销售退货
+const addSaleOrderReturn = (params)=>postAction("/saleOrderReturn/add",params)
+const editSaleOrderReturn = (params)=>postAction("/saleOrderReturn/edit",params)
+const saleOrderReturncheckIn = (params)=>postAction("/saleOrderReturn/checkIn",params)
+const getSaleOrderReturnOne = (params)=>getAction("/saleOrderReturn/getOne",params)
+const addSaleMtlOrderReturn = (params)=>postAction("/saleOrderReturnMtl/add",params)
+const editSaleMtlOrderReturn = (params)=>postAction("/saleOrderReturnMtl/edit",params)
+const getSaleOrderReturnMtlList = (params)=>getAction("/saleOrderReturnMtl/getList",params)
+const addSaleOrderReturnExpense = (params)=>postAction("/saleOrderReturnExpense/add",params)
+const editSaleOrderReturnExpense = (params)=>postAction("/saleOrderReturnExpense/edit",params)
+
 
 export {
   // imgView,
@@ -217,6 +252,8 @@ export {
   addSaleOrder,
   editSaleOrder,
   getSaleOrderOne,
+  getSaleOrderByCode,
+  disableSaleOrder,
   addCustomerType,
   editCustomerType,
   getCustomerTypeList,
@@ -235,6 +272,7 @@ export {
   editWarehouse,
   getWarehouseList,
   getAreaList,
+  getAreaOne,
   saveCustomer,
   getCustomerOne,
   getDeliveryInfo,
@@ -251,11 +289,14 @@ export {
   addMaterialSelfUnit,
   editMaterialSelfUnit,
   getMaterialList,
+  searchMaterial,
   addMaterialPrice,
   editMaterialPrice,
   getCustomerList,
   addSaleMtlOrder,
   editSaleMtlOrder,
+  getlSaleMtlList,
+  getlSaleMtlOneByMtlId,
   getDiscountTypeList,
   getMtlPrice,
   addExpense,
@@ -263,9 +304,11 @@ export {
   getExpenseList,
   addSaleOrderExpense,
   editSaleOrderExpense,
+  getSaleOrderExpenseList,
   delivery,
   getSaleOrderDeliveryInfo,
   getDeliveryMtls,
+  getPutInMtls,
   addStocking,
   editStocking,
   handleStocking,
@@ -275,10 +318,32 @@ export {
   addBillCodeBuilder,
   editBillCodeBuilder,
   deliveryStockOut,
+  putStockIn,
   viewInventoryLog,
   purchasequeryById,
   purchasedetailDelete,
-  inventoryInedit
+  inventoryInedit,
+  inventoryOutadd,
+  purchasereturnadd,
+  purchasereturnedit,
+  getPurchaseByCode,
+  addLogisticsCompany,
+  editLogisticsCompany,
+  getLogisticsCompanyList,
+  addSaleOrderReturn,
+  editSaleOrderReturn,
+  saleOrderReturncheckIn,
+  getSaleOrderReturnOne,
+  addSaleMtlOrderReturn,
+  editSaleMtlOrderReturn,
+  getSaleOrderReturnMtlList,
+  getSaleOrderExpenseOne,
+  addSaleOrderReturnExpense,
+  editSaleOrderReturnExpense,
+  getPurchaseMtlList,
+  getPurchaseMtlOne,
+  purchaseReturnQueryById,
+  purchaseReturnDetailDelete
 }
 
 

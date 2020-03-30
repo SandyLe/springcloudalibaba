@@ -17,8 +17,8 @@
         :type="collapsed ? 'menu-unfold' : 'menu-fold'"
         @click.native="toggle"/>
 
-      <span v-if="device === 'desktop'">欢迎进入 Jeecg-Boot 企业级快速开发平台</span>
-      <span v-else>Jeecg-Boot</span>
+      <span v-if="device === 'desktop'">欢迎进入 WENJIANG-上海文疆商贸 企业ERP平台</span>
+      <span v-else>WJ-ERP</span>
 
       <user-menu :theme="theme"/>
     </div>

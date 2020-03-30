@@ -63,7 +63,7 @@ public class SysPermissionController {
 
 	/**
 	 * 加载数据节点
-	 * 
+	 *
 	 * @return
 	 */
 	@RequestMapping(value = "/list", method = RequestMethod.GET)
@@ -147,7 +147,7 @@ public class SysPermissionController {
 
 //	/**
 //	 * 查询用户拥有的菜单权限和按钮权限（根据用户账号）
-//	 * 
+//	 *
 //	 * @return
 //	 */
 //	@RequestMapping(value = "/queryByUser", method = RequestMethod.GET)
@@ -169,7 +169,7 @@ public class SysPermissionController {
 
 	/**
 	 * 查询用户拥有的菜单权限和按钮权限（根据TOKEN）
-	 * 
+	 *
 	 * @return
 	 */
 	@RequestMapping(value = "/getUserPermissionByToken", method = RequestMethod.GET)
@@ -202,7 +202,7 @@ public class SysPermissionController {
 			result.setResult(json);
 			result.success("查询成功");
 		} catch (Exception e) {
-			result.error500("查询失败:" + e.getMessage());  
+			result.error500("查询失败:" + e.getMessage());
 			log.error(e.getMessage(), e);
 		}
 		return result;
@@ -294,7 +294,7 @@ public class SysPermissionController {
 
 	/**
 	 * 获取全部的权限树
-	 * 
+	 *
 	 * @return
 	 */
 	@RequestMapping(value = "/queryTreeList", method = RequestMethod.GET)
@@ -326,7 +326,7 @@ public class SysPermissionController {
 
 	/**
 	 * 异步加载数据节点
-	 * 
+	 *
 	 * @return
 	 */
 	@RequestMapping(value = "/queryListAsync", method = RequestMethod.GET)
@@ -349,7 +349,7 @@ public class SysPermissionController {
 
 	/**
 	 * 查询角色授权
-	 * 
+	 *
 	 * @return
 	 */
 	@RequestMapping(value = "/queryRolePermission", method = RequestMethod.GET)
@@ -367,11 +367,11 @@ public class SysPermissionController {
 
 	/**
 	 * 保存角色授权
-	 * 
+	 *
 	 * @return
 	 */
 	@RequestMapping(value = "/saveRolePermission", method = RequestMethod.POST)
-	@RequiresRoles({ "admin" })
+//	@RequiresRoles({ "ccAdmin" })
 	public Result<String> saveRolePermission(@RequestBody JSONObject json) {
 		long start = System.currentTimeMillis();
 		Result<String> result = new Result<>();
@@ -426,7 +426,7 @@ public class SysPermissionController {
 
 		}
 	}
-	
+
 	/**
 	  *  获取权限JSON数组
 	 * @param jsonArray
@@ -596,7 +596,7 @@ public class SysPermissionController {
 	/**
 	 * 判断是否外网URL 例如： http://localhost:8080/jeecg-boot/swagger-ui.html#/ 支持特殊格式： {{
 	 * window._CONFIG['domianURL'] }}/druid/ {{ JS代码片段 }}，前台解析会自动执行JS代码片段
-	 * 
+	 *
 	 * @return
 	 */
 	private boolean isWWWHttpUrl(String url) {
@@ -609,7 +609,7 @@ public class SysPermissionController {
 	/**
 	 * 通过URL生成路由name（去掉URL前缀斜杠，替换内容中的斜杠‘/’为-） 举例： URL = /isystem/role RouteName =
 	 * isystem-role
-	 * 
+	 *
 	 * @return
 	 */
 	private String urlToRouteName(String url) {
@@ -629,7 +629,7 @@ public class SysPermissionController {
 
 	/**
 	 * 根据菜单id来获取其对应的权限数据
-	 * 
+	 *
 	 * @param sysPermissionDataRule
 	 * @return
 	 */
@@ -644,7 +644,7 @@ public class SysPermissionController {
 
 	/**
 	 * 添加菜单权限数据
-	 * 
+	 *
 	 * @param sysPermissionDataRule
 	 * @return
 	 */
@@ -677,7 +677,7 @@ public class SysPermissionController {
 
 	/**
 	 * 删除菜单权限数据
-	 * 
+	 *
 	 * @param sysPermissionDataRule
 	 * @return
 	 */
@@ -696,7 +696,7 @@ public class SysPermissionController {
 
 	/**
 	 * 查询菜单权限数据
-	 * 
+	 *
 	 * @param sysPermissionDataRule
 	 * @return
 	 */

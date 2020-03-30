@@ -47,19 +47,27 @@
         @change="handleTableChange">
 
         <span slot="nameAction" slot-scope="text, record">
-          <a @click="goDetail(record.id)">{{record.code}}</a>
+          <a-tooltip placement="topLeft">
+            <template slot="title">
+              <span>{{record.code}}</span>
+            </template>
+            <a @click="goDetail(record.id)">{{record.code}}</a>
+          </a-tooltip>
         </span>
         <span slot="action" slot-scope="text, record">
-          <a @click="handleEditSaleOrder(record.id)">编辑</a>
-
-          <a-divider type="vertical" />
+          <span v-if="record.billStatus < 1 && record.billStatus != -1">
+            <a @click="handleEditSaleOrder(record.id)">编辑</a>
+            <a-divider type="vertical" />
+          </span>
           <a-dropdown>
             <a class="ant-dropdown-link">
               更多 <a-icon type="down" />
             </a>
             <a-menu slot="overlay">
-              <a-menu-item>
-                <a @click="handlePerssion(record.id)">授权</a>
+              <a-menu-item  v-if="record.billStatus < 4 && record.billStatus != -1">
+                <a-popconfirm title="确定作废吗?" @confirm="() => handleInvalid(record)">
+                  <a>作废</a>
+                </a-popconfirm>
               </a-menu-item>
               <a-menu-item>
                 <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
@@ -80,6 +88,7 @@
   import SaleOrderModal from './SaleOrderMtlModal'
   import JInput from '@/components/jeecg/JInput'
   import {JeecgListMixin} from '@/mixins/JeecgListMixin'
+  import {disableSaleOrder} from '@/api/api'
   export default {
     name: "",
     mixins: [JeecgListMixin],
@@ -181,8 +190,22 @@
       searchReset () {
 
       },
+      goDetail (id) {
+        this.$router.push({ name: "saleorder-saleOrderEdit", query: {"id": id, "unEditable": true}})
+      },
       handleEditSaleOrder (id) {
-        this.$router.push({ name: "saleorder-saleOrderEdit", query: {"id": id}})
+        this.$router.push({ name: "saleorder-saleOrderEdit", query: {"id": id, "unEditable": false}})
+      },
+      handleInvalid (record) {
+        disableSaleOrder(record).then((res)=>{
+          if(res.success){
+            this.$message.success(res.message);
+            this.$emit('ok');
+          }else{
+            this.$message.warning(res.message);
+          }
+        }).finally(() => {
+        })
       }
     }
   }

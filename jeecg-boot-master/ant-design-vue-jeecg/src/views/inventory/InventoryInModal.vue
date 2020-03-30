@@ -24,20 +24,20 @@
     <a-spin :spinning="confirmLoading">
       <a-form :form="form">
         <a-row>
-          
+
           <a-col :md="6" :sm="6">
             <a-form-item
               :labelCol="labelCol"
               :wrapperCol="wrapperCol"
-              label="采购单">
-              {{ model.sourceId }}
+              label="原单编号">
+              <a-input type="text" :readOnly="true" v-decorator="[ 'sourceCode', {}]" />
               <a-input type="hidden" placeholder="请输入规格" v-decorator="[ 'sourceId', {}]" />
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="6">
             <a-form-item
               :labelCol="labelCol"
-              :wrapperCol="wrapperCol"
+                :wrapperCol="wrapperCol"
               label="仓库">
               <a-select v-decorator="['warehouseId', {}]" placeholder="请选择仓库" showSearch optionFilterProp="children"
                         @change="mtlChange" notFoundContent="没有匹配的仓库"  >
@@ -55,8 +55,10 @@
               :labelCol="labelCol"
               :wrapperCol="wrapperCol"
               label="入库时间">
-              <a-date-picker format="YYYY-MM-DD" placeholder="请输入入库时间" style="width: 100%" v-decorator="[ 'putInTime', {}]"/>
-              <!-- <a-input placeholder="请输入入库时间" v-decorator="[ 'putInTime', {}]" /> -->
+              <a-date-picker format="YYYY-MM-DD HH:mm:ss"
+                            placeholder="请输入入库时间" showTime
+                            style="width: 100%" @change="onDateChange"
+                            :defaultValue="!model.putInTime ? null :moment( model.putInTime, 'YYYY-MM-DD HH:mm:ss')" name="putInTime" id="putInTime"/>
             </a-form-item>
           </a-col>
         </a-row>
@@ -66,10 +68,12 @@
 </template>
 
 <script>
-
+ import moment from 'moment';
+import 'moment/locale/zh-cn';
+moment.locale('zh-cn');
   import pick from 'lodash.pick'
   import AFormItem from "ant-design-vue/es/form/FormItem";
-  import {getWarehouseList, addStocking,editStocking,getMaterialList,duplicateCheck,getMaterialSelfUnitList,getMaterialOne,inventoryInedit } from '@/api/api'
+  import {getWarehouseList, inventoryInedit } from '@/api/api'
 
   export default {
     name: "StockingModal",
@@ -81,7 +85,7 @@
     },
     data() {
       return {
-        title: "操作",
+        title: "入库单",
         visible: false,
         confirmLoading: false,
         labelCol: {
@@ -121,6 +125,7 @@
     created () {
     },
     methods: {
+      moment,
       add () {
         this.edit({});
       },
@@ -134,36 +139,18 @@
             that.warehouseList = res.result;
           }
         })
-        // getMaterialList().then((res) => {
-        //   if (res.success) {
-        //     that.mtlList = res.result;
-        //   }
-        // })
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'id','sourceId' ,'billStatus','putInTime','warehouseId','billType'))
+          this.form.setFieldsValue(pick(this.model,'id','sourceId' ,'sourceCode' ,'sourceBillType' ,'billStatus','putInTime','warehouseId','billType'))
         });
 
       },
       mtlChange (val) {
         this.model.warehouseId = val;
         this.form.setFieldsValue({ 'warehouseId' : val })
-        // debugger
-        // getMaterialSelfUnitList({addSelf:true,sourceId:val}).then((res) => {
-        //   if (res.success) {
-        //     this.unitList = res.result;
-        //   }
-        // })
-
-        // getMaterialOne({id:val}).then((res) => {
-        //   if (res.success) {
-        //     const material = res.result;
-        //     // this.model.mtlCode = material.code;
-        //     // this.model.specification = material.specification;
-        //     this.$nextTick(() => {
-        //       this.form.setFieldsValue(pick(this.model,'mtlCode','specification'))
-        //     });
-        //   }
-        // })
+      },
+      onDateChange(date, dateString) {
+        this.model.putInTime = dateString;
+        this.form.setFieldsValue({ 'putInTime' : dateString })
       },
       unitChange (val) {
         this.unitId = val;
@@ -179,14 +166,7 @@
           if (!err) {
             that.confirmLoading = true;
             let formData = Object.assign(this.model, values);
-            let obj = inventoryInedit(formData);
-            // console.log(formData)
-            // if(!this.model.id){
-            //   obj=addStocking(formData);
-            // }else{
-            //   obj=editStocking(formData);
-            // }
-            obj.then((res)=>{
+            inventoryInedit(formData).then((res)=>{
               if(res.success){
                 that.$message.success(res.message);
                 that.$emit('ok');
@@ -196,6 +176,9 @@
             }).finally(() => {
               that.confirmLoading = false;
               that.close();
+              if (formData.sourceBillType === 4) {
+                that.$router.replace({ path:'/purchase/PurchaseList' });
+              }
             })
           }
         })

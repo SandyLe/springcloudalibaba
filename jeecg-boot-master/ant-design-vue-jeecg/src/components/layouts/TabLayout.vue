@@ -21,7 +21,7 @@
     <div style="margin: 12px 12px 0;">
       <transition name="page-toggle">
         <keep-alive v-if="multipage">
-          <router-view v-if="reloadFlag"/>
+          <router-view v-if="reloadFlag" :closeTab="closeTab"/>
         </keep-alive>
         <template v-else>
           <router-view v-if="reloadFlag"/>
@@ -125,6 +125,9 @@
       }
     },
     methods: {
+      closeTab(key) {
+        this.remove(key)
+      },
       changePage(key) {
         this.activePage = key
       },

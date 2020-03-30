@@ -39,7 +39,7 @@
                 :labelCol="labelCol"
                 :wrapperCol="wrapperCol"
                 label="代码">
-                <a-input placeholder="请输入代码" v-decorator="[ 'code', validatorRules.code]" />
+                <a-input placeholder="后台自动生成" :readOnly="true" v-decorator="[ 'code', validatorRules.code]" />
               </a-form-item>
             </a-col>
             <a-col :md="6" :sm="6">
@@ -47,7 +47,7 @@
                 :labelCol="labelCol"
                 :wrapperCol="wrapperCol"
                 label="客户类型">
-                <a-select v-decorator="['customerTypeId', {}]" placeholder="请选择类型列表">
+                <a-select v-decorator="['customerTypeId', validatorRules.customerTypeId]" placeholder="请选择类型列表">
                   <a-select-option value="">请选择</a-select-option>
                   <a-select-option v-for="(item, key) in typeList" :key="key" :value="item.id">
                     <span style="display: inline-block;width: 100%" :title=" item.name || item.code ">
@@ -390,9 +390,9 @@
                   :wrapperCol="wrapperCol"
                   label="物流"
                   label-width="4">
-                  <a-select v-decorator="['cdiLogistics', {}]" placeholder="物流" style="width: 10%">
+                  <a-select v-decorator="['cdiLogistics', {}]" placeholder="物流">
                     <a-select-option value="">请选择</a-select-option>
-                    <a-select-option v-for="(item, key) in sourceList" :key="key" :value="item.id">
+                    <a-select-option v-for="(item, key) in cdiLogisticsCompanyList" :key="key" :value="item.id">
                     <span style="display: inline-block;width: 100%" :title=" item.name || item.code ">
                       {{ item.name || item.code }}
                     </span>
@@ -485,7 +485,7 @@
   import moment from 'moment'
   import AFormItem from "ant-design-vue/es/form/FormItem";
   import JDictSelectTag from '@/components/dict/JDictSelectTag.vue'
-  import {saveCustomer,duplicateCheck, getCustomerTypeList, getCustomerSourceList, getAreaList, getDeliveryInfo} from '@/api/api'
+  import {saveCustomer,duplicateCheck, getCustomerTypeList, getCustomerSourceList, getAreaList, getLogisticsCompanyList, getDeliveryInfo} from '@/api/api'
   export default {
     name: "Customer",
     data() {
@@ -505,7 +505,6 @@
         },
         hlabelCol: {
           xs: { span: 24 },
-          xs: { span: 24 },
           sm: { span: 2 },
         },
         hwrapperCol: {
@@ -517,7 +516,13 @@
         validatorRules: {
           name: {
             rules: [
-              { min: 0, max: 126, message: '长度不超过 126 个字符', trigger: 'blur' }
+              { min: 1, max: 126, message: '长度不超过 126 个字符', trigger: 'blur' },
+              {required: true, message: '名称不能为空!'}
+            ]
+          },
+          customerTypeId: {
+            rules: [
+              {required: true, message: '请选择客户类型!'}
             ]
           }
         },
@@ -540,7 +545,8 @@
         cityList: [],
         districtList:[],
         cdiCityList: [],
-        cdiDistrictList:[]
+        cdiDistrictList:[],
+        cdiLogisticsCompanyList:[]
       }
     },
     components: {AFormItem,JDictSelectTag},
@@ -647,6 +653,13 @@
                     }
                   })
                 }
+                getLogisticsCompanyList({}).then((res) => {
+                  if (res.success) {
+                    if(res.result && res.result.length>0){
+                      this.cdiLogisticsCompanyList = res.result;
+                    }
+                  }
+                })
                 this.$nextTick(() => {
                   this.form.setFieldsValue(pick(that.model,'cdiDefaultType','cdiDescription','cdiLinkman','cdiPhone','cdiDeliveryAddress','cdiCarLicense',
                     'cdiRecipients','cdiRecipientsPhone','cdiProvince','cdiCity','cdiDistrict','cdiAddress','cdiLogistics','cdiBranch','cdiTel','cdiId'));

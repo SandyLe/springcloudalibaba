@@ -1,5 +1,6 @@
 package org.jeecg.modules.basic.entity;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -12,6 +13,8 @@ public class CustomerDeliveryInfo extends BasicEntity {
     private String cdiSourceId;
     @ApiModelProperty("发货方式")
     private String cdiDefaultType;
+    @TableField(exist=false)
+    private String cdiDefaultTypeName;
     @ApiModelProperty("说明")
     private String cdiDescription;
     @ApiModelProperty("联系人")
@@ -32,6 +35,8 @@ public class CustomerDeliveryInfo extends BasicEntity {
     private String cdiAddress;
     @ApiModelProperty("物流公司")
     private String cdiLogistics;
+    @TableField(exist=false)
+    private String cdiLogisticsName;
     @ApiModelProperty("网点")
     private String cdiBranch;
     @ApiModelProperty("电话")
@@ -40,6 +45,8 @@ public class CustomerDeliveryInfo extends BasicEntity {
     private String cdiRecipientsPhone;
     @ApiModelProperty("收件人")
     private String cdiRecipients;
+    @TableField(exist=false)
+    private String cdiFullAddress;
 
     public String getCdiSourceId() {
         return cdiSourceId;
@@ -167,5 +174,29 @@ public class CustomerDeliveryInfo extends BasicEntity {
 
     public void setCdiRecipients(String cdiRecipients) {
         this.cdiRecipients = cdiRecipients;
+    }
+
+    public String getCdiDefaultTypeName() {
+        return cdiDefaultTypeName;
+    }
+
+    public void setCdiDefaultTypeName(String cdiDefaultTypeName) {
+        this.cdiDefaultTypeName = cdiDefaultTypeName;
+    }
+
+    public String getCdiFullAddress() {
+        return cdiFullAddress;
+    }
+
+    public void setCdiFullAddress(String cdiFullAddress) {
+        this.cdiFullAddress = cdiFullAddress;
+    }
+
+    public String getCdiLogisticsName() {
+        return cdiLogisticsName;
+    }
+
+    public void setCdiLogisticsName(String cdiLogisticsName) {
+        this.cdiLogisticsName = cdiLogisticsName;
     }
 }

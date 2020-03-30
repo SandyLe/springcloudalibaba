@@ -9,6 +9,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
@@ -20,12 +21,17 @@ import org.jeecg.modules.basic.entity.Customer;
 import org.jeecg.modules.basic.entity.Warehouse;
 import org.jeecg.modules.basic.enums.BillStatus;
 import org.jeecg.modules.basic.enums.BillType;
+import org.jeecg.modules.basic.enums.RowSts;
 import org.jeecg.modules.basic.service.BillCodeBuilderService;
 import org.jeecg.modules.basic.service.CustomerService;
 import org.jeecg.modules.basic.service.WarehouseService;
+import org.jeecg.modules.inventory.entity.InventoryOut;
+import org.jeecg.modules.inventory.service.InventoryOutService;
 import org.jeecg.modules.saleorder.entity.SaleOrder;
 import org.jeecg.modules.saleorder.entity.SaleOrderDeliveryInfo;
+import org.jeecg.modules.saleorder.entity.SaleOrderMtl;
 import org.jeecg.modules.saleorder.service.SaleOrderDeliveryInfoService;
+import org.jeecg.modules.saleorder.service.SaleOrderMtlService;
 import org.jeecg.modules.saleorder.service.SaleOrderService;
 import org.jeecg.modules.system.service.ISysDictService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,9 +61,14 @@ public class SaleOrderController {
     @Autowired
     private ISysDictService iSysDictService;
     @Autowired
+    private InventoryOutService inventoryOutService;
+    @Autowired
     private SaleOrderDeliveryInfoService saleOrderDeliveryInfoService;
     @Autowired
     private BillCodeBuilderService billCodeBuilderService;
+    @Autowired
+    private SaleOrderMtlService saleOrderMtlService;
+
     /**
      * 添加
      *
@@ -111,23 +122,25 @@ public class SaleOrderController {
 
         IPage<SaleOrder> pageList = saleOrderService.page(page, queryWrapper);
         List<SaleOrder> saleOrderList = pageList.getRecords();
-        List<String> customerIds = saleOrderList.stream().map(SaleOrder::getCustomerId).collect(Collectors.toList());
-        List<String> warehouseIds = saleOrderList.stream().map(SaleOrder::getWarehouseId).collect(Collectors.toList());
-        Collection<Customer> customers = customerService.listByIds(customerIds);
-        Collection<Warehouse> warehouses = warehouseService.listByIds(warehouseIds);
-        Collection<DictModel> sysDict = iSysDictService.queryDictItemsByCode("receipt_type");
-        Collection<DictModel> channelDicts = iSysDictService.queryDictItemsByCode("channel");
-        Map<String, String> customerMap = customers.stream().collect(Collectors.toMap(Customer::getId, Customer::getName));
-        Map<String, String> warehouseMap = warehouses.stream().collect(Collectors.toMap(Warehouse:: getId, Warehouse:: getName));
-        Map<String, String> dictModelMap = sysDict.stream().collect(Collectors.toMap(DictModel::getValue, DictModel::getText));
-        Map<String, String> channelMap = channelDicts.stream().collect(Collectors.toMap(DictModel::getValue, DictModel::getText));
-        saleOrderList.stream().forEach(o->{
-            o.setWarehouse(warehouseMap.get(o.getWarehouseId()));
-            o.setCustomer(customerMap.get(o.getCustomerId()));
-            o.setReceiptTypeName(dictModelMap.get(o.getReceiptType()));
-            o.setChannel(channelMap.get(o.getChannelId()));
-            o.setBillStatusName(BillStatus.getName(o.getBillStatus()));
-        });
+        if (CollectionUtils.isNotEmpty(saleOrderList)) {
+            List<String> customerIds = saleOrderList.stream().map(SaleOrder::getCustomerId).collect(Collectors.toList());
+            List<String> warehouseIds = saleOrderList.stream().map(SaleOrder::getWarehouseId).collect(Collectors.toList());
+            Collection<Customer> customers = customerService.listByIds(customerIds);
+            Collection<Warehouse> warehouses = warehouseService.listByIds(warehouseIds);
+            Collection<DictModel> sysDict = iSysDictService.queryDictItemsByCode("receipt_type");
+            Collection<DictModel> channelDicts = iSysDictService.queryDictItemsByCode("channel");
+            Map<String, String> customerMap = customers.stream().collect(Collectors.toMap(Customer::getId, Customer::getName));
+            Map<String, String> warehouseMap = warehouses.stream().collect(Collectors.toMap(Warehouse:: getId, Warehouse:: getName));
+            Map<String, String> dictModelMap = sysDict.stream().collect(Collectors.toMap(DictModel::getValue, DictModel::getText));
+            Map<String, String> channelMap = channelDicts.stream().collect(Collectors.toMap(DictModel::getValue, DictModel::getText));
+            saleOrderList.stream().forEach(o->{
+                o.setWarehouse(warehouseMap.get(o.getWarehouseId()));
+                o.setCustomer(customerMap.get(o.getCustomerId()));
+                o.setReceiptTypeName(dictModelMap.get(o.getReceiptType()));
+                o.setChannel(channelMap.get(o.getChannelId()));
+                o.setBillStatusName(BillStatus.getName(o.getBillStatus()));
+            });
+        }
 
         log.info("查询当前页：" + pageList.getCurrent());
         log.info("查询当前页数量：" + pageList.getSize());
@@ -214,6 +227,39 @@ public class SaleOrderController {
     @ApiOperation(value = "通过ID查询销售订单", notes = "通过ID查询销售订单")
     public Result<?> queryById(@ApiParam(name = "id", value = "示例id", required = true) @RequestParam(name = "id", required = true) String id) {
         SaleOrder saleOrder = saleOrderService.getById(id);
+        if (null != saleOrder) {
+            if (StringUtils.isNotBlank(saleOrder.getCustomerId())) {
+                Customer customer = customerService.getById(saleOrder.getCustomerId());
+                saleOrder.setCustomer(null != customer ? customer.getName() : null);
+            }
+            if (StringUtils.isNotBlank(saleOrder.getWarehouseId())) {
+                Warehouse warehouse = warehouseService.getById(saleOrder.getWarehouseId());
+                saleOrder.setWarehouse(null != warehouse ? warehouse.getName() : null);
+            }
+        }
+        return Result.ok(saleOrder);
+    }
+
+    /**
+     * 通过code查询
+     *
+     * @param code
+     * @return
+     */
+    @GetMapping(value = "/getOneByCode")
+    @ApiOperation(value = "通过Code查询销售订单", notes = "通过Code查询销售订单")
+    public Result<?> queryByCode(@ApiParam(name = "code", value = "示例code", required = true) @RequestParam(name = "code", required = true) String code) {
+        SaleOrder saleOrder = saleOrderService.getOne(new LambdaQueryWrapper<SaleOrder>().eq(SaleOrder::getCode, code));
+        if (null != saleOrder) {
+            if (StringUtils.isNotBlank(saleOrder.getCustomerId())) {
+                Customer customer = customerService.getById(saleOrder.getCustomerId());
+                saleOrder.setCustomer(null != customer ? customer.getName() : null);
+            }
+            if (StringUtils.isNotBlank(saleOrder.getWarehouseId())) {
+                Warehouse warehouse = warehouseService.getById(saleOrder.getWarehouseId());
+                saleOrder.setWarehouse(null != warehouse ? warehouse.getName() : null);
+            }
+        }
         return Result.ok(saleOrder);
     }
 
@@ -227,40 +273,46 @@ public class SaleOrderController {
     @AutoLog(value = "发货")
     @ApiOperation(value = "发货", notes = "发货")
     public Result<?> edit(@RequestBody DeliveryEditDto deliveryEditDto) throws Exception {
-        String billId = deliveryEditDto.getId();
-        SaleOrder saleOrder = saleOrderService.getById(billId);
-        saleOrder.setWarehouseId(deliveryEditDto.getWarehouseId());
-        saleOrder.setDeliveryTime(deliveryEditDto.getDeliveryTime());
-        saleOrder.setInstallTime(deliveryEditDto.getInstallTime());
 
-        SaleOrderDeliveryInfo cdi = new SaleOrderDeliveryInfo();
-        BeanUtils.copyProperties(cdi,deliveryEditDto);
-        cdi.setCdiSourceId(saleOrder.getCustomerId());
-        cdi.setSourceId(saleOrder.getId());
-        cdi.setSourceBillCode(saleOrder.getCode());
-        cdi.setWarehouseId(saleOrder.getWarehouseId());
-        cdi.setId(deliveryEditDto.getCdiId());
+        saleOrderService.delivery(deliveryEditDto);
 
-        cdi.setCreateBy(deliveryEditDto.getCdiCreateBy());
-        cdi.setCreateTime(deliveryEditDto.getCdiCreateTime());
-        cdi.setUpdateBy(deliveryEditDto.getCdiUpdateBy());
-        cdi.setUpdateTime(deliveryEditDto.getCdiUpdateTime());
-        cdi.setCode(deliveryEditDto.getCdiCode());
-        cdi.setName(deliveryEditDto.getCdiName());
-        cdi.setRowSts(deliveryEditDto.getCdiRowSts());
-        cdi.setSort(deliveryEditDto.getCdiSort());
-        cdi.setCode(deliveryEditDto.getCdiContent());
-        if (StringUtils.isEmpty(cdi.getId())) {
-            cdi.setBillStatus(BillStatus.TOSEND.getId());
-            saleOrder.setBillStatus(BillStatus.TOSEND.getId());
-        }
-
-        saleOrderService.updateById(saleOrder);
-        saleOrderDeliveryInfoService.saveOrUpdate(cdi);
-
-        Result<Object> result = Result.ok();
-        result.setResult(saleOrder);
-        return result;
+        return Result.ok();
     }
 
+    /**
+     * 作废
+     *
+     * @param saleOrder
+     * @return
+     */
+    @PostMapping(value = "/disable")
+    @AutoLog(value = "修改销售订单")
+    @ApiOperation(value = "修改销售订单", notes = "修改销售订单")
+    public Result<?> disable(@RequestBody SaleOrder saleOrder){
+
+        SaleOrder existed = saleOrderService.getById(saleOrder.getId());
+        Assert.notNull(existed, "销售订单不存在！");
+        existed.setBillStatus(BillStatus.INVALID.getId());
+        saleOrderService.updateById(existed);
+
+        List<SaleOrderMtl> saleOrderMtls = saleOrderMtlService.list(new LambdaQueryWrapper<SaleOrderMtl>().eq(SaleOrderMtl::getSourceId, saleOrder.getId()));
+        if (CollectionUtils.isNotEmpty(saleOrderMtls)) {
+            saleOrderMtls.stream().forEach(o->{o.setBillStatus(BillStatus.INVALID.getId());});
+            saleOrderMtlService.updateBatchById(saleOrderMtls);
+        }
+
+        SaleOrderDeliveryInfo info = saleOrderDeliveryInfoService.getOne(new LambdaQueryWrapper<SaleOrderDeliveryInfo>().eq(SaleOrderDeliveryInfo::getSourceId, saleOrder.getId()));
+        if (null != info) {
+            info.setBillStatus(BillStatus.INVALID.getId());
+            saleOrderDeliveryInfoService.updateById(info);
+        }
+
+        List<InventoryOut> inventoryOuts = inventoryOutService.list(new LambdaQueryWrapper<InventoryOut>().eq(InventoryOut::getSourceId, saleOrder.getId()));
+        if (CollectionUtils.isNotEmpty(inventoryOuts)) {
+            inventoryOuts.stream().forEach(o->{o.setBillStatus(BillStatus.INVALID.getId());});
+            inventoryOutService.updateBatchById(inventoryOuts);
+        }
+
+        return Result.ok("修改成功！");
+    }
 }

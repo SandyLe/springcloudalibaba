@@ -29,13 +29,13 @@
               :labelCol="labelCol"
               :wrapperCol="wrapperCol"
               label="产品">
-              <a-select v-decorator="['mtlId', {}]" placeholder="请选择产品" showSearch optionFilterProp="children"
-                        @change="mtlChange" notFoundContent="没有匹配的产品"  >
+
+              <a-select v-decorator="['mtlId', {}]" placeholder="请选择产品"  showSearch
+                        optionFilterProp="children" @change="mtlChange"
+                        notFoundContent="无法找到，输入关键词Enter搜索" @keyup.enter.native="searchMtl" >
                 <a-select-option value="">请选择</a-select-option>
                 <a-select-option v-for="(item, key) in mtlList" :key="key" :value="item.id">
-                    <span style="display: inline-block;width: 100%" :title=" item.name || item.code ">
-                      {{ item.name || item.code }}
-                    </span>
+                  {{ item.name || item.code }}
                 </a-select-option>
               </a-select>
             </a-form-item>
@@ -122,7 +122,7 @@
 
   import pick from 'lodash.pick'
   import AFormItem from "ant-design-vue/es/form/FormItem";
-  import {addSaleMtlOrder,editSaleMtlOrder,getMaterialList,duplicateCheck,getDiscountTypeList,getMaterialSelfUnitList,getMtlPrice } from '@/api/api'
+  import {addSaleMtlOrder,editSaleMtlOrder,searchMaterial,duplicateCheck,getDiscountTypeList,getMaterialSelfUnitList,getMtlPrice } from '@/api/api'
 
   export default {
     name: "SaleOrderMtlModal",
@@ -178,14 +178,12 @@
         this.edit({});
       },
       edit (record) {
-        console.log(this.$route.query.id)
-        debugger
         this.form.resetFields();
         record.sourceId = this.$route.query.id;
         this.model = Object.assign({}, record);
         this.visible = true;
         let that = this;
-        getMaterialList().then((res) => {
+        searchMaterial().then((res) => {
           if (res.success) {
             that.mtlList = res.result;
           }
@@ -210,7 +208,6 @@
 
       },
       mtlChange (val) {
-        debugger
         getMaterialSelfUnitList({addSelf:true,sourceId:val}).then((res) => {
           if (res.success) {
             this.unitList = res.result;
@@ -263,6 +260,13 @@
               that.confirmLoading = false;
               that.close();
             })
+          }
+        })
+      },
+      searchMtl (e) {
+        searchMaterial({"keyword":e.target.valueOf().value}).then((res) => {
+          if (res.success) {
+            this.mtlList = res.result;
           }
         })
       },

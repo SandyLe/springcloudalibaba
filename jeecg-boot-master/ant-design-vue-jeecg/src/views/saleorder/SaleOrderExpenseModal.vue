@@ -26,7 +26,7 @@
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
-          label="产品">
+          label="费用名称">
           <a-select v-decorator="['expenseId', {}]" placeholder="请选择费用名称" showSearch optionFilterProp="children"
                     notFoundContent="没有匹配的费用名称"  >
             <a-select-option value="">请选择</a-select-option>
@@ -107,7 +107,6 @@
       },
       edit (record) {
         console.log(this.$route.query.id)
-        debugger
         this.form.resetFields();
         record.sourceId = this.$route.query.id;
         this.model = Object.assign({}, record);
@@ -146,7 +145,6 @@
               if(res.success){
                 that.saleOrder.totalamount = res.result;
                 console.log(that.saleOrder.totalamount)
-                debugger
                 this.$emit("listenToTotalamont",that.saleOrder.totalamount);
                 that.$message.success(res.message);
                 that.$emit('ok');

@@ -7,11 +7,15 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.jeecg.modules.basic.entity.BasicEntity;
+import org.jeecg.modules.basic.enums.BillStatus;
+import org.jeecg.modules.basic.enums.BillType;
+import org.jeecg.modules.basic.enums.EnumConvertUtils;
 import org.jeecgframework.poi.excel.annotation.Excel;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 @Data
 @TableName("sl_inventory_in")
@@ -20,7 +24,13 @@ public class InventoryIn extends BasicEntity {
 
     @ApiModelProperty("原单ID：销售退货，采购入库")
     private String sourceId;
+    @ApiModelProperty("原单Code：销售出库，采购退货Code")
+    private String sourceCode;
     @ApiModelProperty("原单类型")
+    private Integer sourceBillType;
+    @TableField(exist=false)
+    private String sourceBillTypeName;
+    @ApiModelProperty("单据类型")
     private Integer billType;
     @ApiModelProperty("仓库ID")
     private String warehouseId;
@@ -36,6 +46,8 @@ public class InventoryIn extends BasicEntity {
 
     @ApiModelProperty("订单状态")
     private Integer billStatus;
+    @TableField(exist=false)
+    private String billStatusName;
 
     public String getSourceId() {
         return sourceId;
@@ -84,4 +96,43 @@ public class InventoryIn extends BasicEntity {
     public void setBillStatus(Integer billStatus) {
         this.billStatus = billStatus;
     }
+
+    public Integer getSourceBillType() {
+        return sourceBillType;
+    }
+
+    public void setSourceBillType(Integer sourceBillType) {
+        this.sourceBillType = sourceBillType;
+    }
+
+    public String getSourceCode() {
+        return sourceCode;
+    }
+
+    public void setSourceCode(String sourceCode) {
+        this.sourceCode = sourceCode;
+    }
+
+    public String getBillStatusName() {
+        if (null != billStatus) {
+            return EnumConvertUtils.getName(BillStatus.class, billStatus);
+        }
+        return null;
+    }
+
+    public void setBillStatusName(String billStatusName) {
+        this.billStatusName = billStatusName;
+    }
+
+    public String getSourceBillTypeName() {
+        if (null != sourceBillType) {
+            return EnumConvertUtils.getName(BillType.class, sourceBillType);
+        }
+        return null;
+    }
+
+    public void setSourceBillTypeName(String sourceBillTypeName) {
+        this.sourceBillTypeName = sourceBillTypeName;
+    }
+
 }

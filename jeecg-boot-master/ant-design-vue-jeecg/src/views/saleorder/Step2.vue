@@ -3,7 +3,7 @@
     <a-form style="max-width: 500px; margin: 40px auto 0;" :form="form">
       <a-alert
         :closable="true"
-        message="确认转账后，资金将直接打入对方账户，无法退回。"
+        message="请确认订单信息及费用信息。"
         style="margin-bottom: 24px;"
       />
       <a-form-item
@@ -74,7 +74,7 @@
       <div>
         <a-card class="card" title="其他费用" :bordered="true">
           <!-- 操作按钮区域 -->
-          <div class="table-operator" style="border-top: 5px">
+          <div class="table-operator" style="border-top: 5px" v-if = "!unEditable">
             <a-button @click="handleAddExpense" type="primary" icon="plus">添加费用</a-button>
             <a-dropdown v-if="selectedRowKeys.length > 0">
               <a-menu slot="overlay">
@@ -101,22 +101,22 @@
             :loading="loading2"
             :rowSelection="{selectedRowKeys: selectedRowKeys2, onChange: onSelectChange2}"
             @change="handleTableChange2">
-           <span slot="action" slot-scope="text, record">
-           <a @click="handleEdit2(record)">编辑</a>
-          <a-divider type="vertical"/>
-          <a-dropdown>
-            <a class="ant-dropdown-link">
-              更多 <a-icon type="down"/>
-            </a>
-            <a-menu slot="overlay">
-              <a-menu-item>
-                <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete2(record.id)">
-                  <a>删除</a>
-                </a-popconfirm>
-              </a-menu-item>
-            </a-menu>
-          </a-dropdown>
-        </span>
+           <span slot="action" slot-scope="text, record" v-if = "!unEditable">
+            <a @click="handleEdit2(record)">编辑</a>
+            <a-divider type="vertical"/>
+            <a-dropdown>
+              <a class="ant-dropdown-link">
+                更多 <a-icon type="down"/>
+              </a>
+              <a-menu slot="overlay">
+                <a-menu-item>
+                  <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete2(record.id)">
+                    <a>删除</a>
+                  </a-popconfirm>
+                </a-menu-item>
+              </a-menu>
+            </a-dropdown>
+          </span>
           </a-table>
         </a-card>
       </div>
@@ -144,7 +144,7 @@
             :labelCol="{span: 5}"
             :wrapperCol="{span: 19}"
             class="stepFormText">
-            <a-input placeholder="请输入实收金额" v-decorator="[ 'payamount', {}]" />
+            <a-input placeholder="请输入实收金额" v-decorator="[ 'payamount', {}]" :disabled="unEditable" />
           </a-form-item>
         </a-card>
       </div>
@@ -300,7 +300,8 @@
           list2: '/saleOrderExpense/getPage',
           delete2: '/saleOrderExpense/delete',
           deleteBatch2: '/saleOrderExpense/deleteBatch',
-        }
+        },
+        unEditable: true
       }
     },
     methods: {
@@ -357,7 +358,6 @@
         return str
       },
       handleEdit2: function(record) {
-        debugger
         this.$refs.saleOrderExpenseModal.title = '编辑'
         this.$refs.saleOrderExpenseModal.roleDisabled = true
         this.$refs.saleOrderExpenseModal.edit(record)
@@ -367,7 +367,6 @@
         this.loadData2()
       },
       loadData2(arg) {
-        debugger
         if (!this.url.list2) {
           this.$message.error('请设置url.list2属性!')
           return
@@ -380,7 +379,6 @@
         params.roleId = this.currentRoleId
         this.loading2 = true
         getAction(this.url.list2, params).then((res) => {
-          debugger
           if (res.success) {
             this.dataSource2 = res.result.records
             this.ipagination2.total = res.result.total
@@ -476,7 +474,6 @@
               if(res.success){
                 that.saleOrder.totalamount = res.result;
                 console.log(that.saleOrder.totalamount)
-                debugger
                 that.$message.success(res.message);
                 that.$emit('ok');
               }else{
@@ -490,7 +487,9 @@
         })
       },
       nextStep () {
-        this.handleOk()
+        if (!this.unEditable) {
+          this.handleOk();
+        }
         this.$emit('nextStep')
       },
       prevStep () {
@@ -499,7 +498,6 @@
     },
     mounted() {
       if (this.$route.query.id) {
-        debugger
         console.log(this.form)
         getSaleOrderOne({id:this.$route.query.id}).then((res) => {
           if (res.success) {
@@ -513,6 +511,7 @@
         })
       }
       this.loadData2();
+      this.unEditable = this.$route.query.unEditable;
     }
   }
 </script>

@@ -15,6 +15,10 @@ public class SaleOrderReturn extends BasicEntity {
 
     @ApiModelProperty("客户ID")
     private String customerId;
+    @ApiModelProperty("原单ID")
+    private String sourceId;
+    @ApiModelProperty("原单编号")
+    private String sourceCode;
     @TableField(exist=false)
     @ApiModelProperty("客户")
     private String customer;
@@ -23,6 +27,8 @@ public class SaleOrderReturn extends BasicEntity {
     @ApiModelProperty("出货仓库")
     @TableField(exist=false)
     private String warehouse;
+    @ApiModelProperty("渠道")
+    private String channelId;
     @ApiModelProperty("付款方式")
     private String payType;
     @ApiModelProperty("付款方式")
@@ -41,7 +47,7 @@ public class SaleOrderReturn extends BasicEntity {
     private BigDecimal otheramount;
     @ApiModelProperty("总金额")
     private BigDecimal totalamount;
-    @ApiModelProperty("已付金额")
+    @ApiModelProperty("已退金额")
     private BigDecimal payamount;
 
     public String getCustomerId() {
@@ -146,5 +152,29 @@ public class SaleOrderReturn extends BasicEntity {
 
     public void setPayamount(BigDecimal payamount) {
         this.payamount = payamount;
+    }
+
+    public String getSourceId() {
+        return sourceId;
+    }
+
+    public void setSourceId(String sourceId) {
+        this.sourceId = sourceId;
+    }
+
+    public String getSourceCode() {
+        return sourceCode;
+    }
+
+    public void setSourceCode(String sourceCode) {
+        this.sourceCode = sourceCode;
+    }
+
+    public String getChannelId() {
+        return channelId;
+    }
+
+    public void setChannelId(String channelId) {
+        this.channelId = channelId;
     }
 }

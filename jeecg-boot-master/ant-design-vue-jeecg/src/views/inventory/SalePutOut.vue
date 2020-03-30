@@ -6,9 +6,9 @@
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
           <a-col :md="6" :sm="12">
-            <a-form-item label="账号">
+            <a-form-item label="原单编号">
               <!--<a-input placeholder="请输入账号查询" v-model="queryParam.username"></a-input>-->
-              <j-input placeholder="输入账号模糊查询" v-model="queryParam.username"></j-input>
+              <j-input placeholder="输入原单编号模糊查询" v-model="queryParam.sourceCode"></j-input>
             </a-form-item>
           </a-col>
 
@@ -48,9 +48,9 @@
         @change="handleTableChange">
 
         <span slot="nameAction" slot-scope="text, record">
-          <a @click="goDetail(record.sourceId)">{{record.sourceBillCode}}</a>
+          <a @click="goDetail(record.sourceId)">{{record.sourceCode}}</a>
         </span>
-        <span slot="action" v-if="record.rowSts !== 6" slot-scope="text, record">
+        <span slot="action" v-if="record.billStatus !== -1" slot-scope="text, record">
           <a v-if="record.billStatus !== 8" @click="handleStocking(record)">出库</a>
           <a-divider type="vertical" />
           <a @click="viewInventoryLog(record)">出库记录</a>
@@ -95,25 +95,35 @@
             }
           },
           {
+            title: '单号',
+            align:"center",
+            dataIndex: 'code'
+          },
+          {
             title: '仓库',
             align:"center",
             dataIndex: 'warehouse'
           },
           {
-            title: '销售订单',
+            title: '原单类型',
+            align:"center",
+            dataIndex: 'sourceBillTypeName'
+          },
+          {
+            title: '原单编号',
             align:"center",
             dataIndex: '',
             scopedSlots: { customRender: 'nameAction' }
           },
           {
-            title: '客户',
+            title: '单据类型',
             align:"center",
-            dataIndex: 'customer'
+            dataIndex: 'billTypeName'
           },
           {
-            title: '发货方式',
+            title: '出库时间',
             align:"center",
-            dataIndex: 'cdiDefaultTypeName'
+            dataIndex: 'putOutTime'
           },
           {
             title: '状态',
@@ -128,11 +138,11 @@
           }
         ],
         url: {
-          list: "/saleOrderDeliveryInfo/getPage",
-          delete: "/saleOrderDeliveryInfo/delete",
-          deleteBatch: "/saleOrderDeliveryInfo/deleteBatch",
-          exportXlsUrl: "/saleOrderDeliveryInfo/exportXls",
-          importExcelUrl: "/saleOrderDeliveryInfo/importExcel",
+          list: "/inventoryOut/getPage",
+          delete: "/inventoryOut/delete",
+          deleteBatch: "/inventoryOut/deleteBatch",
+          exportXlsUrl: "/inventoryOut/exportXls",
+          importExcelUrl: "/inventoryOut/importExcel",
         },
       }
     },
@@ -164,13 +174,7 @@
           })
         }
         this.$refs.inventoryLogModal.edit(record);
-        this.$refs.inventoryLogModal.title = "出库记录列表";
-      },
-      searchQuery () {
-
-      },
-      searchReset () {
-
+        this.$refs.inventoryLogModal.title = "出库记录";
       }
     }
   }

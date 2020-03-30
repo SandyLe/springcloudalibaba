@@ -1,28 +1,28 @@
 <template>
   <div>
     <a-form style="margin: 40px auto 0;">
-      <result title="操作成功" :is-success="true" description="预计两小时内到账">
+      <result title="操作成功" :is-success="true" description="销售订单录入完成，请在库存管理中销售出库完成出库操作">
         <div class="information">
           <a-row>
-            <a-col :sm="8" :xs="24">付款账户：</a-col>
-            <a-col :sm="16" :xs="24">ant-design@alipay.com</a-col>
+            <a-col :sm="8" :xs="24">销售单号：</a-col>
+            <a-col :sm="16" :xs="24">{{saleOrder.code}}</a-col>
           </a-row>
           <a-row>
-            <a-col :sm="8" :xs="24">收款账户：</a-col>
-            <a-col :sm="16" :xs="24">test@example.com</a-col>
+            <a-col :sm="8" :xs="24">客户名称：</a-col>
+            <a-col :sm="16" :xs="24">{{saleOrder.customer}}</a-col>
           </a-row>
           <a-row>
-            <a-col :sm="8" :xs="24">收款人姓名：</a-col>
-            <a-col :sm="16" :xs="24">辉夜</a-col>
+            <a-col :sm="8" :xs="24">出货仓库：</a-col>
+            <a-col :sm="16" :xs="24">{{saleOrder.warehouse}}</a-col>
           </a-row>
           <a-row>
-            <a-col :sm="8" :xs="24">转账金额：</a-col>
-            <a-col :sm="16" :xs="24"><span class="money">500</span> 元</a-col>
+            <a-col :sm="8" :xs="24">订单金额：</a-col>
+            <a-col :sm="16" :xs="24"><span class="money">{{saleOrder.totalamount}}</span> 元</a-col>
           </a-row>
         </div>
         <div slot="action">
-          <a-button type="primary" @click="finish">再转一笔</a-button>
-          <a-button style="margin-left: 8px" @click="toOrderList">查看账单</a-button>
+          <a-button type="primary" @click="finish">完成</a-button>
+          <a-button style="margin-left: 8px" @click="toOrderList">订单列表</a-button>
         </div>
       </result>
     </a-form>
@@ -31,6 +31,7 @@
 
 <script>
   import Result from '../result/Result'
+  import {getSaleOrderOne } from '@/api/api'
 
   export default {
     name: "Step3",
@@ -39,6 +40,7 @@
     },
     data () {
       return {
+        saleOrder: {},
         loading: false
       }
     },
@@ -47,7 +49,17 @@
         this.$emit('finish')
       },
       toOrderList () {
-        this.$router.push('/list/query-list')
+        this.$router.push('/saleorder/SaleOrder')
+        this.$parent.$parent.closeRouteViewTab(this.$route.fullPath)
+      }
+    },
+    mounted() {
+      if (this.$route.query.id) {
+        getSaleOrderOne({id:this.$route.query.id}).then((res) => {
+          if (res.success) {
+            this.saleOrder = res.result;
+          }
+        })
       }
     }
   }

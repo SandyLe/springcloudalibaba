@@ -11,6 +11,8 @@ import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.modules.basic.entity.CustomerSource;
+import org.jeecg.modules.basic.enums.BillType;
+import org.jeecg.modules.basic.service.BillCodeBuilderService;
 import org.jeecg.modules.basic.service.CustomerSourceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -27,6 +29,8 @@ public class CustomerSourceController {
 
     @Autowired
     private CustomerSourceService customerSourceService;
+    @Autowired
+    private BillCodeBuilderService billCodeBuilderService;
 
     /**
      * 分页列表查询
@@ -76,6 +80,7 @@ public class CustomerSourceController {
     @AutoLog(value = "添加客户来源")
     @ApiOperation(value = "添加客户来源", notes = "添加客户来源")
     public Result<?> add(@RequestBody CustomerSource customerSource) {
+        customerSource.setCode(billCodeBuilderService.getBillCode(BillType.CUSTOMERSOURCE.getId()));
         customerSourceService.save(customerSource);
         return Result.ok("添加成功！");
     }

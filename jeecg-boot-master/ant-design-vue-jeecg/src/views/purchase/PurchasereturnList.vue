@@ -43,7 +43,7 @@
 
     <!-- 操作按钮区域 -->
     <div class="table-operator">
-        <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
+        <a-button @click="diyhandleEdit" type="primary" icon="plus">新增</a-button>
         <a-button type="primary" icon="download" @click="handleExportXls('采购列表')">导出</a-button>
         <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
             <a-button type="primary" icon="import">导入</a-button>
@@ -83,7 +83,7 @@
             </template>
 
             <span slot="action" slot-scope="text, record">
-                <a @click="handleEdit(record)">编辑</a>
+                <a @click="diyhandleEdit(record)">编辑</a>
 
                 <a-divider type="vertical" />
                 <a-dropdown>
@@ -102,15 +102,11 @@
         </a-table>
     </div>
 
-    <purchasereturn-modal ref="modalForm" @ok="modalFormOk"></purchasereturn-modal>
 </a-card>
 </template>
 
 <script>
-import {
-    JeecgListMixin
-} from '@/mixins/JeecgListMixin'
-import PurchasereturnModal from './PurchasereturnModal'
+import {JeecgListMixin} from '@/mixins/JeecgListMixin'
 import JDictSelectTag from '@/components/dict/JDictSelectTag.vue'
 import JDate from '@/components/jeecg/JDate.vue'
 
@@ -119,8 +115,7 @@ export default {
     mixins: [JeecgListMixin],
     components: {
         JDictSelectTag,
-        JDate,
-        PurchasereturnModal
+        JDate
     },
     data() {
         return {
@@ -137,21 +132,29 @@ export default {
                     }
                 },
                 {
-                    title: '供应商',
-                    align: "center",
-                    dataIndex: 'vendorId',
-                    customRender: (text) => {
-                        if (!text) {
-                            return ''
-                        } else {
-                            return filterMultiDictText(this.dictOptions['vendorId'], text + "")
-                        }
-                    }
+                  title: '单号',
+                  align: "center",
+                  dataIndex: 'code'
+                },
+                {
+                  title: '供应商',
+                  align: "center",
+                  dataIndex: 'vendor'
+                },
+                {
+                  title: '仓库',
+                  align: "center",
+                  dataIndex: 'warehouse'
+                },
+                {
+                  title: '结算账户',
+                  align: "center",
+                  dataIndex: 'account'
                 },
                 {
                     title: '业务时间',
                     align: "center",
-                    dataIndex: 'businessTime'
+                    dataIndex: 'billdate'
                 },
                 {
                     title: '金额',
@@ -164,22 +167,9 @@ export default {
                     dataIndex: 'updateTime'
                 },
                 {
-                    title: '创建时间',
-                    align: "center",
-                    dataIndex: 'createTime',
-                    customRender: function (text) {
-                        return !text ? "" : (text.length > 10 ? text.substr(0, 10) : text)
-                    }
-                },
-                {
-                    title: '排序值',
-                    align: "center",
-                    dataIndex: 'sort'
-                },
-                {
-                    title: '状态',
-                    align: "center",
-                    dataIndex: 'states'
+                  title: '状态',
+                  align: "center",
+                  dataIndex: 'billStatusName'
                 },
                 {
                     title: '操作',
@@ -208,18 +198,17 @@ export default {
         }
     },
     methods: {
-        initDictConfig() {
-            initDictOptions('').then((res) => {
-                if (res.success) {
-                    this.$set(this.dictOptions, 'vendorId', res.result)
-                }
-            })
+      diyhandleEdit(e){
+        if(e.id){
+          this.$router.replace({ path:'/purchase/PurchasereturnModal/' + e.id });
         }
-
+        else{
+          this.$router.replace({ path:'/purchase/PurchasereturnModal/' });
+        }
+      }
     }
 }
 </script>
-
 <style scoped>
-@import '~@assets/less/common.less'
+  @import '~@assets/less/common.less'
 </style>
