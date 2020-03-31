@@ -29,19 +29,25 @@
 			</snapshots>
 		</repository>
 	</repositories>
-	
+
 	<dependencies>
 		<dependency>
 			<groupId>org.jeecgframework.boot</groupId>
 			<artifactId>jeecg-boot-base-common</artifactId>
+			<version>2.1.1</version>
+			<scope>system</scope>
+			<systemPath>/Users/sandylee/Documents/workspace/jeecg-boot-master/jeecg-boot/jeecg-boot-base-common/target/jeecg-boot-base-common-2.1.1.jar</systemPath>
 		</dependency>
 	</dependencies>
-	
+
 	<build>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<includeSystemScope>true</includeSystemScope>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>

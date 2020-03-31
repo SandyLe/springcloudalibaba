@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import org.apache.commons.lang.StringUtils;
 
 import java.math.BigDecimal;
 
@@ -36,6 +37,8 @@ public class Material extends BasicEntity {
     private String unit;
     @ApiModelProperty("基础单位ID")
     private String barCode;
+    @TableField(exist=false)
+    private String info;
 
     public String getSpecification() {
         return specification;
@@ -123,5 +126,23 @@ public class Material extends BasicEntity {
 
     public void setUnit(String unit) {
         this.unit = unit;
+    }
+
+    public String getInfo() {
+        StringBuilder sb = new StringBuilder();
+        if (StringUtils.isNotBlank(this.getName())) {
+            sb.append(this.getName() + " | ");
+        }
+        if (StringUtils.isNotBlank(this.getCode())) {
+            sb.append(this.getCode() + " | ");
+        }
+        if (StringUtils.isNotBlank(this.getSpecification())) {
+            sb.append(this.getSpecification());
+        }
+        return sb.toString();
+    }
+
+    public void setInfo(String info) {
+        this.info = info;
     }
 }

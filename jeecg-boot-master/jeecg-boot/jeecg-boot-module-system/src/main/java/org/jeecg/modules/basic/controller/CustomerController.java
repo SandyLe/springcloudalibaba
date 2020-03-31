@@ -251,4 +251,24 @@ public class CustomerController {
         }
         return stringBuilder.toString();
     }
+    /**
+     * 搜索客户
+     *
+     * @param keyword
+     * @return
+     */
+    @ApiOperation(value = "搜索", notes = "搜索")
+    @GetMapping(value = "/search")
+    @PermissionData
+    public Result<?> search(Customer customer,
+                            @ApiParam(name = "keyword", value = "关键词", required = true) @RequestParam(name = "keyword", required = false) String keyword,
+                            HttpServletRequest req) {
+        QueryWrapper<Customer> queryWrapper = QueryGenerator.initQueryWrapper(customer, req.getParameterMap());
+        if (StringUtils.isNotBlank(keyword)) {
+            queryWrapper.like("name", keyword).or().like("code", keyword).or().like("phone", keyword);
+        }
+        queryWrapper.orderByDesc("create_time").last("limit 0,20");
+        List<Customer> list = customerService.list(queryWrapper);
+        return Result.ok(list);
+    }
 }

@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.apache.commons.lang.StringUtils;
 import org.jeecg.modules.basic.entity.BasicEntity;
 
 import java.math.BigDecimal;
@@ -45,6 +46,8 @@ public class SaleOrderMtl extends BasicEntity {
     private BigDecimal amount;
     @ApiModelProperty("订单状态")
     private Integer billStatus;
+    @TableField(exist=false)
+    private String info;
 
     public String getMtlId() {
         return mtlId;
@@ -156,5 +159,23 @@ public class SaleOrderMtl extends BasicEntity {
 
     public void setBillStatus(Integer billStatus) {
         this.billStatus = billStatus;
+    }
+
+    public String getInfo() {
+        StringBuilder sb = new StringBuilder();
+        if (StringUtils.isNotBlank(this.getMtl())) {
+            sb.append(this.getMtl() + " | ");
+        }
+        if (StringUtils.isNotBlank(this.getMtlCode())) {
+            sb.append(this.getMtlCode() + " | ");
+        }
+        if (StringUtils.isNotBlank(this.getSpecification())) {
+            sb.append(this.getSpecification());
+        }
+        return sb.toString();
+    }
+
+    public void setInfo(String info) {
+        this.info = info;
     }
 }

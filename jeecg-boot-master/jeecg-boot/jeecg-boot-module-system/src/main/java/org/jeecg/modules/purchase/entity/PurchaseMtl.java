@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import org.apache.commons.lang.StringUtils;
 import org.jeecg.modules.basic.entity.BasicEntity;
 import org.springframework.format.annotation.DateTimeFormat;
 import lombok.Data;
@@ -35,6 +36,12 @@ public class PurchaseMtl extends BasicEntity {
     @ApiModelProperty("产品")
     @TableField(exist=false)
     private String mtl;
+    @ApiModelProperty("产品Code")
+    @TableField(exist=false)
+    private String mtlCode;
+    @ApiModelProperty("规格")
+    @TableField(exist=false)
+    private String specification;
 
     /*单位*/
     @ApiModelProperty("单位")
@@ -55,6 +62,8 @@ public class PurchaseMtl extends BasicEntity {
     /*金额*/
     @ApiModelProperty("金额")
     private String amount;
+    @TableField(exist=false)
+    private String info;
 
 
     public String getSourceId() {
@@ -119,5 +128,39 @@ public class PurchaseMtl extends BasicEntity {
 
     public void setMtl(String mtl) {
         this.mtl = mtl;
+    }
+
+    public String getMtlCode() {
+        return mtlCode;
+    }
+
+    public void setMtlCode(String mtlCode) {
+        this.mtlCode = mtlCode;
+    }
+
+    public String getSpecification() {
+        return specification;
+    }
+
+    public void setSpecification(String specification) {
+        this.specification = specification;
+    }
+
+    public String getInfo() {
+        StringBuilder sb = new StringBuilder();
+        if (StringUtils.isNotBlank(this.getMtl())) {
+            sb.append(this.getMtl() + " | ");
+        }
+        if (StringUtils.isNotBlank(this.getMtlCode())) {
+            sb.append(this.getMtlCode() + " | ");
+        }
+        if (StringUtils.isNotBlank(this.getSpecification())) {
+            sb.append(this.getSpecification());
+        }
+        return sb.toString();
+    }
+
+    public void setInfo(String info) {
+        this.info = info;
     }
 }
