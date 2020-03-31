@@ -35,7 +35,7 @@
                         notFoundContent="无法找到，输入关键词Enter搜索" @keyup.enter.native="searchMtl" >
                 <a-select-option value="">请选择</a-select-option>
                 <a-select-option v-for="(item, key) in mtlList" :key="key" :value="item.id">
-                  {{ item.name || item.code }}
+                  {{ item.info }}
                 </a-select-option>
               </a-select>
             </a-form-item>

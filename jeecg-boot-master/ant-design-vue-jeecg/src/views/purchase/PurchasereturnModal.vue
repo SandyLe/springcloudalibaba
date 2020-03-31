@@ -89,7 +89,7 @@
                     <a-select v-if="['mtlId','unitId'].indexOf(columns[i].dataIndex) > -1" :readOnly="columns[i].dataIndex==='unitId'" v-decorator="[record[columns[i].dataIndex], {}]"
                               @change="e => handleChange(e, record.key, col)" :placeholder="'请选择'+columns[i].title" :value="record[columns[i].dataIndex]">
                       <a-select-option v-for="(item, key) in columns[i].list" :key="key" :value="item.id">
-                        {{ item.name }}
+                        {{ item.info || item.name }}
                       </a-select-option>
                     </a-select>
                     <a-input :key="col" v-else style="margin: -5px 0" :value="text" :placeholder="columns[i].title" @change="e => handleChange(e.target.value, record.key, col)" />

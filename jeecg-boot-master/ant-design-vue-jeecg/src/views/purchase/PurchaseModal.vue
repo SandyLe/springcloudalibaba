@@ -68,7 +68,7 @@
                                               @change="e => handleChange(e, record.key, col)" :placeholder="'请选择'+columns[i].title" :value="record[columns[i].dataIndex]" ref="sel">
                                         <a-select-option value="">请选择</a-select-option>
                                         <a-select-option v-for="(item, key) in columns[i].list" :key="key" :value="item.id">
-                                            {{ item.name }}
+                                            {{ item.info || item.name }}
                                         </a-select-option>
                                     </a-select>
                                     <a-input :key="col" v-else style="margin: -5px 0" :value="text" :placeholder="columns[i].title" @change="e => handleChange(e.target.value, record.key, col)" />

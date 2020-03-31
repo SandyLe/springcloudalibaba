@@ -136,6 +136,7 @@ const getCustomerOne = (params)=>getAction("/customer/getOne",params)
 const saveCustomer = (params)=>postAction("/customer/save",params)
 const getCustomerList =  (params)=>getAction("/customer/getList",params)
 const getDeliveryInfo = (params)=>getAction("/customer/getDeliveryInfo",params)
+const searchCustomer = (params)=>getAction("/customer/search",params)
 const addVendor = (params)=>postAction("/vendor/add",params)
 const editVendor = (params)=>postAction("/vendor/edit",params)
 const getVendorList = (params)=>getAction("/vendor/getList",params)
@@ -343,7 +344,8 @@ export {
   getPurchaseMtlList,
   getPurchaseMtlOne,
   purchaseReturnQueryById,
-  purchaseReturnDetailDelete
+  purchaseReturnDetailDelete,
+  searchCustomer
 }
 
 
