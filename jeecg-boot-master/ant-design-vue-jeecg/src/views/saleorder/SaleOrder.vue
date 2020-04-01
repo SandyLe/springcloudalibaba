@@ -77,6 +77,9 @@
             </a>
             <a-menu slot="overlay">
               <a-menu-item  v-if="record.billStatus < 4 && record.billStatus != -1">
+                <a @click="popDetail(record)">详情打印</a>
+              </a-menu-item>
+              <a-menu-item  v-if="record.billStatus < 4 && record.billStatus != -1">
                 <a-popconfirm title="确定作废吗?" @confirm="() => handleInvalid(record)">
                   <a>作废</a>
                 </a-popconfirm>
@@ -92,12 +95,12 @@
       </a-table>
     </div>
 
-    <saleOrder-modal ref="modalForm" @ok="modalFormOk"></saleOrder-modal>
+    <sale-order-detail ref="saleOrderDetail" @ok="modalFormOk"></sale-order-detail>
   </a-card>
 </template>
 
 <script>
-  import SaleOrderModal from './SaleOrderMtlModal'
+  import SaleOrderDetail from './SaleOrderDetail'
   import JInput from '@/components/jeecg/JInput'
   import {JeecgListMixin} from '@/mixins/JeecgListMixin'
   import {disableSaleOrder, searchCustomer} from '@/api/api'
@@ -106,7 +109,7 @@
     mixins: [JeecgListMixin],
     components: {
       JInput,
-      SaleOrderModal
+      SaleOrderDetail
     },
     data () {
       return {
@@ -206,6 +209,10 @@
       },
       goDetail (id) {
         this.$router.push({ name: "saleorder-saleOrderEdit", query: {"id": id, "unEditable": true}})
+      },
+      popDetail: function(record) {
+        this.$refs.saleOrderDetail.title = '订单详情'
+        this.$refs.saleOrderDetail.view(record)
       },
       handleEditSaleOrder (id) {
         this.$router.push({ name: "saleorder-saleOrderEdit", query: {"id": id, "unEditable": false}})
