@@ -189,9 +189,9 @@
                 :wrapperCol="wrapperCol"
                 label="物流"
                 label-width="4">
-                <a-select v-decorator="['cdiLogistics', {}]" placeholder="物流" style="width: 10%" :disabled="unEditable">
+                <a-select v-decorator="['cdiLogistics', {}]" placeholder="物流" :disabled="unEditable">
                   <a-select-option value="">请选择</a-select-option>
-                  <a-select-option v-for="(item, key) in sourceList" :key="key" :value="item.id">
+                  <a-select-option v-for="(item, key) in logistics" :key="key" :value="item.id">
                     <span style="display: inline-block;width: 100%" :title=" item.name || item.code ">
                       {{ item.name || item.code }}
                     </span>
@@ -288,7 +288,7 @@
   import pick from 'lodash.pick'
   import moment from 'moment'
   import JDictSelectTag from '@/components/dict/JDictSelectTag.vue'
-  import {getWarehouseList,editSaleOrder, getSaleOrderOne, getAreaList, delivery, getSaleOrderDeliveryInfo, duplicateCheck } from '@/api/api'
+  import {getWarehouseList,editSaleOrder, getSaleOrderOne, getAreaList, delivery, getSaleOrderDeliveryInfo, duplicateCheck, getLogisticsCompanyList } from '@/api/api'
   export default {
     name: "Step3",
     components: {JDictSelectTag},
@@ -328,6 +328,7 @@
         districtList:[],
         cdiCityList: [],
         cdiDistrictList:[],
+        logistics: [],
         unEditable: true
       }
     },
@@ -380,6 +381,19 @@
             }
           })
         }
+        if (val === 'WULIU'){
+          getLogisticsCompanyList({}).then((res) => {
+            if (res.success) {
+              this.logistics = res.result
+            }
+          })
+          getAreaList({parentId:'100000'}).then((res) => {
+            if (res.success) {
+              this.provinceList = res.result
+            }
+          })
+        }
+
       },
       areaChangeCdi(val) {
 
