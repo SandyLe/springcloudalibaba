@@ -1,5 +1,6 @@
 package org.jeecg.modules.saleorder.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -8,18 +9,18 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.DictModel;
+import org.jeecg.modules.basic.entity.Area;
 import org.jeecg.modules.basic.entity.Customer;
+import org.jeecg.modules.basic.entity.LogisticsCompany;
 import org.jeecg.modules.basic.entity.Warehouse;
 import org.jeecg.modules.basic.enums.BillStatus;
 import org.jeecg.modules.basic.enums.EnumConvertUtils;
-import org.jeecg.modules.basic.service.CustomerService;
-import org.jeecg.modules.basic.service.MaterialService;
-import org.jeecg.modules.basic.service.MaterialUnitService;
-import org.jeecg.modules.basic.service.WarehouseService;
+import org.jeecg.modules.basic.service.*;
 import org.jeecg.modules.saleorder.entity.SaleOrderDeliveryInfo;
 import org.jeecg.modules.saleorder.service.SaleOrderDeliveryInfoService;
 import org.jeecg.modules.system.service.ISysDictService;
@@ -51,6 +52,10 @@ public class SaleOrderDeliveryController {
     private MaterialUnitService materialUnitService;
     @Autowired
     private MaterialService materialService;
+    @Autowired
+    private LogisticsCompanyService logisticsCompanyService;
+    @Autowired
+    private AreaService areaService;
     /**
      * 添加
      *
@@ -77,6 +82,38 @@ public class SaleOrderDeliveryController {
         QueryWrapper<SaleOrderDeliveryInfo> queryWrapper = QueryGenerator.initQueryWrapper(saleOrderDeliveryInfo, req.getParameterMap());
         List<SaleOrderDeliveryInfo> list = saleOrderDeliveryInfoService.list(queryWrapper);
         return Result.ok(list);
+    }
+    /**
+     * 获取销售订单发货信息
+     *
+     * @param sourceId
+     * @return
+     */
+    @ApiOperation(value = "获取销售订单发货信息数据", notes = "获取所有销售订单发货信息数据")
+    @GetMapping(value = "/getBySourceId")
+    public Result<?> getBySourceId(@RequestParam(name = "sourceId", required = true) String sourceId) {
+        LambdaQueryWrapper<SaleOrderDeliveryInfo> queryWrapper = new LambdaQueryWrapper<SaleOrderDeliveryInfo>().eq(SaleOrderDeliveryInfo::getSourceId, sourceId);
+        SaleOrderDeliveryInfo saleOrderDeliveryInfo = saleOrderDeliveryInfoService.getOne(queryWrapper);
+        if (StringUtils.isNotBlank(saleOrderDeliveryInfo.getCdiLogistics())) {
+            LogisticsCompany logisticsCompany = logisticsCompanyService.getById(saleOrderDeliveryInfo.getCdiLogistics());
+            saleOrderDeliveryInfo.setCdiLogistics(null != logisticsCompany ? logisticsCompany.getName() : null);
+        }
+        if (StringUtils.isNotBlank(saleOrderDeliveryInfo.getCdiProvince())) {
+            Area area = areaService.getById(saleOrderDeliveryInfo.getCdiProvince());
+            saleOrderDeliveryInfo.setCdiProvince(null != area ? area.getName() : "");
+        }
+        if (StringUtils.isNotBlank(saleOrderDeliveryInfo.getCdiCity())) {
+            Area area = areaService.getById(saleOrderDeliveryInfo.getCdiCity());
+            saleOrderDeliveryInfo.setCdiCity(null != area ? area.getName() : "");
+        }
+        if (StringUtils.isNotBlank(saleOrderDeliveryInfo.getCdiDistrict())) {
+            Area area = areaService.getById(saleOrderDeliveryInfo.getCdiDistrict());
+            saleOrderDeliveryInfo.setCdiDistrict(null != area ? area.getName() : "");
+        }
+        Collection<DictModel> sysDict = iSysDictService.queryDictItemsByCode("delivery_type");
+        Map<String, String> dictModelMap = sysDict.stream().collect(Collectors.toMap(DictModel::getValue, DictModel::getText));
+        saleOrderDeliveryInfo.setCdiDefaultTypeName(dictModelMap.get(saleOrderDeliveryInfo.getCdiDefaultType()));
+        return Result.ok(saleOrderDeliveryInfo);
     }
     /**
      * 分页列表查询
