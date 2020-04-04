@@ -53,6 +53,12 @@
           批量操作 <a-icon type="down" />
         </a-button>
       </a-dropdown>
+
+      <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel" style="margin-left: 8px">
+        <a-button type="primary" icon="import">导入</a-button>
+      </a-upload>
+
+      <a-button type="link" @click="downloadtemplate">下载模板</a-button>
     </div>
 
     <!-- table区域-begin -->
@@ -195,13 +201,22 @@
         url: {
           list: "/material/getPage",
           delete: "/material/delete",
-          deleteBatch: "/material/deleteBatch"
+          deleteBatch: "/material/deleteBatch",
+          importExcelUrl: "/material/importExcel",
         }
       }
+    },
+    computed: {
+      importExcelUrl: function(){
+        return `${window._CONFIG['domianURL']}/${this.url.importExcelUrl}`;
+      },
     },
     methods: {
       goDetail(id) {
         this.$router.push({ name: "material-materialEdit", query: {"id": id}})
+      },
+      downloadtemplate(){
+        location.href =`${window._CONFIG['domianURL']}/sys/common/sysdownload/systemplate/product.xlsx`;
       }
     }
   }

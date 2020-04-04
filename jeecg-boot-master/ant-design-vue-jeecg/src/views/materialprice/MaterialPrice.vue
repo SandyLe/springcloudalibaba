@@ -41,6 +41,12 @@
           批量操作 <a-icon type="down" />
         </a-button>
       </a-dropdown>
+
+      <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel" style="margin-left: 8px">
+        <a-button type="primary" icon="import">导入</a-button>
+      </a-upload>
+
+      <a-button type="link" @click="downloadtemplate">下载模板</a-button>
     </div>
 
     <!-- table区域-begin -->
@@ -172,8 +178,19 @@
         url: {
           list: "/materialPrice/getPage",
           delete: "/materialPrice/delete",
-          deleteBatch: "/materialPrice/deleteBatch"
+          deleteBatch: "/materialPrice/deleteBatch",
+          importExcelUrl: "/materialPrice/importExcel",
         }
+      }
+    },
+    computed: {
+      importExcelUrl: function(){
+        return `${window._CONFIG['domianURL']}/${this.url.importExcelUrl}`;
+      },
+    },
+    methods: {
+      downloadtemplate(){
+        location.href =`${window._CONFIG['domianURL']}/sys/common/sysdownload/systemplate/materialprice.xlsx`;
       }
     }
   }
