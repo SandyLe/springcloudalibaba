@@ -14,6 +14,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.jeecg.common.api.vo.Result;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -194,6 +196,67 @@ public class CommonController {
 		}
 
 	}
+
+	/**
+	 * 下载文件
+	 * 请求地址：http://localhost:8080/jeecg-boot/common/sysdownload/{user/20190119/e1fe9925bc315c60addea1b98eb1cb1349547719_1547866868179.jpg}
+	 *
+	 * @param request
+	 * @param response
+	 * @throws Exception
+	 */
+	@GetMapping(value = "/sysdownload/**")
+	public void sysDownload(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		// ISO-8859-1 ==> UTF-8 进行编码转换
+		String filePath = extractPathFromPattern(request);
+		System.out.println(String.format("公共下载：%s=",filePath));
+		// 其余处理略
+		InputStream inputStream = null;
+		OutputStream outputStream = null;
+		try {
+			filePath = filePath.replace("..", "");
+			if (filePath.endsWith(",")) {
+				filePath = filePath.substring(0, filePath.length() - 1);
+			}
+			Resource resource = new ClassPathResource(filePath);
+			File file = resource.getFile();
+			if (file.exists()) {
+				response.setContentType("application/force-download");// 设置强制下载不打开            
+				response.addHeader("Content-Disposition", "attachment;fileName=" + new String(file.getName().getBytes("UTF-8"),"iso-8859-1"));
+				inputStream = new BufferedInputStream(new FileInputStream(file));
+				outputStream = response.getOutputStream();
+				byte[] buf = new byte[1024];
+				int len;
+				while ((len = inputStream.read(buf)) > 0) {
+					outputStream.write(buf, 0, len);
+				}
+				response.flushBuffer();
+			}
+			else{
+				System.out.println("文件不存在或找不到");
+			}
+		} catch (Exception e) {
+			log.info("文件下载失败" + e.getMessage());
+			// e.printStackTrace();
+		} finally {
+			if (inputStream != null) {
+				try {
+					inputStream.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+			if (outputStream != null) {
+				try {
+					outputStream.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
+	}
+
 	/**
 	 * @功能：pdf预览Iframe
 	 * @param modelAndView

@@ -84,6 +84,7 @@ public class ShiroConfig {
 		filterChainDefinitionMap.put("/auth/2step-code", "anon");//登录验证码
 		filterChainDefinitionMap.put("/sys/common/view/**", "anon");//图片预览不限制token
 		filterChainDefinitionMap.put("/sys/common/download/**", "anon");//文件下载不限制token
+		filterChainDefinitionMap.put("/sys/common/sysdownload/**", "anon");//系统文件下载不限制token
 		filterChainDefinitionMap.put("/sys/common/pdf/**", "anon");//pdf预览
 		filterChainDefinitionMap.put("/generic/**", "anon");//pdf预览需要文件
 		filterChainDefinitionMap.put("/", "anon");
@@ -96,6 +97,7 @@ public class ShiroConfig {
 		filterChainDefinitionMap.put("/**/*.jpg", "anon");
 		filterChainDefinitionMap.put("/**/*.png", "anon");
 		filterChainDefinitionMap.put("/**/*.ico", "anon");
+
 
 		// update-begin--Author:sunjianlei Date:20190813 for：排除字体格式的后缀
 		filterChainDefinitionMap.put("/**/*.ttf", "anon");

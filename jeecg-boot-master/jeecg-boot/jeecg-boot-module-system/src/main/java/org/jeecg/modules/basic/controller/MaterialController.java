@@ -1,5 +1,6 @@
 package org.jeecg.modules.basic.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -9,25 +10,34 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.system.query.QueryGenerator;
+import org.jeecg.modules.basic.dto.MaterialExcelDto;
 import org.jeecg.modules.basic.entity.Material;
 import org.jeecg.modules.basic.entity.MaterialBrand;
 import org.jeecg.modules.basic.entity.MaterialType;
 import org.jeecg.modules.basic.entity.MaterialUnit;
 import org.jeecg.modules.basic.enums.BillType;
 import org.jeecg.modules.basic.service.*;
+import org.jeecg.modules.system.entity.SysUser;
+import org.jeecgframework.poi.excel.ExcelImportUtil;
+import org.jeecgframework.poi.excel.entity.ImportParams;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
+import springfox.documentation.spring.web.json.Json;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -205,5 +215,95 @@ public class MaterialController {
         queryWrapper.orderByDesc(Material::getCreateTime).last("limit 0,20");
         List<Material> list = materialService.list(queryWrapper);
         return Result.ok(list);
+    }
+
+    /**
+     * 通过excel导入数据
+     *
+     * @param request
+     * @param response
+     * @return
+     */
+//    @RequiresPermissions("user:import")
+    @RequestMapping(value = "/importExcel", method = RequestMethod.POST)
+    @Transactional
+    public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response) {
+        MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
+        Map<String, MultipartFile> fileMap = multipartRequest.getFileMap();
+
+        Collection<MaterialBrand> brands = materialBrandService.list();
+        Collection<MaterialType> types = materialTypeService.list();
+        Collection<MaterialUnit> units = materialUnitService.list();
+
+        for (Map.Entry<String, MultipartFile> entity : fileMap.entrySet()) {
+            MultipartFile file = entity.getValue();// 获取上传文件对象
+            ImportParams params = new ImportParams();
+            params.setHeadRows(1);
+            params.setNeedSave(true);
+            try {
+                List<MaterialExcelDto> materialList = ExcelImportUtil.importExcel(file.getInputStream(), MaterialExcelDto.class, params);
+                if (CollectionUtils.isNotEmpty(materialList)){
+
+                    if (materialList.stream().anyMatch(p->StringUtils.isEmpty(p.getBrand()))){
+                        return Result.error(String.format("抱歉！“品牌”列不能为空"));
+                    }
+                    Collection<String> brandsSubtract  = CollectionUtils.removeAll(materialList.stream().map(p->p.getBrand()).collect(Collectors.toList()),
+                            brands.stream().map(p->p.getName()).collect(Collectors.toList()));
+                    if (CollectionUtils.isNotEmpty(brandsSubtract)){
+                        return Result.error(String.format("抱歉！请先新增以下品牌: %s", StringUtils.join(brandsSubtract.toArray(),",")));
+                    }
+
+
+                    if (materialList.stream().anyMatch(p->StringUtils.isEmpty(p.getType()))){
+                        return Result.error(String.format("抱歉！“类型”列不能为空"));
+                    }
+                    Collection<String> typesSubtract = CollectionUtils.removeAll(materialList.stream().map(p->p.getType()).collect(Collectors.toList()),
+                            types.stream().map(p->p.getName()).collect(Collectors.toList()));
+                    if (CollectionUtils.isNotEmpty(typesSubtract)){
+                        return Result.error(String.format("抱歉！请先新增以下类型: %s", StringUtils.join(typesSubtract.toArray(),",")));
+                    }
+
+
+                    if (materialList.stream().anyMatch(p->StringUtils.isEmpty(p.getUnit()))){
+                        return Result.error(String.format("抱歉！“单位”列不能为空"));
+                    }
+                    Collection<String> unitsSubtract = CollectionUtils.removeAll(materialList.stream().map(p->p.getUnit()).collect(Collectors.toList()),
+                            units.stream().map(p->p.getName()).collect(Collectors.toList()));
+                    if (CollectionUtils.isNotEmpty(typesSubtract)){
+                        return Result.error(String.format("抱歉！请先新增以下单位: %s", StringUtils.join(unitsSubtract.toArray(),",")));
+                    }
+
+
+                    List<Material> excelMaterial = new ArrayList<>();
+                    Material material;
+                    for (MaterialExcelDto materialExcelDto : materialList) {
+                        System.out.println(JSON.toJSONString(materialExcelDto));
+                        material = new Material();
+                        material.setName(materialExcelDto.getName());
+                        material.setCode(billCodeBuilderService.getBillCode(BillType.MATERIAL.getId()));
+                        material.setSpecification(materialExcelDto.getSpecification());
+                        material.setBrandId(brands.stream().filter(p-> ObjectUtils.equals(p.getName(), materialExcelDto.getBrand()) ).findFirst().get().getId());
+                        material.setUnitId(units.stream().filter(p-> ObjectUtils.equals(p.getName(), materialExcelDto.getUnit()) ).findFirst().get().getId());
+                        material.setTypeId(types.stream().filter(p-> ObjectUtils.equals(p.getName(), materialExcelDto.getType()) ).findFirst().get().getId());
+                        excelMaterial.add(material);
+                    }
+                    materialService.saveBatch(excelMaterial);
+                    return Result.ok("文件导入成功！数据行数：" + materialList.size());
+                }
+                return Result.error("抱歉! Excel中没有任何数据");
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                log.error(e.getMessage(),e);
+                return Result.error("抱歉! 发生错误:"+ e.getMessage());
+            } finally {
+                try {
+                    file.getInputStream().close();
+                } catch (IOException e) {
+                    log.error(e.getMessage(), e);
+                }
+            }
+        }
+        return Result.error("文件导入失败！");
     }
 }
