@@ -3,15 +3,27 @@
 
     <!-- 查询区域 -->
     <div class="table-page-search-wrapper">
-      <a-form layout="inline" @keyup.enter.native="searchQuery">
+      <a-form layout="inline">
+        <!--<a-form layout="inline" @keyup.enter.native="searchQuery">-->
         <a-row :gutter="24">
           <a-col :md="6" :sm="12">
-            <a-form-item label="账号">
+            <a-form-item label="单号">
               <!--<a-input placeholder="请输入账号查询" v-model="queryParam.username"></a-input>-->
-              <j-input placeholder="输入账号模糊查询" v-model="queryParam.username"></j-input>
+              <j-input placeholder="输入单号模糊查询" v-model="queryParam.code"></j-input>
             </a-form-item>
           </a-col>
-
+          <a-col :md="8" :sm="12">
+            <a-form-item label="客户">
+              <a-select style="" v-model="queryParam.customerId" placeholder="请选择客户"  showSearch
+                        optionFilterProp="children"
+                        notFoundContent="无法找到，输入名称、编号、手机号回车搜索" @keyup.enter.native="searchCustomer" >
+                <a-select-option value="">请选择</a-select-option>
+                <a-select-option v-for="(item, key) in customerList" :key="key" :value="item.id">
+                  {{ item.info }}
+                </a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
           <a-col :md="6" :sm="8">
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
               <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
@@ -65,6 +77,9 @@
             </a>
             <a-menu slot="overlay">
               <a-menu-item  v-if="record.billStatus < 4 && record.billStatus != -1">
+                <a @click="popDetail(record)">详情打印</a>
+              </a-menu-item>
+              <a-menu-item  v-if="record.billStatus < 4 && record.billStatus != -1">
                 <a-popconfirm title="确定作废吗?" @confirm="() => handleInvalid(record)">
                   <a>作废</a>
                 </a-popconfirm>
@@ -80,25 +95,26 @@
       </a-table>
     </div>
 
-    <saleOrder-modal ref="modalForm" @ok="modalFormOk"></saleOrder-modal>
+    <sale-order-detail ref="saleOrderDetail" @ok="modalFormOk"></sale-order-detail>
   </a-card>
 </template>
 
 <script>
-  import SaleOrderModal from './SaleOrderMtlModal'
+  import SaleOrderDetail from './SaleOrderDetail'
   import JInput from '@/components/jeecg/JInput'
   import {JeecgListMixin} from '@/mixins/JeecgListMixin'
-  import {disableSaleOrder} from '@/api/api'
+  import {disableSaleOrder, searchCustomer} from '@/api/api'
   export default {
     name: "",
     mixins: [JeecgListMixin],
     components: {
       JInput,
-      SaleOrderModal
+      SaleOrderDetail
     },
     data () {
       return {
         queryParam:{},
+        customerList: [],
         columns: [
 
           {
@@ -184,14 +200,19 @@
       }
     },
     methods: {
-      searchQuery () {
-
-      },
-      searchReset () {
-
+      searchCustomer (e) {
+        searchCustomer({"keyword":e.target.valueOf().value}).then((res) => {
+          if (res.success) {
+            this.customerList = res.result;
+          }
+        })
       },
       goDetail (id) {
         this.$router.push({ name: "saleorder-saleOrderEdit", query: {"id": id, "unEditable": true}})
+      },
+      popDetail: function(record) {
+        this.$refs.saleOrderDetail.title = '订单详情'
+        this.$refs.saleOrderDetail.view(record)
       },
       handleEditSaleOrder (id) {
         this.$router.push({ name: "saleorder-saleOrderEdit", query: {"id": id, "unEditable": false}})
@@ -207,6 +228,13 @@
         }).finally(() => {
         })
       }
+    },
+    mounted() {
+      searchCustomer({}).then((res) => {
+        if (res.success) {
+          this.customerList = res.result;
+        }
+      })
     }
   }
 </script>

@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import org.apache.commons.lang.StringUtils;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -74,6 +75,8 @@ public class Customer extends BasicEntity {
     private String billingInfo;
     @TableField(exist=false)
     private String fullAddress;
+    @TableField(exist=false)
+    private String info;
 
     public String getCustomerTypeId() {
         return customerTypeId;
@@ -313,5 +316,23 @@ public class Customer extends BasicEntity {
 
     public void setFullAddress(String fullAddress) {
         this.fullAddress = fullAddress;
+    }
+
+    public String getInfo() {
+        StringBuilder sb = new StringBuilder();
+        if (StringUtils.isNotBlank(this.getName())) {
+            sb.append(this.getName() + " | ");
+        }
+        if (StringUtils.isNotBlank(this.getCode())) {
+            sb.append(this.getCode() + " | ");
+        }
+        if (StringUtils.isNotBlank(this.getPhone())) {
+            sb.append(this.getPhone());
+        }
+        return sb.toString();
+    }
+
+    public void setInfo(String info) {
+        this.info = info;
     }
 }

@@ -34,7 +34,7 @@
                 <a-select-option value="">请选择</a-select-option>
                 <a-select-option v-for="(item, key) in mtlList" :key="key" :value="item.mtlId">
                     <span style="display: inline-block;width: 100%" :title=" item.mtl || item.mtlCode ">
-                      {{ item.mtl || item.mtlCode }}
+                      {{ item.info }}
                     </span>
                 </a-select-option>
               </a-select>

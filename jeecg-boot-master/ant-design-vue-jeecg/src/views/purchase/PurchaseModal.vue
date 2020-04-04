@@ -63,12 +63,12 @@
                         <form :autoFormCreate="(form) => this.form = form">
                             <a-table :columns="columns" :dataSource="tabledata" :pagination="false" rowKey="id" ref="mtltable">
                                 <template v-for="(col, i) in ['mtlId', 'unitId','quantity', 'price', 'discount', 'amount', 'content', 'action']" :slot="col" clearable slot-scope="text, record, index">
-                                    <a-select v-if="['mtlId','unitId'].indexOf(columns[i].dataIndex) > -1" v-decorator="[record[columns[i].dataIndex], {}]" showSearch
+                                    <a-select :style="['mtlId'].indexOf(columns[i].dataIndex) > -1 ? 'width: 250px;' : ''" v-if="['mtlId','unitId'].indexOf(columns[i].dataIndex) > -1" v-decorator="[record[columns[i].dataIndex], {}]" showSearch
                                               optionFilterProp="children" notFoundContent="无法找到，输入关键词回车[Enter]搜索试试" @keyup.enter.native="e => searchData(e, col, record.key)"
                                               @change="e => handleChange(e, record.key, col)" :placeholder="'请选择'+columns[i].title" :value="record[columns[i].dataIndex]" ref="sel">
                                         <a-select-option value="">请选择</a-select-option>
-                                        <a-select-option v-for="(item, key) in columns[i].list" :key="key" :value="item.id">
-                                            {{ item.name }}
+                                        <a-select-option v-for="(item, key) in columns[i].list" :key="key" :value="item.id" :title="item.info">
+                                            {{ item.info || item.name }}
                                         </a-select-option>
                                     </a-select>
                                     <a-input :key="col" v-else style="margin: -5px 0" :value="text" :placeholder="columns[i].title" @change="e => handleChange(e.target.value, record.key, col)" />

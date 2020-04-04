@@ -104,6 +104,7 @@ const getSaleOrderByCode = (params)=>getAction("/saleOrder/getOneByCode",params)
 const delivery = (params)=>postAction("/saleOrder/delivery",params)
 const disableSaleOrder = (params)=>postAction("/saleOrder/disable",params)
 const getSaleOrderDeliveryInfo = (params)=>getAction("/saleOrderDeliveryInfo/getList",params)
+const getDeliveryInfoBySourceId = (params)=>getAction("/saleOrderDeliveryInfo/getBySourceId",params)
 const getDeliveryMtls = (params)=>getAction("/inventoryOut/mtl/getList",params)
 const getPutInMtls = (params)=>getAction("/inventoryIn/mtl/getList",params)
 const deliveryStockOut = (params)=>postAction("/inventoryOut/mtls/stockout",params)
@@ -136,6 +137,7 @@ const getCustomerOne = (params)=>getAction("/customer/getOne",params)
 const saveCustomer = (params)=>postAction("/customer/save",params)
 const getCustomerList =  (params)=>getAction("/customer/getList",params)
 const getDeliveryInfo = (params)=>getAction("/customer/getDeliveryInfo",params)
+const searchCustomer = (params)=>getAction("/customer/search",params)
 const addVendor = (params)=>postAction("/vendor/add",params)
 const editVendor = (params)=>postAction("/vendor/edit",params)
 const getVendorList = (params)=>getAction("/vendor/getList",params)
@@ -189,6 +191,7 @@ const purchaseReturnDetailDelete = (params)=>deleteAction("/purchaseReturnMtl/de
 const addLogisticsCompany = (params)=>postAction("/logisticsCompany/add",params)
 const editLogisticsCompany = (params)=>postAction("/logisticsCompany/edit",params)
 const getLogisticsCompanyList = (params)=>getAction("/logisticsCompany/getList",params)
+
 // 销售退货
 const addSaleOrderReturn = (params)=>postAction("/saleOrderReturn/add",params)
 const editSaleOrderReturn = (params)=>postAction("/saleOrderReturn/edit",params)
@@ -343,7 +346,9 @@ export {
   getPurchaseMtlList,
   getPurchaseMtlOne,
   purchaseReturnQueryById,
-  purchaseReturnDetailDelete
+  purchaseReturnDetailDelete,
+  searchCustomer,
+  getDeliveryInfoBySourceId
 }
 
 
