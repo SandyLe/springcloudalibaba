@@ -187,6 +187,7 @@ public class PurchaseController extends JeecgController<Purchase, PurchaseServic
         purchasedtldto.setTotalamount(purchase.getTotalamount());
         purchasedtldto.setCode(purchase.getCode());
         purchasedtldto.setCreateTime(purchase.getCreateTime());
+        purchasedtldto.setBatchNo(purchase.getBatchNo());
         purchasedtldto.setDetaillist(purchaseMtlService.queryBySourceId(purchase.getId()));
 
         return Result.ok(purchasedtldto);

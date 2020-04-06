@@ -14,7 +14,10 @@ public enum BillType implements AbstractEnum{
     CUSTOMERSOURCE(9, "customerSource", "客户来源"),
     CUSTOMERTYPE(10, "customerType", "客户类型"),
     STOREIN(11, "storeIn", "入库单"),
-    STOREOUT(12, "storeOut", "出库单");
+    STOREOUT(12, "storeOut", "出库单"),
+    ALLOT(13, "allot", "调拨单"),
+    ASSEMBLE(14, "assemble", "组装单"),
+    TEARDOWN(15, "teardown", "拆卸单");
 
     private Integer id;
     private String code;

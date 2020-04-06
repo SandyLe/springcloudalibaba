@@ -63,9 +63,19 @@ public class InventoryOutServiceImpl extends ServiceImpl<InventoryOutMapper, Inv
 
         InventoryOut info = getById(mtls.get(0).getBillId());
         if (null != info) {
+            Integer operationId = BillType.SALEORDER.getId();
+            if (info.getSourceBillType() == BillType.PURCHASERETURNORDER.getId()) {
+                operationId = InventoryOperation.PURCHASERETURNOUT.getId();
+            } else if (info.getSourceBillType() == BillType.ALLOT.getId()) {
+                operationId = InventoryOperation.ALLOTOUT.getId();
+            } else if (info.getSourceBillType() == BillType.ASSEMBLE.getId()) {
+                operationId = InventoryOperation.ASSEMBLEOUT.getId();
+            } else if (info.getSourceBillType() == BillType.TEARDOWN.getId()) {
+                operationId = InventoryOperation.TEARDOWNOUT.getId();
+            }
             for (PreInventoryOutMtl mtl : mtls) {
                 InventoryLog inventoryLog = new InventoryLog(mtl.getSourceId(), info.getSourceBillType(), mtl.getMtlId(),
-                        info.getWarehouseId(), null, mtl.getQuantity(), null, mtl.getUnitId(), InventoryOperation.SALEOUT.getId());
+                        info.getWarehouseId(), null, mtl.getQuantity(), null, mtl.getUnitId(), operationId, null);
                 inventoryService.updateInventory(inventoryLog);
             }
             List<PreInventoryOutMtl> deliveryMtls = getDeliveryMtlList(info.getId(), info.getSourceId());

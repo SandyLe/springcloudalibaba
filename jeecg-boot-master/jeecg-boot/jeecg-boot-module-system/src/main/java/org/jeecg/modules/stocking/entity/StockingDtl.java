@@ -10,9 +10,9 @@ import org.jeecg.modules.basic.entity.BasicEntity;
 import java.math.BigDecimal;
 
 @Data
-@TableName("sl_stocking")
-@ApiModel(value = "Stocking", description = "盘点单")
-public class Stocking extends BasicEntity {
+@TableName("sl_stocking_dtl")
+@ApiModel(value = "StockingDtl", description = "盘点单")
+public class StockingDtl extends BasicEntity {
 
     @ApiModelProperty("产品ID")
     private String mtlId;
