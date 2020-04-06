@@ -204,6 +204,12 @@ const addSaleOrderReturnExpense = (params)=>postAction("/saleOrderReturnExpense/
 const editSaleOrderReturnExpense = (params)=>postAction("/saleOrderReturnExpense/edit",params)
 
 
+// 采购批次
+const addPurchaseBatch = (params)=>postAction("/purchaseBatch/add", params)
+const getPurchaseBatchOne = (params)=>getAction("/purchaseBatch/getOne",params)
+const editPurchaseBatch = (params)=>postAction("/purchaseBatch/edit",params)
+const getPurchaseBatchList = (params)=>getAction("/purchaseBatch/getList",params)
+
 export {
   // imgView,
   // doMian,
@@ -348,7 +354,11 @@ export {
   purchaseReturnQueryById,
   purchaseReturnDetailDelete,
   searchCustomer,
-  getDeliveryInfoBySourceId
+  getDeliveryInfoBySourceId,
+  addPurchaseBatch,
+  getPurchaseBatchOne,
+  editPurchaseBatch,
+  getPurchaseBatchList
 }
 
 

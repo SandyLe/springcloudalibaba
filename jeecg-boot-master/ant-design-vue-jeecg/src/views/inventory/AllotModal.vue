@@ -2,65 +2,36 @@
 <div>
     <a-card :bordered="false">
         <a-form :form="form">
-            <a-row>
+          <a-row>
               <a-col :span="12">
-                <a-form-item label="采购批次号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <a-select v-decorator="['batchNo', {}]" placeholder="请输入批次号，入库计算同批次产品平均采购成本">
-                    <a-select-option v-for="(item, key) in dictOptions.purchaseBatch" :key="key" :value="item.code">
-                      {{ item.code }}
-                    </a-select-option>
-                  </a-select>
-                </a-form-item>
-              </a-col>
-            </a-row>
-            <a-row>
-                <a-col :span="12">
-                    <a-form-item label="供应商" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                        <a-select v-decorator="['vendorId', {}]" placeholder="请选择供应商">
-                            <a-select-option v-for="(item, key) in dictOptions.vendorId" :key="key" :value="item.id">
-                                {{ item.name }}
-                            </a-select-option>
-                        </a-select>
-                    </a-form-item>
-                </a-col>
-                <a-col :span="12">
-                  <a-form-item label="采购单号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                    <a-input v-decorator="[ 'code', {}]" :readOnly="true" placeholder="后台自动生成"></a-input>
-                  </a-form-item>
-                </a-col>
-            </a-row>
-            <a-row>
-              <a-col :span="12">
-                <a-form-item label="仓库" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <a-select v-decorator="['warehouseId', {}]" placeholder="请选择仓库">
-                    <a-select-option v-for="(item, key) in dictOptions.warehouse" :key="key" :value="item.id">
+                <a-form-item label="调出仓库" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                  <a-select v-decorator="['fromWarehouseId', {}]" ref="fromWarehouseId" placeholder="请选择仓库">
+                    <a-select-option v-for="(item, key) in warehouseList" :key="key" :value="item.id">
                       {{ item.name }}
                     </a-select-option>
                   </a-select>
                 </a-form-item>
               </a-col>
-                <a-col :span="12">
-                    <a-form-item label="结算账户" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                        <a-input v-decorator="[ 'account', {}]" placeholder="请输入结算账户" />
-                    </a-form-item>
-                </a-col>
-            </a-row>
-            <a-row>
-                <a-col :span="12">
-                    <a-form-item label="实付金额" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                        <a-input-number v-decorator="[ 'payamount', {}]" placeholder="请输入实付金额" style="width:100%" />
-                    </a-form-item>
-                </a-col>
-                <a-col :span="12">
-                    <a-form-item label="总金额" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                        <a-input-number v-decorator="[ 'totalamount', {}]" placeholder="请输入总金额" style="width:100%"/>
-                        <div style="display:none;">
-                            <a-input v-decorator="[ 'id', {}]" placeholder="实体主键" type="hidden" />
-                            <a-input v-decorator="[ 'code', {}]" placeholder="代码" type="hidden"/>
-                        </div>
-                    </a-form-item>
-                </a-col>
-            </a-row>
+              <a-col :span="12">
+                <a-form-item label="调入仓库" :labelCol="labelCol" ref="toWarehouseId" :wrapperCol="wrapperCol">
+                  <a-select v-decorator="['toWarehouseId', {}]" placeholder="请选择仓库">
+                    <a-select-option v-for="(item, key) in warehouseList" :key="key" :value="item.id">
+                      {{ item.name }}
+                    </a-select-option>
+                  </a-select>
+                </a-form-item>
+              </a-col>
+              <a-col :span="12">
+                <a-form-item label="单号" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                  <a-input v-decorator="[ 'code', {}]" :readOnly="true" placeholder="后台自动生成"></a-input>
+                </a-form-item>
+              </a-col>
+              <a-col :span="12">
+                  <a-form-item label="单据时间" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                    <a-date-picker showTime format='YYYY-MM-DD HH:mm:ss' v-decorator="[ 'billDate', {}]"/>
+                  </a-form-item>
+              </a-col>
+          </a-row>
           <a-row>
             <a-col :span="24">
               <a-form-item label="备注" :labelCol="hlabelCol" :wrapperCol="hwrapperCol">
@@ -73,7 +44,7 @@
                     <a-card>
                         <form :autoFormCreate="(form) => this.form = form">
                             <a-table :columns="columns" :dataSource="tabledata" :pagination="false" rowKey="id" ref="mtltable">
-                                <template v-for="(col, i) in ['mtlId', 'unitId','quantity', 'price', 'discount', 'amount', 'content', 'action']" :slot="col" clearable slot-scope="text, record, index">
+                                <template v-for="(col, i) in ['mtlId', 'unitId','allotAmount', 'fromAmount', 'toAmount','content', 'action']" :slot="col" clearable slot-scope="text, record, index">
                                     <a-select :style="['mtlId'].indexOf(columns[i].dataIndex) > -1 ? 'width: 250px;' : ''" v-if="['mtlId','unitId'].indexOf(columns[i].dataIndex) > -1" v-decorator="[record[columns[i].dataIndex], {}]" showSearch
                                               optionFilterProp="children" notFoundContent="无法找到，输入关键词回车[Enter]搜索试试" @keyup.enter.native="e => searchData(e, col, record.key)"
                                               @change="e => handleChange(e, record.key, col)" :placeholder="'请选择'+columns[i].title" :value="record[columns[i].dataIndex]" ref="sel">
@@ -82,7 +53,7 @@
                                             {{ item.info || item.name }}
                                         </a-select-option>
                                     </a-select>
-                                    <a-input :key="col" v-else style="margin: -5px 0" :value="text" :placeholder="columns[i].title" @change="e => handleChange(e.target.value, record.key, col)" />
+                                    <a-input :key="col" v-else style="margin: -5px 0" :readOnly="['fromAmount','toAmount'].indexOf(columns[i].dataIndex) > -1" :value="text" :placeholder="columns[i].title" @change="e => handleChange(e.target.value, record.key, col)" />
                                     <!-- <template v-else>{{ text }}</template> -->
                                 </template>
 
@@ -144,13 +115,12 @@ import {
     httpAction
 } from '@/api/manage'
 import pick from 'lodash.pick'
+import moment from 'moment'
 import JDate from '@/components/jeecg/JDate'
 import JDictSelectTag from '@/components/dict/JDictSelectTag'
 import FooterToolBar from '@/components/tools/FooterToolBar'
 import InventoryModal from '../inventory/InventoryInModal'
 import {
-    getVendorList,
-    ajaxGetDictItems,
     getWarehouseList,
     searchMaterial,
     getMaterialUnitList,
@@ -168,6 +138,7 @@ export default {
     },
     data() {
         return {
+            warehouseList: [],
             hasaddmain: false,
             form: this.$form.createForm(this),
             title: '操作',
@@ -200,8 +171,9 @@ export default {
             },
             confirmLoading: false,
             validatorRules: {
-                vendorId: {},
-                businessDate: {
+                fromWarehouseId: {},
+                toWarehouseId: {},
+                billDate: {
                     rules: [{
                         required: true,
                         message: '请输入业务时间!'
@@ -212,17 +184,8 @@ export default {
                 states: {}
             },
             url: {
-                add: '/purchase/add',
-                edit: '/purchase/edit'
-            },
-            vendorIddictOptions: [],
-            warehouseOptions: [],
-            dictOptions: {
-                vendorId: [],
-                warehouse: [],
-                materiallist: [],
-                materialunitlist: [],
-                purchaseBatch:[]
+                add: '/allot/add',
+                edit: '/allot/edit'
             },
             columns: [{
                     title: '产品', //顺序不要调整，getMaterialList中有用
@@ -244,39 +207,30 @@ export default {
                 },
                 {
                     title: '数量',
-                    dataIndex: 'quantity',
-                    key: 'quantity',
+                    dataIndex: 'allotAmount',
+                    key: 'allotAmount',
                     width: '10%',
                     scopedSlots: {
-                        customRender: 'quantity'
+                        customRender: 'allotAmount'
                     }
                 },
                 {
-                    title: '单价',
-                    dataIndex: 'price',
-                    key: 'price',
-                    width: '10%',
-                    scopedSlots: {
-                        customRender: 'price'
-                    }
+                  title: '调出仓库当前库存',
+                  dataIndex: 'fromAmount',
+                  key: 'fromAmount',
+                  width: '15%',
+                  scopedSlots: {
+                    customRender: 'fromAmount'
+                  }
                 },
                 {
-                    title: '折扣',
-                    dataIndex: 'discount',
-                    key: 'discount',
-                    width: '10%',
-                    scopedSlots: {
-                        customRender: 'discount'
-                    }
-                },
-                {
-                    title: '金额',
-                    dataIndex: 'amount',
-                    key: 'amount',
-                    width: '10%',
-                    scopedSlots: {
-                        customRender: 'amount'
-                    }
+                  title: '调入仓库当前库存',
+                  dataIndex: 'toAmount',
+                  key: 'toAmount',
+                  width: '15%',
+                  scopedSlots: {
+                    customRender: 'toAmount'
+                  }
                 },
                 {
                     title: '备注',
@@ -325,29 +279,14 @@ export default {
         }
     },
     methods: {
+        moment,
         initDictConfig() {
-            //供应商
-            getVendorList('').then((res) => {
-                if (res.success) {
-                    if (res.result && res.result.length > 0) {
-                        res.result.forEach(function (option) {
-                            option.value = option.id;
-                            option.text = option.name;
-                        })
-                    }
-                    this.$set(this.dictOptions, 'vendorId', res.result)
-                }
-            });
             //仓库
             getWarehouseList('').then((res) => {
                 if (res.success) {
                     if (res.result && res.result.length > 0) {
-                        res.result.forEach(function (option) {
-                            option.value = option.id;
-                            option.text = option.name;
-                        })
+                      this.warehouseList = res.result;
                     }
-                    this.$set(this.dictOptions, 'warehouse', res.result)
                 }
             });
             //产品
@@ -360,8 +299,9 @@ export default {
                         })
                     }
                     this.columns[0].list = res.result;
-                    this.$set(this.dictOptions, 0, this.columns[0])
-                    // this.$set(this.dictOptions, 'materiallist', res.result)
+                    const newData = [...this.tabledata]
+                    newData.editable = true
+                    this.tabledata = newData;
                 }
             });
             //单位
@@ -374,22 +314,8 @@ export default {
                         })
                     }
                     this.columns[1].list = res.result;
-                    this.$set(this.dictOptions, 1, this.columns[1])
-                    // this.$set(this.dictOptions, 'materialunitlist', res.result)
                 }
             });
-          //仓库
-          getPurchaseBatchList('').then((res) => {
-            if (res.success) {
-              if (res.result && res.result.length > 0) {
-                res.result.forEach(function (option) {
-                  option.value = option.code;
-                  option.text = option.code;
-                })
-              }
-              this.$set(this.dictOptions, 'purchaseBatch', res.result)
-            }
-          });
         },
         add() {
             if(this.$route.params.id){
@@ -414,7 +340,7 @@ export default {
             this.visible = true
             this.$nextTick(() => {
                 this.form.setFieldsValue(
-                    pick(this.model, 'id', 'code', 'vendorId', 'content', 'warehouseId', 'account', 'payamount', 'totalamount', 'batchNo')
+                    pick(this.model, 'id', 'code', 'vendorId', 'content', 'fromWarehouseId', 'toWarehouseId', 'account', 'payamount', 'totalamount', 'batchNo')
                 )
             })
         },
@@ -470,7 +396,7 @@ export default {
                           that.confirmLoading = false
                           that.close()
                           that.$parent.closeRouteViewTab(this.$route.path)
-                          that.$router.push({ path:'/purchase/PurchaseList' });
+                          that.$router.push({ path:'/inventory/AllotList' });
                       })
               }
           })
@@ -480,7 +406,7 @@ export default {
         },
         popupCallback(row) {
             this.form.setFieldsValue(
-                pick(row, 'code', 'vendorId', 'content', 'warehouseId', 'account', 'payamount', 'totalamount')
+                pick(row, 'code', 'vendorId', 'content', 'fromWarehouseId', 'toWarehouseId', 'account', 'payamount', 'totalamount')
             )
         },
         newMember() {
@@ -496,6 +422,9 @@ export default {
         handleChange(value, key, column) {
             const newData = [...this.tabledata]
             const target = newData.filter(item => key === item.key)[0]
+            const fromWarehouseId = this.$refs.fromWarehouseId.value;
+            const toWarehouseId = this.$refs.toWarehouseId.value;
+
             if (target) {
                 target[column] = value;
                 if (target.quantity && target.price) {
@@ -534,7 +463,7 @@ export default {
             // console.log(this.$route.matched);
             this.$route.matched.splice(this.$route.matched.length-1 ,1);
             this.$parent.closeRouteViewTab(this.$route.fullPath)
-            this.$router.replace({ path:'/purchase/PurchaseList' });
+            this.$router.replace({ path:'/inventory/AllotList' });
         },
         searchData(e, col, key) {
           if (col === 'mtlId') {
@@ -548,13 +477,11 @@ export default {
                   })
                 }
                 that.columns[0].list = res.result;
-                that.$set(that.dictOptions, 0, that.columns[0])
 
                 const newData = [...this.tabledata]
                 const target = newData.filter(item => key === item.key)[0]
                 target.editable = true
                 that.tabledata = newData;
-                // this.$set(this.dictOptions, 'materiallist', res.result)
               }
             });
           }
@@ -563,7 +490,7 @@ export default {
     mounted() {
       if (this.$route.query.unEditable === false) {
         this.unEditable = this.$route.query.unEditable;
-      }
+      };
     }
 }
 </script>

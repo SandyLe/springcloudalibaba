@@ -1,21 +1,27 @@
 <template>
-  <a-card :bordered="false">
+  <a-card :bordered="false" class="card-area">
 
     <!-- 查询区域 -->
     <div class="table-page-search-wrapper">
-      <a-form layout="inline">
+      <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
+
           <a-col :md="6" :sm="12">
             <a-form-item label="产品">
               <a-select v-model="queryParam.mtlId" placeholder="请选择产品"  showSearch
                         optionFilterProp="children"
-                        notFoundContent="无法找到，输入关键词Enter搜索" @keyup.enter.native="searchMtl"
-                        style="width: 250px;">
+                        notFoundContent="无法找到，输入关键词Enter搜索" @keyup.enter.native="searchMtl" >
                 <a-select-option value="">请选择</a-select-option>
                 <a-select-option v-for="(item, key) in mtlList" :key="key" :value="item.id">
                   {{ item.info }}
                 </a-select-option>
               </a-select>
+            </a-form-item>
+          </a-col>
+
+          <a-col :md="6" :sm="12">
+            <a-form-item label="代码">
+              <j-input placeholder="输入批次号模糊查询" v-model="queryParam.batchNo"></j-input>
             </a-form-item>
           </a-col>
 
@@ -25,13 +31,15 @@
               <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
             </span>
           </a-col>
+
         </a-row>
       </a-form>
     </div>
+
     <!-- 操作按钮区域 -->
-    <!--
-    <div class="table-operator"  style="margin-top: 5px">
-      <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
+    <div class="table-operator" style="border-top: 5px">
+      <!--<a-button @click="handleAdd" type="primary" icon="plus">添加产品成本</a-button>
+
       <a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
           <a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>
@@ -40,13 +48,25 @@
           批量操作 <a-icon type="down" />
         </a-button>
       </a-dropdown>
+
+      <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel" style="margin-left: 8px">
+        <a-button type="primary" icon="import">导入</a-button>
+      </a-upload>
+
+      <a-button type="link" @click="downloadtemplate">下载模板</a-button>-->
     </div>
-    -->
+
+    <!-- table区域-begin -->
     <div>
+      <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;">
+        <i class="anticon anticon-info-circle ant-alert-icon"></i>已选择&nbsp;<a style="font-weight: 600">{{ selectedRowKeys.length }}</a>项&nbsp;&nbsp;
+        <a style="margin-left: 24px" @click="onClearSelected">清空</a>
+      </div>
+
       <a-table
         ref="table"
-        size="middle"
         bordered
+        size="middle"
         rowKey="id"
         :columns="columns"
         :dataSource="dataSource"
@@ -55,52 +75,43 @@
         :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         @change="handleTableChange">
 
-        <span slot="nameAction" slot-scope="text, record">
-          <a @click="goDetail(record.mtlId)">{{record.material}}</a>
-        </span>
-        <span slot="action" slot-scope="text, record">
-          <!-- <a @click="handleEdit(record.id)">编辑</a>
+        <template slot="avatarslot" slot-scope="text, record, index">
+          <div class="anty-img-wrap">
+            <a-avatar shape="square" :src="getAvatarView(record.avatar)" icon="user"/>
+          </div>
+        </template>
 
-                    <a-divider type="vertical" />
-                    <a-dropdown>
-                      <a class="ant-dropdown-link">
-                        更多 <a-icon type="down" />
-                      </a>
-                      <a-menu slot="overlay">
-                        <a-menu-item>
-                          <a @click="handlePerssion(record.id)">授权</a>
-                        </a-menu-item>
-                        <a-menu-item>
-                          <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
-                            <a>删除</a>
-                          </a-popconfirm>
-                        </a-menu-item>
-                      </a-menu>
-                    </a-dropdown> -->
+        <span slot="action" slot-scope="text, record">
+          <a href="javascript:;" @click="handleDetail(record)">详情</a>
         </span>
       </a-table>
     </div>
+    <!-- table区域-end -->
 
-    <inventory-modal ref="modalForm" @ok="modalFormOk"></inventory-modal>
+    <!-- 表单区域
+    <material-price-modal ref="modalForm" @ok="modalFormOk"></material-price-modal>-->
+
   </a-card>
 </template>
 
 <script>
+  //import MaterialPriceModal from './MaterialPriceModal'
   import JInput from '@/components/jeecg/JInput'
   import {JeecgListMixin} from '@/mixins/JeecgListMixin'
   import {searchMaterial} from '@/api/api'
   export default {
-    name: "",
+    name: "MaterialPrice",
     mixins: [JeecgListMixin],
     components: {
-      JInput
+      JInput,
+     // MaterialPriceModal
     },
-    data () {
+    data() {
       return {
-        queryParam:{},
+        queryParam: {},
         mtlList:[],
+        // 表头
         columns: [
-
           {
             title: '#',
             dataIndex: '',
@@ -112,35 +123,41 @@
             }
           },
           {
-            title: '仓库',
+            title: '产品名称',
             align:"center",
-            dataIndex: 'warehouse'
+            dataIndex: 'material'
           },
           {
-            title: '产品',
+            title: '采购批次号',
             align:"center",
-            dataIndex: '',
-            scopedSlots: { customRender: 'nameAction' }
+            dataIndex: 'batchNo'
           },
           {
-            title: '库存',
-            align:"center",
-            dataIndex: 'stockAmount'
-          },
-          {
-            title: '库存下限  ',
-            align:"center",
-            dataIndex: 'warningstart'
-          },
-          {
-            title: '库存上限',
-            align:"center",
-            dataIndex: 'warningend'
-          },
-          {
-            title: '单位',
+            title: '计量单位',
             align:"center",
             dataIndex: 'unit'
+          },
+          {
+            title: '平均价格',
+            align:"center",
+            dataIndex: 'averagePrice'
+          },
+          {
+            title: '备注',
+            align:"center",
+            dataIndex: 'content'
+          },
+          {
+            title: '创建时间',
+            dataIndex: 'createTime',
+            align:"center",
+            sorter: true
+          },
+          {
+            title: '更新时间',
+            dataIndex: 'updateTime',
+            align:"center",
+            sorter: true
           },
           {
             title: '操作',
@@ -150,13 +167,17 @@
           }
         ],
         url: {
-          list: "/inventory/getPage",
-          delete: "/inventory/delete",
-          deleteBatch: "/inventory/deleteBatch",
-          exportXlsUrl: "/inventory/exportXls",
-          importExcelUrl: "/inventory/importExcel",
-        },
+          list: "/purchaseCost/getPage",
+          delete: "/purchaseCost/delete",
+          deleteBatch: "/purchaseCost/deleteBatch",
+          importExcelUrl: "/purchaseCost/importExcel",
+        }
       }
+    },
+    computed: {
+      importExcelUrl: function(){
+        return `${window._CONFIG['domianURL']}/${this.url.importExcelUrl}`;
+      },
     },
     methods: {
       searchMtl (e) {
@@ -165,6 +186,9 @@
             this.mtlList = res.result;
           }
         })
+      },
+      downloadtemplate(){
+        location.href =`${window._CONFIG['domianURL']}/sys/common/sysdownload/systemplate/materialprice.xlsx`;
       }
     },
     mounted() {
@@ -176,3 +200,7 @@
     }
   }
 </script>
+
+<style scoped>
+
+</style>
