@@ -9,5 +9,13 @@ import java.util.List;
 @ApiModel(value = "AssembleDto", description = "组装单DTO")
 public class AssembleDto extends Assemble {
 
-    private List<AssembleDtl> dtlList;
+    private List<AssembleDtl> detaillist;
+
+    public List<AssembleDtl> getDetaillist() {
+        return detaillist;
+    }
+
+    public void setDetaillist(List<AssembleDtl> detaillist) {
+        this.detaillist = detaillist;
+    }
 }

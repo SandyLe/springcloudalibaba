@@ -9,13 +9,13 @@ import java.util.List;
 @ApiModel(value = "AllotDto", description = "调拨单")
 public class AllotDto extends Allot {
 
-    private List<AllotDtl> dtlList;
+    private List<AllotDtl> detaillist;
 
-    public List<AllotDtl> getDtlList() {
-        return dtlList;
+    public List<AllotDtl> getDetaillist() {
+        return detaillist;
     }
 
-    public void setDtlList(List<AllotDtl> dtlList) {
-        this.dtlList = dtlList;
+    public void setDetaillist(List<AllotDtl> detaillist) {
+        this.detaillist = detaillist;
     }
 }

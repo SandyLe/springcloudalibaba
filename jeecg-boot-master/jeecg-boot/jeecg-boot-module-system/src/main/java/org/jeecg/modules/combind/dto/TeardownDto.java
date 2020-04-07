@@ -9,5 +9,13 @@ import java.util.List;
 @ApiModel(value = "TeardownDto", description = "拆卸单DTO")
 public class TeardownDto extends Teardown {
 
-    private List<TeardownDtl> dtlList;
+    private List<TeardownDtl> detaillist;
+
+    public List<TeardownDtl> getDetaillist() {
+        return detaillist;
+    }
+
+    public void setDetaillist(List<TeardownDtl> detaillist) {
+        this.detaillist = detaillist;
+    }
 }
