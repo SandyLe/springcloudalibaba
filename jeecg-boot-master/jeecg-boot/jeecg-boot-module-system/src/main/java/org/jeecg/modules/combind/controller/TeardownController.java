@@ -15,16 +15,15 @@ import org.jeecg.modules.basic.enums.BillStatus;
 import org.jeecg.modules.basic.enums.BillType;
 import org.jeecg.modules.basic.enums.RowSts;
 import org.jeecg.modules.basic.service.BillCodeBuilderService;
+import org.jeecg.modules.combind.dto.TeardownDto;
+import org.jeecg.modules.combind.entity.TeardownDtl;
 import org.jeecg.modules.inventory.entity.InventoryIn;
 import org.jeecg.modules.inventory.entity.InventoryInMtl;
 import org.jeecg.modules.inventory.service.InventoryInService;
 import org.jeecg.modules.inventory.service.InventoryOutService;
-import org.jeecg.modules.purchase.dto.PurchaseDtlDto;
-import org.jeecg.modules.purchase.dto.PurchaseInventoryDto;
-import org.jeecg.modules.purchase.entity.Purchase;
-import org.jeecg.modules.purchase.entity.PurchaseMtl;
-import org.jeecg.modules.purchase.service.PurchaseMtlService;
-import org.jeecg.modules.purchase.service.PurchaseService;
+import org.jeecg.modules.combind.entity.Teardown;
+import org.jeecg.modules.combind.service.TeardownDtlService;
+import org.jeecg.modules.combind.service.TeardownService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -40,174 +39,159 @@ import java.util.stream.Collectors;
 @Slf4j
 @Api(tags = "采购列表")
 @RestController
-@RequestMapping("/purchase")
-public class TeardownController extends JeecgController<Purchase, PurchaseService> {
+@RequestMapping("/teardown")
+public class TeardownController extends JeecgController<Teardown, TeardownService> {
     @Autowired
     private InventoryInService inventoryInService;
     @Autowired
     private InventoryOutService inventoryOutService;
     @Autowired
-    private PurchaseService purchaseService;
+    private TeardownService teardownService;
     @Autowired
-    private PurchaseMtlService purchaseMtlService;
+    private TeardownDtlService teardownDtlService;
     @Autowired
     private BillCodeBuilderService billCodeBuilderService;
 
     @GetMapping("/getPage")
-    public Result<?> queryPageList(Purchase purchase,
+    public Result<?> queryPageList(Teardown teardown,
                                    @RequestParam(name = "pageNo",defaultValue = "1") Integer pageNo,
                                    @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
                                    HttpServletRequest req) {
-        QueryWrapper<Purchase> queryWrapper = QueryGenerator.initQueryWrapper(purchase, req.getParameterMap());
-        Page<Purchase> page = new Page<>(pageNo, pageSize);
-        IPage<Purchase> pageList = purchaseService.page(page, queryWrapper);
+        QueryWrapper<Teardown> queryWrapper = QueryGenerator.initQueryWrapper(teardown, req.getParameterMap());
+        Page<Teardown> page = new Page<>(pageNo, pageSize);
+        IPage<Teardown> pageList = teardownService.page(page, queryWrapper);
         return Result.ok(pageList);
     }
 
     @PostMapping("/add")
     @Transactional
-    public Result<?> add(@RequestBody PurchaseDtlDto purchasedtldto){
-        PurchaseInventoryDto dto = new PurchaseInventoryDto();
-        dto.setMsg("添加失败");
-
+    public Result<?> add(@RequestBody TeardownDto teardowndtldto){
         // 采购主表
         String code = billCodeBuilderService.getBillCode(BillType.PURCHASEORDER.getId());
-        purchasedtldto.setCode(code);
-        purchaseService.save(purchasedtldto);
+        teardowndtldto.setCode(code);
+        teardownService.save(teardowndtldto);
 
         //采购单子表
         List<InventoryInMtl> detaillist = new ArrayList<>();
-        if (CollectionUtils.isNotEmpty(purchasedtldto.getDetaillist())){
-            List<PurchaseMtl> mtls = purchasedtldto.getDetaillist().stream().filter(o->StringUtils.isNotBlank(o.getMtlId())).collect(Collectors.toList());
+        if (CollectionUtils.isNotEmpty(teardowndtldto.getDetaillist())){
+            List<TeardownDtl> mtls = teardowndtldto.getDetaillist().stream().filter(o->StringUtils.isNotBlank(o.getMtlId())).collect(Collectors.toList());
             mtls.stream().forEach(o->{
                 //采购商品详情
                 o.setCode(code);
-                o.setSourceId(purchasedtldto.getId());
+                o.setSourceId(teardowndtldto.getId());
             });
-            purchaseMtlService.saveBatch(mtls);
+            teardownDtlService.saveBatch(mtls);
         }
-        if (StringUtils.isNotBlank(purchasedtldto.getWarehouseId())) {
+        if (StringUtils.isNotBlank(teardowndtldto.getWarehouseId())) {
 
             // 入库单主表
             InventoryIn inventoryIn = new InventoryIn();
             inventoryIn.setBillStatus(BillStatus.TOSTOCKIN.getId());
-            inventoryIn.setWarehouseId(purchasedtldto.getWarehouseId());
-            inventoryIn.setPutInTime(purchasedtldto.getPutInTime());
+            inventoryIn.setWarehouseId(teardowndtldto.getWarehouseId());
+//            inventoryIn.setPutInTime(teardowndtldto.getPutInTime());
             inventoryIn.setSourceCode(code);
-            inventoryIn.setSourceId(purchasedtldto.getId());
+            inventoryIn.setSourceId(teardowndtldto.getId());
             inventoryIn.setBillType(BillType.STOREIN.getId());
             inventoryIn.setRowSts(RowSts.EFFECTIVE.getId());
             inventoryIn.setSourceBillType(BillType.PURCHASEORDER.getId());
             inventoryIn.setCode(billCodeBuilderService.getBillCode(BillType.STOREIN.getId()));
             inventoryInService.saveToInventoryIn(inventoryIn);
         }
-
-        dto.setMsg("添加成功");
-        return Result.ok(dto);
+        return Result.ok(teardowndtldto.getId());
     }
 
     @PutMapping("/edit")
     @Transactional
-    public Result<?> edit(@RequestBody PurchaseDtlDto purchasedtldto){
-        PurchaseInventoryDto dto = new PurchaseInventoryDto();
-        dto.setMsg("编辑失败");
+    public Result<?> edit(@RequestBody TeardownDto teardowndtldto){
 
         // 采购主表
-        purchaseService.updateById(purchasedtldto);
-        if (purchasedtldto.getDetaillist().size() > 0){
-            for (PurchaseMtl item: purchasedtldto.getDetaillist()){
+        teardownService.updateById(teardowndtldto);
+        if (teardowndtldto.getDetaillist().size() > 0){
+            for (TeardownDtl item: teardowndtldto.getDetaillist()){
                 //采购商品详情
                 if (item.getId() != null && item.getId().length() > 0)
-                    purchaseMtlService.updateById(item);
+                    teardownDtlService.updateById(item);
                 else{
-                    item.setSourceId(purchasedtldto.getId());
-                    purchaseMtlService.save(item);
+                    item.setSourceId(teardowndtldto.getId());
+                    teardownDtlService.save(item);
                 }
             }
         }
 
         // 入库单主表
-        inventoryInService.deleteBySourceId(purchasedtldto.getId());
+        inventoryInService.deleteBySourceId(teardowndtldto.getId());
 
-        if (StringUtils.isNotBlank(purchasedtldto.getWarehouseId())) {
+        if (StringUtils.isNotBlank(teardowndtldto.getWarehouseId())) {
 
             // 入库单主表
             InventoryIn inventoryIn = new InventoryIn();
             inventoryIn.setBillStatus(BillStatus.TOSTOCKIN.getId());
-            inventoryIn.setWarehouseId(purchasedtldto.getWarehouseId());
-            inventoryIn.setPutInTime(purchasedtldto.getPutInTime());
-            inventoryIn.setSourceCode(purchasedtldto.getCode());
-            inventoryIn.setSourceId(purchasedtldto.getId());
+            inventoryIn.setWarehouseId(teardowndtldto.getWarehouseId());
+//            inventoryIn.setPutInTime(teardowndtldto.getPutInTime());
+            inventoryIn.setSourceCode(teardowndtldto.getCode());
+            inventoryIn.setSourceId(teardowndtldto.getId());
             inventoryIn.setBillType(BillType.STOREIN.getId());
             inventoryIn.setRowSts(RowSts.EFFECTIVE.getId());
             inventoryIn.setSourceBillType(BillType.PURCHASEORDER.getId());
             inventoryIn.setCode(billCodeBuilderService.getBillCode(BillType.STOREIN.getId()));
             inventoryInService.saveToInventoryIn(inventoryIn);
-            dto.setInventory(inventoryIn);
         }
-        dto.setMsg("编辑成功");
 
-        return Result.ok(dto);
+        return Result.ok(teardowndtldto.getId());
     }
 
     @DeleteMapping("/delete")
     @Transactional
     public Result<?> delete(@RequestParam(name = "id", required = true) String id){
-        purchaseService.removeById(id);
-        purchaseMtlService.removeBySourceId(id);
+        teardownService.removeById(id);
+        teardownDtlService.deleteBySourceId(id);
         return Result.ok("删除成功!");
     }
 
     @DeleteMapping("/deleteBatch")
     @Transactional
     public Result<?> deleteBatch(@RequestParam(name = "ids", required = true) String ids){
-        purchaseService.removeByIds(Arrays.asList(ids.split(",")));
-        purchaseMtlService.removeBySourceIds(Arrays.asList(ids.split(",")));
+        teardownService.removeByIds(Arrays.asList(ids.split(",")));
+        teardownDtlService.deleteBySourceIds(Arrays.asList(ids.split(",")));
         return Result.ok("批量删除成功!");
     }
 
     @GetMapping("/queryById")
     public Result<?> queryById(@RequestParam(name = "id", required = true) String id){
-        Purchase purchase = purchaseService.getById(id);
-        System.out.println(purchase.getId());
-        if (purchase == null){
+        Teardown teardown = teardownService.getById(id);
+        System.out.println(teardown.getId());
+        if (teardown == null){
             return Result.ok("未找到对应数据");
         }
-        PurchaseDtlDto purchasedtldto = new PurchaseDtlDto();
-        purchasedtldto.setId(purchase.getId());
-        purchasedtldto.setVendorId(purchase.getVendorId());
-        purchasedtldto.setContent(purchase.getContent());
-        purchasedtldto.setWarehouseId(purchase.getWarehouseId());
-        purchasedtldto.setAccount(purchase.getAccount());
-        purchasedtldto.setPayamount(purchase.getPayamount());
-        purchasedtldto.setBilldate(purchase.getBilldate());
-        purchasedtldto.setTotalamount(purchase.getTotalamount());
-        purchasedtldto.setCode(purchase.getCode());
-        purchasedtldto.setCreateTime(purchase.getCreateTime());
-        purchasedtldto.setBatchNo(purchase.getBatchNo());
-        purchasedtldto.setDetaillist(purchaseMtlService.queryBySourceId(purchase.getId()));
+        TeardownDto teardowndtldto = new TeardownDto();
+        teardowndtldto.setId(teardown.getId());
+        teardowndtldto.setContent(teardown.getContent());
+        teardowndtldto.setWarehouseId(teardown.getWarehouseId());
+        teardowndtldto.setCode(teardown.getCode());
+        teardowndtldto.setCreateTime(teardown.getCreateTime());
+        teardowndtldto.setDetaillist(teardownDtlService.findBySourceId(teardown.getId()));
 
-        return Result.ok(purchasedtldto);
+        return Result.ok(teardowndtldto);
     }
 
     @GetMapping("/getOneByCode")
     public Result<?> queryByCode(@RequestParam(name = "code", required = true) String code){
 
-        LambdaQueryWrapper<Purchase> lambdaQueryWrapper = new LambdaQueryWrapper<Purchase>().eq(Purchase::getCode, code);
-        Purchase purchase = purchaseService.getOne(lambdaQueryWrapper);
-        if (purchase == null){
+        LambdaQueryWrapper<Teardown> lambdaQueryWrapper = new LambdaQueryWrapper<Teardown>().eq(Teardown::getCode, code);
+        Teardown teardown = teardownService.getOne(lambdaQueryWrapper);
+        if (teardown == null){
             return Result.ok("未找到对应数据");
         }
-        return Result.ok(purchase);
+        return Result.ok(teardown);
     }
 
     @RequestMapping("/exportXls")
-    public ModelAndView exportXls(HttpServletRequest request, Purchase purchase){
-        return super.exportXls(request, purchase,Purchase.class, "采购列表");
+    public ModelAndView exportXls(HttpServletRequest request, Teardown teardown){
+        return super.exportXls(request, teardown,Teardown.class, "采购列表");
     }
 
     @PostMapping("importExcel")
     public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response){
-        return super.importExcel(request, response, Purchase.class);
+        return super.importExcel(request, response, Teardown.class);
     }
 }

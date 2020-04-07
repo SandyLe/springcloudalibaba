@@ -15,7 +15,7 @@ import java.util.List;
 @Service
 public class AllotServiceImpl extends ServiceImpl<AllotMapper, Allot>  implements AllotService {
 
-    @Autowireda
-    private AllotMapper llotMapper;
+    @Autowired
+    private AllotMapper allotMapper;
 
 }

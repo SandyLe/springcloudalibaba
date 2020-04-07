@@ -22,4 +22,21 @@ public class TeardownDtlServiceImpl extends ServiceImpl<TeardownDtlMapper, Teard
     @Autowired
     private TeardownDtlMapper teardownDtlMapper;
 
+    @Override
+    public void deleteBySourceId(String sourceId) {
+        LambdaQueryWrapper<TeardownDtl> queryWrapper = new LambdaQueryWrapper<TeardownDtl>().eq(TeardownDtl::getSourceId, sourceId);
+        teardownDtlMapper.delete(queryWrapper);
+    }
+
+    @Override
+    public void deleteBySourceIds(List<String> sourceIdList) {
+        LambdaQueryWrapper<TeardownDtl> queryWrapper = new LambdaQueryWrapper<TeardownDtl>().in(TeardownDtl::getSourceId, sourceIdList);
+        teardownDtlMapper.delete(queryWrapper);
+    }
+
+    @Override
+    public List<TeardownDtl> findBySourceId(String sourceId) {
+        LambdaQueryWrapper<TeardownDtl> queryWrapper = new LambdaQueryWrapper<TeardownDtl>().eq(TeardownDtl::getSourceId, sourceId);
+        return teardownDtlMapper.selectList(queryWrapper);
+    }
 }

@@ -15,6 +15,8 @@ import java.util.Date;
 @ApiModel(value = "AssembleDtl", description = "组装单明细")
 public class AssembleDtl extends CBasicEntity {
 
+    @ApiModelProperty("原单id")
+    private String sourceId;
     @ApiModelProperty("产品ID")
     private String mtlId;
     @TableField(exist=false)
@@ -86,5 +88,13 @@ public class AssembleDtl extends CBasicEntity {
 
     public void setAmount(BigDecimal amount) {
         this.amount = amount;
+    }
+
+    public String getSourceId() {
+        return sourceId;
+    }
+
+    public void setSourceId(String sourceId) {
+        this.sourceId = sourceId;
     }
 }

@@ -3,6 +3,8 @@ package org.jeecg.modules.combind.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.combind.entity.TeardownDtl;
 
+import java.util.List;
+
 
 /**
  * @Description:
@@ -12,4 +14,7 @@ import org.jeecg.modules.combind.entity.TeardownDtl;
  */
 public interface TeardownDtlService extends IService<TeardownDtl> {
 
+    public void deleteBySourceId (String sourceId);
+    public void deleteBySourceIds (List<String> sourceIdList);
+    public List<TeardownDtl> findBySourceId (String sourceId);
 }

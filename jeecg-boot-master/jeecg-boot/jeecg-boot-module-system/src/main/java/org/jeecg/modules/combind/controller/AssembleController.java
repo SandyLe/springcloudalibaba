@@ -20,7 +20,6 @@ import org.jeecg.modules.inventory.entity.InventoryInMtl;
 import org.jeecg.modules.inventory.service.InventoryInService;
 import org.jeecg.modules.inventory.service.InventoryOutService;
 import org.jeecg.modules.combind.dto.AssembleDto;
-import org.jeecg.modules.combind.dto.AssembleInventoryDto;
 import org.jeecg.modules.combind.entity.Assemble;
 import org.jeecg.modules.combind.entity.AssembleDtl;
 import org.jeecg.modules.combind.service.AssembleDtlService;
@@ -67,20 +66,17 @@ public class AssembleController extends JeecgController<Assemble, AssembleServic
     @PostMapping("/add")
     @Transactional
     public Result<?> add(@RequestBody AssembleDto assembledto){
-        AssembleDto dto = new AssembleDto();
-        dto.setMsg("添加失败");
-
-        // 采购主表
-        String code = billCodeBuilderService.getBillCode(BillType.AssembleORDER.getId());
+        // 组装主表
+        String code = billCodeBuilderService.getBillCode(BillType.ASSEMBLE.getId());
         assembledto.setCode(code);
         assembleService.save(assembledto);
 
-        //采购单子表
+        //组装单子表
         List<InventoryInMtl> detaillist = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(assembledto.getDetaillist())){
-            List<AssembleMtl> mtls = assembledto.getDetaillist().stream().filter(o->StringUtils.isNotBlank(o.getMtlId())).collect(Collectors.toList());
+            List<AssembleDtl> mtls = assembledto.getDetaillist().stream().filter(o->StringUtils.isNotBlank(o.getMtlId())).collect(Collectors.toList());
             mtls.stream().forEach(o->{
-                //采购商品详情
+                //组装商品详情
                 o.setCode(code);
                 o.setSourceId(assembledto.getId());
             });
@@ -92,31 +88,26 @@ public class AssembleController extends JeecgController<Assemble, AssembleServic
             InventoryIn inventoryIn = new InventoryIn();
             inventoryIn.setBillStatus(BillStatus.TOSTOCKIN.getId());
             inventoryIn.setWarehouseId(assembledto.getWarehouseId());
-            inventoryIn.setPutInTime(assembledto.getPutInTime());
+//            inventoryIn.setPutInTime(assembledto.getPutInTime());
             inventoryIn.setSourceCode(code);
             inventoryIn.setSourceId(assembledto.getId());
             inventoryIn.setBillType(BillType.STOREIN.getId());
             inventoryIn.setRowSts(RowSts.EFFECTIVE.getId());
-            inventoryIn.setSourceBillType(BillType.AssembleORDER.getId());
+            inventoryIn.setSourceBillType(BillType.ASSEMBLE.getId());
             inventoryIn.setCode(billCodeBuilderService.getBillCode(BillType.STOREIN.getId()));
             inventoryInService.saveToInventoryIn(inventoryIn);
         }
-
-        dto.setMsg("添加成功");
-        return Result.ok(dto);
+        return Result.ok(assembledto.getId());
     }
 
     @PutMapping("/edit")
     @Transactional
     public Result<?> edit(@RequestBody AssembleDto assembledto){
-        AssembleDto dto = new AssembleDto();
-        dto.setMsg("编辑失败");
-
-        // 采购主表
+        // 组装主表
         assembleService.updateById(assembledto);
         if (assembledto.getDetaillist().size() > 0){
             for (AssembleDtl item: assembledto.getDetaillist()){
-                //采购商品详情
+                //组装商品详情
                 if (item.getId() != null && item.getId().length() > 0)
                     assembleDtlService.updateById(item);
                 else{
@@ -135,26 +126,24 @@ public class AssembleController extends JeecgController<Assemble, AssembleServic
             InventoryIn inventoryIn = new InventoryIn();
             inventoryIn.setBillStatus(BillStatus.TOSTOCKIN.getId());
             inventoryIn.setWarehouseId(assembledto.getWarehouseId());
-            inventoryIn.setPutInTime(assembledto.getPutInTime());
+//            inventoryIn.setPutInTime(assembledto.getPutInTime());
             inventoryIn.setSourceCode(assembledto.getCode());
             inventoryIn.setSourceId(assembledto.getId());
             inventoryIn.setBillType(BillType.STOREIN.getId());
             inventoryIn.setRowSts(RowSts.EFFECTIVE.getId());
-            inventoryIn.setSourceBillType(BillType.AssembleORDER.getId());
+            inventoryIn.setSourceBillType(BillType.ASSEMBLE.getId());
             inventoryIn.setCode(billCodeBuilderService.getBillCode(BillType.STOREIN.getId()));
             inventoryInService.saveToInventoryIn(inventoryIn);
-            dto.setInventory(inventoryIn);
         }
-        dto.setMsg("编辑成功");
 
-        return Result.ok(dto);
+        return Result.ok(assembledto.getId());
     }
 
     @DeleteMapping("/delete")
     @Transactional
     public Result<?> delete(@RequestParam(name = "id", required = true) String id){
         assembleService.removeById(id);
-        assembleDtlService.removeBySourceId(id);
+        assembleDtlService.deleteBySourceId(id);
         return Result.ok("删除成功!");
     }
 
@@ -162,7 +151,7 @@ public class AssembleController extends JeecgController<Assemble, AssembleServic
     @Transactional
     public Result<?> deleteBatch(@RequestParam(name = "ids", required = true) String ids){
         assembleService.removeByIds(Arrays.asList(ids.split(",")));
-        assembleDtlService.removeBySourceIds(Arrays.asList(ids.split(",")));
+        assembleDtlService.deleteBySourceIds(Arrays.asList(ids.split(",")));
         return Result.ok("批量删除成功!");
     }
 
@@ -174,17 +163,16 @@ public class AssembleController extends JeecgController<Assemble, AssembleServic
         }
         AssembleDto assembledtldto = new AssembleDto();
         assembledtldto.setId(assemble.getId());
-        assembledtldto.setVendorId(assemble.getVendorId());
+//        assembledtldto.setVendorId(assemble.getVendorId());
         assembledtldto.setContent(assemble.getContent());
         assembledtldto.setWarehouseId(assemble.getWarehouseId());
-        assembledtldto.setAccount(assemble.getAccount());
-        assembledtldto.setPayamount(assemble.getPayamount());
-        assembledtldto.setBilldate(assemble.getBilldate());
-        assembledtldto.setTotalamount(assemble.getTotalamount());
+//        assembledtldto.setAccount(assemble.getAccount());
+//        assembledtldto.setPayamount(assemble.getPayamount());
+//        assembledtldto.setBilldate(assemble.getBilldate());
+//        assembledtldto.setTotalamount(assemble.getTotalamount());
         assembledtldto.setCode(assemble.getCode());
         assembledtldto.setCreateTime(assemble.getCreateTime());
-        assembledtldto.setBatchNo(assemble.getBatchNo());
-        assembledtldto.setDetaillist(AssembleMtlService.queryBySourceId(assemble.getId()));
+        assembledtldto.setDetaillist(assembleDtlService.findBySourceId(assemble.getId()));
 
         return Result.ok(assembledtldto);
     }
@@ -202,7 +190,7 @@ public class AssembleController extends JeecgController<Assemble, AssembleServic
 
     @RequestMapping("/exportXls")
     public ModelAndView exportXls(HttpServletRequest request, Assemble Assemble){
-        return super.exportXls(request, Assemble,Assemble.class, "采购列表");
+        return super.exportXls(request, Assemble,Assemble.class, "组装列表");
     }
 
     @PostMapping("importExcel")
