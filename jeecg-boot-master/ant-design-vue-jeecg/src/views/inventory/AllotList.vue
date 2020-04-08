@@ -121,7 +121,7 @@ export default {
                   dataIndex: 'fromWarehouse'
                 },
                 {
-                    title: '掉入仓库',
+                    title: '调入仓库',
                     align: "center",
                     dataIndex: 'toWarehouse'
                 },

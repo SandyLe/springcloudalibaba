@@ -13,8 +13,8 @@
                 </a-form-item>
               </a-col>
               <a-col :span="12">
-                <a-form-item label="调入仓库" :labelCol="labelCol" ref="toWarehouseId" :wrapperCol="wrapperCol">
-                  <a-select v-decorator="['toWarehouseId', {}]" placeholder="请选择仓库">
+                <a-form-item label="调入仓库" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                  <a-select v-decorator="['toWarehouseId', {}]" ref="toWarehouseId" placeholder="请选择仓库">
                     <a-select-option v-for="(item, key) in warehouseList" :key="key" :value="item.id">
                       {{ item.name }}
                     </a-select-option>
@@ -126,7 +126,8 @@ import {
     getMaterialUnitList,
     purchasequeryById,
     purchasedetailDelete,
-    getPurchaseBatchList
+    getPurchaseBatchList,
+    getinventoryList
 } from '@/api/api'
 export default {
     name: 'PurchasesModal',
@@ -412,29 +413,47 @@ export default {
         newMember() {
             this.tabledata.push({
                 key: this.tabledata.length,
-                name: '',
-                workId: '',
-                department: '',
+                mtlId: '',
+                unitId: '',
+                allotAmount: '',
+                fromAmount: '',
+                toAmount: '',
                 editable: true,
                 isNew: true
             })
         },
         handleChange(value, key, column) {
+
             const newData = [...this.tabledata]
             const target = newData.filter(item => key === item.key)[0]
-            const fromWarehouseId = this.$refs.fromWarehouseId.value;
-            const toWarehouseId = this.$refs.toWarehouseId.value;
-
-            if (target) {
-                target[column] = value;
-                if (target.quantity && target.price) {
-                    if (target.discount)
-                        target['amount'] = Math.round((parseFloat(target.quantity) * parseFloat(target.price) - parseFloat(target.discount)) * 100)/100;
-                    else
-                        target['amount'] = Math.round( (parseFloat(target.quantity) * parseFloat(target.price)) * 100)/100;
+            target[column] = value;
+            if ('mtlId' === column){
+              const fromWarehouseId = this.$refs.fromWarehouseId.value;
+              const toWarehouseId = this.$refs.toWarehouseId.value;
+              debugger
+              getinventoryList({"warehouseId" : fromWarehouseId, "mtlId": value}).then((res) => {
+                if (res.success) {
+                  if (res.result.length>0){
+                    target.mtlId = res.result[0].mtlId;
+                    target.unitId = res.result[0].unitId;
+                    target.fromAmount = res.result[0].stockAmount;
+                    this.tabledata = newData
+                  }
                 }
-                this.tabledata = newData
+              });
+
+              getinventoryList({"warehouseId" : toWarehouseId, "mtlId": value}).then((res) => {
+                if (res.success) {
+                  if (res.result.length>0){
+                    target.mtlId = res.result[0].mtlId;
+                    target.unitId = res.result[0].unitId;
+                    target.toAmount = res.result[0].stockAmount;
+                    this.tabledata = newData
+                  }
+                }
+              });
             }
+          this.tabledata = newData
         },
         toggle(key) {
             let target = this.tabledata.filter(item => item.key === key)[0]

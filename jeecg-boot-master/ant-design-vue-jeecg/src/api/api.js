@@ -210,6 +210,9 @@ const getPurchaseBatchOne = (params)=>getAction("/purchaseBatch/getOne",params)
 const editPurchaseBatch = (params)=>postAction("/purchaseBatch/edit",params)
 const getPurchaseBatchList = (params)=>getAction("/purchaseBatch/getList",params)
 
+// 库存
+const getinventoryList = (params)=>getAction("/inventory/getList",params)
+
 export {
   // imgView,
   // doMian,
@@ -358,7 +361,8 @@ export {
   addPurchaseBatch,
   getPurchaseBatchOne,
   editPurchaseBatch,
-  getPurchaseBatchList
+  getPurchaseBatchList,
+  getinventoryList
 }
 
 
