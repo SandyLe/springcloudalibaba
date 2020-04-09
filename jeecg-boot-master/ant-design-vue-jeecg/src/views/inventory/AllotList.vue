@@ -72,6 +72,28 @@
                 <a @click="goDetail(record.id)">{{record.code}}</a>
               </a-tooltip>
             </span>
+            <span slot="action" slot-scope="text, record">
+                  <a v-if="record.inventoryin!=null&&record.inventoryin.billStatus==1" @click="handleinventoryout(record)" :data-id="record.id">退货</a>
+                  <a-divider type="vertical" v-if="record.inventoryin!=null&&record.inventoryin.billStatus==1"/>
+
+                  <a v-if="record.inventoryin!=null" @click="handleinventoryin(record.inventoryin)" :data-id="record.id">入库单</a>
+                  <a-divider type="vertical" v-if="record.inventoryin!=null"/>
+
+                  <a v-if="record.billStatus<11" @click="diyhandleEdit" :data-id="record.id">编辑</a>
+                  <a-divider type="vertical" v-if="!(record.inventoryin!=null&&record.inventoryin.billStatus==1)"/>
+
+                  <a-dropdown>
+                      <a class="ant-dropdown-link">更多
+                          <a-icon type="down" /></a>
+                      <a-menu slot="overlay">
+                          <a-menu-item>
+                              <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
+                                  <a>删除</a>
+                              </a-popconfirm>
+                          </a-menu-item>
+                      </a-menu>
+                  </a-dropdown>
+              </span>
         </a-table>
     </div>
 </a-card>

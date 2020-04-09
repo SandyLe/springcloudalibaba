@@ -28,7 +28,7 @@
               </a-col>
               <a-col :span="12">
                   <a-form-item label="单据时间" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                    <a-date-picker showTime format='YYYY-MM-DD HH:mm:ss' v-decorator="[ 'billDate', {}]"/>
+                    <a-date-picker showTime format='YYYY-MM-DD HH:mm:ss' v-decorator="[ 'billdate', {}]"/>
                   </a-form-item>
               </a-col>
           </a-row>
@@ -139,6 +139,7 @@ export default {
     },
     data() {
         return {
+            dateFormat:"YYYY-MM-DD HH:mm:ss",
             warehouseList: [],
             hasaddmain: false,
             form: this.$form.createForm(this),
@@ -174,7 +175,7 @@ export default {
             validatorRules: {
                 fromWarehouseId: {},
                 toWarehouseId: {},
-                billDate: {
+                billdate: {
                     rules: [{
                         required: true,
                         message: '请输入业务时间!'
@@ -355,6 +356,11 @@ export default {
 
           this.form.validateFields((err, values) => {
               if (!err) {
+                  if(!values.billdate){
+                    values.billdate = '';
+                  }else{
+                    values.billdate = values.billdate.format(this.dateFormat);
+                  }
                   that.confirmLoading = true
                   let httpurl = ''
                   let method = ''
