@@ -9,15 +9,13 @@ import org.jeecg.modules.basic.enums.BillStatus;
 import org.jeecg.modules.basic.enums.BillType;
 import org.jeecg.modules.basic.enums.InventoryOperation;
 import org.jeecg.modules.basic.enums.RowSts;
+import org.jeecg.modules.inventory.entity.AllotDtl;
 import org.jeecg.modules.inventory.entity.InventoryLog;
 import org.jeecg.modules.inventory.entity.InventoryOut;
 
 import org.jeecg.modules.inventory.entity.InventoryOutMtl;
 import org.jeecg.modules.inventory.mapper.InventoryOutMapper;
-import org.jeecg.modules.inventory.service.InventoryLogService;
-import org.jeecg.modules.inventory.service.InventoryOutMtlService;
-import org.jeecg.modules.inventory.service.InventoryOutService;
-import org.jeecg.modules.inventory.service.InventoryService;
+import org.jeecg.modules.inventory.service.*;
 import org.jeecg.modules.purchase.entity.PurchaseReturn;
 import org.jeecg.modules.purchase.entity.PurchaseReturnMtl;
 import org.jeecg.modules.purchase.service.PurchaseReturnMtlService;
@@ -56,6 +54,8 @@ public class InventoryOutServiceImpl extends ServiceImpl<InventoryOutMapper, Inv
     private InventoryLogService inventoryLogService;
     @Autowired
     private PurchaseReturnService purchaseReturnService;
+    @Autowired
+    private AllotDtlService allotDtlService;
 
     @Override
     @Transactional
@@ -125,6 +125,14 @@ public class InventoryOutServiceImpl extends ServiceImpl<InventoryOutMapper, Inv
             if (CollectionUtils.isNotEmpty(purchaseReturnMtls)) {
                 purchaseReturnMtls.forEach(o ->{
                     inventoryOutMtls.add(new InventoryOutMtl(inventoryOut.getId(), o.getSourceId(), inventoryOut.getSourceBillType(), o.getMtlId(), o.getQuantity(), o.getUnitId(), RowSts.EFFECTIVE.getId()));
+                });
+            }
+        } else if (inventoryOut.getSourceBillType() == BillType.ALLOT.getId()) {
+            LambdaQueryWrapper<AllotDtl> queryWrapper = new LambdaQueryWrapper<AllotDtl>().eq(AllotDtl::getSourceId, inventoryOut.getSourceId());
+            List<AllotDtl> allotDtls = allotDtlService.list(queryWrapper);
+            if (CollectionUtils.isNotEmpty(allotDtls)) {
+                allotDtls.forEach(o ->{
+                    inventoryOutMtls.add(new InventoryOutMtl(inventoryOut.getId(), o.getSourceId(), inventoryOut.getSourceBillType(), o.getMtlId(), o.getAllotAmount(), o.getUnitId(), RowSts.EFFECTIVE.getId()));
                 });
             }
         }

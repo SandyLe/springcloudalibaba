@@ -2,10 +2,13 @@ package org.jeecg.modules.inventory.entity;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.jeecg.modules.basic.entity.BasicEntity;
+import org.jeecgframework.poi.excel.annotation.Excel;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -15,8 +18,11 @@ import java.util.Date;
 @ApiModel(value = "Allot", description = "调拨单")
 public class Allot extends BasicEntity {
 
-    @ApiModelProperty("单据时间")
-    private Date billDate;
+    @Excel(name = "订单日期",width = 20 , format = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @ApiModelProperty("订单日期")
+    private Date billdate;
     @ApiModelProperty("调出仓库ID")
     private String fromWarehouseId;
     @ApiModelProperty("调出仓库")
@@ -28,12 +34,12 @@ public class Allot extends BasicEntity {
     @TableField(exist=false)
     private String toWarehouse;
 
-    public Date getBillDate() {
-        return billDate;
+    public Date getBilldate() {
+        return billdate;
     }
 
-    public void setBillDate(Date billDate) {
-        this.billDate = billDate;
+    public void setBilldate(Date billdate) {
+        this.billdate = billdate;
     }
 
     public String getFromWarehouseId() {

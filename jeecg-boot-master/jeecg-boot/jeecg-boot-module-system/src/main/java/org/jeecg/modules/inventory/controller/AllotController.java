@@ -11,17 +11,16 @@ import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.base.controller.JeecgController;
 import org.jeecg.common.system.query.QueryGenerator;
+import org.jeecg.modules.basic.entity.Warehouse;
 import org.jeecg.modules.basic.enums.BillStatus;
 import org.jeecg.modules.basic.enums.BillType;
 import org.jeecg.modules.basic.enums.RowSts;
 import org.jeecg.modules.basic.service.BillCodeBuilderService;
-import org.jeecg.modules.inventory.entity.InventoryIn;
-import org.jeecg.modules.inventory.entity.InventoryInMtl;
+import org.jeecg.modules.basic.service.WarehouseService;
+import org.jeecg.modules.inventory.entity.*;
 import org.jeecg.modules.inventory.service.InventoryInService;
 import org.jeecg.modules.inventory.service.InventoryOutService;
 import org.jeecg.modules.inventory.dto.AllotDto;
-import org.jeecg.modules.inventory.entity.Allot;
-import org.jeecg.modules.inventory.entity.AllotDtl;
 import org.jeecg.modules.inventory.service.AllotDtlService;
 import org.jeecg.modules.inventory.service.AllotService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,16 +30,16 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
-@Api(tags = "采购列表")
+@Api(tags = "调拨列表")
 @RestController
 @RequestMapping("/allot")
 public class AllotController extends JeecgController<Allot, AllotService> {
+    @Autowired
+    private WarehouseService warehouseService;
     @Autowired
     private InventoryInService inventoryInService;
     @Autowired
@@ -60,6 +59,18 @@ public class AllotController extends JeecgController<Allot, AllotService> {
         QueryWrapper<Allot> queryWrapper = QueryGenerator.initQueryWrapper(allot, req.getParameterMap());
         Page<Allot> page = new Page<>(pageNo, pageSize);
         IPage<Allot> pageList = allotService.page(page, queryWrapper);
+        List<Allot> datas = pageList.getRecords();
+        List<String> fromWarehoseIds = datas.stream().map(Allot::getFromWarehouseId).collect(Collectors.toList());
+        List<String> toWarehouseIds = datas.stream().map(Allot::getToWarehouseId).collect(Collectors.toList());
+        fromWarehoseIds.addAll(toWarehouseIds);
+        List<String> warehouseIds = fromWarehoseIds.stream().distinct().collect(Collectors.toList());
+        Collection<Warehouse> warehouses =warehouseService.listByIds(warehouseIds);
+        Map<String, Warehouse> warehouseMap = warehouses.stream().collect(Collectors.toMap(Warehouse::getId, o->o));
+        datas.stream().forEach(o->{
+            o.setFromWarehouse(warehouseMap.get(o.getFromWarehouseId()).getName());
+            o.setToWarehouse(warehouseMap.get(o.getToWarehouseId()).getName());
+        });
+        pageList.setRecords(datas);
         return Result.ok(pageList);
     }
 
@@ -67,36 +78,42 @@ public class AllotController extends JeecgController<Allot, AllotService> {
     @Transactional
     public Result<?> add(@RequestBody AllotDto allotdto){
 
-        // 采购主表
-        String code = billCodeBuilderService.getBillCode(BillType.PURCHASEORDER.getId());
+        // 调拨单主表
+        String code = billCodeBuilderService.getBillCode(BillType.ALLOT.getId());
         allotdto.setCode(code);
         allotService.save(allotdto);
 
-        //采购单子表
+        //调拨单子表
         List<InventoryInMtl> detaillist = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(allotdto.getDetaillist())){
             List<AllotDtl> mtls = allotdto.getDetaillist().stream().filter(o->StringUtils.isNotBlank(o.getMtlId())).collect(Collectors.toList());
             mtls.stream().forEach(o->{
-                //采购商品详情
+                //调拨商品详情
                 o.setCode(code);
                 o.setSourceId(allotdto.getId());
             });
             allotDtlService.saveBatch(mtls);
         }
-        if (StringUtils.isNotBlank(allotdto.getFromWarehouseId())) {
+        if (StringUtils.isNotBlank(allotdto.getToWarehouseId())) {
 
             // 入库单主表
             InventoryIn inventoryIn = new InventoryIn();
             inventoryIn.setBillStatus(BillStatus.TOSTOCKIN.getId());
-            inventoryIn.setWarehouseId(allotdto.getFromWarehouseId());
+            inventoryIn.setWarehouseId(allotdto.getToWarehouseId());
 //            inventoryIn.setPutInTime(allotdto.getPutInTime());
             inventoryIn.setSourceCode(code);
             inventoryIn.setSourceId(allotdto.getId());
             inventoryIn.setBillType(BillType.STOREIN.getId());
             inventoryIn.setRowSts(RowSts.EFFECTIVE.getId());
-            inventoryIn.setSourceBillType(BillType.PURCHASEORDER.getId());
+            inventoryIn.setSourceBillType(BillType.ALLOT.getId());
             inventoryIn.setCode(billCodeBuilderService.getBillCode(BillType.STOREIN.getId()));
             inventoryInService.saveToInventoryIn(inventoryIn);
+        }
+        if (StringUtils.isNotBlank(allotdto.getFromWarehouseId())) {
+            // 销售出库
+            InventoryOut inventoryOut = new InventoryOut(allotdto.getId(), allotdto.getCode(), BillType.STOREOUT.getId(), BillType.SALEORDER.getId(), allotdto.getFromWarehouseId(), new Date(), BillStatus.TOSEND.getId());
+            inventoryOut.setRowSts(RowSts.EFFECTIVE.getId());
+            inventoryOutService.saveToInventoryOut(inventoryOut);
         }
 
         return Result.ok(allotdto.getId());
@@ -106,11 +123,11 @@ public class AllotController extends JeecgController<Allot, AllotService> {
     @Transactional
     public Result<?> edit(@RequestBody AllotDto allotdto){
 
-        // 采购主表
+        // 调拨主表
         allotService.updateById(allotdto);
         if (allotdto.getDetaillist().size() > 0){
             for (AllotDtl item: allotdto.getDetaillist()){
-                //采购商品详情
+                //调拨商品详情
                 if (item.getId() != null && item.getId().length() > 0)
                     allotDtlService.updateById(item);
                 else{
@@ -189,7 +206,7 @@ public class AllotController extends JeecgController<Allot, AllotService> {
 
     @RequestMapping("/exportXls")
     public ModelAndView exportXls(HttpServletRequest request, Allot allot){
-        return super.exportXls(request, allot,Allot.class, "采购列表");
+        return super.exportXls(request, allot,Allot.class, "调拨列表");
     }
 
     @PostMapping("importExcel")
