@@ -1,4 +1,4 @@
-package org.jeecg.modules.basic.enums;
+package org.jeecg.common.enums;
 
 public enum RowSts implements AbstractEnum{
 

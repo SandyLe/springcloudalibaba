@@ -1,4 +1,6 @@
-package org.jeecg.modules.basic.enums;
+package org.jeecg.common.enums;
+
+import org.jeecg.common.enums.AbstractEnum;
 
 public enum DateFormat implements AbstractEnum {
 

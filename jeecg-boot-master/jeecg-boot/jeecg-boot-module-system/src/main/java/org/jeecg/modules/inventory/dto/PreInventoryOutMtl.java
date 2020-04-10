@@ -32,6 +32,8 @@ public class PreInventoryOutMtl {
     private String unit;
     @ApiModelProperty("数量")
     private BigDecimal quantity;
+    @ApiModelProperty("操作类型")
+    private Integer operationId;
 
     public String getBillId() {
         return billId;
@@ -119,5 +121,13 @@ public class PreInventoryOutMtl {
 
     public void setSourceBillTypeName(String sourceBillTypeName) {
         this.sourceBillTypeName = sourceBillTypeName;
+    }
+
+    public Integer getOperationId() {
+        return operationId;
+    }
+
+    public void setOperationId(Integer operationId) {
+        this.operationId = operationId;
     }
 }

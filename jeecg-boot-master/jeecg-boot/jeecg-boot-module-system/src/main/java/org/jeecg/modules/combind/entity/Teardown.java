@@ -38,6 +38,8 @@ public class Teardown extends CBasicEntity {
     private BigDecimal price;
     @ApiModelProperty("金额")
     private BigDecimal amount;
+    @ApiModelProperty("订单状态")
+    private Integer billStatus;
 
     public String getMtlId() {
         return mtlId;
@@ -117,5 +119,13 @@ public class Teardown extends CBasicEntity {
 
     public void setAmount(BigDecimal amount) {
         this.amount = amount;
+    }
+
+    public Integer getBillStatus() {
+        return billStatus;
+    }
+
+    public void setBillStatus(Integer billStatus) {
+        this.billStatus = billStatus;
     }
 }

@@ -33,6 +33,8 @@ public class Allot extends BasicEntity {
     @ApiModelProperty("调入仓库")
     @TableField(exist=false)
     private String toWarehouse;
+    @ApiModelProperty("订单状态")
+    private Integer billStatus;
 
     public Date getBilldate() {
         return billdate;
@@ -72,5 +74,13 @@ public class Allot extends BasicEntity {
 
     public void setToWarehouse(String toWarehouse) {
         this.toWarehouse = toWarehouse;
+    }
+
+    public Integer getBillStatus() {
+        return billStatus;
+    }
+
+    public void setBillStatus(Integer billStatus) {
+        this.billStatus = billStatus;
     }
 }

@@ -1,6 +1,6 @@
-package org.jeecg.modules.basic.enums;
+package org.jeecg.common.enums;
 
-public enum BillStatus implements AbstractEnum{
+public enum BillStatus implements AbstractEnum {
 
     INVALID(-1, "作废"),
     NEW(0, "草稿"),
@@ -15,7 +15,8 @@ public enum BillStatus implements AbstractEnum{
     TOSTOCKIN(10, "待入库"),
     PARTICIALSTOCKIN(11, "部分入库"),
     ALLSTOCKINED(12, "已入库"),
-    REFUND(13, "已退款");
+    REFUND(13, "已退款"),
+    TOSTOCKOUT(14, "待出库");
 
     private Integer id;
     private String name;

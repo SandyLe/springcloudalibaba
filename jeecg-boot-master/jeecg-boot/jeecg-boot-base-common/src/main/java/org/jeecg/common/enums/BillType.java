@@ -1,6 +1,6 @@
-package org.jeecg.modules.basic.enums;
+package org.jeecg.common.enums;
 
-public enum BillType implements AbstractEnum{
+public enum BillType implements AbstractEnum {
 
     SALEORDER(0, "sale_order", "销售订单"),
     CUSTOMER(1, "customer", "客户"),

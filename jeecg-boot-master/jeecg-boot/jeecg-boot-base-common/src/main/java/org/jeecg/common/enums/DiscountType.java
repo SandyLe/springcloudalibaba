@@ -1,6 +1,6 @@
-package org.jeecg.modules.basic.enums;
+package org.jeecg.common.enums;
 
-public enum DiscountType implements AbstractEnum{
+public enum DiscountType implements AbstractEnum {
 
     PERCENT("0", "百分比"),
     AMOUNT("1", "金额");

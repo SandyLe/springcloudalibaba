@@ -5,15 +5,21 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Lists;
 import org.apache.commons.collections.CollectionUtils;
-import org.jeecg.modules.basic.enums.BillStatus;
-import org.jeecg.modules.basic.enums.BillType;
-import org.jeecg.modules.basic.enums.InventoryOperation;
-import org.jeecg.modules.basic.enums.RowSts;
-import org.jeecg.modules.inventory.entity.AllotDtl;
-import org.jeecg.modules.inventory.entity.InventoryLog;
-import org.jeecg.modules.inventory.entity.InventoryOut;
+import org.apache.commons.lang.StringUtils;
+import org.jeecg.common.enums.BillStatus;
+import org.jeecg.common.enums.BillType;
+import org.jeecg.common.enums.InventoryOperation;
+import org.jeecg.common.enums.RowSts;
+import org.jeecg.common.util.Constants;
+import org.jeecg.modules.basic.service.BillCodeBuilderService;
+import org.jeecg.modules.combind.entity.Assemble;
+import org.jeecg.modules.combind.entity.Teardown;
+import org.jeecg.modules.combind.service.AssembleDtlService;
+import org.jeecg.modules.combind.service.AssembleService;
+import org.jeecg.modules.combind.service.TeardownDtlService;
+import org.jeecg.modules.combind.service.TeardownService;
+import org.jeecg.modules.inventory.entity.*;
 
-import org.jeecg.modules.inventory.entity.InventoryOutMtl;
 import org.jeecg.modules.inventory.mapper.InventoryOutMapper;
 import org.jeecg.modules.inventory.service.*;
 import org.jeecg.modules.purchase.entity.PurchaseReturn;
@@ -56,6 +62,18 @@ public class InventoryOutServiceImpl extends ServiceImpl<InventoryOutMapper, Inv
     private PurchaseReturnService purchaseReturnService;
     @Autowired
     private AllotDtlService allotDtlService;
+    @Autowired
+    private AllotService allotService;
+    @Autowired
+    private AssembleService assembleService;
+    @Autowired
+    private AssembleDtlService assembleDtlService;
+    @Autowired
+    private TeardownService teardownService;
+    @Autowired
+    private TeardownDtlService teardownDtlService;
+    @Autowired
+    private BillCodeBuilderService billCodeBuilderService;
 
     @Override
     @Transactional
@@ -63,19 +81,9 @@ public class InventoryOutServiceImpl extends ServiceImpl<InventoryOutMapper, Inv
 
         InventoryOut info = getById(mtls.get(0).getBillId());
         if (null != info) {
-            Integer operationId = BillType.SALEORDER.getId();
-            if (info.getSourceBillType() == BillType.PURCHASERETURNORDER.getId()) {
-                operationId = InventoryOperation.PURCHASERETURNOUT.getId();
-            } else if (info.getSourceBillType() == BillType.ALLOT.getId()) {
-                operationId = InventoryOperation.ALLOTOUT.getId();
-            } else if (info.getSourceBillType() == BillType.ASSEMBLE.getId()) {
-                operationId = InventoryOperation.ASSEMBLEOUT.getId();
-            } else if (info.getSourceBillType() == BillType.TEARDOWN.getId()) {
-                operationId = InventoryOperation.TEARDOWNOUT.getId();
-            }
             for (PreInventoryOutMtl mtl : mtls) {
                 InventoryLog inventoryLog = new InventoryLog(mtl.getSourceId(), info.getSourceBillType(), mtl.getMtlId(),
-                        info.getWarehouseId(), null, mtl.getQuantity(), null, mtl.getUnitId(), operationId, null);
+                        info.getWarehouseId(), null, mtl.getQuantity(), null, mtl.getUnitId(), mtl.getOperationId(), null);
                 inventoryService.updateInventory(inventoryLog);
             }
             List<PreInventoryOutMtl> deliveryMtls = getDeliveryMtlList(info.getId(), info.getSourceId());
@@ -99,6 +107,36 @@ public class InventoryOutServiceImpl extends ServiceImpl<InventoryOutMapper, Inv
                     info.setBillStatus(BillStatus.STOCKED.getId());
                 }
                 purchaseReturnService.updateById(purchaseReturn);
+            } else if (mtls.get(0).getSourceBillType() == BillType.ALLOT.getId()) {
+                Allot allot = allotService.getById(info.getSourceId());
+                if (CollectionUtils.isNotEmpty(deliveryMtls)) {
+                    allot.setBillStatus(BillStatus.PARTICIALSTOCK.getId());
+                    info.setBillStatus(BillStatus.PARTICIALSTOCK.getId());
+                } else {
+                    allot.setBillStatus(BillStatus.STOCKED.getId());
+                    info.setBillStatus(BillStatus.STOCKED.getId());
+                }
+                allotService.updateById(allot);
+            } else if (mtls.get(0).getSourceBillType() == BillType.ASSEMBLE.getId()) {
+                Assemble assemble = assembleService.getById(info.getSourceId());
+                if (CollectionUtils.isNotEmpty(deliveryMtls)) {
+                    assemble.setBillStatus(BillStatus.PARTICIALSTOCK.getId());
+                    info.setBillStatus(BillStatus.PARTICIALSTOCK.getId());
+                } else {
+                    assemble.setBillStatus(BillStatus.STOCKED.getId());
+                    info.setBillStatus(BillStatus.STOCKED.getId());
+                }
+                assembleService.updateById(assemble);
+            } else if (mtls.get(0).getSourceBillType() == BillType.TEARDOWN.getId()) {
+                Teardown teardown = teardownService.getById(info.getSourceId());
+                if (CollectionUtils.isNotEmpty(deliveryMtls)) {
+                    teardown.setBillStatus(BillStatus.PARTICIALSTOCK.getId());
+                    info.setBillStatus(BillStatus.PARTICIALSTOCK.getId());
+                } else {
+                    teardown.setBillStatus(BillStatus.STOCKED.getId());
+                    info.setBillStatus(BillStatus.STOCKED.getId());
+                }
+                teardownService.updateById(teardown);
             }
             updateById(info);
         }
@@ -106,7 +144,9 @@ public class InventoryOutServiceImpl extends ServiceImpl<InventoryOutMapper, Inv
     }
     @Override
     public String saveToInventoryOut (InventoryOut inventoryOut) {
-
+        if (StringUtils.isEmpty(inventoryOut.getId())) {
+            inventoryOut.setCode(billCodeBuilderService.getBillCode(BillType.STOREOUT.getId()));
+        }
         // 保存主表
         save(inventoryOut);
 
@@ -143,8 +183,11 @@ public class InventoryOutServiceImpl extends ServiceImpl<InventoryOutMapper, Inv
     @Override
     public List<PreInventoryOutMtl> getDeliveryMtlList(String id, String sourceId) {
         List<PreInventoryOutMtl> preInventoryOutMtls = Lists.newArrayList();
+        InventoryOut inventoryOut = getById(id);
+        Integer operationId = Constants.OUTOPERATIONS.get(inventoryOut.getSourceBillType());
         LambdaQueryWrapper<InventoryOutMtl> querySaleMtlWrapper = new QueryWrapper<InventoryOutMtl>().lambda().eq(InventoryOutMtl::getSourceBillId, sourceId).eq(InventoryOutMtl::getRowSts, RowSts.EFFECTIVE.getId());
         LambdaQueryWrapper<InventoryLog> queryInventoryLogWrapper = new QueryWrapper<InventoryLog>().lambda().eq(InventoryLog::getSourceId, sourceId);
+        queryInventoryLogWrapper.eq(InventoryLog::getOperationId, operationId);
         List<InventoryOutMtl> inventoryOutMtls = inventoryOutMtlService.list(querySaleMtlWrapper);
         List<InventoryLog> inventoryLogs = inventoryLogService.list(queryInventoryLogWrapper);
         Map<String, BigDecimal> mtlDeliveryQtyMap = new HashMap<>();
@@ -164,6 +207,7 @@ public class InventoryOutServiceImpl extends ServiceImpl<InventoryOutMapper, Inv
                 preInventoryOutMtl.setSourceBillType(o.getSourceBillType());
                 preInventoryOutMtl.setQuantity(tempAmout);
                 preInventoryOutMtl.setUnitId(o.getUnitId());
+                preInventoryOutMtl.setOperationId(operationId);
                 preInventoryOutMtls.add(preInventoryOutMtl);
             }
         });

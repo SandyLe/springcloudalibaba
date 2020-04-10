@@ -3,9 +3,6 @@ package org.jeecg.modules.basic.entity;
 import com.baomidou.mybatisplus.annotation.TableField;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import org.jeecg.common.system.base.entity.JeecgEntity;
-import org.jeecg.modules.basic.enums.EnumConvertUtils;
-import org.jeecg.modules.basic.enums.RowSts;
 
 @ApiModel(value = "CBasicEntity", description = "企业基础数据基类")
 public class CBasicEntity extends BasicEntity {

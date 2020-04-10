@@ -6,10 +6,12 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Lists;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
-import org.jeecg.modules.basic.enums.BillStatus;
-import org.jeecg.modules.basic.enums.BillType;
-import org.jeecg.modules.basic.enums.InventoryOperation;
-import org.jeecg.modules.basic.enums.RowSts;
+import org.jeecg.common.enums.BillStatus;
+import org.jeecg.common.enums.BillType;
+import org.jeecg.common.enums.InventoryOperation;
+import org.jeecg.common.enums.RowSts;
+import org.jeecg.common.util.Constants;
+import org.jeecg.modules.basic.service.BillCodeBuilderService;
 import org.jeecg.modules.cost.entity.PurchaseCost;
 import org.jeecg.modules.cost.service.PurchaseCostService;
 import org.jeecg.modules.inventory.dto.PreInventoryOutMtl;
@@ -63,13 +65,17 @@ public class InventoryInServiceImpl extends ServiceImpl<InventoryInMapper, Inven
     private PurchaseCostService purchaseCostService;
     @Autowired
     private AllotDtlService allotDtlService;
+    @Autowired
+    private BillCodeBuilderService billCodeBuilderService;
 
 
     @Override
     public List<PreInventoryOutMtl> getDeliveryMtlList(String id, String sourceId) {
+        InventoryIn inventoryIn = getById(id);
+        Integer operationId = Constants.INOPERATIONS.get(inventoryIn.getSourceBillType());
         List<PreInventoryOutMtl> preInventoryOutMtls = Lists.newArrayList();
         LambdaQueryWrapper<InventoryInMtl> querySaleMtlWrapper = new QueryWrapper<InventoryInMtl>().lambda().eq(InventoryInMtl::getSourceBillId, sourceId).eq(InventoryInMtl::getRowSts, RowSts.EFFECTIVE.getId());
-        LambdaQueryWrapper<InventoryLog> queryInventoryLogWrapper = new QueryWrapper<InventoryLog>().lambda().eq(InventoryLog::getSourceId, sourceId);
+        LambdaQueryWrapper<InventoryLog> queryInventoryLogWrapper = new QueryWrapper<InventoryLog>().lambda().eq(InventoryLog::getSourceId, sourceId).eq(InventoryLog::getOperationId, operationId);
         List<InventoryInMtl> inventoryInMtls = inventoryInMtlService.list(querySaleMtlWrapper);
         List<InventoryLog> inventoryLogs = inventoryLogService.list(queryInventoryLogWrapper);
         Map<String, BigDecimal> mtlDeliveryQtyMap = new HashMap<>();
@@ -89,6 +95,7 @@ public class InventoryInServiceImpl extends ServiceImpl<InventoryInMapper, Inven
                 preInventoryOutMtl.setMtlId(o.getMtlId());
                 preInventoryOutMtl.setQuantity(tempAmout);
                 preInventoryOutMtl.setUnitId(o.getUnitId());
+                preInventoryOutMtl.setOperationId(operationId);
                 preInventoryOutMtls.add(preInventoryOutMtl);
             }
         });
@@ -99,6 +106,9 @@ public class InventoryInServiceImpl extends ServiceImpl<InventoryInMapper, Inven
     public String saveToInventoryIn(InventoryIn inventoryIn) {
 
         // 保存主表
+        if (StringUtils.isEmpty(inventoryIn.getId())) {
+            inventoryIn.setCode(billCodeBuilderService.getBillCode(BillType.STOREIN.getId()));
+        }
         save(inventoryIn);
 
         // 保存子表
@@ -143,25 +153,19 @@ public class InventoryInServiceImpl extends ServiceImpl<InventoryInMapper, Inven
             Purchase purchase = null;
             String batchNo = null;
             Integer billStatus = BillStatus.ALLSTOCKINED.getId();
-            Integer operationId = null;
             if (billType == BillType.PURCHASEORDER.getId()) {
                 purchase = purchaseService.getById(info.getSourceId());
                 batchNo = purchase.getBatchNo();
-                operationId = InventoryOperation.PURCHASEIN.getId();
             } else if (billType == BillType.SALERETURNORDER.getId()) {
                 saleOrderReturn = saleOrderReturnService.getById(info.getSourceId());
-                operationId = InventoryOperation.SALERETURNIN.getId();
             } else if (billType == BillType.ALLOT.getId()) {
-                operationId = InventoryOperation.ALLOTIN.getId();
             } else if (billType == BillType.ASSEMBLE.getId()) {
-                operationId = InventoryOperation.ASSEMBLEIN.getId();
             } else if (billType == BillType.TEARDOWN.getId()) {
-                operationId = InventoryOperation.TEARDOWNIN.getId();
             }
             for (PreInventoryOutMtl mtl : mtls) {
                 // 入库更新库存
                 InventoryLog inventoryLog = new InventoryLog(mtl.getSourceId(), info.getSourceBillType(), mtl.getMtlId(),
-                        info.getWarehouseId(), null, mtl.getQuantity(), null, mtl.getUnitId(), operationId, batchNo);
+                        info.getWarehouseId(), null, mtl.getQuantity(), null, mtl.getUnitId(), mtl.getOperationId(), batchNo);
                 inventoryService.updateInventory(inventoryLog);
 
                 // 更新采购产品批次平均价格

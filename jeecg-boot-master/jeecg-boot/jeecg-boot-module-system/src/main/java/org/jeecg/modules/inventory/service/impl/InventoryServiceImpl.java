@@ -1,14 +1,12 @@
 package org.jeecg.modules.inventory.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.exception.JeecgBootException;
-import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.modules.basic.entity.Material;
-import org.jeecg.modules.basic.enums.InventoryOperation;
+import org.jeecg.common.enums.InventoryOperation;
 import org.jeecg.modules.basic.service.MaterialService;
 import org.jeecg.modules.inventory.entity.Inventory;
 import org.jeecg.modules.inventory.entity.InventoryDtl;
@@ -24,9 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory>  implements InventoryService {

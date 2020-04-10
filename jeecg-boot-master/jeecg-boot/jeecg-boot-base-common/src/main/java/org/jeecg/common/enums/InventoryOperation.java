@@ -1,6 +1,6 @@
-package org.jeecg.modules.basic.enums;
+package org.jeecg.common.enums;
 
-public enum InventoryOperation implements AbstractEnum{
+public enum InventoryOperation implements AbstractEnum {
 
     STOCKING(0, "库存盘点"),
     SALEOUT(1, "销售出库"),

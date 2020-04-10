@@ -1,4 +1,4 @@
-package org.jeecg.modules.basic.enums;
+package org.jeecg.common.enums;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.lang3.EnumUtils;
+import org.jeecg.common.enums.AbstractEnum;
 
 /**
  * 枚举通用接口

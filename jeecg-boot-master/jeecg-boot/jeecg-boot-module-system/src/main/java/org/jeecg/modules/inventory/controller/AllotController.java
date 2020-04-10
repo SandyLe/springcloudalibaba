@@ -12,9 +12,9 @@ import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.base.controller.JeecgController;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.modules.basic.entity.Warehouse;
-import org.jeecg.modules.basic.enums.BillStatus;
-import org.jeecg.modules.basic.enums.BillType;
-import org.jeecg.modules.basic.enums.RowSts;
+import org.jeecg.common.enums.BillStatus;
+import org.jeecg.common.enums.BillType;
+import org.jeecg.common.enums.RowSts;
 import org.jeecg.modules.basic.service.BillCodeBuilderService;
 import org.jeecg.modules.basic.service.WarehouseService;
 import org.jeecg.modules.inventory.entity.*;
@@ -111,12 +111,13 @@ public class AllotController extends JeecgController<Allot, AllotService> {
         }
         if (StringUtils.isNotBlank(allotdto.getFromWarehouseId())) {
             // 销售出库
-            InventoryOut inventoryOut = new InventoryOut(allotdto.getId(), allotdto.getCode(), BillType.STOREOUT.getId(), BillType.SALEORDER.getId(), allotdto.getFromWarehouseId(), new Date(), BillStatus.TOSEND.getId());
+            InventoryOut inventoryOut = new InventoryOut(allotdto.getId(), allotdto.getCode(), BillType.STOREOUT.getId(), BillType.ALLOT.getId(), allotdto.getFromWarehouseId(), new Date(), BillStatus.TOSTOCKOUT.getId());
             inventoryOut.setRowSts(RowSts.EFFECTIVE.getId());
             inventoryOutService.saveToInventoryOut(inventoryOut);
         }
-
-        return Result.ok(allotdto.getId());
+        Result<Object> result = Result.ok();
+        result.setResult(allotdto.getId());
+        return result;
     }
 
     @PutMapping("/edit")
