@@ -213,6 +213,9 @@ const getPurchaseBatchList = (params)=>getAction("/purchaseBatch/getList",params
 // 库存
 const getinventoryList = (params)=>getAction("/inventory/getList",params)
 
+// 调拨单
+const getAllotOne = (params)=>getAction("/allot/queryById",params)
+
 export {
   // imgView,
   // doMian,
@@ -362,7 +365,8 @@ export {
   getPurchaseBatchOne,
   editPurchaseBatch,
   getPurchaseBatchList,
-  getinventoryList
+  getinventoryList,
+  getAllotOne
 }
 
 

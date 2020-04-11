@@ -124,9 +124,8 @@ import {
     getWarehouseList,
     searchMaterial,
     getMaterialUnitList,
-    purchasequeryById,
+    getAllotOne,
     purchasedetailDelete,
-    getPurchaseBatchList,
     getinventoryList
 } from '@/api/api'
 export default {
@@ -321,7 +320,7 @@ export default {
         },
         add() {
             if(this.$route.params.id){
-                purchasequeryById({"id":this.$route.params.id}).then((res)=>{
+              getAllotOne({"id":this.$route.params.id}).then((res)=>{
                     if (res.result) {
                         if(res.result.detaillist){
                             this.tabledata = res.result.detaillist;
@@ -342,8 +341,9 @@ export default {
             this.visible = true
             this.$nextTick(() => {
                 this.form.setFieldsValue(
-                    pick(this.model, 'id', 'code', 'vendorId', 'content', 'fromWarehouseId', 'toWarehouseId', 'account', 'payamount', 'totalamount', 'batchNo')
+                    pick(this.model, 'id', 'code', 'content', 'fromWarehouseId', 'toWarehouseId')
                 )
+              this.form.setFieldsValue({billdate: this.model.billdate ? moment(this.model.billdate) : null})
             })
         },
         close() {
@@ -413,8 +413,9 @@ export default {
         },
         popupCallback(row) {
             this.form.setFieldsValue(
-                pick(row, 'code', 'vendorId', 'content', 'fromWarehouseId', 'toWarehouseId', 'account', 'payamount', 'totalamount')
+                pick(row, 'code', 'vendorId', 'content', 'fromWarehouseId', 'toWarehouseId')
             )
+          this.form.setFieldsValue({billdate: this.model.billdate ? moment(this.model.billdate) : null})
         },
         newMember() {
             this.tabledata.push({

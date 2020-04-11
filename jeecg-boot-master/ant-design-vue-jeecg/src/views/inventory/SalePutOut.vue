@@ -167,7 +167,7 @@
       viewInventoryLog (record) {
         this.inventoryLogs = [];
         if (record.id && record.sourceId) {
-          viewInventoryLog({sourceId: record.sourceId}).then((res) => {
+          viewInventoryLog({sourceId: record.id}).then((res) => {
             if (res.success) {
               this.inventoryLogs = res.result;
             }
