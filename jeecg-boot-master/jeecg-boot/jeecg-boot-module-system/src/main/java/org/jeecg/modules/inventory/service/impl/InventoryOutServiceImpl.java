@@ -175,6 +175,17 @@ public class InventoryOutServiceImpl extends ServiceImpl<InventoryOutMapper, Inv
                     inventoryOutMtls.add(new InventoryOutMtl(inventoryOut.getId(), o.getSourceId(), inventoryOut.getSourceBillType(), o.getMtlId(), o.getAllotAmount(), o.getUnitId(), RowSts.EFFECTIVE.getId()));
                 });
             }
+        } else if (inventoryOut.getSourceBillType() == BillType.ASSEMBLE.getId()) {
+            Assemble assemble = assembleService.getById(inventoryOut.getSourceId());
+            inventoryOutMtls.add(new InventoryOutMtl(inventoryOut.getId(), assemble.getId(), inventoryOut.getSourceBillType(), assemble.getMtlId(), o.getAllotAmount(), o.getUnitId(), RowSts.EFFECTIVE.getId()));
+        } else if (inventoryOut.getSourceBillType() == BillType.ALLOT.getId()) {
+            LambdaQueryWrapper<AllotDtl> queryWrapper = new LambdaQueryWrapper<AllotDtl>().eq(AllotDtl::getSourceId, inventoryOut.getSourceId());
+            List<AllotDtl> allotDtls = allotDtlService.list(queryWrapper);
+            if (CollectionUtils.isNotEmpty(allotDtls)) {
+                allotDtls.forEach(o ->{
+                    inventoryOutMtls.add(new InventoryOutMtl(inventoryOut.getId(), o.getSourceId(), inventoryOut.getSourceBillType(), o.getMtlId(), o.getAllotAmount(), o.getUnitId(), RowSts.EFFECTIVE.getId()));
+                });
+            }
         }
         inventoryOutMtlService.saveBatch(inventoryOutMtls);
         return inventoryOut.getId();

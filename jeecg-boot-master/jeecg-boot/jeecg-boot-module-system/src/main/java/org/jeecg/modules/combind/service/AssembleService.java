@@ -1,6 +1,7 @@
 package org.jeecg.modules.combind.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.jeecg.modules.combind.dto.AssembleDto;
 import org.jeecg.modules.combind.entity.Assemble;
 import org.jeecg.modules.purchase.entity.Purchase;
 
@@ -14,4 +15,5 @@ import java.util.List;
  */
 public interface AssembleService extends IService<Assemble> {
 
-}
+    public String saveOrder(AssembleDto assembledto);
+    publiclHQˆd5¡xe_v≥*°VZkê4Ïn’g¥Ì˜®O¨oê‚#Ñ∞ZVÍ†ƒÄ

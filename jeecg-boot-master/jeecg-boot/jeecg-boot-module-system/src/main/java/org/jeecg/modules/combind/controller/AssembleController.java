@@ -49,8 +49,6 @@ public class AssembleController extends JeecgController<Assemble, AssembleServic
     private AssembleService assembleService;
     @Autowired
     private AssembleDtlService assembleDtlService;
-    @Autowired
-    private BillCodeBuilderService billCodeBuilderService;
 
     @GetMapping("/getPage")
     public Result<?> queryPageList(Assemble Assemble,
@@ -66,77 +64,14 @@ public class AssembleController extends JeecgController<Assemble, AssembleServic
     @PostMapping("/add")
     @Transactional
     public Result<?> add(@RequestBody AssembleDto assembledto){
-        // ÁªÑË£Ö‰∏ªË°®
-        String code = billCodeBuilderService.getBillCode(BillType.ASSEMBLE.getId());
-        assembledto.setCode(code);
-        assembleService.save(assembledto);
-
-        //ÁªÑË£ÖÂçïÂ≠êË°®
-        List<InventoryInMtl> detaillist = new ArrayList<>();
-        if (CollectionUtils.isNotEmpty(assembledto.getDetaillist())){
-            List<AssembleDtl> mtls = assembledto.getDetaillist().stream().filter(o->StringUtils.isNotBlank(o.getMtlId())).collect(Collectors.toList());
-            mtls.stream().forEach(o->{
-                //ÁªÑË£ÖÂïÜÂìÅËØ¶ÊÉÖ
-                o.setCode(code);
-                o.setSourceId(assembledto.getId());
-            });
-            assembleDtlService.saveBatch(mtls);
-        }
-        if (StringUtils.isNotBlank(assembledto.getWarehouseId())) {
-
-            // ÂÖ•Â∫ìÂçï‰∏ªË°®
-            InventoryIn inventoryIn = new InventoryIn();
-            inventoryIn.setBillStatus(BillStatus.TOSTOCKIN.getId());
-            inventoryIn.setWarehouseId(assembledto.getWarehouseId());
-//            inventoryIn.setPutInTime(assembledto.getPutInTime());
-            inventoryIn.setSourceCode(code);
-            inventoryIn.setSourceId(assembledto.getId());
-            inventoryIn.setBillType(BillType.STOREIN.getId());
-            inventoryIn.setRowSts(RowSts.EFFECTIVE.getId());
-            inventoryIn.setSourceBillType(BillType.ASSEMBLE.getId());
-            inventoryIn.setCode(billCodeBuilderService.getBillCode(BillType.STOREIN.getId()));
-            inventoryInService.saveToInventoryIn(inventoryIn);
-        }
-        return Result.ok(assembledto.getId());
+        assembleService.saveOrder(assembledto);
+        return Result.ok();
     }
 
     @PutMapping("/edit")
-    @Transactional
     public Result<?> edit(@RequestBody AssembleDto assembledto){
-        // ÁªÑË£Ö‰∏ªË°®
-        assembleService.updateById(assembledto);
-        if (assembledto.getDetaillist().size() > 0){
-            for (AssembleDtl item: assembledto.getDetaillist()){
-                //ÁªÑË£ÖÂïÜÂìÅËØ¶ÊÉÖ
-                if (item.getId() != null && item.getId().length() > 0)
-                    assembleDtlService.updateById(item);
-                else{
-                    item.setSourceId(assembledto.getId());
-                    assembleDtlService.save(item);
-                }
-            }
-        }
-
-        // ÂÖ•Â∫ìÂçï‰∏ªË°®
-        inventoryInService.deleteBySourceId(assembledto.getId());
-
-        if (StringUtils.isNotBlank(assembledto.getWarehouseId())) {
-
-            // ÂÖ•Â∫ìÂçï‰∏ªË°®
-            InventoryIn inventoryIn = new InventoryIn();
-            inventoryIn.setBillStatus(BillStatus.TOSTOCKIN.getId());
-            inventoryIn.setWarehouseId(assembledto.getWarehouseId());
-//            inventoryIn.setPutInTime(assembledto.getPutInTime());
-            inventoryIn.setSourceCode(assembledto.getCode());
-            inventoryIn.setSourceId(assembledto.getId());
-            inventoryIn.setBillType(BillType.STOREIN.getId());
-            inventoryIn.setRowSts(RowSts.EFFECTIVE.getId());
-            inventoryIn.setSourceBillType(BillType.ASSEMBLE.getId());
-            inventoryIn.setCode(billCodeBuilderService.getBillCode(BillType.STOREIN.getId()));
-            inventoryInService.saveToInventoryIn(inventoryIn);
-        }
-
-        return Result.ok(assembledto.getId());
+        assembleService.editOrder(assembledto);
+        return Result.ok();
     }
 
     @DeleteMapping("/delete")
@@ -190,11 +125,6 @@ public class AssembleController extends JeecgController<Assemble, AssembleServic
 
     @RequestMapping("/exportXls")
     public ModelAndView exportXls(HttpServletRequest request, Assemble Assemble){
-        return super.exportXls(request, Assemble,Assemble.class, "ÁªÑË£ÖÂàóË°®");
-    }
-
-    @PostMapping("importExcel")
-    public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response){
-        return super.importExcel(request, response, Assemble.class);
-    }
-}
+        return super.exportXls(requestlƒ*™õÙΩ∂2ˇ	<ºÃx±J{!F/kA∆Ãm<rîç≥\ä4∞¯Grÿ˛qá—»ßÌ;)⁄c∂®BÙísÁæfóæ©≤Íƒ§2Õ™)g;aÓπÓ+óÈ~ïRt:ç–ãèqƒC¬çjÔ”9.qKõ”Ÿ(úÚ˝êÊc’Ö°Iì3Eµ
+@Î±]Ó;7∫\·'fØjëû∑ªóV<J…Ou∂€›…ø•àøJDˆBózaç3	‡eNNﬁ˙aõUp+MÎ}%•ø{7»/îìü3Ï¶"ÓN[\õ!§õªç*úÕ2π√éÛ¡µC
+VvÑåóNY¢X≠¯)RﬂzèŸD
