@@ -16,4 +16,5 @@ import java.util.List;
 public interface AssembleService extends IService<Assemble> {
 
     public String saveOrder(AssembleDto assembledto);
-    publiclHQöd5Áxe_v³*¡VZk4ìnÕg´í÷¨O¬oâ#„°ZVê Ä€
+    public String editOrder(AssembleDto assembledto);
+}

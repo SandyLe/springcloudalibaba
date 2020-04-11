@@ -82,7 +82,7 @@ public class InventoryOutServiceImpl extends ServiceImpl<InventoryOutMapper, Inv
         InventoryOut info = getById(mtls.get(0).getBillId());
         if (null != info) {
             for (PreInventoryOutMtl mtl : mtls) {
-                InventoryLog inventoryLog = new InventoryLog(mtl.getSourceId(), info.getSourceBillType(), mtl.getMtlId(),
+                InventoryLog inventoryLog = new InventoryLog(info.getId(), mtl.getSourceId(), info.getSourceBillType(), mtl.getMtlId(),
                         info.getWarehouseId(), null, mtl.getQuantity(), null, mtl.getUnitId(), mtl.getOperationId(), null);
                 inventoryService.updateInventory(inventoryLog);
             }
@@ -177,7 +177,7 @@ public class InventoryOutServiceImpl extends ServiceImpl<InventoryOutMapper, Inv
             }
         } else if (inventoryOut.getSourceBillType() == BillType.ASSEMBLE.getId()) {
             Assemble assemble = assembleService.getById(inventoryOut.getSourceId());
-            inventoryOutMtls.add(new InventoryOutMtl(inventoryOut.getId(), assemble.getId(), inventoryOut.getSourceBillType(), assemble.getMtlId(), o.getAllotAmount(), o.getUnitId(), RowSts.EFFECTIVE.getId()));
+            inventoryOutMtls.add(new InventoryOutMtl(inventoryOut.getId(), assemble.getId(), inventoryOut.getSourceBillType(), assemble.getMtlId(), assemble.getQuantity(), assemble.getUnitId(), RowSts.EFFECTIVE.getId()));
         } else if (inventoryOut.getSourceBillType() == BillType.ALLOT.getId()) {
             LambdaQueryWrapper<AllotDtl> queryWrapper = new LambdaQueryWrapper<AllotDtl>().eq(AllotDtl::getSourceId, inventoryOut.getSourceId());
             List<AllotDtl> allotDtls = allotDtlService.list(queryWrapper);
@@ -197,7 +197,7 @@ public class InventoryOutServiceImpl extends ServiceImpl<InventoryOutMapper, Inv
         InventoryOut inventoryOut = getById(id);
         Integer operationId = Constants.OUTOPERATIONS.get(inventoryOut.getSourceBillType());
         LambdaQueryWrapper<InventoryOutMtl> querySaleMtlWrapper = new QueryWrapper<InventoryOutMtl>().lambda().eq(InventoryOutMtl::getSourceBillId, sourceId).eq(InventoryOutMtl::getRowSts, RowSts.EFFECTIVE.getId());
-        LambdaQueryWrapper<InventoryLog> queryInventoryLogWrapper = new QueryWrapper<InventoryLog>().lambda().eq(InventoryLog::getSourceId, sourceId);
+        LambdaQueryWrapper<InventoryLog> queryInventoryLogWrapper = new QueryWrapper<InventoryLog>().lambda().eq(InventoryLog::getSourceId, id);
         queryInventoryLogWrapper.eq(InventoryLog::getOperationId, operationId);
         List<InventoryOutMtl> inventoryOutMtls = inventoryOutMtlService.list(querySaleMtlWrapper);
         List<InventoryLog> inventoryLogs = inventoryLogService.list(queryInventoryLogWrapper);

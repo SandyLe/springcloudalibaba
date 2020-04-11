@@ -719,3 +719,16 @@ CREATE TABLE `sl_logistics_company` (
   `sort` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+//*************************************************202004*****************//
+
+ALTER TABLE sl_inventory_log ADD COLUMN source_bill_id VARCHAR(30);
+UPDATE sl_inventory_log SET source_bill_id = source_id;
+
+UPDATE sl_inventory_log SET source_id=(
+SELECT sin.id FROM sl_inventory_in sin WHERE sin.source_id = source_bill_id AND sin.source_bill_type = source_bill_type AND sin.row_sts=1
+);
+UPDATE sl_inventory_log SET source_id=(
+SELECT sou.id FROM sl_inventory_out sou WHERE sou.source_id = source_bill_id AND sou.source_bill_type = source_bill_type AND sou.row_sts=1
+)
+

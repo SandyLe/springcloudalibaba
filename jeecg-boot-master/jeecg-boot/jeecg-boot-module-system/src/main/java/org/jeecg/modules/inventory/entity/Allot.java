@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.jeecg.common.enums.BillStatus;
+import org.jeecg.common.enums.EnumConvertUtils;
 import org.jeecg.modules.basic.entity.BasicEntity;
 import org.jeecgframework.poi.excel.annotation.Excel;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -35,6 +37,9 @@ public class Allot extends BasicEntity {
     private String toWarehouse;
     @ApiModelProperty("订单状态")
     private Integer billStatus;
+    @ApiModelProperty("订单状态")
+    @TableField(exist=false)
+    private String billStatusName;
 
     public Date getBilldate() {
         return billdate;
@@ -82,5 +87,16 @@ public class Allot extends BasicEntity {
 
     public void setBillStatus(Integer billStatus) {
         this.billStatus = billStatus;
+    }
+
+    public void setBillStatusName(String billStatusName) {
+        this.billStatusName = billStatusName;
+    }
+
+    public String getBillStatusName() {
+        if (null != billStatus) {
+            return EnumConvertUtils.getName(BillStatus.class, billStatus);
+        }
+        return billStatusName;
     }
 }

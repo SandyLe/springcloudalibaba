@@ -7,17 +7,28 @@ import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.enums.BillStatus;
 import org.jeecg.common.enums.BillType;
 import org.jeecg.common.enums.RowSts;
+import org.jeecg.modules.basic.service.BillCodeBuilderService;
 import org.jeecg.modules.combind.dto.AssembleDto;
 import org.jeecg.modules.combind.entity.Assemble;
+import org.jeecg.modules.combind.entity.AssembleDtl;
 import org.jeecg.modules.combind.mapper.AssembleMapper;
+import org.jeecg.modules.combind.service.AssembleDtlService;
 import org.jeecg.modules.combind.service.AssembleService;
+import org.jeecg.modules.inventory.entity.InventoryIn;
+import org.jeecg.modules.inventory.entity.InventoryOut;
+import org.jeecg.modules.inventory.service.InventoryInService;
+import org.jeecg.modules.inventory.service.InventoryOutService;
 import org.jeecg.modules.purchase.entity.Purchase;
 import org.jeecg.modules.purchase.mapper.PurchaseMapper;
 import org.jeecg.modules.purchase.service.PurchaseService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @Description:
@@ -32,8 +43,10 @@ public class AssembleServiceImpl extends ServiceImpl<AssembleMapper, Assemble> i
     private AssembleMapper assembleMapper;
     @Autowired
     private AssembleDtlService assembleDtlService;
+    @Lazy
     @Autowired
     private InventoryInService inventoryInService;
+    @Lazy
     @Autowired
     private InventoryOutService inventoryOutService;
     @Autowired
@@ -73,12 +86,13 @@ public class AssembleServiceImpl extends ServiceImpl<AssembleMapper, Assemble> i
             inventoryInService.saveToInventoryIn(inventoryIn);
         }
 
-        if (StringUtils.isNotBlank(allotdto.getFromWarehouseId())) {
+        if (StringUtils.isNotBlank(assembledto.getWarehouseId())) {
             // ÈîÄÂîÆÂá∫Â∫ì
-            InventoryOut inventoryOut = new InventoryOut(allotdto.getId(), allotdto.getCode(), BillType.STOREOUT.getId(), BillType.ALLOT.getId(), allotdto.getFromWarehouseId(), new Date(), BillStatus.TOSTOCKOUT.getId());
+            InventoryOut inventoryOut = new InventoryOut(assembledto.getId(), assembledto.getCode(), BillType.STOREOUT.getId(), BillType.ALLOT.getId(), assembledto.getWarehouseId(), new Date(), BillStatus.TOSTOCKOUT.getId());
             inventoryOut.setRowSts(RowSts.EFFECTIVE.getId());
             inventoryOutService.saveToInventoryOut(inventoryOut);
         }
+        return assembledto.getId();
     }
 
     @Override
@@ -86,7 +100,7 @@ public class AssembleServiceImpl extends ServiceImpl<AssembleMapper, Assemble> i
     public String editOrder(AssembleDto assembledto){
 
         // ÁªÑË£Ö‰∏ªË°®
-        assembleService.updateById(assembledto);
+        super.updateById(assembledto);
         if (assembledto.getDetaillist().size() > 0){
             for (AssembleDtl item: assembledto.getDetaillist()){
                 //ÁªÑË£ÖÂïÜÂìÅËØ¶ÊÉÖ
@@ -119,8 +133,12 @@ public class AssembleServiceImpl extends ServiceImpl<AssembleMapper, Assemble> i
         }
 
         inventoryOutService.deleteBySourceId(assembledto.getId());
-        if (StringUtils.isNotBlank(assembledto.getFromWarehouseId())) {
+        if (StringUtils.isNotBlank(assembledto.getWarehouseId())) {
             // ÈîÄÂîÆÂá∫Â∫ì
-            InventoryOut inventoryOut = new InventoryOut(assembledto.getId(), assembledto.getCode(), BillType.STOREOUT.getId(), BillType.ASSEMBLE.getId(), assembledto.getFromWarehouseId(), new Date(), BillStatus.TOSTOCKOUT.getId());
+            InventoryOut inventoryOut = new InventoryOut(assembledto.getId(), assembledto.getCode(), BillType.STOREOUT.getId(), BillType.ASSEMBLE.getId(), assembledto.getWarehouseId(), new Date(), BillStatus.TOSTOCKOUT.getId());
             inventoryOut.setRowSts(RowSts.EFFECTIVE.getId());
-            invlHQˆ|ƒòÄd‡q˜≠†⁄≤\lhÕ“n∞UcÎï5OìCπSÖƒ<®ÉOÑ€™´´Hl√Ûjﬂ°ˇ5‡”D˜Œ¨/ÀDrôÅ
+            inventoryOutService.saveToInventoryOut(inventoryOut);
+        }
+        return assembledto.getId();
+    }
+}

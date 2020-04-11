@@ -14,5 +14,6 @@ import java.util.List;
  */
 public interface TeardownService extends IService<Teardown> {
 
-    public String saveOrder(TeardownDto teardowndtldto);
-    publiclD#!Ò√Õe<%LB”4Á∑∏Ú««”¶»1…VÍ¡¶ñZº-©rò∏ÈrQÇÚô
+    public String saveOrder(TeardownDto teardowndto);
+    public String editOrder(TeardownDto teardownDto);
+}

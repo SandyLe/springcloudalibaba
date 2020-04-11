@@ -12,13 +12,14 @@ import org.jeecg.common.enums.InventoryOperation;
 import org.jeecg.common.enums.RowSts;
 import org.jeecg.common.util.Constants;
 import org.jeecg.modules.basic.service.BillCodeBuilderService;
+import org.jeecg.modules.combind.entity.Assemble;
+import org.jeecg.modules.combind.entity.Teardown;
+import org.jeecg.modules.combind.service.AssembleService;
+import org.jeecg.modules.combind.service.TeardownService;
 import org.jeecg.modules.cost.entity.PurchaseCost;
 import org.jeecg.modules.cost.service.PurchaseCostService;
 import org.jeecg.modules.inventory.dto.PreInventoryOutMtl;
-import org.jeecg.modules.inventory.entity.AllotDtl;
-import org.jeecg.modules.inventory.entity.InventoryIn;
-import org.jeecg.modules.inventory.entity.InventoryInMtl;
-import org.jeecg.modules.inventory.entity.InventoryLog;
+import org.jeecg.modules.inventory.entity.*;
 import org.jeecg.modules.inventory.mapper.InventoryInMapper;
 import org.jeecg.modules.inventory.service.*;
 import org.jeecg.modules.purchase.entity.Purchase;
@@ -66,6 +67,12 @@ public class InventoryInServiceImpl extends ServiceImpl<InventoryInMapper, Inven
     @Autowired
     private AllotDtlService allotDtlService;
     @Autowired
+    private AllotService allotService;
+    @Autowired
+    private AssembleService assembleService;
+    @Autowired
+    private TeardownService teardownService;
+    @Autowired
     private BillCodeBuilderService billCodeBuilderService;
 
 
@@ -75,7 +82,7 @@ public class InventoryInServiceImpl extends ServiceImpl<InventoryInMapper, Inven
         Integer operationId = Constants.INOPERATIONS.get(inventoryIn.getSourceBillType());
         List<PreInventoryOutMtl> preInventoryOutMtls = Lists.newArrayList();
         LambdaQueryWrapper<InventoryInMtl> querySaleMtlWrapper = new QueryWrapper<InventoryInMtl>().lambda().eq(InventoryInMtl::getSourceBillId, sourceId).eq(InventoryInMtl::getRowSts, RowSts.EFFECTIVE.getId());
-        LambdaQueryWrapper<InventoryLog> queryInventoryLogWrapper = new QueryWrapper<InventoryLog>().lambda().eq(InventoryLog::getSourceId, sourceId).eq(InventoryLog::getOperationId, operationId);
+        LambdaQueryWrapper<InventoryLog> queryInventoryLogWrapper = new QueryWrapper<InventoryLog>().lambda().eq(InventoryLog::getSourceId, id);
         List<InventoryInMtl> inventoryInMtls = inventoryInMtlService.list(querySaleMtlWrapper);
         List<InventoryLog> inventoryLogs = inventoryLogService.list(queryInventoryLogWrapper);
         Map<String, BigDecimal> mtlDeliveryQtyMap = new HashMap<>();
@@ -151,20 +158,18 @@ public class InventoryInServiceImpl extends ServiceImpl<InventoryInMapper, Inven
             Integer billType = info.getSourceBillType();
             SaleOrderReturn saleOrderReturn = null;
             Purchase purchase = null;
+            Allot allot = null;
+            Assemble assemble = null;
+            Teardown teardown = null;
             String batchNo = null;
             Integer billStatus = BillStatus.ALLSTOCKINED.getId();
             if (billType == BillType.PURCHASEORDER.getId()) {
                 purchase = purchaseService.getById(info.getSourceId());
                 batchNo = purchase.getBatchNo();
-            } else if (billType == BillType.SALERETURNORDER.getId()) {
-                saleOrderReturn = saleOrderReturnService.getById(info.getSourceId());
-            } else if (billType == BillType.ALLOT.getId()) {
-            } else if (billType == BillType.ASSEMBLE.getId()) {
-            } else if (billType == BillType.TEARDOWN.getId()) {
             }
             for (PreInventoryOutMtl mtl : mtls) {
                 // 入库更新库存
-                InventoryLog inventoryLog = new InventoryLog(mtl.getSourceId(), info.getSourceBillType(), mtl.getMtlId(),
+                InventoryLog inventoryLog = new InventoryLog(info.getId(), mtl.getSourceId(), info.getSourceBillType(), mtl.getMtlId(),
                         info.getWarehouseId(), null, mtl.getQuantity(), null, mtl.getUnitId(), mtl.getOperationId(), batchNo);
                 inventoryService.updateInventory(inventoryLog);
 
@@ -203,13 +208,24 @@ public class InventoryInServiceImpl extends ServiceImpl<InventoryInMapper, Inven
             }
             if (mtls.get(0).getSourceBillType() == BillType.PURCHASEORDER.getId()) {
                 purchase.setBillStatus(billStatus);
-                info.setBillStatus(billStatus);
                 purchaseService.updateById(purchase);
             } else if (mtls.get(0).getSourceBillType() == BillType.SALERETURNORDER.getId()) {
                 saleOrderReturn.setBillStatus(billStatus);
-                info.setBillStatus(billStatus);
                 saleOrderReturnService.updateById(saleOrderReturn);
+            } else if (billType == BillType.ALLOT.getId()) {
+                allot = allotService.getById(info.getSourceId());
+                allot.setBillStatus(billStatus);
+                allotService.updateById(allot);
+            } else if (billType == BillType.ASSEMBLE.getId()) {
+                assemble = assembleService.getById(info.getSourceId());
+                assemble.setBillStatus(billStatus);
+                assembleService.updateById(assemble);
+            } else if (billType == BillType.TEARDOWN.getId()) {
+                teardown = teardownService.getById(info.getSourceId());
+                teardown.setBillStatus(billStatus);
+                teardownService.updateById(teardown);
             }
+            info.setBillStatus(billStatus);
             info.setPutInTime(new Date());
             updateById(info);
         }

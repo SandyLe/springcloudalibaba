@@ -7,17 +7,30 @@ import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.enums.BillStatus;
 import org.jeecg.common.enums.BillType;
 import org.jeecg.common.enums.RowSts;
+import org.jeecg.modules.basic.service.BillCodeBuilderService;
 import org.jeecg.modules.combind.dto.TeardownDto;
 import org.jeecg.modules.combind.entity.Teardown;
+import org.jeecg.modules.combind.entity.TeardownDtl;
 import org.jeecg.modules.combind.mapper.TeardownMapper;
+import org.jeecg.modules.combind.service.TeardownDtlService;
 import org.jeecg.modules.combind.service.TeardownService;
+import org.jeecg.modules.inventory.entity.InventoryIn;
+import org.jeecg.modules.inventory.entity.InventoryInMtl;
+import org.jeecg.modules.inventory.entity.InventoryOut;
+import org.jeecg.modules.inventory.service.InventoryInService;
+import org.jeecg.modules.inventory.service.InventoryOutService;
 import org.jeecg.modules.purchase.entity.Purchase;
 import org.jeecg.modules.purchase.mapper.PurchaseMapper;
 import org.jeecg.modules.purchase.service.PurchaseService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @Description:
@@ -34,8 +47,10 @@ public class TeardownServiceImpl extends ServiceImpl<TeardownMapper, Teardown> i
     private TeardownDtlService teardownDtlService;
     @Autowired
     private BillCodeBuilderService billCodeBuilderService;
+    @Lazy
     @Autowired
     private InventoryInService inventoryInService;
+    @Lazy
     @Autowired
     private InventoryOutService inventoryOutService;
 
@@ -73,37 +88,38 @@ public class TeardownServiceImpl extends ServiceImpl<TeardownMapper, Teardown> i
             inventoryIn.setCode(billCodeBuilderService.getBillCode(BillType.STOREIN.getId()));
             inventoryInService.saveToInventoryIn(inventoryIn);
         }
+        return teardowndtldto.getId();
     }
 
     @Override
     @Transactional
-    public String editOrder(TeardownDto teardowndtldto){
+    public String editOrder(TeardownDto teardowndto){
         // ÊãÜÂç∏‰∏ªË°®
-        super.updateById(teardowndtldto);
-        if (teardowndtldto.getDetaillist().size() > 0){
-            for (TeardownDtl item: teardowndtldto.getDetaillist()){
+        super.updateById(teardowndto);
+        if (teardowndto.getDetaillist().size() > 0){
+            for (TeardownDtl item: teardowndto.getDetaillist()){
                 //ÊãÜÂç∏ÂïÜÂìÅËØ¶ÊÉÖ
                 if (item.getId() != null && item.getId().length() > 0)
                     teardownDtlService.updateById(item);
                 else{
-                    item.setSourceId(teardowndtldto.getId());
+                    item.setSourceId(teardowndto.getId());
                     teardownDtlService.save(item);
                 }
             }
         }
 
         // ÂÖ•Â∫ìÂçï‰∏ªË°®
-        inventoryInService.deleteBySourceId(teardowndtldto.getId());
+        inventoryInService.deleteBySourceId(teardowndto.getId());
 
-        if (StringUtils.isNotBlank(teardowndtldto.getWarehouseId())) {
+        if (StringUtils.isNotBlank(teardowndto.getWarehouseId())) {
 
             // ÂÖ•Â∫ìÂçï‰∏ªË°®
             InventoryIn inventoryIn = new InventoryIn();
             inventoryIn.setBillStatus(BillStatus.TOSTOCKIN.getId());
-            inventoryIn.setWarehouseId(teardowndtldto.getWarehouseId());
+            inventoryIn.setWarehouseId(teardowndto.getWarehouseId());
             inventoryIn.setPutInTime(new Date());
-            inventoryIn.setSourceCode(teardowndtldto.getCode());
-            inventoryIn.setSourceId(teardowndtldto.getId());
+            inventoryIn.setSourceCode(teardowndto.getCode());
+            inventoryIn.setSourceId(teardowndto.getId());
             inventoryIn.setBillType(BillType.STOREIN.getId());
             inventoryIn.setRowSts(RowSts.EFFECTIVE.getId());
             inventoryIn.setSourceBillType(BillType.PURCHASEORDER.getId());
@@ -111,7 +127,13 @@ public class TeardownServiceImpl extends ServiceImpl<TeardownMapper, Teardown> i
             inventoryInService.saveToInventoryIn(inventoryIn);
         }
 
-        inventoryOutService.deleteBySourceId(allotdto.getId());
-        if (StringUtils.isNotBlank(allotdto.getFromWarehouseId())) {
+        inventoryOutService.deleteBySourceId(teardowndto.getId());
+        if (StringUtils.isNotBlank(teardowndto.getWarehouseId())) {
             // ÈîÄÂîÆÂá∫Â∫ì
-            InventoryOut inventoryOut = new InventoryOut(allotdto.getId(), allotdto.getCode(), BillType.STOREOUT.getId(), BillTlƒ&5ŒÊ∆AÀˆã€ã#Ë$‹U◊µ2´ ‡ø#vqébcØCOÇGØiﬁˆ÷38cÜ∆·•«E|	Ò∑;6á2±¬Ãƒ*A?5[Êåqñº¢™⁄HÛõª]©Ú„L±Æ∫Î>ÙàNß`sÂÂ≥Áí–¨@ﬁ‚"õÉoW«M·ùπ˛°ü¯cÁ¢Sÿ±8¶áÊò⁄˝øﬂ•BL:Ö;júΩ›*Wz«à"Ä?¢eŒKò®ã‰evëµx‹ÉH›ñúêÂmU~Ì±t÷õˆó¢®n¸! Ú	∂ÂÀ™lZˇ/%Î-´©ßh5˝Ûb%Cµ⁄Î \xçQé(ãêÂ§
+            InventoryOut inventoryOut = new InventoryOut(teardowndto.getId(), teardowndto.getCode(), BillType.STOREOUT.getId(), BillType.ALLOT.getId(), teardowndto.getWarehouseId(), new Date(), BillStatus.TOSTOCKOUT.getId());
+            inventoryOut.setRowSts(RowSts.EFFECTIVE.getId());
+            inventoryOutService.saveToInventoryOut(inventoryOut);
+        }
+        return teardowndto.getId();
+    }
+}

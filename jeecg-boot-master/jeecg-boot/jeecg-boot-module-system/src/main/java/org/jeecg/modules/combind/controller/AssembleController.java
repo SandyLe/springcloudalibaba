@@ -42,17 +42,13 @@ import java.util.stream.Collectors;
 @RequestMapping("/assemble")
 public class AssembleController extends JeecgController<Assemble, AssembleService> {
     @Autowired
-    private InventoryInService inventoryInService;
-    @Autowired
-    private InventoryOutService inventoryOutService;
-    @Autowired
     private AssembleService assembleService;
     @Autowired
     private AssembleDtlService assembleDtlService;
 
     @GetMapping("/getPage")
     public Result<?> queryPageList(Assemble Assemble,
-                                   @RequestParam(name = "pageNo",defaultValue = "1") Integer pageNo,
+                                   @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
                                    @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
                                    HttpServletRequest req) {
         QueryWrapper<Assemble> queryWrapper = QueryGenerator.initQueryWrapper(Assemble, req.getParameterMap());
@@ -63,20 +59,20 @@ public class AssembleController extends JeecgController<Assemble, AssembleServic
 
     @PostMapping("/add")
     @Transactional
-    public Result<?> add(@RequestBody AssembleDto assembledto){
+    public Result<?> add(@RequestBody AssembleDto assembledto) {
         assembleService.saveOrder(assembledto);
         return Result.ok();
     }
 
     @PutMapping("/edit")
-    public Result<?> edit(@RequestBody AssembleDto assembledto){
+    public Result<?> edit(@RequestBody AssembleDto assembledto) {
         assembleService.editOrder(assembledto);
         return Result.ok();
     }
 
     @DeleteMapping("/delete")
     @Transactional
-    public Result<?> delete(@RequestParam(name = "id", required = true) String id){
+    public Result<?> delete(@RequestParam(name = "id", required = true) String id) {
         assembleService.removeById(id);
         assembleDtlService.deleteBySourceId(id);
         return Result.ok("åˆ é™¤æˆåŠŸ!");
@@ -84,16 +80,16 @@ public class AssembleController extends JeecgController<Assemble, AssembleServic
 
     @DeleteMapping("/deleteBatch")
     @Transactional
-    public Result<?> deleteBatch(@RequestParam(name = "ids", required = true) String ids){
+    public Result<?> deleteBatch(@RequestParam(name = "ids", required = true) String ids) {
         assembleService.removeByIds(Arrays.asList(ids.split(",")));
         assembleDtlService.deleteBySourceIds(Arrays.asList(ids.split(",")));
         return Result.ok("æ‰¹é‡åˆ é™¤æˆåŠŸ!");
     }
 
     @GetMapping("/queryById")
-    public Result<?> queryById(@RequestParam(name = "id", required = true) String id){
+    public Result<?> queryById(@RequestParam(name = "id", required = true) String id) {
         Assemble assemble = assembleService.getById(id);
-        if (assemble == null){
+        if (assemble == null) {
             return Result.ok("æœªæ‰¾åˆ°å¯¹åº”æ•°æ®");
         }
         AssembleDto assembledtldto = new AssembleDto();
@@ -113,18 +109,23 @@ public class AssembleController extends JeecgController<Assemble, AssembleServic
     }
 
     @GetMapping("/getOneByCode")
-    public Result<?> queryByCode(@RequestParam(name = "code", required = true) String code){
+    public Result<?> queryByCode(@RequestParam(name = "code", required = true) String code) {
 
         LambdaQueryWrapper<Assemble> lambdaQueryWrapper = new LambdaQueryWrapper<Assemble>().eq(Assemble::getCode, code);
         Assemble assemble = assembleService.getOne(lambdaQueryWrapper);
-        if (assemble == null){
+        if (assemble == null) {
             return Result.ok("æœªæ‰¾åˆ°å¯¹åº”æ•°æ®");
         }
         return Result.ok(assemble);
     }
 
     @RequestMapping("/exportXls")
-    public ModelAndView exportXls(HttpServletRequest request, Assemble Assemble){
-        return super.exportXls(requestlÄ*ª›ô½¶2ÿ	<¼Ìx±J{!F/kAÆÌm<r”³\Š4°øGrØşq‡ÑÈ§í;)Úc¶¨Bô’sç¾f—¾©²êÄ¤2Íª)g;aî¹î+—é~•Rt:Ğ‹qÄCÂjïÓ9.qK›ÓÙ(œòıæcÕ…¡I“3Eµ
-@ë±]î;7º\á'f¯j‘·»—V<JÉOu¶ÛİÉ¿¥ˆ¿JDöB—za3	àeNNŞúa›Up+Më}%¥¿{7È/”“Ÿ3ì¦"îN[\›!¤›»*œÍ2¹ÃóÁµC
-Vv„Œ—NY¢X­ø)RßzÙD
+    public ModelAndView exportXls(HttpServletRequest request, Assemble assemble) {
+        return super.exportXls(request, assemble, Assemble.class, "æ‹†å¸å•åˆ—è¡¨");
+    }
+
+    @PostMapping("importExcel")
+    public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response) {
+        return super.importExcel(request, response, Assemble.class);
+    }
+}
