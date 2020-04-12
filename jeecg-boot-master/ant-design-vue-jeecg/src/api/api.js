@@ -214,7 +214,16 @@ const getPurchaseBatchList = (params)=>getAction("/purchaseBatch/getList",params
 const getinventoryList = (params)=>getAction("/inventory/getList",params)
 
 // 调拨单
-const getAllotOne = (params)=>getAction("/allot/queryById",params)
+const getAllotOne = (params)=>getAction("/allot/getOne",params)
+const allotDtlDelete = (params)=>deleteAction("/allotDtl/delete",params)
+
+// 组装单
+const getAssembleOne = (params)=>getAction("/assemble/getOne",params)
+const assembleDtlDelete = (params)=>deleteAction("/assembleDtl/delete",params)
+
+// 拆卸单
+const getTeardownOne = (params)=>getAction("/teardown/getOne",params)
+const teardownDtlDelete = (params)=>deleteAction("/teardownDtl/delete",params)
 
 export {
   // imgView,
@@ -366,7 +375,12 @@ export {
   editPurchaseBatch,
   getPurchaseBatchList,
   getinventoryList,
-  getAllotOne
+  getAllotOne,
+  allotDtlDelete,
+  getAssembleOne,
+  assembleDtlDelete,
+  getTeardownOne,
+  teardownDtlDelete
 }
 
 

@@ -125,7 +125,7 @@ import {
     searchMaterial,
     getMaterialUnitList,
     getAllotOne,
-    purchasedetailDelete,
+    allotDtlDelete,
     getinventoryList
 } from '@/api/api'
 export default {
@@ -474,7 +474,7 @@ export default {
             const newData = this.tabledata.filter(item => item.key !== key)
             this.tabledata = newData;
             if(id){
-                purchasedetailDelete({"id" : id}).then((res) => {
+                allotDtlDelete({"id" : id}).then((res) => {
                     if (res.success) {
                     }
                 });

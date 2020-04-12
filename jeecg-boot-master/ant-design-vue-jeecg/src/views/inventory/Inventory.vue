@@ -5,7 +5,7 @@
     <div class="table-page-search-wrapper">
       <a-form layout="inline">
         <a-row :gutter="24">
-          <a-col :md="6" :sm="12">
+          <a-col :md="8" :sm="12">
             <a-form-item label="产品">
               <a-select v-model="queryParam.mtlId" placeholder="请选择产品"  showSearch
                         optionFilterProp="children"

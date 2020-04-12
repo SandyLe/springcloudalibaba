@@ -5,13 +5,15 @@
         <a-form layout="inline" @keyup.enter.native="searchQuery">
             <a-row :gutter="24">
                 <a-col :md="6" :sm="8">
-                    <a-form-item label="供应商">
-                        <a-select v-model="queryParam.vendorId" placeholder="请输入供应商">
-                            <a-select-option value="">请选择</a-select-option>
-                            <a-select-option v-for="(item, key) in dictOptions.vendorId" :key="key" :value="item.id">
-                                {{ item.name }}
-                            </a-select-option>
-                        </a-select>
+                    <a-form-item label="产品">
+                      <a-select v-decorator="['mtlId', {}]" v-model="queryParam.mtlId" placeholder="请选择产品"  showSearch
+                                optionFilterProp="children"
+                                notFoundContent="无法找到，输入关键词Enter搜索" @keyup.enter.native="searchMtl" >
+                        <a-select-option value="">请选择</a-select-option>
+                        <a-select-option v-for="(item, key) in mtlList" :key="key" :value="item.id">
+                          {{ item.info }}
+                        </a-select-option>
+                      </a-select>
                     </a-form-item>
                 </a-col>
                 <a-col :md="12" :sm="16">
@@ -24,23 +26,10 @@
                         </a-select>
                     </a-form-item>
                 </a-col>
-                <template v-if="toggleSearchStatus">
-                    <a-col :md="12" :sm="16">
-                        <a-form-item label="业务时间">
-                            <j-date placeholder="请选择开始日期" class="query-group-cust" v-model="queryParam.billdate_begin"></j-date>
-                            <span class="query-group-split-cust"></span>
-                            <j-date placeholder="请选择结束日期" class="query-group-cust" v-model="queryParam.billdate_end"></j-date>
-                        </a-form-item>
-                    </a-col>
-                </template>
                 <a-col :md="6" :sm="8">
                     <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
                         <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
                         <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
-                        <a @click="handleToggleSearch" style="margin-left: 8px">
-                            {{ toggleSearchStatus ? '收起' : '展开' }}
-                            <a-icon :type="toggleSearchStatus ? 'up' : 'down'" />
-                        </a>
                     </span>
                 </a-col>
 
@@ -51,11 +40,11 @@
 
     <!-- 操作按钮区域 -->
     <div class="table-operator">
-        <a-button @click="diyhandleEdit" type="primary" icon="plus">新增</a-button>
+        <a-button @click="diyhandleEdit" type="primary" icon="plus">新增</a-button><!--
         <a-button type="primary" icon="download" @click="handleExportXls('采购列表')">导出</a-button>
         <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
             <a-button type="primary" icon="import">导入</a-button>
-        </a-upload>
+        </a-upload>-->
         <a-dropdown v-if="selectedRowKeys.length > 0">
             <a-menu slot="overlay">
                 <a-menu-item key="1" @click="batchDel">
@@ -83,7 +72,7 @@
                 </template>
                 <a @click="goDetail(record.id)">{{record.code}}</a>
               </a-tooltip>
-            </span>
+            </span><!--
             <template slot="htmlSlot" slot-scope="text">
                 <div v-html="text"></div>
             </template>
@@ -96,14 +85,14 @@
                 <a-button v-else :ghost="true" type="primary" icon="download" size="small" @click="uploadFile(text)">
                     下载
                 </a-button>
-            </template>
+            </template>-->
 
             <span slot="action" slot-scope="text, record">
-                <a v-if="record.inventoryin!=null&&record.inventoryin.billStatus==1" @click="handleinventoryout(record)" :data-id="record.id">退货</a>
+                <!--<a v-if="record.inventoryin!=null&&record.inventoryin.billStatus==1" @click="handleinventoryout(record)" :data-id="record.id">退货</a>
                 <a-divider type="vertical" v-if="record.inventoryin!=null&&record.inventoryin.billStatus==1"/>
 
                 <a v-if="record.inventoryin!=null" @click="handleinventoryin(record.inventoryin)" :data-id="record.id">入库单</a>
-                <a-divider type="vertical" v-if="record.inventoryin!=null"/>
+                <a-divider type="vertical" v-if="record.inventoryin!=null"/>-->
 
                 <a v-if="record.billStatus<11" @click="diyhandleEdit" :data-id="record.id">编辑</a>
                 <a-divider type="vertical" v-if="!(record.inventoryin!=null&&record.inventoryin.billStatus==1)"/>
@@ -123,33 +112,30 @@
 
         </a-table>
     </div>
-    <inventory-modal ref="inventorymodalForm" ></inventory-modal>
-    <inventory-out-modal ref="inventoryOutmodalForm" ></inventory-out-modal>
+    <<!--inventory-modal ref="inventorymodalForm" ></inventory-modal>
+    <inventory-out-modal ref="inventoryOutmodalForm" ></inventory-out-modal>-->
 </a-card>
 </template>
 
 <script>
 import { JeecgListMixin } from '@/mixins/JeecgListMixin'
-import InventoryModal from '../inventory/InventoryInModal'
-import InventoryOutModal from '../inventory/InventoryOutModal'
 import JDictSelectTag from '@/components/dict/JDictSelectTag.vue'
 import { filterMultiDictText } from '@/components/dict/JDictSelectUtil'
 import JDate from '@/components/jeecg/JDate.vue'
-import { getVendorList, ajaxGetDictItems, getWarehouseList } from '@/api/api'
+import { getVendorList, ajaxGetDictItems, getWarehouseList, searchMaterial} from '@/api/api'
 
 export default {
-    name: "PurchaseList",
+    name: "AssembleList",
     mixins: [JeecgListMixin],
     components: {
         JDictSelectTag,
-        JDate,
-        InventoryModal,
-        InventoryOutModal
+        JDate
     },
     data() {
         return {
+            mtlList:[],
             queryParam: {},
-            description: '采购列表管理页面',
+            description: '产品组装管理页面',
             // 表头
             columns: [{
                     title: '#',
@@ -162,27 +148,25 @@ export default {
                     }
                 },
                 {
-                  title: '批次号',
-                  align: "center",
-                  dataIndex: 'batchNo'
-                },
-                {
-                  title: '采购单号',
+                  title: '组装单号',
                   align: "center",
                   dataIndex: '',
                   scopedSlots: { customRender: 'nameAction' }
                 },
                 {
-                    title: '供应商',
+                  title: '数量',
+                  align: "center",
+                  dataIndex: 'quantity'
+                },
+                {
+                    title: '产品',
                     align: "center",
-                    dataIndex: 'vendorId',
-                    customRender: (text) => {
-                        if (!text) {
-                            return ''
-                        } else {
-                            return filterMultiDictText(this.dictOptions['vendorId'], text + "")
-                        }
-                    }
+                    dataIndex: 'material'
+                },
+                {
+                  title: '单位',
+                  align: "center",
+                  dataIndex: 'unit'
                 },
                 {
                     title: '仓库',
@@ -197,24 +181,19 @@ export default {
                     }
                 },
                 {
-                    title: '实付金额',
+                    title: '新单价',
                     align: "center",
-                    dataIndex: 'payamount'
-                },
-                {
-                    title: '总金额',
-                    align: "center",
-                    dataIndex: 'totalamount'
+                    dataIndex: 'price'
                 },
                 {
                     title: '订单日期',
                     align: "center",
-                    dataIndex: 'billdate',
+                    dataIndex: 'billDate',
                     // customRender:(text)=>{
                     //   if(!text){
                     //     return ''
                     //   }else{
-                    //     return filterMultiDictText(this.dictOptions['purchasestype'], text+"")
+                    //     return filterMultiDictText(this.dictOptions['assemblestype'], text+"")
                     //   }
                     // }
                 },
@@ -233,15 +212,14 @@ export default {
                 }
             ],
             url: {
-                list: "/purchase/getPage",
-                delete: "/purchase/delete",
-                deleteBatch: "/purchase/deleteBatch",
-                exportXlsUrl: "/purchase/exportXls",
-                importExcelUrl: "purchase/importExcel",
+                list: "/assemble/getPage",
+                delete: "/assemble/delete",
+                deleteBatch: "/assemble/deleteBatch",
+                exportXlsUrl: "/assemble/exportXls",
+                importExcelUrl: "assemble/importExcel",
             },
             dictOptions: {
                 vendorId: [],
-                purchasestype: [],
                 warehouse: []
             },
         }
@@ -253,17 +231,13 @@ export default {
     },
     methods: {
         initDictConfig() {
-            getVendorList('').then((res) => {
-                if (res.success) {
-                    if (res.result && res.result.length > 0) {
-                        res.result.forEach(function (option) {
-                            option.value = option.id;
-                            option.text = option.name;
-                        })
-                    }
-                    this.$set(this.dictOptions, 'vendorId', res.result)
-                }
-            });
+
+          //产品
+          searchMaterial('').then((res) => {
+            if (res.success) {
+              this.mtlList = res.result;
+            }
+          });
             getWarehouseList('').then((res) => {
                 if (res.success) {
                     if (res.result && res.result.length > 0) {
@@ -276,32 +250,21 @@ export default {
                 }
             });
         },
+        searchMtl (e) {
+          searchMaterial({"keyword":e.target.valueOf().value}).then((res) => {
+            if (res.success) {
+              this.mtlList = res.result;
+            }
+          })
+        },
         diyhandleEdit(e){
             if(e.target.dataset.id)
-                this.$router.replace({ path:'/purchase/PurchaseModal/' + e.target.dataset.id });
+                this.$router.replace({ path:'/combind/AssembleModal/' + e.target.dataset.id });
             else
-                this.$router.replace({ path:'/purchase/PurchaseModal/' });
+                this.$router.replace({ path:'/combind/AssembleModal/' });
         },
         goDetail(id) {
-          this.$router.replace({ path:'/purchase/PurchaseModal/' + id, query: {"unEditable": false} });
-        },
-        handleinventoryin(data){
-            var that = this;
-            that.$refs.inventorymodalForm.edit(data);
-            that.$refs.inventorymodalForm.disableSubmit = true;
-        },
-        handleinventoryout(data){
-            var that = this;
-            let model = {};
-            model.sourceId = data.id;
-            if(data.inventoryOut && data.inventoryOut.putOutTime)
-            {
-                model.id = data.inventoryOut.id;
-                model.putOutTime = data.inventoryOut.putOutTime;
-            }
-
-            that.$refs.inventoryOutmodalForm.edit(model);
-            that.$refs.inventoryOutmodalForm.disableSubmit = true;
+          this.$router.replace({ path:'/combind/AssembleModal/' + id, query: {"unEditable": false} });
         }
     }
 }
