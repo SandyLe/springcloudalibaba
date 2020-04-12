@@ -29,10 +29,6 @@ public class AssembleDtl extends CBasicEntity {
     private String unit;
     @ApiModelProperty("数量")
     private BigDecimal quantity;
-    @ApiModelProperty("单价")
-    private BigDecimal price;
-    @ApiModelProperty("金额")
-    private BigDecimal amount;
 
     public String getMtlId() {
         return mtlId;
@@ -72,22 +68,6 @@ public class AssembleDtl extends CBasicEntity {
 
     public void setQuantity(BigDecimal quantity) {
         this.quantity = quantity;
-    }
-
-    public BigDecimal getPrice() {
-        return price;
-    }
-
-    public void setPrice(BigDecimal price) {
-        this.price = price;
-    }
-
-    public BigDecimal getAmount() {
-        return amount;
-    }
-
-    public void setAmount(BigDecimal amount) {
-        this.amount = amount;
     }
 
     public String getSourceId() {

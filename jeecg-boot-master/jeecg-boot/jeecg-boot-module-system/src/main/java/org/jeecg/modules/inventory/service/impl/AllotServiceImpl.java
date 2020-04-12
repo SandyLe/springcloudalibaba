@@ -49,6 +49,7 @@ public class AllotServiceImpl extends ServiceImpl<AllotMapper, Allot>  implement
         // 调拨单主表
         String code = billCodeBuilderService.getBillCode(BillType.ALLOT.getId());
         allotdto.setCode(code);
+        allotdto.setBillStatus(BillStatus.NEW.getId());
         super.save(allotdto);
 
         //调拨单子表

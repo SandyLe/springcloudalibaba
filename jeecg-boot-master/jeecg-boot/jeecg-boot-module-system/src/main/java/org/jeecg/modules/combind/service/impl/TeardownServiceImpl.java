@@ -56,39 +56,46 @@ public class TeardownServiceImpl extends ServiceImpl<TeardownMapper, Teardown> i
 
     @Override
     @Transactional
-    public String saveOrder(TeardownDto teardowndtldto){
+    public String saveOrder(TeardownDto teardownDto){
         // 拆卸主表
-        String code = billCodeBuilderService.getBillCode(BillType.PURCHASEORDER.getId());
-        teardowndtldto.setCode(code);
-        super.save(teardowndtldto);
+        String code = billCodeBuilderService.getBillCode(BillType.TEARDOWN.getId());
+        teardownDto.setCode(code);
+        teardownDto.setBillStatus(BillStatus.NEW.getId());
+        super.save(teardownDto);
 
         //拆卸单子表
         List<InventoryInMtl> detaillist = new ArrayList<>();
-        if (CollectionUtils.isNotEmpty(teardowndtldto.getDetaillist())){
-            List<TeardownDtl> mtls = teardowndtldto.getDetaillist().stream().filter(o-> StringUtils.isNotBlank(o.getMtlId())).collect(Collectors.toList());
+        if (CollectionUtils.isNotEmpty(teardownDto.getDetaillist())){
+            List<TeardownDtl> mtls = teardownDto.getDetaillist().stream().filter(o-> StringUtils.isNotBlank(o.getMtlId())).collect(Collectors.toList());
             mtls.stream().forEach(o->{
                 //拆卸商品详情
                 o.setCode(code);
-                o.setSourceId(teardowndtldto.getId());
+                o.setSourceId(teardownDto.getId());
             });
             teardownDtlService.saveBatch(mtls);
         }
-        if (StringUtils.isNotBlank(teardowndtldto.getWarehouseId())) {
+        if (StringUtils.isNotBlank(teardownDto.getWarehouseId())) {
 
             // 入库单主表
             InventoryIn inventoryIn = new InventoryIn();
             inventoryIn.setBillStatus(BillStatus.TOSTOCKIN.getId());
-            inventoryIn.setWarehouseId(teardowndtldto.getWarehouseId());
-//            inventoryIn.setPutInTime(teardowndtldto.getPutInTime());
+            inventoryIn.setWarehouseId(teardownDto.getWarehouseId());
+            inventoryIn.setPutInTime(new Date());
             inventoryIn.setSourceCode(code);
-            inventoryIn.setSourceId(teardowndtldto.getId());
+            inventoryIn.setSourceId(teardownDto.getId());
             inventoryIn.setBillType(BillType.STOREIN.getId());
             inventoryIn.setRowSts(RowSts.EFFECTIVE.getId());
-            inventoryIn.setSourceBillType(BillType.PURCHASEORDER.getId());
+            inventoryIn.setSourceBillType(BillType.TEARDOWN.getId());
             inventoryIn.setCode(billCodeBuilderService.getBillCode(BillType.STOREIN.getId()));
             inventoryInService.saveToInventoryIn(inventoryIn);
         }
-        return teardowndtldto.getId();
+        if (StringUtils.isNotBlank(teardownDto.getWarehouseId())) {
+            // 销售出库
+            InventoryOut inventoryOut = new InventoryOut(teardownDto.getId(), teardownDto.getCode(), BillType.STOREOUT.getId(), BillType.TEARDOWN.getId(), teardownDto.getWarehouseId(), new Date(), BillStatus.TOSTOCKOUT.getId());
+            inventoryOut.setRowSts(RowSts.EFFECTIVE.getId());
+            inventoryOutService.saveToInventoryOut(inventoryOut);
+        }
+        return teardownDto.getId();
     }
 
     @Override
@@ -122,7 +129,7 @@ public class TeardownServiceImpl extends ServiceImpl<TeardownMapper, Teardown> i
             inventoryIn.setSourceId(teardowndto.getId());
             inventoryIn.setBillType(BillType.STOREIN.getId());
             inventoryIn.setRowSts(RowSts.EFFECTIVE.getId());
-            inventoryIn.setSourceBillType(BillType.PURCHASEORDER.getId());
+            inventoryIn.setSourceBillType(BillType.TEARDOWN.getId());
             inventoryIn.setCode(billCodeBuilderService.getBillCode(BillType.STOREIN.getId()));
             inventoryInService.saveToInventoryIn(inventoryIn);
         }
@@ -130,7 +137,7 @@ public class TeardownServiceImpl extends ServiceImpl<TeardownMapper, Teardown> i
         inventoryOutService.deleteBySourceId(teardowndto.getId());
         if (StringUtils.isNotBlank(teardowndto.getWarehouseId())) {
             // 销售出库
-            InventoryOut inventoryOut = new InventoryOut(teardowndto.getId(), teardowndto.getCode(), BillType.STOREOUT.getId(), BillType.ALLOT.getId(), teardowndto.getWarehouseId(), new Date(), BillStatus.TOSTOCKOUT.getId());
+            InventoryOut inventoryOut = new InventoryOut(teardowndto.getId(), teardowndto.getCode(), BillType.STOREOUT.getId(), BillType.TEARDOWN.getId(), teardowndto.getWarehouseId(), new Date(), BillStatus.TOSTOCKOUT.getId());
             inventoryOut.setRowSts(RowSts.EFFECTIVE.getId());
             inventoryOutService.saveToInventoryOut(inventoryOut);
         }

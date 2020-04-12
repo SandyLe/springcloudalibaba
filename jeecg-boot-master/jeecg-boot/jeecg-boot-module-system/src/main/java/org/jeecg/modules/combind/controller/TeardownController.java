@@ -14,7 +14,13 @@ import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.enums.BillStatus;
 import org.jeecg.common.enums.BillType;
 import org.jeecg.common.enums.RowSts;
+import org.jeecg.modules.basic.entity.Material;
+import org.jeecg.modules.basic.entity.MaterialUnit;
+import org.jeecg.modules.basic.entity.Warehouse;
 import org.jeecg.modules.basic.service.BillCodeBuilderService;
+import org.jeecg.modules.basic.service.MaterialService;
+import org.jeecg.modules.basic.service.MaterialUnitService;
+import org.jeecg.modules.basic.service.WarehouseService;
 import org.jeecg.modules.combind.dto.TeardownDto;
 import org.jeecg.modules.combind.entity.TeardownDtl;
 import org.jeecg.modules.inventory.entity.InventoryIn;
@@ -24,6 +30,7 @@ import org.jeecg.modules.inventory.service.InventoryOutService;
 import org.jeecg.modules.combind.entity.Teardown;
 import org.jeecg.modules.combind.service.TeardownDtlService;
 import org.jeecg.modules.combind.service.TeardownService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -31,9 +38,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -45,6 +50,12 @@ public class TeardownController extends JeecgController<Teardown, TeardownServic
     private TeardownService teardownService;
     @Autowired
     private TeardownDtlService teardownDtlService;
+    @Autowired
+    private WarehouseService warehouseService;
+    @Autowired
+    private MaterialService materialService;
+    @Autowired
+    private MaterialUnitService materialUnitService;
 
     @GetMapping("/getPage")
     public Result<?> queryPageList(Teardown teardown,
@@ -54,20 +65,48 @@ public class TeardownController extends JeecgController<Teardown, TeardownServic
         QueryWrapper<Teardown> queryWrapper = QueryGenerator.initQueryWrapper(teardown, req.getParameterMap());
         Page<Teardown> page = new Page<>(pageNo, pageSize);
         IPage<Teardown> pageList = teardownService.page(page, queryWrapper);
+        List<Teardown> datas = pageList.getRecords();
+        if (CollectionUtils.isNotEmpty(datas)) {
+            Map<String, String> warehouseMap = new HashMap<>();
+            Map<String, String> mtlMap = new HashMap<>();
+            Map<String, String> unitMap = new HashMap<>();
+
+            List<String> warehouseIds = datas.stream().map(Teardown::getWarehouseId).collect(Collectors.toList());
+            if (CollectionUtils.isNotEmpty(warehouseIds)) {
+                Collection<Warehouse> warehouses = warehouseService.listByIds(warehouseIds);
+                warehouseMap.putAll(warehouses.stream().collect(Collectors.toMap(Warehouse::getId, Warehouse::getName)));
+            }
+            List<String> mtlIds = datas.stream().map(Teardown::getMtlId).collect(Collectors.toList());
+            if (CollectionUtils.isNotEmpty(mtlIds)) {
+                Collection<Material> materials = materialService.listByIds(mtlIds);
+                mtlMap.putAll(materials.stream().collect(Collectors.toMap(Material::getId, Material::getName)));
+            }
+            List<String> unitIds = datas.stream().map(Teardown::getUnitId).collect(Collectors.toList());
+            if (CollectionUtils.isNotEmpty(unitIds)) {
+                Collection<MaterialUnit> units = materialUnitService.listByIds(unitIds);
+                unitMap.putAll(units.stream().collect(Collectors.toMap(MaterialUnit::getId, MaterialUnit::getName)));
+            }
+            datas.stream().forEach(o -> {
+                o.setWarehouse(warehouseMap.get(o.getWarehouseId()));
+                o.setMaterial(mtlMap.get(o.getMtlId()));
+                o.setUnit(unitMap.get(o.getUnitId()));
+            });
+        }
+        pageList.setRecords(datas);
         return Result.ok(pageList);
     }
 
     @PostMapping("/add")
     public Result<?> add(@RequestBody TeardownDto teardowndto){
         teardownService.saveOrder(teardowndto);
-        return Result.ok(teardowndto.getId());
+        return Result.ok();
     }
 
     @PutMapping("/edit")
     public Result<?> edit(@RequestBody TeardownDto teardowndtldto){
 
-
-        return Result.ok(teardowndtldto.getId());
+        teardownService.editOrder(teardowndtldto);
+        return Result.ok();
     }
 
     @DeleteMapping("/delete")
@@ -86,7 +125,7 @@ public class TeardownController extends JeecgController<Teardown, TeardownServic
         return Result.ok("批量删除成功!");
     }
 
-    @GetMapping("/queryById")
+    @GetMapping("/getOne")
     public Result<?> queryById(@RequestParam(name = "id", required = true) String id){
         Teardown teardown = teardownService.getById(id);
         System.out.println(teardown.getId());
@@ -94,11 +133,7 @@ public class TeardownController extends JeecgController<Teardown, TeardownServic
             return Result.ok("未找到对应数据");
         }
         TeardownDto teardowndtldto = new TeardownDto();
-        teardowndtldto.setId(teardown.getId());
-        teardowndtldto.setContent(teardown.getContent());
-        teardowndtldto.setWarehouseId(teardown.getWarehouseId());
-        teardowndtldto.setCode(teardown.getCode());
-        teardowndtldto.setCreateTime(teardown.getCreateTime());
+        BeanUtils.copyProperties(teardown, teardowndtldto);
         teardowndtldto.setDetaillist(teardownDtlService.findBySourceId(teardown.getId()));
 
         return Result.ok(teardowndtldto);

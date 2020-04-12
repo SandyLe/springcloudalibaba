@@ -56,10 +56,10 @@ public class AllotController extends JeecgController<Allot, AllotService> {
         fromWarehoseIds.addAll(toWarehouseIds);
         List<String> warehouseIds = fromWarehoseIds.stream().distinct().collect(Collectors.toList());
         Collection<Warehouse> warehouses = warehouseService.listByIds(warehouseIds);
-        Map<String, Warehouse> warehouseMap = warehouses.stream().collect(Collectors.toMap(Warehouse::getId, o -> o));
+        Map<String, String> warehouseMap = warehouses.stream().collect(Collectors.toMap(Warehouse::getId, Warehouse::getName));
         datas.stream().forEach(o -> {
-            o.setFromWarehouse(warehouseMap.get(o.getFromWarehouseId()).getName());
-            o.setToWarehouse(warehouseMap.get(o.getToWarehouseId()).getName());
+            o.setFromWarehouse(warehouseMap.get(o.getFromWarehouseId()));
+            o.setToWarehouse(warehouseMap.get(o.getToWarehouseId()));
         });
         pageList.setRecords(datas);
         return Result.ok(pageList);
@@ -100,7 +100,7 @@ public class AllotController extends JeecgController<Allot, AllotService> {
         return Result.ok("批量删除成功!");
     }
 
-    @GetMapping("/queryById")
+    @GetMapping("/getOne")
     public Result<?> queryById(@RequestParam(name = "id", required = true) String id) {
         Allot allot = allotService.getById(id);
         if (allot == null) {

@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.jeecg.common.enums.BillStatus;
+import org.jeecg.common.enums.EnumConvertUtils;
 import org.jeecg.modules.basic.entity.CBasicEntity;
 
 import java.math.BigDecimal;
@@ -34,12 +36,11 @@ public class Teardown extends CBasicEntity {
     private String warehouse;
     @ApiModelProperty("数量")
     private BigDecimal quantity;
-    @ApiModelProperty("单价")
-    private BigDecimal price;
-    @ApiModelProperty("金额")
-    private BigDecimal amount;
     @ApiModelProperty("订单状态")
     private Integer billStatus;
+    @ApiModelProperty("订单状态")
+    @TableField(exist=false)
+    private String billStatusName;
 
     public String getMtlId() {
         return mtlId;
@@ -105,27 +106,22 @@ public class Teardown extends CBasicEntity {
         this.quantity = quantity;
     }
 
-    public BigDecimal getPrice() {
-        return price;
-    }
-
-    public void setPrice(BigDecimal price) {
-        this.price = price;
-    }
-
-    public BigDecimal getAmount() {
-        return amount;
-    }
-
-    public void setAmount(BigDecimal amount) {
-        this.amount = amount;
-    }
-
     public Integer getBillStatus() {
         return billStatus;
     }
 
     public void setBillStatus(Integer billStatus) {
         this.billStatus = billStatus;
+    }
+
+    public void setBillStatusName(String billStatusName) {
+        this.billStatusName = billStatusName;
+    }
+
+    public String getBillStatusName() {
+        if (null != billStatus) {
+            return EnumConvertUtils.getName(BillStatus.class, billStatus);
+        }
+        return billStatusName;
     }
 }

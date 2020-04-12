@@ -10,11 +10,14 @@ import org.jeecg.common.enums.BillStatus;
 import org.jeecg.common.enums.BillType;
 import org.jeecg.common.enums.InventoryOperation;
 import org.jeecg.common.enums.RowSts;
+import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.util.Constants;
 import org.jeecg.modules.basic.service.BillCodeBuilderService;
 import org.jeecg.modules.combind.entity.Assemble;
 import org.jeecg.modules.combind.entity.Teardown;
+import org.jeecg.modules.combind.entity.TeardownDtl;
 import org.jeecg.modules.combind.service.AssembleService;
+import org.jeecg.modules.combind.service.TeardownDtlService;
 import org.jeecg.modules.combind.service.TeardownService;
 import org.jeecg.modules.cost.entity.PurchaseCost;
 import org.jeecg.modules.cost.service.PurchaseCostService;
@@ -72,6 +75,8 @@ public class InventoryInServiceImpl extends ServiceImpl<InventoryInMapper, Inven
     private AssembleService assembleService;
     @Autowired
     private TeardownService teardownService;
+    @Autowired
+    private TeardownDtlService teardownDtlService;
     @Autowired
     private BillCodeBuilderService billCodeBuilderService;
 
@@ -144,6 +149,19 @@ public class InventoryInServiceImpl extends ServiceImpl<InventoryInMapper, Inven
                     inventoryInMtls.add(new InventoryInMtl(inventoryIn.getId(), o.getSourceId(), inventoryIn.getSourceBillType(), o.getMtlId(), o.getAllotAmount(), o.getUnitId(), RowSts.EFFECTIVE.getId()));
                 });
             }
+        } else if (inventoryIn.getSourceBillType() == BillType.ASSEMBLE.getId()) {
+            Assemble assemble = assembleService.getById(inventoryIn.getSourceId());
+            if (null != assemble) {
+                inventoryInMtls.add(new InventoryInMtl(inventoryIn.getId(), assemble.getId(), inventoryIn.getSourceBillType(), assemble.getMtlId(), assemble.getQuantity(), assemble.getUnitId(), RowSts.EFFECTIVE.getId()));
+            }
+        } else if (inventoryIn.getSourceBillType() == BillType.TEARDOWN.getId()) {
+            LambdaQueryWrapper<TeardownDtl> queryWrapper = new LambdaQueryWrapper<TeardownDtl>().eq(TeardownDtl::getSourceId, inventoryIn.getSourceId());
+            List<TeardownDtl> teardownDtls = teardownDtlService.list(queryWrapper);
+            if (CollectionUtils.isNotEmpty(teardownDtls)) {
+                teardownDtls.forEach(o ->{
+                    inventoryInMtls.add(new InventoryInMtl(inventoryIn.getId(), o.getSourceId(), inventoryIn.getSourceBillType(), o.getMtlId(), o.getQuantity(), o.getUnitId(), RowSts.EFFECTIVE.getId()));
+                });
+            }
         }
         inventoryInMtlService.saveBatch(inventoryInMtls);
         return inventoryIn.getId();
@@ -166,6 +184,12 @@ public class InventoryInServiceImpl extends ServiceImpl<InventoryInMapper, Inven
             if (billType == BillType.PURCHASEORDER.getId()) {
                 purchase = purchaseService.getById(info.getSourceId());
                 batchNo = purchase.getBatchNo();
+            } else if (billType == BillType.ALLOT.getId()) {
+                allot = allotService.getById(info.getSourceId());
+            } else if (billType == BillType.ASSEMBLE.getId()) {
+                assemble = assembleService.getById(info.getSourceId());
+            } else if (billType == BillType.TEARDOWN.getId()) {
+                teardown = teardownService.getById(info.getSourceId());
             }
             for (PreInventoryOutMtl mtl : mtls) {
                 // 入库更新库存
@@ -213,15 +237,21 @@ public class InventoryInServiceImpl extends ServiceImpl<InventoryInMapper, Inven
                 saleOrderReturn.setBillStatus(billStatus);
                 saleOrderReturnService.updateById(saleOrderReturn);
             } else if (billType == BillType.ALLOT.getId()) {
-                allot = allotService.getById(info.getSourceId());
+                if (allot.getBillStatus() != BillStatus.STOCKED.getId()) {
+                    throw new JeecgBootException("请先完成产品出库操作！");
+                }
                 allot.setBillStatus(billStatus);
                 allotService.updateById(allot);
             } else if (billType == BillType.ASSEMBLE.getId()) {
-                assemble = assembleService.getById(info.getSourceId());
+                if (assemble.getBillStatus() != BillStatus.STOCKED.getId()) {
+                    throw new JeecgBootException("请先完成产品出库操作！");
+                }
                 assemble.setBillStatus(billStatus);
                 assembleService.updateById(assemble);
             } else if (billType == BillType.TEARDOWN.getId()) {
-                teardown = teardownService.getById(info.getSourceId());
+                if (teardown.getBillStatus() != BillStatus.STOCKED.getId()) {
+                    throw new JeecgBootException("请先完成产品出库操作！");
+                }
                 teardown.setBillStatus(billStatus);
                 teardownService.updateById(teardown);
             }

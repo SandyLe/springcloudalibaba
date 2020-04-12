@@ -14,7 +14,13 @@ import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.enums.BillStatus;
 import org.jeecg.common.enums.BillType;
 import org.jeecg.common.enums.RowSts;
+import org.jeecg.modules.basic.entity.Material;
+import org.jeecg.modules.basic.entity.MaterialUnit;
+import org.jeecg.modules.basic.entity.Warehouse;
 import org.jeecg.modules.basic.service.BillCodeBuilderService;
+import org.jeecg.modules.basic.service.MaterialService;
+import org.jeecg.modules.basic.service.MaterialUnitService;
+import org.jeecg.modules.basic.service.WarehouseService;
 import org.jeecg.modules.inventory.entity.InventoryIn;
 import org.jeecg.modules.inventory.entity.InventoryInMtl;
 import org.jeecg.modules.inventory.service.InventoryInService;
@@ -24,6 +30,7 @@ import org.jeecg.modules.combind.entity.Assemble;
 import org.jeecg.modules.combind.entity.AssembleDtl;
 import org.jeecg.modules.combind.service.AssembleDtlService;
 import org.jeecg.modules.combind.service.AssembleService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -31,9 +38,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -45,15 +50,49 @@ public class AssembleController extends JeecgController<Assemble, AssembleServic
     private AssembleService assembleService;
     @Autowired
     private AssembleDtlService assembleDtlService;
+    @Autowired
+    private WarehouseService warehouseService;
+    @Autowired
+    private MaterialService materialService;
+    @Autowired
+    private MaterialUnitService materialUnitService;
 
     @GetMapping("/getPage")
-    public Result<?> queryPageList(Assemble Assemble,
+    public Result<?> queryPageList(Assemble assemble,
                                    @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
                                    @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
                                    HttpServletRequest req) {
-        QueryWrapper<Assemble> queryWrapper = QueryGenerator.initQueryWrapper(Assemble, req.getParameterMap());
+        QueryWrapper<Assemble> queryWrapper = QueryGenerator.initQueryWrapper(assemble, req.getParameterMap());
         Page<Assemble> page = new Page<>(pageNo, pageSize);
         IPage<Assemble> pageList = assembleService.page(page, queryWrapper);
+        List<Assemble> datas = pageList.getRecords();
+        if (CollectionUtils.isNotEmpty(datas)) {
+            Map<String, String> warehouseMap = new HashMap<>();
+            Map<String, String> mtlMap = new HashMap<>();
+            Map<String, String> unitMap = new HashMap<>();
+
+            List<String> warehouseIds = datas.stream().map(Assemble::getWarehouseId).collect(Collectors.toList());
+            if (CollectionUtils.isNotEmpty(warehouseIds)) {
+                Collection<Warehouse> warehouses = warehouseService.listByIds(warehouseIds);
+                warehouseMap.putAll(warehouses.stream().collect(Collectors.toMap(Warehouse::getId, Warehouse::getName)));
+            }
+            List<String> mtlIds = datas.stream().map(Assemble::getMtlId).collect(Collectors.toList());
+            if (CollectionUtils.isNotEmpty(mtlIds)) {
+                Collection<Material> materials = materialService.listByIds(mtlIds);
+                mtlMap.putAll(materials.stream().collect(Collectors.toMap(Material::getId, Material::getName)));
+            }
+            List<String> unitIds = datas.stream().map(Assemble::getUnitId).collect(Collectors.toList());
+            if (CollectionUtils.isNotEmpty(unitIds)) {
+                Collection<MaterialUnit> units = materialUnitService.listByIds(unitIds);
+                unitMap.putAll(units.stream().collect(Collectors.toMap(MaterialUnit::getId, MaterialUnit::getName)));
+            }
+            datas.stream().forEach(o -> {
+                o.setWarehouse(warehouseMap.get(o.getWarehouseId()));
+                o.setMaterial(mtlMap.get(o.getMtlId()));
+                o.setUnit(unitMap.get(o.getUnitId()));
+            });
+        }
+        pageList.setRecords(datas);
         return Result.ok(pageList);
     }
 
@@ -86,23 +125,14 @@ public class AssembleController extends JeecgController<Assemble, AssembleServic
         return Result.ok("批量删除成功!");
     }
 
-    @GetMapping("/queryById")
+    @GetMapping("/getOne")
     public Result<?> queryById(@RequestParam(name = "id", required = true) String id) {
         Assemble assemble = assembleService.getById(id);
         if (assemble == null) {
             return Result.ok("未找到对应数据");
         }
         AssembleDto assembledtldto = new AssembleDto();
-        assembledtldto.setId(assemble.getId());
-//        assembledtldto.setVendorId(assemble.getVendorId());
-        assembledtldto.setContent(assemble.getContent());
-        assembledtldto.setWarehouseId(assemble.getWarehouseId());
-//        assembledtldto.setAccount(assemble.getAccount());
-//        assembledtldto.setPayamount(assemble.getPayamount());
-//        assembledtldto.setBilldate(assemble.getBilldate());
-//        assembledtldto.setTotalamount(assemble.getTotalamount());
-        assembledtldto.setCode(assemble.getCode());
-        assembledtldto.setCreateTime(assemble.getCreateTime());
+        BeanUtils.copyProperties(assemble, assembledtldto);
         assembledtldto.setDetaillist(assembleDtlService.findBySourceId(assemble.getId()));
 
         return Result.ok(assembledtldto);

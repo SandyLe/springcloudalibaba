@@ -58,6 +58,7 @@ public class AssembleServiceImpl extends ServiceImpl<AssembleMapper, Assemble> i
         // 组装主表
         String code = billCodeBuilderService.getBillCode(BillType.ASSEMBLE.getId());
         assembledto.setCode(code);
+        assembledto.setBillStatus(BillStatus.NEW.getId());
         super.save(assembledto);
 
         //组装单子表
@@ -87,8 +88,8 @@ public class AssembleServiceImpl extends ServiceImpl<AssembleMapper, Assemble> i
         }
 
         if (StringUtils.isNotBlank(assembledto.getWarehouseId())) {
-            // 销售出库
-            InventoryOut inventoryOut = new InventoryOut(assembledto.getId(), assembledto.getCode(), BillType.STOREOUT.getId(), BillType.ALLOT.getId(), assembledto.getWarehouseId(), new Date(), BillStatus.TOSTOCKOUT.getId());
+            // 出库
+            InventoryOut inventoryOut = new InventoryOut(assembledto.getId(), assembledto.getCode(), BillType.STOREOUT.getId(), BillType.ASSEMBLE.getId(), assembledto.getWarehouseId(), new Date(), BillStatus.TOSTOCKOUT.getId());
             inventoryOut.setRowSts(RowSts.EFFECTIVE.getId());
             inventoryOutService.saveToInventoryOut(inventoryOut);
         }

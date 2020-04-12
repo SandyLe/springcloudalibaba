@@ -14,6 +14,7 @@ import org.jeecg.common.util.Constants;
 import org.jeecg.modules.basic.service.BillCodeBuilderService;
 import org.jeecg.modules.combind.entity.Assemble;
 import org.jeecg.modules.combind.entity.Teardown;
+import org.jeecg.modules.combind.entity.TeardownDtl;
 import org.jeecg.modules.combind.service.AssembleDtlService;
 import org.jeecg.modules.combind.service.AssembleService;
 import org.jeecg.modules.combind.service.TeardownDtlService;
@@ -178,14 +179,9 @@ public class InventoryOutServiceImpl extends ServiceImpl<InventoryOutMapper, Inv
         } else if (inventoryOut.getSourceBillType() == BillType.ASSEMBLE.getId()) {
             Assemble assemble = assembleService.getById(inventoryOut.getSourceId());
             inventoryOutMtls.add(new InventoryOutMtl(inventoryOut.getId(), assemble.getId(), inventoryOut.getSourceBillType(), assemble.getMtlId(), assemble.getQuantity(), assemble.getUnitId(), RowSts.EFFECTIVE.getId()));
-        } else if (inventoryOut.getSourceBillType() == BillType.ALLOT.getId()) {
-            LambdaQueryWrapper<AllotDtl> queryWrapper = new LambdaQueryWrapper<AllotDtl>().eq(AllotDtl::getSourceId, inventoryOut.getSourceId());
-            List<AllotDtl> allotDtls = allotDtlService.list(queryWrapper);
-            if (CollectionUtils.isNotEmpty(allotDtls)) {
-                allotDtls.forEach(o ->{
-                    inventoryOutMtls.add(new InventoryOutMtl(inventoryOut.getId(), o.getSourceId(), inventoryOut.getSourceBillType(), o.getMtlId(), o.getAllotAmount(), o.getUnitId(), RowSts.EFFECTIVE.getId()));
-                });
-            }
+        } else if (inventoryOut.getSourceBillType() == BillType.TEARDOWN.getId()) {
+            Teardown teardown = teardownService.getById(inventoryOut.getSourceId());
+            inventoryOutMtls.add(new InventoryOutMtl(inventoryOut.getId(), teardown.getId(), inventoryOut.getSourceBillType(), teardown.getMtlId(), teardown.getQuantity(), teardown.getUnitId(), RowSts.EFFECTIVE.getId()));
         }
         inventoryOutMtlService.saveBatch(inventoryOutMtls);
         return inventoryOut.getId();

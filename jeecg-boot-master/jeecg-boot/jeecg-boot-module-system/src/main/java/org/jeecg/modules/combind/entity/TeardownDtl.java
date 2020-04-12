@@ -31,8 +31,6 @@ public class TeardownDtl extends CBasicEntity {
     private BigDecimal quantity;
     @ApiModelProperty("单价")
     private BigDecimal price;
-    @ApiModelProperty("金额")
-    private BigDecimal amount;
 
     public String getMtlId() {
         return mtlId;
@@ -80,14 +78,6 @@ public class TeardownDtl extends CBasicEntity {
 
     public void setPrice(BigDecimal price) {
         this.price = price;
-    }
-
-    public BigDecimal getAmount() {
-        return amount;
-    }
-
-    public void setAmount(BigDecimal amount) {
-        this.amount = amount;
     }
 
     public String getSourceId() {
