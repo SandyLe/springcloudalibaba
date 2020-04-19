@@ -9,10 +9,11 @@
             label="客户">
             <a-select v-decorator="['customerId', {}]" placeholder="请选择客户"  showSearch
                       optionFilterProp="children"
-                      notFoundContent="无法找到" :disabled="unEditable" >
+                      notFoundContent="无法找到，输入名称、编号、手机号回车搜索" @keyup.enter.native="searchCustomer"
+                      :disabled="unEditable" >
               <a-select-option value="">请选择</a-select-option>
               <a-select-option v-for="(item, key) in customerList" :key="key" :value="item.id">
-                {{ item.name || item.code }}
+                {{ item.info }}
               </a-select-option>
             </a-select>
           </a-form-item>
@@ -145,7 +146,7 @@
   import pick from 'lodash.pick'
   import moment from 'moment'
   import JDictSelectTag from '@/components/dict/JDictSelectTag.vue'
-  import {addSaleOrder, editSaleOrder, getCustomerList, getSaleOrderOne, getSaleOrderMtlList } from '@/api/api'
+  import {addSaleOrder, editSaleOrder, getCustomerList, getSaleOrderOne, getSaleOrderMtlList, searchCustomer } from '@/api/api'
   import {JeecgListMixin} from '@/mixins/JeecgListMixin'
   export default {
     name: "Step1",
@@ -318,6 +319,13 @@
           }
         })
       },
+      searchCustomer (e) {
+        searchCustomer({"keyword":e.target.valueOf().value}).then((res) => {
+          if (res.success) {
+            this.customerList = res.result;
+          }
+        })
+      },
       handleAddMtl () {
         this.mainId = this.$route.query.id;
         console.log(this.mainId)
@@ -343,7 +351,7 @@
       }
     },
     mounted() {
-      getCustomerList().then((res) => {
+      searchCustomer({}).then((res) => {
         if (res.success) {
           this.customerList = res.result;
         }

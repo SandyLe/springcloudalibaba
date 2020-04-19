@@ -353,7 +353,6 @@
             values.sourceId = this.$route.query.id;
             let formData = Object.assign(this.model, values);
             let obj;
-            console.log(formData)
             if(this.model.id){
               obj=delivery(formData);
             }

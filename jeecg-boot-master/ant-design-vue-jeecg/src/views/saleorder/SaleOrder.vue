@@ -80,6 +80,9 @@
                 <a @click="popDetail(record)">详情打印</a>
               </a-menu-item>
               <a-menu-item  v-if="record.billStatus < 4 && record.billStatus != -1">
+                <a @click="addWorkOrder(record)">安排工单</a>
+              </a-menu-item>
+              <a-menu-item  v-if="record.billStatus < 4 && record.billStatus != -1">
                 <a-popconfirm title="确定作废吗?" @confirm="() => handleInvalid(record)">
                   <a>作废</a>
                 </a-popconfirm>
@@ -227,6 +230,10 @@
           }
         }).finally(() => {
         })
+      },
+      addWorkOrder (record) {
+
+        this.$router.replace({ path:'/workorder/workOrderDetail/',  query: {"sourceBillType": 0, "sourceId": record.id, "sourceCode": record.code} });
       }
     },
     mounted() {

@@ -225,6 +225,21 @@ const assembleDtlDelete = (params)=>deleteAction("/assembleDtl/delete",params)
 const getTeardownOne = (params)=>getAction("/teardown/getOne",params)
 const teardownDtlDelete = (params)=>deleteAction("/teardownDtl/delete",params)
 
+// 工单
+const getWorkOrderOne = (params)=>getAction("/workOrder/getOne",params)
+const workOrderDtlDelete = (params)=>deleteAction("/workOrderDtl/delete",params)
+
+// 维修单
+const addRepair = (params)=>postAction("/repairOrder/add", params)
+const getRepairOne = (params)=>getAction("/repairOrder/getOne",params)
+const editRepair = (params)=>postAction("/repairOrder/edit",params)
+const getRepairList = (params)=>getAction("/repairOrder/getList",params)
+
+// 换货单
+
+const getChangeOrderOne = (params)=>getAction("/changeOrder/getOne",params)
+const changeOrderDtlDelete = (params)=>deleteAction("/changeOrderDtl/delete",params)
+
 export {
   // imgView,
   // doMian,
@@ -380,7 +395,15 @@ export {
   getAssembleOne,
   assembleDtlDelete,
   getTeardownOne,
-  teardownDtlDelete
+  teardownDtlDelete,
+  getWorkOrderOne,
+  workOrderDtlDelete,
+  addRepair,
+  editRepair,
+  getRepairOne,
+  getRepairList,
+  getChangeOrderOne,
+  changeOrderDtlDelete
 }
 
 
