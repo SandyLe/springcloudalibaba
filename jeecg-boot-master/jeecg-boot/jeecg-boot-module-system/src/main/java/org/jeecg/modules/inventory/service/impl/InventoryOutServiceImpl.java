@@ -12,6 +12,10 @@ import org.jeecg.common.enums.InventoryOperation;
 import org.jeecg.common.enums.RowSts;
 import org.jeecg.common.util.Constants;
 import org.jeecg.modules.basic.service.BillCodeBuilderService;
+import org.jeecg.modules.changeorder.entity.ChangeOrder;
+import org.jeecg.modules.changeorder.entity.ChangeOrderDtl;
+import org.jeecg.modules.changeorder.service.ChangeOrderDtlService;
+import org.jeecg.modules.changeorder.service.ChangeOrderService;
 import org.jeecg.modules.combind.entity.Assemble;
 import org.jeecg.modules.combind.entity.Teardown;
 import org.jeecg.modules.combind.entity.TeardownDtl;
@@ -73,6 +77,10 @@ public class InventoryOutServiceImpl extends ServiceImpl<InventoryOutMapper, Inv
     private TeardownService teardownService;
     @Autowired
     private TeardownDtlService teardownDtlService;
+    @Autowired
+    private ChangeOrderDtlService changeOrderDtlService;
+    @Autowired
+    private ChangeOrderService changeOrderService;
     @Autowired
     private BillCodeBuilderService billCodeBuilderService;
 
@@ -138,6 +146,16 @@ public class InventoryOutServiceImpl extends ServiceImpl<InventoryOutMapper, Inv
                     info.setBillStatus(BillStatus.STOCKED.getId());
                 }
                 teardownService.updateById(teardown);
+            } else if (mtls.get(0).getSourceBillType() == BillType.CHANGEORDER.getId()) {
+                ChangeOrder changeOrder = changeOrderService.getById(info.getSourceId());
+                if (CollectionUtils.isNotEmpty(deliveryMtls)) {
+                    changeOrder.setBillStatus(BillStatus.PARTICIALSTOCK.getId());
+                    info.setBillStatus(BillStatus.PARTICIALSTOCK.getId());
+                } else {
+                    changeOrder.setBillStatus(BillStatus.STOCKED.getId());
+                    info.setBillStatus(BillStatus.STOCKED.getId());
+                }
+                changeOrderService.updateById(changeOrder);
             }
             updateById(info);
         }
@@ -182,6 +200,14 @@ public class InventoryOutServiceImpl extends ServiceImpl<InventoryOutMapper, Inv
         } else if (inventoryOut.getSourceBillType() == BillType.TEARDOWN.getId()) {
             Teardown teardown = teardownService.getById(inventoryOut.getSourceId());
             inventoryOutMtls.add(new InventoryOutMtl(inventoryOut.getId(), teardown.getId(), inventoryOut.getSourceBillType(), teardown.getMtlId(), teardown.getQuantity(), teardown.getUnitId(), RowSts.EFFECTIVE.getId()));
+        } else if (inventoryOut.getSourceBillType() == BillType.CHANGEORDER.getId()) {
+            LambdaQueryWrapper<ChangeOrderDtl> queryWrapper = new LambdaQueryWrapper<ChangeOrderDtl>().eq(ChangeOrderDtl::getSourceId, inventoryOut.getSourceId());
+            List<ChangeOrderDtl> allotDtls = changeOrderDtlService.list(queryWrapper);
+            if (CollectionUtils.isNotEmpty(allotDtls)) {
+                allotDtls.forEach(o ->{
+                    inventoryOutMtls.add(new InventoryOutMtl(inventoryOut.getId(), o.getSourceId(), inventoryOut.getSourceBillType(), o.getNewMtlId(), o.getNewQuantity(), o.getNewUnitId(), RowSts.EFFECTIVE.getId()));
+                });
+            }
         }
         inventoryOutMtlService.saveBatch(inventoryOutMtls);
         return inventoryOut.getId();

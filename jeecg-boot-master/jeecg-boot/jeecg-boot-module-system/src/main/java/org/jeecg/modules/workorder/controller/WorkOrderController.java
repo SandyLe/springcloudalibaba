@@ -8,6 +8,7 @@ import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.jeecg.common.api.vo.Result;
+import org.jeecg.common.enums.BillStatus;
 import org.jeecg.common.system.base.controller.JeecgController;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.modules.system.entity.SysUser;
@@ -44,7 +45,16 @@ public class WorkOrderController extends JeecgController<WorkOrder, WorkOrderSer
                                    @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
                                    @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
                                    HttpServletRequest req) {
+        Integer billStatus = workOrder.getBillStatus();
+        if (null != billStatus) {
+            workOrder.setBillStatus(null);
+        }
         QueryWrapper<WorkOrder> queryWrapper = QueryGenerator.initQueryWrapper(workOrder, req.getParameterMap());
+        if (billStatus == BillStatus.DOWN.getId()) {
+            queryWrapper.eq("bill_status", billStatus);
+        } else {
+            queryWrapper.ne("bill_status", BillStatus.DOWN.getId());
+        }
         Page<WorkOrder> page = new Page<>(pageNo, pageSize);
         IPage<WorkOrder> pageList = workOrderService.page(page, queryWrapper);
         List<WorkOrder> datas = pageList.getRecords();

@@ -7,7 +7,9 @@ import org.jeecg.common.enums.BillStatus;
 import org.jeecg.common.enums.BillType;
 import org.jeecg.common.enums.RowSts;
 import org.jeecg.modules.basic.service.BillCodeBuilderService;
+import org.jeecg.modules.inventory.entity.InventoryIn;
 import org.jeecg.modules.inventory.entity.InventoryOut;
+import org.jeecg.modules.inventory.service.InventoryInService;
 import org.jeecg.modules.inventory.service.InventoryOutService;
 import org.jeecg.modules.changeorder.dto.ChangeOrderDto;
 import org.jeecg.modules.changeorder.entity.ChangeOrder;
@@ -40,19 +42,22 @@ public class ChangeOrderServiceImpl extends ServiceImpl<ChangeOrderMapper, Chang
     @Lazy
     @Autowired
     private InventoryOutService inventoryOutService;
+    @Lazy
+    @Autowired
+    private InventoryInService inventoryInService;
     @Autowired
     private BillCodeBuilderService billCodeBuilderService;
 
     @Override
     @Transactional
     public String saveOrder(ChangeOrderDto changeOrderdto){
-        // 组装主表
-        String code = billCodeBuilderService.getBillCode(BillType.WORKORDER.getId());
+        // 换货主表
+        String code = billCodeBuilderService.getBillCode(BillType.CHANGEORDER.getId());
         changeOrderdto.setCode(code);
         changeOrderdto.setBillStatus(BillStatus.NEW.getId());
         super.save(changeOrderdto);
 
-        //组装单子表
+        //换货单子表
         if (CollectionUtils.isNotEmpty(changeOrderdto.getDetaillist())){
             List<ChangeOrderDtl> mtls = changeOrderdto.getDetaillist().stream().filter(o-> StringUtils.isNotBlank(o.getMtlId())).collect(Collectors.toList());
             mtls.stream().forEach(o->{
@@ -65,9 +70,21 @@ public class ChangeOrderServiceImpl extends ServiceImpl<ChangeOrderMapper, Chang
 
         if (StringUtils.isNotBlank(changeOrderdto.getWarehouseId())) {
             // 配件出库
-            InventoryOut inventoryOut = new InventoryOut(changeOrderdto.getId(), changeOrderdto.getCode(), BillType.STOREOUT.getId(), BillType.WORKORDER.getId(), changeOrderdto.getWarehouseId(), new Date(), BillStatus.TOSTOCKOUT.getId());
+            InventoryOut inventoryOut = new InventoryOut(changeOrderdto.getId(), changeOrderdto.getCode(), BillType.STOREOUT.getId(), BillType.CHANGEORDER.getId(), changeOrderdto.getWarehouseId(), new Date(), BillStatus.TOSTOCKOUT.getId());
             inventoryOut.setRowSts(RowSts.EFFECTIVE.getId());
             inventoryOutService.saveToInventoryOut(inventoryOut);
+            // 入库单主表
+            InventoryIn inventoryIn = new InventoryIn();
+            inventoryIn.setBillStatus(BillStatus.TOSTOCKIN.getId());
+            inventoryIn.setWarehouseId(changeOrderdto.getWarehouseId());
+            inventoryIn.setPutInTime(new Date());
+            inventoryIn.setSourceCode(code);
+            inventoryIn.setSourceId(changeOrderdto.getId());
+            inventoryIn.setBillType(BillType.STOREIN.getId());
+            inventoryIn.setRowSts(RowSts.EFFECTIVE.getId());
+            inventoryIn.setSourceBillType(BillType.CHANGEORDER.getId());
+            inventoryIn.setCode(billCodeBuilderService.getBillCode(BillType.STOREIN.getId()));
+            inventoryInService.saveToInventoryIn(inventoryIn);
         }
         return changeOrderdto.getId();
     }
@@ -90,12 +107,26 @@ public class ChangeOrderServiceImpl extends ServiceImpl<ChangeOrderMapper, Chang
             }
         }
 
-        inventoryOutService.deleteBySourceId(changeOrderdto.getId());
         if (StringUtils.isNotBlank(changeOrderdto.getWarehouseId())) {
             // 配件出库
-            InventoryOut inventoryOut = new InventoryOut(changeOrderdto.getId(), changeOrderdto.getCode(), BillType.STOREOUT.getId(), BillType.WORKORDER.getId(), changeOrderdto.getWarehouseId(), new Date(), BillStatus.TOSTOCKOUT.getId());
+            inventoryOutService.deleteBySourceId(changeOrderdto.getId());
+            InventoryOut inventoryOut = new InventoryOut(changeOrderdto.getId(), changeOrderdto.getCode(), BillType.STOREOUT.getId(), BillType.CHANGEORDER.getId(), changeOrderdto.getWarehouseId(), new Date(), BillStatus.TOSTOCKOUT.getId());
             inventoryOut.setRowSts(RowSts.EFFECTIVE.getId());
             inventoryOutService.saveToInventoryOut(inventoryOut);
+
+
+            inventoryInService.deleteBySourceId(changeOrderdto.getId());
+            InventoryIn inventoryIn = new InventoryIn();
+            inventoryIn.setBillStatus(BillStatus.TOSTOCKIN.getId());
+            inventoryIn.setWarehouseId(changeOrderdto.getWarehouseId());
+            inventoryIn.setPutInTime(new Date());
+            inventoryIn.setSourceCode(changeOrderdto.getCode());
+            inventoryIn.setSourceId(changeOrderdto.getId());
+            inventoryIn.setBillType(BillType.STOREIN.getId());
+            inventoryIn.setRowSts(RowSts.EFFECTIVE.getId());
+            inventoryIn.setSourceBillType(BillType.CHANGEORDER.getId());
+            inventoryIn.setCode(billCodeBuilderService.getBillCode(BillType.STOREIN.getId()));
+            inventoryInService.saveToInventoryIn(inventoryIn);
         }
         return changeOrderdto.getId();
     }

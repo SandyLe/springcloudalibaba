@@ -14,7 +14,9 @@ public enum InventoryOperation implements AbstractEnum {
     ASSEMBLEIN(9, "组装入库"),
     ASSEMBLEOUT(10, "组装出库"),
     TEARDOWNIN(11, "拆卸入库"),
-    TEARDOWNOUT(12, "拆卸出库");
+    TEARDOWNOUT(12, "拆卸出库"),
+    CHANGEIN(13, "换货入库"),
+    CHANGEOUT(14, "换货出库");
 
     private Integer id;
     private String name;

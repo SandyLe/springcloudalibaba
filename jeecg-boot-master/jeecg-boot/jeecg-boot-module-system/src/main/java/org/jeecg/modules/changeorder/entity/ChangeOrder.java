@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.jeecg.common.enums.BillStatus;
+import org.jeecg.common.enums.BillType;
 import org.jeecg.common.enums.EnumConvertUtils;
 import org.jeecg.modules.basic.entity.CBasicEntity;
 
@@ -33,21 +34,16 @@ public class ChangeOrder extends CBasicEntity {
     private String billStatusName;
     @ApiModelProperty("单据时间")
     private Date billDate;
-    @ApiModelProperty("施工时间")
-    private Date operateDate;
-    @ApiModelProperty("施工人员ID")
-    private String operateUserId;
-    @TableField(exist=false)
-    private String operateUserName;
-    @ApiModelProperty("完工时间")
-    private Date finishedDate;
-    @ApiModelProperty("施工备注")
-    private String operateLog;
-    @ApiModelProperty("配件出货仓库ID")
+    @ApiModelProperty("出入仓库ID")
     private String warehouseId;
-    @ApiModelProperty("配件出货")
+    @ApiModelProperty("仓库")
     @TableField(exist=false)
     private String warehouse;
+    @ApiModelProperty("客户ID")
+    private String customerId;
+    @ApiModelProperty("客户")
+    @TableField(exist=false)
+    private String customer;
 
     public String getSourceId() {
         return sourceId;
@@ -76,7 +72,7 @@ public class ChangeOrder extends CBasicEntity {
     public String getSourceBillTypeName() {
 
         if (null != sourceBillType) {
-            return EnumConvertUtils.getName(BillStatus.class, sourceBillType);
+            return EnumConvertUtils.getName(BillType.class, sourceBillType);
         }
         return sourceBillTypeName;
     }
@@ -99,46 +95,6 @@ public class ChangeOrder extends CBasicEntity {
 
     public void setBillDate(Date billDate) {
         this.billDate = billDate;
-    }
-
-    public Date getOperateDate() {
-        return operateDate;
-    }
-
-    public void setOperateDate(Date operateDate) {
-        this.operateDate = operateDate;
-    }
-
-    public String getOperateUserId() {
-        return operateUserId;
-    }
-
-    public void setOperateUserId(String operateUserId) {
-        this.operateUserId = operateUserId;
-    }
-
-    public String getOperateUserName() {
-        return operateUserName;
-    }
-
-    public void setOperateUserName(String operateUserName) {
-        this.operateUserName = operateUserName;
-    }
-
-    public Date getFinishedDate() {
-        return finishedDate;
-    }
-
-    public void setFinishedDate(Date finishedDate) {
-        this.finishedDate = finishedDate;
-    }
-
-    public String getOperateLog() {
-        return operateLog;
-    }
-
-    public void setOperateLog(String operateLog) {
-        this.operateLog = operateLog;
     }
 
     public Integer getBillStatus() {
@@ -173,5 +129,21 @@ public class ChangeOrder extends CBasicEntity {
 
     public void setWarehouse(String warehouse) {
         this.warehouse = warehouse;
+    }
+
+    public String getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(String customerId) {
+        this.customerId = customerId;
+    }
+
+    public String getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(String customer) {
+        this.customer = customer;
     }
 }

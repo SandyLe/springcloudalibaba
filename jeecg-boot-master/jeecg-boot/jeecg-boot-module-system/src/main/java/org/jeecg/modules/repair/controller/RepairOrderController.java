@@ -6,17 +6,14 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections.CollectionUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.base.controller.JeecgController;
 import org.jeecg.common.system.query.QueryGenerator;
-import org.jeecg.modules.system.entity.SysUser;
+import org.jeecg.modules.basic.entity.Customer;
+import org.jeecg.modules.basic.service.CustomerService;
 import org.jeecg.modules.system.service.ISysUserService;
-import org.jeecg.modules.repair.dto.RepairOrderDto;
 import org.jeecg.modules.repair.entity.RepairOrder;
-import org.jeecg.modules.repair.service.RepairOrderDtlService;
 import org.jeecg.modules.repair.service.RepairOrderService;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -35,9 +32,9 @@ public class RepairOrderController extends JeecgController<RepairOrder, RepairOr
     @Autowired
     private RepairOrderService repairOrderService;
     @Autowired
-    private RepairOrderDtlService repairOrderDtlService;
-    @Autowired
     private ISysUserService iSysUserService;
+    @Autowired
+    private CustomerService customerService;
 
     @GetMapping("/getPage")
     public Result<?> queryPageList(RepairOrder repairOrder,
@@ -48,32 +45,26 @@ public class RepairOrderController extends JeecgController<RepairOrder, RepairOr
         Page<RepairOrder> page = new Page<>(pageNo, pageSize);
         IPage<RepairOrder> pageList = repairOrderService.page(page, queryWrapper);
         List<RepairOrder> datas = pageList.getRecords();
-        if (CollectionUtils.isNotEmpty(datas)) {
-            Map<String, String> userMap = new HashMap<>();
-
-            List<String> userIds = datas.stream().map(RepairOrder::getOperateUserId).collect(Collectors.toList());
-            if (CollectionUtils.isNotEmpty(userIds)) {
-                Collection<SysUser> sysUsers = iSysUserService.listByIds(userIds);
-                userMap.putAll(sysUsers.stream().collect(Collectors.toMap(SysUser::getId, SysUser::getRealname)));
-            }
-            datas.stream().forEach(o -> {
-                o.setOperateUserName(userMap.get(o.getOperateUserId()));
-            });
-        }
+        List<String> customerIds = datas.stream().map(RepairOrder::getCustomerId).collect(Collectors.toList());
+        Collection<Customer> customers = customerService.listByIds(customerIds);
+        Map<String, String> customerMap = customers.stream().collect(Collectors.toMap(Customer::getId, Customer::getName));
+        datas.stream().forEach(o->{
+            o.setCustomer(customerMap.get(o.getCustomerId()));
+        });
         pageList.setRecords(datas);
         return Result.ok(pageList);
     }
 
     @PostMapping("/add")
     @Transactional
-    public Result<?> add(@RequestBody RepairOrderDto repairOrderdto) {
-        repairOrderService.saveOrder(repairOrderdto);
+    public Result<?> add(@RequestBody RepairOrder repairOrder) {
+        repairOrderService.saveOrder(repairOrder);
         return Result.ok();
     }
 
-    @PutMapping("/edit")
-    public Result<?> edit(@RequestBody RepairOrderDto repairOrderdto) {
-        repairOrderService.editOrder(repairOrderdto);
+    @PostMapping("/edit")
+    public Result<?> edit(@RequestBody RepairOrder repairOrder) {
+        repairOrderService.editOrder(repairOrder);
         return Result.ok();
     }
 
@@ -81,7 +72,6 @@ public class RepairOrderController extends JeecgController<RepairOrder, RepairOr
     @Transactional
     public Result<?> delete(@RequestParam(name = "id", required = true) String id) {
         repairOrderService.removeById(id);
-        repairOrderDtlService.deleteBySourceId(id);
         return Result.ok("删除成功!");
     }
 
@@ -89,7 +79,6 @@ public class RepairOrderController extends JeecgController<RepairOrder, RepairOr
     @Transactional
     public Result<?> deleteBatch(@RequestParam(name = "ids", required = true) String ids) {
         repairOrderService.removeByIds(Arrays.asList(ids.split(",")));
-        repairOrderDtlService.deleteBySourceIds(Arrays.asList(ids.split(",")));
         return Result.ok("批量删除成功!");
     }
 
@@ -99,11 +88,7 @@ public class RepairOrderController extends JeecgController<RepairOrder, RepairOr
         if (repairOrder == null) {
             return Result.ok("未找到对应数据");
         }
-        RepairOrderDto repairOrderdtldto = new RepairOrderDto();
-        BeanUtils.copyProperties(repairOrder, repairOrderdtldto);
-        repairOrderdtldto.setDetaillist(repairOrderDtlService.findBySourceId(repairOrder.getId()));
-
-        return Result.ok(repairOrderdtldto);
+        return Result.ok(repairOrder);
     }
 
     @GetMapping("/getOneByCode")

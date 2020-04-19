@@ -10,6 +10,10 @@ import org.apache.commons.collections.CollectionUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.base.controller.JeecgController;
 import org.jeecg.common.system.query.QueryGenerator;
+import org.jeecg.modules.basic.entity.Customer;
+import org.jeecg.modules.basic.entity.Warehouse;
+import org.jeecg.modules.basic.service.CustomerService;
+import org.jeecg.modules.basic.service.WarehouseService;
 import org.jeecg.modules.changeorder.dto.ChangeOrderDto;
 import org.jeecg.modules.changeorder.entity.ChangeOrder;
 import org.jeecg.modules.changeorder.service.ChangeOrderDtlService;
@@ -38,6 +42,10 @@ public class ChangeOrderController extends JeecgController<ChangeOrder, ChangeOr
     private ChangeOrderDtlService changeOrderDtlService;
     @Autowired
     private ISysUserService iSysUserService;
+    @Autowired
+    private CustomerService customerService;
+    @Autowired
+    private WarehouseService warehouseService;
 
     @GetMapping("/getPage")
     public Result<?> queryPageList(ChangeOrder changeOrder,
@@ -48,18 +56,16 @@ public class ChangeOrderController extends JeecgController<ChangeOrder, ChangeOr
         Page<ChangeOrder> page = new Page<>(pageNo, pageSize);
         IPage<ChangeOrder> pageList = changeOrderService.page(page, queryWrapper);
         List<ChangeOrder> datas = pageList.getRecords();
-        if (CollectionUtils.isNotEmpty(datas)) {
-            Map<String, String> userMap = new HashMap<>();
-
-            List<String> userIds = datas.stream().map(ChangeOrder::getOperateUserId).collect(Collectors.toList());
-            if (CollectionUtils.isNotEmpty(userIds)) {
-                Collection<SysUser> sysUsers = iSysUserService.listByIds(userIds);
-                userMap.putAll(sysUsers.stream().collect(Collectors.toMap(SysUser::getId, SysUser::getRealname)));
-            }
-            datas.stream().forEach(o -> {
-                o.setOperateUserName(userMap.get(o.getOperateUserId()));
-            });
-        }
+        List<String> customerIds = datas.stream().map(ChangeOrder::getCustomerId).collect(Collectors.toList());
+        List<String> warehouseIds = datas.stream().map(ChangeOrder::getWarehouseId).collect(Collectors.toList());
+        Collection<Customer> customers = customerService.listByIds(customerIds);
+        Collection<Warehouse> warehouses = warehouseService.listByIds(warehouseIds);
+        Map<String, String> customerMap = customers.stream().collect(Collectors.toMap(Customer::getId, Customer::getName));
+        Map<String, String> warehouseMap = warehouses.stream().collect(Collectors.toMap(Warehouse:: getId, Warehouse:: getName));
+        datas.stream().forEach(o->{
+            o.setWarehouse(warehouseMap.get(o.getWarehouseId()));
+            o.setCustomer(customerMap.get(o.getCustomerId()));
+        });
         pageList.setRecords(datas);
         return Result.ok(pageList);
     }

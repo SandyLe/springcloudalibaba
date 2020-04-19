@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.jeecg.common.enums.BillStatus;
+import org.jeecg.common.enums.BillType;
 import org.jeecg.common.enums.EnumConvertUtils;
 import org.jeecg.modules.basic.entity.CBasicEntity;
 
@@ -46,7 +47,7 @@ public class WorkOrder extends CBasicEntity {
     private String operateLog;
     @ApiModelProperty("配件出货仓库ID")
     private String warehouseId;
-    @ApiModelProperty("配件出货")
+    @ApiModelProperty("配件出货仓库")
     @TableField(exist=false)
     private String warehouse;
 
@@ -77,7 +78,7 @@ public class WorkOrder extends CBasicEntity {
     public String getSourceBillTypeName() {
 
         if (null != sourceBillType) {
-            return EnumConvertUtils.getName(BillStatus.class, sourceBillType);
+            return EnumConvertUtils.getName(BillType.class, sourceBillType);
         }
         return sourceBillTypeName;
     }

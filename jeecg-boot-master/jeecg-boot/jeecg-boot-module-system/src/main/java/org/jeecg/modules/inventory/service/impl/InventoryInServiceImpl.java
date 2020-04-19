@@ -13,6 +13,10 @@ import org.jeecg.common.enums.RowSts;
 import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.util.Constants;
 import org.jeecg.modules.basic.service.BillCodeBuilderService;
+import org.jeecg.modules.changeorder.entity.ChangeOrder;
+import org.jeecg.modules.changeorder.entity.ChangeOrderDtl;
+import org.jeecg.modules.changeorder.service.ChangeOrderDtlService;
+import org.jeecg.modules.changeorder.service.ChangeOrderService;
 import org.jeecg.modules.combind.entity.Assemble;
 import org.jeecg.modules.combind.entity.Teardown;
 import org.jeecg.modules.combind.entity.TeardownDtl;
@@ -78,8 +82,11 @@ public class InventoryInServiceImpl extends ServiceImpl<InventoryInMapper, Inven
     @Autowired
     private TeardownDtlService teardownDtlService;
     @Autowired
+    private ChangeOrderService changeOrderService;
+    @Autowired
+    private ChangeOrderDtlService changeOrderDtlService;
+    @Autowired
     private BillCodeBuilderService billCodeBuilderService;
-
 
     @Override
     public List<PreInventoryOutMtl> getDeliveryMtlList(String id, String sourceId) {
@@ -162,6 +169,14 @@ public class InventoryInServiceImpl extends ServiceImpl<InventoryInMapper, Inven
                     inventoryInMtls.add(new InventoryInMtl(inventoryIn.getId(), o.getSourceId(), inventoryIn.getSourceBillType(), o.getMtlId(), o.getQuantity(), o.getUnitId(), RowSts.EFFECTIVE.getId()));
                 });
             }
+        } else if (inventoryIn.getSourceBillType() == BillType.CHANGEORDER.getId()) {
+            LambdaQueryWrapper<ChangeOrderDtl> queryWrapper = new LambdaQueryWrapper<ChangeOrderDtl>().eq(ChangeOrderDtl::getSourceId, inventoryIn.getSourceId());
+            List<ChangeOrderDtl> changeOrderDtls = changeOrderDtlService.list(queryWrapper);
+            if (CollectionUtils.isNotEmpty(changeOrderDtls)) {
+                changeOrderDtls.forEach(o ->{
+                    inventoryInMtls.add(new InventoryInMtl(inventoryIn.getId(), o.getSourceId(), inventoryIn.getSourceBillType(), o.getMtlId(), o.getQuantity(), o.getUnitId(), RowSts.EFFECTIVE.getId()));
+                });
+            }
         }
         inventoryInMtlService.saveBatch(inventoryInMtls);
         return inventoryIn.getId();
@@ -179,6 +194,7 @@ public class InventoryInServiceImpl extends ServiceImpl<InventoryInMapper, Inven
             Allot allot = null;
             Assemble assemble = null;
             Teardown teardown = null;
+            ChangeOrder changeOrder = null;
             String batchNo = null;
             Integer billStatus = BillStatus.ALLSTOCKINED.getId();
             if (billType == BillType.PURCHASEORDER.getId()) {
@@ -190,6 +206,8 @@ public class InventoryInServiceImpl extends ServiceImpl<InventoryInMapper, Inven
                 assemble = assembleService.getById(info.getSourceId());
             } else if (billType == BillType.TEARDOWN.getId()) {
                 teardown = teardownService.getById(info.getSourceId());
+            } else if (billType == BillType.CHANGEORDER.getId()) {
+                changeOrder = changeOrderService.getById(info.getSourceId());
             }
             for (PreInventoryOutMtl mtl : mtls) {
                 // 入库更新库存
@@ -254,6 +272,9 @@ public class InventoryInServiceImpl extends ServiceImpl<InventoryInMapper, Inven
                 }
                 teardown.setBillStatus(billStatus);
                 teardownService.updateById(teardown);
+            } else if (billType == BillType.CHANGEORDER.getId()) {
+                changeOrder.setBillStatus(billStatus);
+                changeOrderService.updateById(changeOrder);
             }
             info.setBillStatus(billStatus);
             info.setPutInTime(new Date());

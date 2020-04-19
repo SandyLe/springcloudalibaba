@@ -270,7 +270,7 @@ public class SaleOrderController {
     @PostMapping(value = "/delivery")
     @AutoLog(value = "发货")
     @ApiOperation(value = "发货", notes = "发货")
-    public Result<?> edit(@RequestBody DeliveryEditDto deliveryEditDto) throws Exception {
+    public Result<?> delivery(@RequestBody DeliveryEditDto deliveryEditDto) throws Exception {
 
         saleOrderService.delivery(deliveryEditDto);
 

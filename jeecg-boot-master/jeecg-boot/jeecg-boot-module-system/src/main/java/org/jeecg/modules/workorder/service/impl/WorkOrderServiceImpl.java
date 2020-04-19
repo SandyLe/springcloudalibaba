@@ -52,6 +52,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         String code = billCodeBuilderService.getBillCode(BillType.WORKORDER.getId());
         workOrderdto.setCode(code);
         workOrderdto.setBillStatus(BillStatus.NEW.getId());
+        workOrderdto.setRowSts(RowSts.EFFECTIVE.getId());
         super.save(workOrderdto);
 
         //组装单子表
@@ -92,8 +93,8 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             }
         }
 
-        inventoryOutService.deleteBySourceId(workOrderdto.getId());
         if (StringUtils.isNotBlank(workOrderdto.getWarehouseId())) {
+            inventoryOutService.deleteBySourceId(workOrderdto.getId());
             // 配件出库
             InventoryOut inventoryOut = new InventoryOut(workOrderdto.getId(), workOrderdto.getCode(), BillType.STOREOUT.getId(), BillType.WORKORDER.getId(), workOrderdto.getWarehouseId(), new Date(), BillStatus.TOSTOCKOUT.getId());
             inventoryOut.setRowSts(RowSts.EFFECTIVE.getId());

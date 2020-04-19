@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.jeecg.common.enums.BillStatus;
+import org.jeecg.common.enums.BillType;
 import org.jeecg.common.enums.EnumConvertUtils;
 import org.jeecg.modules.basic.entity.CBasicEntity;
 
@@ -33,21 +34,17 @@ public class RepairOrder extends CBasicEntity {
     private String billStatusName;
     @ApiModelProperty("单据时间")
     private Date billDate;
-    @ApiModelProperty("施工时间")
+    @ApiModelProperty("维修时间")
     private Date operateDate;
-    @ApiModelProperty("施工人员ID")
-    private String operateUserId;
-    @TableField(exist=false)
-    private String operateUserName;
     @ApiModelProperty("完工时间")
     private Date finishedDate;
-    @ApiModelProperty("施工备注")
+    @ApiModelProperty("状况备注")
     private String operateLog;
-    @ApiModelProperty("配件出货仓库ID")
-    private String warehouseId;
-    @ApiModelProperty("配件出货")
+    @ApiModelProperty("客户ID")
+    private String customerId;
+    @ApiModelProperty("客户")
     @TableField(exist=false)
-    private String warehouse;
+    private String customer;
 
     public String getSourceId() {
         return sourceId;
@@ -76,7 +73,7 @@ public class RepairOrder extends CBasicEntity {
     public String getSourceBillTypeName() {
 
         if (null != sourceBillType) {
-            return EnumConvertUtils.getName(BillStatus.class, sourceBillType);
+            return EnumConvertUtils.getName(BillType.class, sourceBillType);
         }
         return sourceBillTypeName;
     }
@@ -107,22 +104,6 @@ public class RepairOrder extends CBasicEntity {
 
     public void setOperateDate(Date operateDate) {
         this.operateDate = operateDate;
-    }
-
-    public String getOperateUserId() {
-        return operateUserId;
-    }
-
-    public void setOperateUserId(String operateUserId) {
-        this.operateUserId = operateUserId;
-    }
-
-    public String getOperateUserName() {
-        return operateUserName;
-    }
-
-    public void setOperateUserName(String operateUserName) {
-        this.operateUserName = operateUserName;
     }
 
     public Date getFinishedDate() {
@@ -159,19 +140,19 @@ public class RepairOrder extends CBasicEntity {
         return billStatusName;
     }
 
-    public String getWarehouseId() {
-        return warehouseId;
+    public String getCustomerId() {
+        return customerId;
     }
 
-    public void setWarehouseId(String warehouseId) {
-        this.warehouseId = warehouseId;
+    public void setCustomerId(String customerId) {
+        this.customerId = customerId;
     }
 
-    public String getWarehouse() {
-        return warehouse;
+    public String getCustomer() {
+        return customer;
     }
 
-    public void setWarehouse(String warehouse) {
-        this.warehouse = warehouse;
+    public void setCustomer(String customer) {
+        this.customer = customer;
     }
 }

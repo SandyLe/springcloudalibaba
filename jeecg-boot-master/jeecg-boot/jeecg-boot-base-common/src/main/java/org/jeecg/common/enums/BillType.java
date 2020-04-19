@@ -17,7 +17,10 @@ public enum BillType implements AbstractEnum {
     STOREOUT(12, "storeOut", "出库单"),
     ALLOT(13, "allot", "调拨单"),
     ASSEMBLE(14, "assemble", "组装单"),
-    TEARDOWN(15, "teardown", "拆卸单");
+    TEARDOWN(15, "teardown", "拆卸单"),
+    WORKORDER(16, "workorder", "工单"),
+    REPAIR(17, "repair", "维修单"),
+    CHANGEORDER(18, "changeorder", "换货单");
 
     private Integer id;
     private String code;

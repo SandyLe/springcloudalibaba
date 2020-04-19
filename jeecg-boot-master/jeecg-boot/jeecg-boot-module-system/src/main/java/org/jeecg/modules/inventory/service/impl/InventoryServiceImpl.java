@@ -59,7 +59,8 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
                 || inventoryLog.getOperationId() == InventoryOperation.SALERETURNIN.getId()
                 || inventoryLog.getOperationId() == InventoryOperation.TEARDOWNIN.getId()
                 || inventoryLog.getOperationId() == InventoryOperation.ASSEMBLEIN.getId()
-                || inventoryLog.getOperationId() == InventoryOperation.ALLOTIN.getId()) {
+                || inventoryLog.getOperationId() == InventoryOperation.ALLOTIN.getId()
+                || inventoryLog.getOperationId() == InventoryOperation.CHANGEIN.getId()) {
 
             List<InventoryOptDtl> optDtls = Lists.newArrayList();
             if( null == inventory ) {
@@ -160,7 +161,8 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
                 || inventoryLog.getOperationId() == InventoryOperation.PURCHASERETURNOUT.getId()
                 || inventoryLog.getOperationId() == InventoryOperation.TEARDOWNOUT.getId()
                 || inventoryLog.getOperationId() == InventoryOperation.ASSEMBLEOUT.getId()
-                || inventoryLog.getOperationId() == InventoryOperation.ALLOTOUT.getId()) {
+                || inventoryLog.getOperationId() == InventoryOperation.ALLOTOUT.getId()
+                || inventoryLog.getOperationId() == InventoryOperation.CHANGEOUT.getId()) {
 
             if (null == inventory || inventory.getStockAmount().compareTo(inventoryLog.getOptAmount()) < 0) {
                 Material material = materialService.getById(inventoryLog.getMtlId());

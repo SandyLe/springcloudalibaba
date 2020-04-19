@@ -18,6 +18,8 @@ public class ChangeOrderDtl extends CBasicEntity {
     private String sourceId;
     @ApiModelProperty("产品ID")
     private String mtlId;
+    @ApiModelProperty("产品ID")
+    private String newMtlId;
     @TableField(exist=false)
     @ApiModelProperty("产品")
     private String material;
@@ -28,10 +30,16 @@ public class ChangeOrderDtl extends CBasicEntity {
     private String unit;
     @ApiModelProperty("数量")
     private BigDecimal quantity;
-    @ApiModelProperty("价格")
-    private BigDecimal price;
-    @ApiModelProperty("总额")
-    private BigDecimal amount;
+    @TableField(exist=false)
+    @ApiModelProperty("产品")
+    private String newMaterial;
+    @ApiModelProperty("单位ID")
+    private String newUnitId;
+    @TableField(exist=false)
+    @ApiModelProperty("单位")
+    private String newUnit;
+    @ApiModelProperty("数量")
+    private BigDecimal newQuantity;
 
     public String getMtlId() {
         return mtlId;
@@ -81,19 +89,43 @@ public class ChangeOrderDtl extends CBasicEntity {
         this.sourceId = sourceId;
     }
 
-    public BigDecimal getPrice() {
-        return price;
+    public String getNewMtlId() {
+        return newMtlId;
     }
 
-    public void setPrice(BigDecimal price) {
-        this.price = price;
+    public void setNewMtlId(String newMtlId) {
+        this.newMtlId = newMtlId;
     }
 
-    public BigDecimal getAmount() {
-        return amount;
+    public String getNewMaterial() {
+        return newMaterial;
     }
 
-    public void setAmount(BigDecimal amount) {
-        this.amount = amount;
+    public void setNewMaterial(String newMaterial) {
+        this.newMaterial = newMaterial;
+    }
+
+    public String getNewUnitId() {
+        return newUnitId;
+    }
+
+    public void setNewUnitId(String newUnitId) {
+        this.newUnitId = newUnitId;
+    }
+
+    public String getNewUnit() {
+        return newUnit;
+    }
+
+    public void setNewUnit(String newUnit) {
+        this.newUnit = newUnit;
+    }
+
+    public BigDecimal getNewQuantity() {
+        return newQuantity;
+    }
+
+    public void setNewQuantity(BigDecimal newQuantity) {
+        this.newQuantity = newQuantity;
     }
 }

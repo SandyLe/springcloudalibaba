@@ -29,11 +29,13 @@ public class Constants {
         OUTOPERATIONS.put(BillType.ALLOT.getId(), InventoryOperation.ALLOTOUT.getId());
         OUTOPERATIONS.put(BillType.ASSEMBLE.getId(), InventoryOperation.ASSEMBLEOUT.getId());
         OUTOPERATIONS.put(BillType.TEARDOWN.getId(), InventoryOperation.TEARDOWNOUT.getId());
+        OUTOPERATIONS.put(BillType.CHANGEORDER.getId(), InventoryOperation.CHANGEOUT.getId());
 
         INOPERATIONS.put(BillType.SALERETURNORDER.getId(), InventoryOperation.SALERETURNIN.getId());
         INOPERATIONS.put(BillType.PURCHASEORDER.getId(), InventoryOperation.PURCHASEIN.getId());
         INOPERATIONS.put(BillType.ALLOT.getId(), InventoryOperation.ALLOTIN.getId());
         INOPERATIONS.put(BillType.ASSEMBLE.getId(), InventoryOperation.ASSEMBLEIN.getId());
         INOPERATIONS.put(BillType.TEARDOWN.getId(), InventoryOperation.TEARDOWNIN.getId());
+        INOPERATIONS.put(BillType.CHANGEORDER.getId(), InventoryOperation.CHANGEIN.getId());
     }
 }
