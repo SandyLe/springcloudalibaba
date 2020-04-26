@@ -240,6 +240,10 @@ const getRepairList = (params)=>getAction("/repairOrder/getList",params)
 const getChangeOrderOne = (params)=>getAction("/changeOrder/getOne",params)
 const changeOrderDtlDelete = (params)=>deleteAction("/changeOrderDtl/delete",params)
 
+// 换货单
+const getLogisticsOrderOne = (params)=>getAction("/logisticsOrder/getOne",params)
+const logisticsOrderDtlDelete = (params)=>deleteAction("/logisticsOrderDtl/delete",params)
+
 export {
   // imgView,
   // doMian,
@@ -403,7 +407,9 @@ export {
   getRepairOne,
   getRepairList,
   getChangeOrderOne,
-  changeOrderDtlDelete
+  changeOrderDtlDelete,
+  getLogisticsOrderOne,
+  logisticsOrderDtlDelete
 }
 
 

@@ -9,31 +9,35 @@
                     </a-form-item>
                 </a-col>
                 <a-col :span="12">
-                  <a-form-item label="换货单号" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                  <a-form-item label="物流单号" :labelCol="labelCol" :wrapperCol="wrapperCol">
                     <a-input v-decorator="[ 'code', {}]" :readOnly="true" placeholder="后台自动生成"></a-input>
                   </a-form-item>
                 </a-col>
             </a-row>
             <a-row>
               <a-col :span="12">
-                <a-form-item label="客户" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <a-select v-decorator="['customerId', {}]" placeholder="请选择客户"  showSearch
-                            optionFilterProp="children"
-                            notFoundContent="无法找到，输入名称、编号、手机号回车搜索" @keyup.enter.native="searchCustomer" >
+                <a-form-item
+                  :labelCol="labelCol"
+                  :wrapperCol="wrapperCol"
+                  label="单据类型">
+                  <a-select v-decorator="['sourceBillType', {}]" placeholder="请选择单据类型" showSearch optionFilterProp="children"
+                            notFoundContent="没有匹配的单据类型"  >
                     <a-select-option value="">请选择</a-select-option>
-                    <a-select-option v-for="(item, key) in customerList" :key="key" :value="item.id">
-                      {{ item.info }}
+                    <a-select-option v-for="(item, key) in billTypeList" :key="key" :value="item.id">
+                    <span style="display: inline-block;width: 100%" :title=" item.name || item.code ">
+                      {{ item.name || item.code }}
+                    </span>
                     </a-select-option>
                   </a-select>
                 </a-form-item>
               </a-col>
               <a-col :span="12">
-                <a-form-item label="仓库" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <a-select v-decorator="['warehouseId', {}]" placeholder="请选择仓库">
-                    <a-select-option v-for="(item, key) in dictOptions.warehouse" :key="key" :value="item.id">
-                      {{ item.name }}
-                    </a-select-option>
-                  </a-select>
+                <a-form-item
+                  :labelCol="labelCol"
+                  :wrapperCol="wrapperCol"
+                  label="默认收货方式"
+                  label-width="4">
+                  <j-dict-select-tag v-decorator="['cdiDefaultType', {}]" placeholder="请选择默认发货方式" :type="'select'" :triggerChange="true" dictCode="delivery_type"/>
                 </a-form-item>
               </a-col>
 
@@ -45,8 +49,143 @@
                   </a-form-item>
                 </a-col>
                 <a-col :span="12">
+                  <a-form-item
+                    :labelCol="labelCol"
+                    :wrapperCol="wrapperCol"
+                    label="物流公司"
+                    label-width="4">
+                    <a-select v-decorator="['cdiLogisticsId', {}]" placeholder="请选择物流公司">
+                      <a-select-option value="">请选择</a-select-option>
+                      <a-select-option v-for="(item, key) in cdiLogisticsCompanyList" :key="key" :value="item.id">
+                    <span style="display: inline-block;width: 100%" :title=" item.name || item.code ">
+                      {{ item.name || item.code }}
+                    </span>
+                      </a-select-option>
+                    </a-select>
+                  </a-form-item>
                 </a-col>
             </a-row>
+          <a-row>
+            <a-col :span="12">
+              <a-form-item
+                :labelCol="labelCol"
+                :wrapperCol="wrapperCol"
+                label="收件人"
+                label-width="4">
+                <a-input placeholder="请输入收件人" v-decorator="[ 'cdiRecipients', validatorRules.cdiRecipients]" />
+              </a-form-item>
+            </a-col>
+            <a-col :span="12">
+              <a-form-item
+                :labelCol="labelCol"
+                :wrapperCol="wrapperCol"
+                label="联系电话"
+                label-width="4">
+                <a-input placeholder="请输入联系电话" v-decorator="[ 'cdiRecipientsPhone', validatorRules.cdiRecipientsPhone]" />
+              </a-form-item>
+            </a-col>
+          </a-row>
+          <a-row>
+            <a-col :span="12">
+              <a-form-item
+                :labelCol="labelCol"
+                :wrapperCol="wrapperCol"
+                label="物流单号"
+                label-width="4">
+                <a-input placeholder="请输入物流单号" v-decorator="[ 'cdiLogisticsNo', validatorRules.cdiLogisticsNo]" />
+              </a-form-item>
+            </a-col>
+            <a-col :span="12">
+              <a-form-item
+                :labelCol="labelCol"
+                :wrapperCol="wrapperCol"
+                label="邮政编码"
+                label-width="4">
+                <a-input placeholder="请输入邮政编码" v-decorator="[ 'postCode', validatorRules.postCode]" />
+              </a-form-item>
+            </a-col>
+          </a-row>
+          <a-row>
+            <a-col :span="12">
+              <a-form-item
+                :labelCol="labelCol"
+                :wrapperCol="wrapperCol"
+                label="件数"
+                label-width="4">
+                <a-input placeholder="请输入件数" v-decorator="[ 'number', validatorRules.number]" />
+              </a-form-item>
+            </a-col>
+            <a-col :span="12">
+              <a-form-item
+                :labelCol="labelCol"
+                :wrapperCol="wrapperCol"
+                label="总重量"
+                label-width="4">
+                <a-input placeholder="请输入总重量" v-decorator="[ 'totalWeight', validatorRules.totalWeight]" />
+              </a-form-item>
+            </a-col>
+          </a-row>
+          <a-row>
+            <a-col :span="12">
+              <a-form-item
+                :labelCol="labelCol"
+                :wrapperCol="wrapperCol"
+                label="保价"
+                label-width="4">
+                <a-input placeholder="请输入保价" v-decorator="[ 'insurance', validatorRules.insurance]" />
+              </a-form-item>
+            </a-col>
+            <a-col :span="12">
+              <a-form-item
+                :labelCol="labelCol"
+                :wrapperCol="wrapperCol"
+                label="费用总计"
+                label-width="4">
+                <a-input placeholder="请输入费用总计" v-decorator="[ 'totalCharge', validatorRules.totalCharge]" />
+              </a-form-item>
+            </a-col>
+          </a-row>
+          <a-row>
+            <a-col :md="24" :sm="24">
+              <a-form-item
+                :labelCol="hlabelCol"
+                :wrapperCol="hwrapperCol"
+                label="收货地址">
+                <a-select v-decorator="['cdiProvince', {}]" placeholder="省" style="width: 15%" @change="areaChangeCdi" >
+                  <a-select-option value="">请选择</a-select-option>
+                  <a-select-option v-for="(item, key) in provinceList" :key="key" :value="item.id">
+                    <span style="display: inline-block;width: 100%" :title=" item.name || item.code ">
+                      {{ item.name || item.code }}
+                    </span>
+                  </a-select-option>
+                </a-select>
+                <a-select v-decorator="['cdiCity', {}]" placeholder="市" style="width: 15%" @change="areaChangeCdi" >
+                  <a-select-option value="">请选择</a-select-option>
+                  <a-select-option v-for="(item, key) in cityList" :key="key" :value="item.id">
+                    <span style="display: inline-block;width: 100%" :title=" item.name || item.code ">
+                      {{ item.name || item.code }}
+                    </span>
+                  </a-select-option>
+                </a-select>
+                <a-select v-decorator="['cdiDistrict', {}]" placeholder="区、县" style="width: 15%">
+                  <a-select-option value="">请选择</a-select-option>
+                  <a-select-option v-for="(item, key) in districtList" :key="key" :value="item.id">
+                    <span style="display: inline-block;width: 100%" :title=" item.name || item.code ">
+                      {{ item.name || item.code }}
+                    </span>
+                  </a-select-option>
+                </a-select>
+                <a-input placeholder="请输入详细地址" v-decorator="[ 'cdiAddress', validatorRules.cdiAddress]" style="width: 55%"  />
+              </a-form-item>
+            </a-col>
+          </a-row>
+          <a-row>
+            <a-col :span="24">
+              <a-form-item label="发货地址" :labelCol="hlabelCol" :wrapperCol="hwrapperCol">
+                <a-input v-decorator="[ 'cdiDeliveryAddress', {}]" placeholder="请输入发货地址"></a-input>
+              </a-form-item>
+            </a-col>
+          </a-row>
           <a-row>
             <a-col :span="24">
               <a-form-item label="备注" :labelCol="hlabelCol" :wrapperCol="hwrapperCol">
@@ -59,8 +198,8 @@
                     <a-card>
                         <form :autoFormCreate="(form) => this.form = form">
                             <a-table :columns="columns" :dataSource="tabledata" :pagination="false" rowKey="id" ref="mtltable">
-                                <template v-for="(col, i) in ['mtlId', 'quantity', 'unitId','newMtlId', 'newQuantity', 'newUnitId','content', 'action']" :slot="col" clearable slot-scope="text, record, index">
-                                    <a-select :style="['mtlId', 'newMtlId'].indexOf(columns[i].dataIndex) > -1 ? 'width: 250px;' : ''" v-if="['mtlId',, 'newMtlId', 'unitId', 'newUnitId'].indexOf(columns[i].dataIndex) > -1" v-decorator="[record[columns[i].dataIndex], {}]" showSearch
+                                <template v-for="(col, i) in ['mtlId', 'quantity', 'unitId','content', 'action']" :slot="col" clearable slot-scope="text, record, index">
+                                    <a-select :style="['mtlId'].indexOf(columns[i].dataIndex) > -1 ? 'width: 250px;' : ''" v-if="['mtlId', 'unitId'].indexOf(columns[i].dataIndex) > -1" v-decorator="[record[columns[i].dataIndex], {}]" showSearch
                                               optionFilterProp="children" notFoundContent="无法找到，输入关键词回车[Enter]搜索试试" @keyup.enter.native="e => searchData(e, col, record.key)"
                                               @change="e => handleChange(e, record.key, col)" :placeholder="'请选择'+columns[i].title" :value="record[columns[i].dataIndex]" ref="sel">
                                         <a-select-option value="">请选择</a-select-option>
@@ -135,16 +274,17 @@ import JDate from '@/components/jeecg/JDate'
 import JDictSelectTag from '@/components/dict/JDictSelectTag'
 import FooterToolBar from '@/components/tools/FooterToolBar'
 import {
-    searchCustomer,
+    getAreaList,
+    getBillTypeList,
     ajaxGetDictItems,
-    getWarehouseList,
+    getLogisticsCompanyList,
     searchMaterial,
     getMaterialUnitList,
-    getChangeOrderOne,
-    changeOrderDtlDelete
+    getLogisticsOrderOne,
+    logisticsOrderDtlDelete
 } from '@/api/api'
 export default {
-    name: 'ChangeOrderModal',
+    name: 'LogisticsOrderModal',
     components: {
         JDate,
         FooterToolBar,
@@ -153,7 +293,11 @@ export default {
     data() {
         return {
             dateFormat:"YYYY-MM-DD HH:mm:ss",
-            customerList:[],
+            billTypeList: [],
+            provinceList: [],
+            cityList: [],
+            districtList:[],
+            cdiLogisticsCompanyList:[],
             hasaddmain: false,
             form: this.$form.createForm(this),
             title: '操作',
@@ -198,8 +342,8 @@ export default {
                 states: {}
             },
             url: {
-                add: '/changeOrder/add',
-                edit: '/changeOrder/edit'
+                add: '/logisticsOrder/add',
+                edit: '/logisticsOrder/edit'
             },
             dictOptions: {
                 vendorId: [],
@@ -235,33 +379,6 @@ export default {
                   }
                 },
                 {
-                  title: '新产品', //顺序不要调整，getMaterialList中有用
-                  dataIndex: 'newMtlId',
-                  key: 'newMtlId',
-                  width: '20%',
-                  scopedSlots: {
-                    customRender: 'newMtlId'
-                  }
-                },
-                {
-                  title: '数量',
-                  dataIndex: 'newQuantity',
-                  key: 'newQuantity',
-                  width: '10%',
-                  scopedSlots: {
-                    customRender: 'newQuantity'
-                  }
-                },
-                {
-                    title: '单位', //顺序不要调整，getMaterialUnitList中有用
-                    dataIndex: 'newUnitId',
-                    key: 'newUnitId',
-                    width: '10%',
-                    scopedSlots: {
-                        customRender: 'newUnitId'
-                    }
-                },
-                {
                     title: '备注',
                     dataIndex: 'content',
                     key: 'content',
@@ -293,16 +410,9 @@ export default {
     },
     methods: {
         moment,
-        searchCustomer (e) {
-          searchCustomer({"keyword":e.target.valueOf().value}).then((res) => {
-            if (res.success) {
-              this.customerList = res.result;
-            }
-          })
-        },
         add() {
             if(this.$route.params.id){
-                getChangeOrderOne({"id":this.$route.params.id}).then((res)=>{
+                getLogisticsOrderOne({"id":this.$route.params.id}).then((res)=>{
                     if (res.result) {
                         if(res.result.detaillist){
                             this.tabledata = res.result.detaillist;
@@ -321,9 +431,33 @@ export default {
             this.form.resetFields()
             this.model = Object.assign({}, record)
             this.visible = true
+            if (record.cdiProvince){
+              getAreaList({parentId:record.cdiProvince  }).then((res) => {
+                if (res.success) {
+                  if(res.result && res.result.length>0){
+                    if(res.result[0].levelType==2){
+                      this.cityList = res.result;
+                    }
+                  }
+                }
+              })
+            }
+            if (record.cdiCity){
+              getAreaList({parentId:record.cdiCity}).then((res) => {
+                if (res.success) {
+                  if(res.result && res.result.length>0){
+                    if(res.result[0].levelType==3){
+                      this.districtList = res.result;
+                    }
+                  }
+                }
+              })
+            }
             this.$nextTick(() => {
                 this.form.setFieldsValue(
-                    pick(this.model, 'id', 'code', 'sourceCode', 'content', 'warehouseId', 'customerId', 'sourceId')
+                    pick(this.model, 'id', 'code', 'sourceCode', 'content', 'sourceBillType', 'cdiDefaultType', 'sourceId', 'cdiLogisticsId',
+                    'cdiRecipients', 'cdiRecipientsPhone', 'cdiLogisticsNo', 'postCode', 'number', 'totalWeight', 'insurance', 'totalCharge',
+                    'cdiProvince', 'cdiCity', 'cdiDistrict', 'cdiAddress', 'cdiDeliveryAddress', 'content')
                 )
                 this.form.setFieldsValue({billDate: this.model.billDate ? moment(this.model.billDate) : null})
             })
@@ -372,7 +506,7 @@ export default {
                           that.confirmLoading = false
                           that.close()
                           that.$parent.closeRouteViewTab(this.$route.path)
-                          that.$router.push({ path:'/changeorder/changeOrder' });
+                          that.$router.push({ path:'/logistics/LogisticsOrderList' });
                       })
               }
           })
@@ -381,9 +515,12 @@ export default {
             this.close()
         },
         popupCallback(row) {
-            this.form.setFieldsValue(
-                pick(row, 'id', 'code', 'sourceCode', 'content', 'warehouseId', 'customerId', 'sourceId')
-            )
+          this.form.setFieldsValue(
+            pick(this.model, 'id', 'code', 'sourceCode', 'content', 'sourceBillType', 'cdiDefaultType', 'sourceId', 'cdiLogisticsId',
+              'cdiRecipients', 'cdiRecipientsPhone', 'cdiLogisticsNo', 'postCode', 'number', 'totalWeight', 'insurance', 'totalCharge',
+              'cdiProvince', 'cdiCity', 'cdiDistrict', 'cdiAddress', 'cdiDeliveryAddress', 'content')
+          )
+          this.form.setFieldsValue({billDate: this.model.billDate ? moment(this.model.billDate) : null})
         },
         newMember() {
             this.tabledata.push({
@@ -415,7 +552,7 @@ export default {
             const newData = this.tabledata.filter(item => item.key !== key)
             this.tabledata = newData;
             if(id){
-                changeOrderDtlDelete({"id" : id}).then((res) => {
+                logisticsOrderDtlDelete({"id" : id}).then((res) => {
                     if (res.success) {
                     }
                 });
@@ -430,7 +567,7 @@ export default {
             // console.log(this.$route.matched);
             this.$route.matched.splice(this.$route.matched.length-1 ,1);
             this.$parent.closeRouteViewTab(this.$route.fullPath)
-            this.$router.replace({ path:'/changeorder/ChangeOrderList' });
+            this.$router.replace({ path:'/logistics/LogisticsOrderList' });
         },
         searchData(e, col, key) {
           if (col === 'mtlId') {
@@ -453,50 +590,48 @@ export default {
                 // this.$set(this.dictOptions, 'materiallist', res.result)
               }
             });
-          } else if (col === 'newMtlId') {
-            const that = this;
-            searchMaterial({"keyword":e.target.valueOf().value}).then((res) => {
-              if (res.success) {
-                if (res.result && res.result.length > 0) {
-                  res.result.forEach(function (option) {
-                    option.value = option.id;
-                    option.text = option.name;
-                  })
-                }
-                that.columns[3].list = res.result;
-                that.$set(that.dictOptions, 3, that.columns[3])
-
-                const newData = [...this.tabledata]
-                const target = newData.filter(item => key === item.key)[0]
-                target.editable = true
-                that.tabledata = newData;
-                // this.$set(this.dictOptions, 'materiallist', res.result)
-              }
-            });
           }
+        },
+        areaChangeCdi(val) {
+          getAreaList({parentId:val}).then((res) => {
+            if (res.success) {
+              if(res.result && res.result.length>0){
+                if(res.result[0].levelType==2){
+                  this.cityList = res.result;
+                  this.model.cdiCity = '';
+                  this.model.cdiDistrict = '';
+                  this.$nextTick(() => {
+                    this.form.setFieldsValue(pick(this.model,'cdiCity', 'cdiDistrict'))
+                  });
+                }else if(res.result[0].levelType==3){
+                  this.districtList = res.result;
+                  this.model.cdiDistrict = '';
+                  this.$nextTick(() => {
+                    this.form.setFieldsValue(pick(this.model, 'cdiDistrict'))
+                  });
+                }
+              }
+            }
+          })
         }
     },
     mounted() {
       if (this.$route.query.unEditable === false) {
         this.unEditable = this.$route.query.unEditable;
       }
-      searchCustomer({}).then((res) => {
+      getBillTypeList().then((res) => {
         if (res.success) {
-          this.customerList = res.result;
+          this.billTypeList = res.result;
         }
       })
-      //仓库
-      getWarehouseList('').then((res) => {
+      // 物流公司
+      getLogisticsCompanyList({}).then((res) => {
         if (res.success) {
-          if (res.result && res.result.length > 0) {
-            res.result.forEach(function (option) {
-              option.value = option.id;
-              option.text = option.name;
-            })
+          if(res.result && res.result.length>0){
+            this.cdiLogisticsCompanyList = res.result;
           }
-          this.$set(this.dictOptions, 'warehouse', res.result)
         }
-      });
+      })
       //产品
       searchMaterial('').then((res) => {
         if (res.success) {
@@ -527,6 +662,11 @@ export default {
           this.$set(this.dictOptions, 2, this.columns[2])
           this.$set(this.dictOptions, 5, this.columns[5])
           // this.$set(this.dictOptions, 'materialunitlist', res.result)
+        }
+      });
+      getAreaList({parentId:'100000'}).then((res) => {
+        if (res.success) {
+          this.provinceList = res.result
         }
       });
     }

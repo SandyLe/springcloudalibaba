@@ -242,10 +242,10 @@
         </a-card>
         <a-card class="card" title="收货信息" :bordered="true">
           <a-row>
-            <a-col :md="24" :sm="24">
+            <a-col :md="8" :sm="8">
               <a-form-item
-                :labelCol="hlabelCol"
-                :wrapperCol="hwrapperCol"
+                :labelCol="labelCol"
+                :wrapperCol="wrapperCol"
                 label="默认收货方式"
                 label-width="4">
                 <a-input style="display: none" v-decorator="[ 'cdiId', validatorRules.cdiId]" />
@@ -390,7 +390,7 @@
                   :wrapperCol="wrapperCol"
                   label="物流"
                   label-width="4">
-                  <a-select v-decorator="['cdiLogistics', {}]" placeholder="物流">
+                  <a-select v-decorator="['cdiLogisticsId', {}]" placeholder="物流">
                     <a-select-option value="">请选择</a-select-option>
                     <a-select-option v-for="(item, key) in cdiLogisticsCompanyList" :key="key" :value="item.id">
                     <span style="display: inline-block;width: 100%" :title=" item.name || item.code ">
@@ -569,6 +569,13 @@
             this.sourceList = res.result;
           }
         })
+        getLogisticsCompanyList({}).then((res) => {
+          if (res.success) {
+            if(res.result && res.result.length>0){
+              this.cdiLogisticsCompanyList = res.result;
+            }
+          }
+        })
         getAreaList({parentId:'100000'}).then((res) => {
           if (res.success) {
             this.provinceList = res.result
@@ -624,7 +631,7 @@
                 that.model.cdiCity = res.result.cdiCity;
                 that.model.cdiDistrict = res.result.cdiDistrict;
                 that.model.cdiAddress = res.result.cdiAddress;
-                that.model.cdiLogistics = res.result.cdiLogistics;
+                that.model.cdiLogisticsId = res.result.cdiLogisticsId;
                 that.model.cdiBranch = res.result.cdiBranch;
                 that.model.cdiTel = res.result.cdiTel;
                 that.model.cdiCarLicense = res.result.cdiCarLicense;
@@ -653,16 +660,9 @@
                     }
                   })
                 }
-                getLogisticsCompanyList({}).then((res) => {
-                  if (res.success) {
-                    if(res.result && res.result.length>0){
-                      this.cdiLogisticsCompanyList = res.result;
-                    }
-                  }
-                })
                 this.$nextTick(() => {
                   this.form.setFieldsValue(pick(that.model,'cdiDefaultType','cdiDescription','cdiLinkman','cdiPhone','cdiDeliveryAddress','cdiCarLicense',
-                    'cdiRecipients','cdiRecipientsPhone','cdiProvince','cdiCity','cdiDistrict','cdiAddress','cdiLogistics','cdiBranch','cdiTel','cdiId'));
+                    'cdiRecipients','cdiRecipientsPhone','cdiProvince','cdiCity','cdiDistrict','cdiAddress','cdiLogisticsId','cdiBranch','cdiTel','cdiId'));
                 });
               }
             }
