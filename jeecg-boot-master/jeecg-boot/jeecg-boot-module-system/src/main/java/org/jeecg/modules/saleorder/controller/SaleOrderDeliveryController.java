@@ -65,7 +65,7 @@ public class SaleOrderDeliveryController {
     @AutoLog(value = "添加销售订单发货信息")
     @ApiOperation(value = "添加销售订单发货信息", notes = "添加销售订单发货信息")
     public Result<?> add(@RequestBody SaleOrderDeliveryInfo saleOrderDeliveryInfo) {
-        saleOrderDeliveryInfoService.save(saleOrderDeliveryInfo);
+        saleOrderDeliveryInfoService.saveSaleOrderDelivery(saleOrderDeliveryInfo);
         return Result.ok(saleOrderDeliveryInfo.getId());
     }
     /**
@@ -93,9 +93,9 @@ public class SaleOrderDeliveryController {
     public Result<?> getBySourceId(@RequestParam(name = "sourceId", required = true) String sourceId) {
         LambdaQueryWrapper<SaleOrderDeliveryInfo> queryWrapper = new LambdaQueryWrapper<SaleOrderDeliveryInfo>().eq(SaleOrderDeliveryInfo::getSourceId, sourceId);
         SaleOrderDeliveryInfo saleOrderDeliveryInfo = saleOrderDeliveryInfoService.getOne(queryWrapper);
-        if (StringUtils.isNotBlank(saleOrderDeliveryInfo.getCdiLogistics())) {
-            LogisticsCompany logisticsCompany = logisticsCompanyService.getById(saleOrderDeliveryInfo.getCdiLogistics());
-            saleOrderDeliveryInfo.setCdiLogistics(null != logisticsCompany ? logisticsCompany.getName() : null);
+        if (StringUtils.isNotBlank(saleOrderDeliveryInfo.getCdiLogisticsId())) {
+            LogisticsCompany logisticsCompany = logisticsCompanyService.getById(saleOrderDeliveryInfo.getCdiLogisticsId());
+            saleOrderDeliveryInfo.setCdiLogisticsId(null != logisticsCompany ? logisticsCompany.getName() : null);
         }
         if (StringUtils.isNotBlank(saleOrderDeliveryInfo.getCdiProvince())) {
             Area area = areaService.getById(saleOrderDeliveryInfo.getCdiProvince());

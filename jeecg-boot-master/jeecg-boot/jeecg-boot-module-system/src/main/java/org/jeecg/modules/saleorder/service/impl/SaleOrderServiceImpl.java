@@ -67,6 +67,6 @@ public class SaleOrderServiceImpl extends ServiceImpl<SaleOrderMapper, SaleOrder
         inventoryOutService.saveToInventoryOut(inventoryOut);
         // 更新销售订单信息
         updateById(saleOrder);
-        saleOrderDeliveryInfoService.saveOrUpdate(cdi);
+        saleOrderDeliveryInfoService.saveSaleOrderDelivery(cdi);
     }
 }

@@ -223,8 +223,8 @@ public class CustomerController {
         CustomerDeliveryInfo result = customerDeliveryInfoService.getOne(QueryGenerator.initQueryWrapper(info, req.getParameterMap()));
         result.setCdiDefaultTypeName(iSysDictService.queryDictTextByKey("delivery_type", result.getCdiDefaultType()));
         result.setCdiFullAddress(getFullAddress(result.getCdiProvince(), result.getCdiCity(), result.getCdiDistrict(), result.getCdiAddress()));
-        if (StringUtils.isNotBlank(result.getCdiLogistics())){
-            LogisticsCompany lc = logisticsCompanyService.getById(result.getCdiLogistics());
+        if (StringUtils.isNotBlank(result.getCdiLogisticsId())){
+            LogisticsCompany lc = logisticsCompanyService.getById(result.getCdiLogisticsId());
             result.setCdiLogisticsName(lc.getName());
         }
         return Result.ok(result);
