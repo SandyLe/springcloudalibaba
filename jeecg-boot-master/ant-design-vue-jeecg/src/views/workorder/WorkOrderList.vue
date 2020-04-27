@@ -108,11 +108,6 @@
             </template>
 
             <span slot="action" slot-scope="text, record">
-                <a v-if="record.inventoryin!=null&&record.inventoryin.billStatus==1" @click="handleinventoryout(record)" :data-id="record.id">退货</a>
-                <a-divider type="vertical" v-if="record.inventoryin!=null&&record.inventoryin.billStatus==1"/>
-
-                <a v-if="record.inventoryin!=null" @click="handleinventoryin(record.inventoryin)" :data-id="record.id">入库单</a>
-                <a-divider type="vertical" v-if="record.inventoryin!=null"/>
 
                 <a v-if="record.billStatus<11" @click="diyhandleEdit" :data-id="record.id">编辑</a>
                 <a-divider type="vertical" v-if="!(record.inventoryin!=null&&record.inventoryin.billStatus==1)"/>
@@ -124,6 +119,16 @@
                         <a-menu-item>
                             <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
                                 <a>删除</a>
+                            </a-popconfirm>
+                        </a-menu-item>
+                        <a-menu-item v-if="record.billStatus == 15">
+                            <a-popconfirm title="确定开始工单吗?" @confirm="() => handleStatus(record, 16)">
+                                <a>开始</a>
+                            </a-popconfirm>
+                        </a-menu-item>
+                        <a-menu-item v-if="record.billStatus == 16">
+                            <a-popconfirm title="确定报完工吗?" @confirm="() => handleStatus(record, 17)">
+                                <a>完工</a>
                             </a-popconfirm>
                         </a-menu-item>
                     </a-menu>
@@ -144,7 +149,7 @@ import InventoryOutModal from '../inventory/InventoryOutModal'
 import JDictSelectTag from '@/components/dict/JDictSelectTag.vue'
 import { filterMultiDictText } from '@/components/dict/JDictSelectUtil'
 import JDate from '@/components/jeecg/JDate.vue'
-import { getVendorList, ajaxGetDictItems, getWarehouseList } from '@/api/api'
+import { getVendorList, ajaxGetDictItems, getWarehouseList, updateWorkOrderStatus } from '@/api/api'
 
 export default {
     name: "WorkOrderList",
@@ -312,6 +317,19 @@ export default {
 
             that.$refs.inventoryOutmodalForm.edit(model);
             that.$refs.inventoryOutmodalForm.disableSubmit = true;
+        },
+        handleStatus(record, status){
+          record.billStatus = status;
+          updateWorkOrderStatus(record).then((res)=>{
+            if(res.success){
+              this.$message.success(res.message);
+              this.$emit('ok');
+            }else{
+              this.$message.warning(res.message);
+            }
+          }).finally(() => {
+            this.loadData();
+          })
         }
     },
     created() {

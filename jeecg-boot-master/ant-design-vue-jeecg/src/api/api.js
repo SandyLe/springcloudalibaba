@@ -228,6 +228,7 @@ const teardownDtlDelete = (params)=>deleteAction("/teardownDtl/delete",params)
 // 工单
 const getWorkOrderOne = (params)=>getAction("/workOrder/getOne",params)
 const workOrderDtlDelete = (params)=>deleteAction("/workOrderDtl/delete",params)
+const updateWorkOrderStatus = (params)=>putAction("/workOrder/updateStatus",params);
 
 // 维修单
 const addRepair = (params)=>postAction("/repairOrder/add", params)
@@ -402,6 +403,7 @@ export {
   teardownDtlDelete,
   getWorkOrderOne,
   workOrderDtlDelete,
+  updateWorkOrderStatus,
   addRepair,
   editRepair,
   getRepairOne,

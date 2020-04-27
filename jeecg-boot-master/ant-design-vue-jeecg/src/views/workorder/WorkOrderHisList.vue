@@ -228,7 +228,7 @@ export default {
                 }
             ],
             url: {
-                list: "/workOrder/getPage?billStatus=6",
+                list: "/workOrder/getPage?billStatus=17",
                 delete: "/workOrder/delete",
                 deleteBatch: "/workOrder/deleteBatch",
                 exportXlsUrl: "/workOrder/exportXls",
