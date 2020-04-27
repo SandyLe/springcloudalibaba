@@ -48,18 +48,24 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     @Override
     @Transactional
     public String saveOrder(WorkOrderDto workOrderdto){
-        // 组装主表
+        // 工单主表
         String code = billCodeBuilderService.getBillCode(BillType.WORKORDER.getId());
         workOrderdto.setCode(code);
-        workOrderdto.setBillStatus(BillStatus.NEW.getId());
+        if (null == workOrderdto.getBillStatus()) {
+            if (StringUtils.isNotBlank(workOrderdto.getOperateUserId())) {
+                workOrderdto.setBillStatus(BillStatus.ARRANGED.getId());
+            } else {
+                workOrderdto.setBillStatus(BillStatus.NEW.getId());
+            }
+        }
         workOrderdto.setRowSts(RowSts.EFFECTIVE.getId());
         super.save(workOrderdto);
 
-        //组装单子表
+        //工单单子表
         if (CollectionUtils.isNotEmpty(workOrderdto.getDetaillist())){
             List<WorkOrderDtl> mtls = workOrderdto.getDetaillist().stream().filter(o-> StringUtils.isNotBlank(o.getMtlId())).collect(Collectors.toList());
             mtls.stream().forEach(o->{
-                //组装商品详情
+                //工单商品详情
                 o.setCode(code);
                 o.setSourceId(workOrderdto.getId());
             });
@@ -79,11 +85,11 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     @Transactional
     public String editOrder(WorkOrderDto workOrderdto){
 
-        // 组装主表
+        // 工单主表
         super.updateById(workOrderdto);
         if (workOrderdto.getDetaillist().size() > 0){
             for (WorkOrderDtl item: workOrderdto.getDetaillist()){
-                //组装商品详情
+                //工单配件详情
                 if (item.getId() != null && item.getId().length() > 0)
                     workOrderDtlService.updateById(item);
                 else{

@@ -16,7 +16,10 @@ public enum BillStatus implements AbstractEnum {
     PARTICIALSTOCKIN(11, "部分入库"),
     ALLSTOCKINED(12, "已入库"),
     REFUND(13, "已退款"),
-    TOSTOCKOUT(14, "待出库");
+    TOSTOCKOUT(14, "待出库"),
+    ARRANGED(15, "已派单"),
+    UNDERCONSTRUCTION(16, "施工中"),
+    FINISHED(17, "已完工");
 
     private Integer id;
     private String name;

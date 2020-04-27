@@ -50,10 +50,10 @@ public class WorkOrderController extends JeecgController<WorkOrder, WorkOrderSer
             workOrder.setBillStatus(null);
         }
         QueryWrapper<WorkOrder> queryWrapper = QueryGenerator.initQueryWrapper(workOrder, req.getParameterMap());
-        if (billStatus == BillStatus.DOWN.getId()) {
+        if (billStatus == BillStatus.FINISHED.getId()) {
             queryWrapper.eq("bill_status", billStatus);
         } else {
-            queryWrapper.ne("bill_status", BillStatus.DOWN.getId());
+            queryWrapper.ne("bill_status", BillStatus.FINISHED.getId());
         }
         Page<WorkOrder> page = new Page<>(pageNo, pageSize);
         IPage<WorkOrder> pageList = workOrderService.page(page, queryWrapper);
@@ -136,4 +136,14 @@ public class WorkOrderController extends JeecgController<WorkOrder, WorkOrderSer
     public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response) {
         return super.importExcel(request, response, WorkOrder.class);
     }
+
+    @PutMapping("/updateStatus")
+    public Result<?> updateStatus(@RequestBody WorkOrderDto workOrderdto) {
+
+        WorkOrder workOrder = workOrderService.getById(workOrderdto.getId());
+        workOrder.setBillStatus(workOrderdto.getBillStatus());
+        workOrderService.updateById(workOrderdto);
+        return Result.ok("操作成功！");
+    }
+
 }
