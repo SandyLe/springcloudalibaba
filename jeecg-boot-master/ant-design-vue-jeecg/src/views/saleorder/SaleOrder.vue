@@ -229,6 +229,7 @@
             this.$message.warning(res.message);
           }
         }).finally(() => {
+          this.loadData();
         })
       },
       addWorkOrder (record) {

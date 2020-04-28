@@ -136,7 +136,7 @@
             :wrapperCol="{span: 19}"
             class="stepFormText"
           >
-            <j-dict-select-tag v-decorator="['receiptType', {}]" @change="deliveryChange" placeholder="请选择退款方式" :type="'select'" :triggerChange="true" dictCode="receipt_type"/>
+            <j-dict-select-tag v-decorator="['receiptType', {}]" placeholder="请选择退款方式" :type="'select'" :triggerChange="true" dictCode="receipt_type"/>
           </a-form-item>
 
           <a-form-item
