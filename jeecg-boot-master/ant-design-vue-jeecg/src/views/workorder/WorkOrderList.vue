@@ -4,17 +4,13 @@
     <div class="table-page-search-wrapper">
         <a-form layout="inline" @keyup.enter.native="searchQuery">
             <a-row :gutter="24">
-                <a-col :md="6" :sm="8">
-                    <a-form-item label="原单编号">
-                        <a-select v-model="queryParam.vendorId" placeholder="请输入供应商">
-                            <a-select-option value="">请选择</a-select-option>
-                            <a-select-option v-for="(item, key) in dictOptions.vendorId" :key="key" :value="item.id">
-                                {{ item.name }}
-                            </a-select-option>
-                        </a-select>
-                    </a-form-item>
+                <a-col :md="6" :sm="12">
+                  <a-form-item label="原单编号">
+                    <!--<a-input placeholder="请输入账号查询" v-model="queryParam.username"></a-input>-->
+                    <j-input placeholder="输入单号模糊查询" v-model="queryParam.sourceCode"></j-input>
+                  </a-form-item>
                 </a-col>
-                <a-col :md="12" :sm="16">
+                <a-col :md="8" :sm="8">
                     <a-form-item label="仓库">
                         <a-select v-model="queryParam.warehouseId" placeholder="请输入仓库">
                             <a-select-option value="">请选择</a-select-option>
@@ -52,10 +48,10 @@
     <!-- 操作按钮区域 -->
     <div class="table-operator">
         <a-button @click="diyhandleEdit" type="primary" icon="plus">新增</a-button>
-        <a-button type="primary" icon="download" @click="handleExportXls('采购列表')">导出</a-button>
+        <!--<a-button type="primary" icon="download" @click="handleExportXls('采购列表')">导出</a-button>
         <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
             <a-button type="primary" icon="import">导入</a-button>
-        </a-upload>
+        </a-upload>-->
         <a-dropdown v-if="selectedRowKeys.length > 0">
             <a-menu slot="overlay">
                 <a-menu-item key="1" @click="batchDel">
@@ -145,6 +141,7 @@
 <script>
 import { JeecgListMixin } from '@/mixins/JeecgListMixin'
 import InventoryModal from '../inventory/InventoryInModal'
+import JInput from '@/components/jeecg/JInput'
 import InventoryOutModal from '../inventory/InventoryOutModal'
 import JDictSelectTag from '@/components/dict/JDictSelectTag.vue'
 import { filterMultiDictText } from '@/components/dict/JDictSelectUtil'
@@ -155,6 +152,7 @@ export default {
     name: "WorkOrderList",
     mixins: [JeecgListMixin],
     components: {
+        JInput,
         JDictSelectTag,
         JDate,
         InventoryModal,
@@ -296,7 +294,6 @@ export default {
         },
         goSourceDetail(billType, id) {
           if (billType == 0 ){
-            debugger
             this.$router.push({ name: "saleorder-saleOrderEdit", query: {"id": id, "unEditable": true}})
           }
         },

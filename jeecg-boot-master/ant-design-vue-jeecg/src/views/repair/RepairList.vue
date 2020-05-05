@@ -7,13 +7,13 @@
         <a-row :gutter="24">
 
           <a-col :md="6" :sm="12">
-            <a-form-item label="名称">
-              <j-input placeholder="输入原单编号查询" v-model="queryParam.name"></j-input>
+            <a-form-item label="原单编号">
+              <j-input placeholder="输入原单编号查询" v-model="queryParam.sourceCode"></j-input>
             </a-form-item>
           </a-col>
 
           <a-col :md="6" :sm="12">
-            <a-form-item label="代码">
+            <a-form-item label="编号">
               <j-input placeholder="输入单号模糊查询" v-model="queryParam.code"></j-input>
             </a-form-item>
           </a-col>

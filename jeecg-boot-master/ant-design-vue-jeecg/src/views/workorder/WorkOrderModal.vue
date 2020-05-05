@@ -5,7 +5,7 @@
             <a-row>
               <a-col :span="12">
                 <a-form-item label="原单类型" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <a-select v-decorator="['sourceBillType', {}]" placeholder="原单类型">
+                  <a-select v-decorator="['sourceBillType', validatorRules.sourceBillType]" placeholder="原单类型">
                     <a-select-option v-for="(item, key) in billTypeList" :key="key" :value="item.id">
                       {{ item.name }}
                     </a-select-option>
@@ -14,7 +14,7 @@
               </a-col>
               <a-col :span="12">
                 <a-form-item label="原单编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <a-input v-decorator="[ 'sourceCode', {}]" placeholder="请输入原单编号" />
+                  <a-input v-decorator="[ 'sourceCode', validatorRules.sourceCode]" placeholder="请输入原单编号" />
                   <a-input v-decorator="[ 'sourceId', {}]" placeholder="原单ID" type="hidden" />
                 </a-form-item>
               </a-col>
@@ -205,16 +205,16 @@ export default {
             },
             confirmLoading: false,
             validatorRules: {
-                vendorId: {},
-                businessDate: {
-                    rules: [{
-                        required: true,
-                        message: '请输入业务时间!'
-                    }]
-                },
-                amount: {},
-                description: {},
-                states: {}
+              sourceCode: {
+                rules: [
+                  {required: true, message: '请输入原单编号!'}
+                ]
+              },
+              sourceBillType: {
+                rules: [
+                  {required: true, message: '请输入原单类型!'}
+                ]
+              }
             },
             url: {
                 add: '/workOrder/add',

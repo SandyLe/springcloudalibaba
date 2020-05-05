@@ -15,7 +15,7 @@
         <a-row>
           <a-col :md="12" :sm="12">
             <a-form-item label="原单编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'sourceCode', {}]" placeholder="请输入原单编号" />
+              <a-input v-decorator="[ 'sourceCode', validatorRules.sourceCode]" placeholder="请输入原单编号" />
               <a-input v-decorator="[ 'sourceId', {}]" placeholder="原单ID" type="hidden" />
             </a-form-item>
           </a-col>
@@ -31,7 +31,7 @@
         <a-row>
           <a-col :md="12" :sm="12">
             <a-form-item label="客户" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-select v-decorator="['customerId', {}]" placeholder="请选择客户"  showSearch
+              <a-select v-decorator="['customerId', validatorRules.customerId]" placeholder="请选择客户"  showSearch
                         optionFilterProp="children"
                         notFoundContent="无法找到，输入名称、编号、手机号回车搜索" @keyup.enter.native="searchCustomer"
                         :disabled="unEditable" >
@@ -111,9 +111,14 @@
         model: {},
         form: this.$form.createForm(this),
         validatorRules: {
-          name: {
+          sourceCode: {
             rules: [
-              { min: 0, max: 126, message: '长度不超过 126 个字符', trigger: 'blur' }
+              {required: true, message: '请输入原单编号!'}
+            ]
+          },
+          customerId: {
+            rules: [
+              {required: true, message: '请选择客户!'}
             ]
           }
         }

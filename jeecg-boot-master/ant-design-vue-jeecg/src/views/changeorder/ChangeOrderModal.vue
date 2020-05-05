@@ -5,7 +5,7 @@
             <a-row>
                 <a-col :span="12">
                     <a-form-item label="原单编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                      <a-input v-decorator="[ 'sourceCode', {}]" placeholder="请输入原单编号" />
+                      <a-input v-decorator="[ 'sourceCode', validatorRules.sourceCode]" placeholder="请输入原单编号" />
                     </a-form-item>
                 </a-col>
                 <a-col :span="12">
@@ -17,7 +17,7 @@
             <a-row>
               <a-col :span="12">
                 <a-form-item label="客户" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <a-select v-decorator="['customerId', {}]" placeholder="请选择客户"  showSearch
+                  <a-select v-decorator="['customerId', validatorRules.customerId]" placeholder="请选择客户"  showSearch
                             optionFilterProp="children"
                             notFoundContent="无法找到，输入名称、编号、手机号回车搜索" @keyup.enter.native="searchCustomer" >
                     <a-select-option value="">请选择</a-select-option>
@@ -186,16 +186,16 @@ export default {
             },
             confirmLoading: false,
             validatorRules: {
-                vendorId: {},
-                businessDate: {
-                    rules: [{
-                        required: true,
-                        message: '请输入业务时间!'
-                    }]
-                },
-                amount: {},
-                description: {},
-                states: {}
+              sourceCode: {
+                rules: [
+                  {required: true, message: '请输入原单编号!'}
+                ]
+              },
+              customerId: {
+                rules: [
+                  {required: true, message: '请选择客户!'}
+                ]
+              }
             },
             url: {
                 add: '/changeOrder/add',

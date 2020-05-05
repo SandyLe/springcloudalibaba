@@ -10,35 +10,34 @@
                     <j-input placeholder="输入单号模糊查询" v-model="queryParam.code"></j-input>
                   </a-form-item>
                 </a-col>
-                <a-col :md="12" :sm="16">
-                  <a-form-item label="客户">
-                    <a-select style="" v-model="queryParam.customerId" placeholder="请选择客户"  showSearch
-                              optionFilterProp="children"
-                              notFoundContent="无法找到，输入名称、编号、手机号回车搜索" @keyup.enter.native="searchCustomer" >
-                      <a-select-option value="">请选择</a-select-option>
-                      <a-select-option v-for="(item, key) in customerList" :key="key" :value="item.id">
-                        {{ item.info }}
-                      </a-select-option>
-                    </a-select>
+                <a-col :md="6" :sm="8">
+                  <a-form-item label="原单单号">
+                    <!--<a-input placeholder="请输入账号查询" v-model="queryParam.username"></a-input>-->
+                    <j-input placeholder="输入原单单号模糊查询" v-model="queryParam.sourceCode"></j-input>
                   </a-form-item>
                 </a-col>
-                <!--<template v-if="toggleSearchStatus">
-                    <a-col :md="12" :sm="16">
-                        <a-form-item label="业务时间">
-                            <j-date placeholder="请选择开始日期" class="query-group-cust" v-model="queryParam.billdate_begin"></j-date>
-                            <span class="query-group-split-cust"></span>
-                            <j-date placeholder="请选择结束日期" class="query-group-cust" v-model="queryParam.billdate_end"></j-date>
-                        </a-form-item>
-                    </a-col>
-                </template>-->
+                <template v-if="toggleSearchStatus">
+                  <a-col :md="8" :sm="16">
+                    <a-form-item label="客户">
+                      <a-select style="" v-model="queryParam.customerId" placeholder="请选择客户"  showSearch
+                                optionFilterProp="children"
+                                notFoundContent="无法找到，输入名称、编号、手机号回车搜索" @keyup.enter.native="searchCustomer" >
+                        <a-select-option value="">请选择</a-select-option>
+                        <a-select-option v-for="(item, key) in customerList" :key="key" :value="item.id">
+                          {{ item.info }}
+                        </a-select-option>
+                      </a-select>
+                    </a-form-item>
+                  </a-col>
+                </template>
                 <a-col :md="6" :sm="8">
                     <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
                         <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
                         <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
-                        <!--<a @click="handleToggleSearch" style="margin-left: 8px">
+                        <a @click="handleToggleSearch" style="margin-left: 8px">
                             {{ toggleSearchStatus ? '收起' : '展开' }}
                             <a-icon :type="toggleSearchStatus ? 'up' : 'down'" />
-                        </a>-->
+                        </a>
                     </span>
                 </a-col>
 
@@ -111,7 +110,7 @@ import { JeecgListMixin } from '@/mixins/JeecgListMixin'
 import JDictSelectTag from '@/components/dict/JDictSelectTag.vue'
 import { filterMultiDictText } from '@/components/dict/JDictSelectUtil'
 import JDate from '@/components/jeecg/JDate.vue'
-import {  ajaxGetDictItems, getWarehouseList } from '@/api/api'
+import {  ajaxGetDictItems, getWarehouseList, searchCustomer} from '@/api/api'
 
 export default {
     name: "ChangeOrderList",
@@ -197,6 +196,13 @@ export default {
         }
     },
     methods: {
+        searchCustomer (e) {
+          searchCustomer({"keyword":e.target.valueOf().value}).then((res) => {
+            if (res.success) {
+              this.customerList = res.result;
+            }
+          })
+        },
         diyhandleEdit(e){
             if(e.target.dataset.id)
                 this.$router.replace({ path:'/changeorder/ChangeOrderModal/' + e.target.dataset.id });

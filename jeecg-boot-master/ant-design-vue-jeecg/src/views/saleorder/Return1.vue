@@ -4,11 +4,11 @@
       <a-row :gutter="24">
         <a-col :md="6" :sm="6">
           <a-form-item
-            :labelCol="{span: 5}"
-            :wrapperCol="{span: 19}"
+            :labelCol="{span: 8}"
+            :wrapperCol="{span: 16}"
             label="原单编号">
             <!--<a-input placeholder="请输入账号查询" v-model="queryParam.username"></a-input>-->
-            <a-input placeholder="输入原销售单号" ref=saleOrderNo v-decorator="[ 'sourceCode', {}]" ></a-input>
+            <a-input placeholder="输入原销售单号" ref=saleOrderNo v-decorator="[ 'sourceCode', validatorRules.sourceCode]" ></a-input>
             <a-input v-decorator="[ 'sourceId', {}]" ref=saleOrderId placeholder="原单ID" type="hidden" />
           </a-form-item>
         </a-col>
@@ -25,7 +25,7 @@
             :labelCol="{span: 5}"
             :wrapperCol="{span: 19}"
             label="客户">
-            <a-select v-decorator="['customerId', {}]" placeholder="请选择客户"  showSearch
+            <a-select v-decorator="['customerId', validatorRules.customerId]" placeholder="请选择客户"  showSearch
                       optionFilterProp="children"
                       notFoundContent="无法找到" :disabled="unEditable" >
               <a-select-option value="">请选择</a-select-option>
@@ -191,6 +191,16 @@
         model: {},
         // form: this.$form.createForm(this),
         validatorRules: {
+          sourceCode: {
+            rules: [
+              {required: true, message: '请输入原单编号!'}
+            ]
+          },
+          customerId: {
+            rules: [
+              {required: true, message: '请先查询原单编号带出原单信息!'}
+            ]
+          },
           code: {
             rules: [
               { min: 0, max: 126, message: '长度不超过 126 个字符', trigger: 'blur' }
@@ -341,12 +351,22 @@
       },
       handleAddMtl () {
         this.mainId = this.$route.query.id;
+        var idExists = true;
         if (!this.mainId) {
-          this.saveSaleOrderReturn(this.mainId);
+          this.saleOrderReturnForm.validateFields((err, values) => {
+            if (!err) {
+              this.saveSaleOrderReturn(this.mainId);
+            } else {
+              idExists = false;
+            }
+          })
+          // this.saveSaleOrderReturn(this.mainId);
         }
-        let saleOrderId = this.$refs.saleOrderId.value;
-        this.$refs.saleOrderReturnMtlModal.add({sourceBillId: saleOrderId});
-        this.$refs.saleOrderReturnMtlModal.title = "新增";
+        if (idExists) {
+          let saleOrderId = this.$refs.saleOrderId.value;
+          this.$refs.saleOrderReturnMtlModal.add({sourceBillId: saleOrderId});
+          this.$refs.saleOrderReturnMtlModal.title = "新增";
+        }
       },
       handleEditMtl (record) {
         let saleOrderId = this.$refs.saleOrderId.value;
