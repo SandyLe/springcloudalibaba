@@ -56,16 +56,18 @@ public class ChangeOrderController extends JeecgController<ChangeOrder, ChangeOr
         Page<ChangeOrder> page = new Page<>(pageNo, pageSize);
         IPage<ChangeOrder> pageList = changeOrderService.page(page, queryWrapper);
         List<ChangeOrder> datas = pageList.getRecords();
-        List<String> customerIds = datas.stream().map(ChangeOrder::getCustomerId).collect(Collectors.toList());
-        List<String> warehouseIds = datas.stream().map(ChangeOrder::getWarehouseId).collect(Collectors.toList());
-        Collection<Customer> customers = customerService.listByIds(customerIds);
-        Collection<Warehouse> warehouses = warehouseService.listByIds(warehouseIds);
-        Map<String, String> customerMap = customers.stream().collect(Collectors.toMap(Customer::getId, Customer::getName));
-        Map<String, String> warehouseMap = warehouses.stream().collect(Collectors.toMap(Warehouse:: getId, Warehouse:: getName));
-        datas.stream().forEach(o->{
-            o.setWarehouse(warehouseMap.get(o.getWarehouseId()));
-            o.setCustomer(customerMap.get(o.getCustomerId()));
-        });
+        if (CollectionUtils.isNotEmpty(datas)) {
+            List<String> customerIds = datas.stream().map(ChangeOrder::getCustomerId).collect(Collectors.toList());
+            List<String> warehouseIds = datas.stream().map(ChangeOrder::getWarehouseId).collect(Collectors.toList());
+            Collection<Customer> customers = customerService.listByIds(customerIds);
+            Collection<Warehouse> warehouses = warehouseService.listByIds(warehouseIds);
+            Map<String, String> customerMap = customers.stream().collect(Collectors.toMap(Customer::getId, Customer::getName));
+            Map<String, String> warehouseMap = warehouses.stream().collect(Collectors.toMap(Warehouse:: getId, Warehouse:: getName));
+            datas.stream().forEach(o->{
+                o.setWarehouse(warehouseMap.get(o.getWarehouseId()));
+                o.setCustomer(customerMap.get(o.getCustomerId()));
+            });
+        }
         pageList.setRecords(datas);
         return Result.ok(pageList);
     }

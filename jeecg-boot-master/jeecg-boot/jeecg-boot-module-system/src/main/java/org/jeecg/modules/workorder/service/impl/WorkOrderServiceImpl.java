@@ -85,6 +85,13 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     @Transactional
     public String editOrder(WorkOrderDto workOrderdto){
 
+        if (null == workOrderdto.getBillStatus() || BillStatus.NEW.getId() == workOrderdto.getBillStatus()) {
+            if (StringUtils.isNotBlank(workOrderdto.getOperateUserId())) {
+                workOrderdto.setBillStatus(BillStatus.ARRANGED.getId());
+            } else {
+                workOrderdto.setBillStatus(BillStatus.NEW.getId());
+            }
+        }
         // 工单主表
         super.updateById(workOrderdto);
         if (workOrderdto.getDetaillist().size() > 0){
