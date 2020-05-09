@@ -6,9 +6,9 @@ import io.swagger.annotations.ApiModelProperty;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.util.DateUtils;
-import org.jeecg.modules.basic.enums.BillType;
-import org.jeecg.modules.basic.enums.DateFormat;
-import org.jeecg.modules.basic.enums.EnumConvertUtils;
+import org.jeecg.common.enums.BillType;
+import org.jeecg.common.enums.DateFormat;
+import org.jeecg.common.enums.EnumConvertUtils;
 
 @TableName("sl_bill_code_builder")
 @ApiModel(value = "BillCodeBuilder", description = "编号规则")

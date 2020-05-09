@@ -7,15 +7,13 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.jeecg.modules.basic.entity.BasicEntity;
-import org.jeecg.modules.basic.enums.BillStatus;
-import org.jeecg.modules.basic.enums.BillType;
-import org.jeecg.modules.basic.enums.EnumConvertUtils;
+import org.jeecg.common.enums.BillStatus;
+import org.jeecg.common.enums.BillType;
+import org.jeecg.common.enums.EnumConvertUtils;
 import org.jeecgframework.poi.excel.annotation.Excel;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import java.math.BigDecimal;
 import java.util.Date;
-import java.util.List;
 
 @Data
 @TableName("sl_inventory_in")

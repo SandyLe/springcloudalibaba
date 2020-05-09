@@ -8,15 +8,13 @@ import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.util.DateUtils;
 import org.jeecg.common.util.RedisUtil;
 import org.jeecg.modules.basic.entity.BillCodeBuilder;
-import org.jeecg.modules.basic.enums.BillType;
-import org.jeecg.modules.basic.enums.DateFormat;
-import org.jeecg.modules.basic.enums.EnumConvertUtils;
+import org.jeecg.common.enums.BillType;
+import org.jeecg.common.enums.DateFormat;
+import org.jeecg.common.enums.EnumConvertUtils;
 import org.jeecg.modules.basic.mapper.BillCodeBuilderMapper;
 import org.jeecg.modules.basic.service.BillCodeBuilderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.Map;
 
 @Service
 public class BillCodeBuilderServiceImpl extends ServiceImpl<BillCodeBuilderMapper, BillCodeBuilder> implements BillCodeBuilderService{

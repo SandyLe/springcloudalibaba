@@ -5,11 +5,12 @@
     <div class="table-page-search-wrapper">
       <a-form layout="inline">
         <a-row :gutter="24">
-          <a-col :md="6" :sm="12">
+          <a-col :md="8" :sm="12">
             <a-form-item label="产品">
               <a-select v-model="queryParam.mtlId" placeholder="请选择产品"  showSearch
                         optionFilterProp="children"
-                        notFoundContent="无法找到，输入关键词Enter搜索" @keyup.enter.native="searchMtl" >
+                        notFoundContent="无法找到，输入关键词Enter搜索" @keyup.enter.native="searchMtl"
+                        style="width: 250px;">
                 <a-select-option value="">请选择</a-select-option>
                 <a-select-option v-for="(item, key) in mtlList" :key="key" :value="item.id">
                   {{ item.info }}

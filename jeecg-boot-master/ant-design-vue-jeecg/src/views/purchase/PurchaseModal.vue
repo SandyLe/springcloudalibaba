@@ -3,6 +3,17 @@
     <a-card :bordered="false">
         <a-form :form="form">
             <a-row>
+              <a-col :span="12">
+                <a-form-item label="采购批次号" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                  <a-select v-decorator="['batchNo', {}]" placeholder="请输入批次号，入库计算同批次产品平均采购成本">
+                    <a-select-option v-for="(item, key) in dictOptions.purchaseBatch" :key="key" :value="item.code">
+                      {{ item.code }}
+                    </a-select-option>
+                  </a-select>
+                </a-form-item>
+              </a-col>
+            </a-row>
+            <a-row>
                 <a-col :span="12">
                     <a-form-item label="供应商" :labelCol="labelCol" :wrapperCol="wrapperCol">
                         <a-select v-decorator="['vendorId', {}]" placeholder="请选择供应商">
@@ -144,7 +155,8 @@ import {
     searchMaterial,
     getMaterialUnitList,
     purchasequeryById,
-    purchasedetailDelete
+    purchasedetailDelete,
+    getPurchaseBatchList
 } from '@/api/api'
 export default {
     name: 'PurchasesModal',
@@ -209,7 +221,8 @@ export default {
                 vendorId: [],
                 warehouse: [],
                 materiallist: [],
-                materialunitlist: []
+                materialunitlist: [],
+                purchaseBatch:[]
             },
             columns: [{
                     title: '产品', //顺序不要调整，getMaterialList中有用
@@ -365,6 +378,18 @@ export default {
                     // this.$set(this.dictOptions, 'materialunitlist', res.result)
                 }
             });
+          //仓库
+          getPurchaseBatchList('').then((res) => {
+            if (res.success) {
+              if (res.result && res.result.length > 0) {
+                res.result.forEach(function (option) {
+                  option.value = option.code;
+                  option.text = option.code;
+                })
+              }
+              this.$set(this.dictOptions, 'purchaseBatch', res.result)
+            }
+          });
         },
         add() {
             if(this.$route.params.id){
@@ -389,7 +414,7 @@ export default {
             this.visible = true
             this.$nextTick(() => {
                 this.form.setFieldsValue(
-                    pick(this.model, 'id', 'code', 'vendorId', 'content', 'warehouseId', 'account', 'payamount', 'totalamount')
+                    pick(this.model, 'id', 'code', 'vendorId', 'content', 'warehouseId', 'account', 'payamount', 'totalamount', 'batchNo')
                 )
             })
         },
@@ -475,7 +500,7 @@ export default {
                 target[column] = value;
                 if (target.quantity && target.price) {
                     if (target.discount)
-                        target['amount'] = Math.round((parseFloat(target.quantity) * parseFloat(target.price) - parseFloat(target.discount)) * 100);
+                        target['amount'] = Math.round((parseFloat(target.quantity) * parseFloat(target.price) - parseFloat(target.discount)) * 100)/100;
                     else
                         target['amount'] = Math.round( (parseFloat(target.quantity) * parseFloat(target.price)) * 100)/100;
                 }

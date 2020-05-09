@@ -4,9 +4,9 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jeecg.modules.basic.dto.DeliveryEditDto;
-import org.jeecg.modules.basic.enums.BillStatus;
-import org.jeecg.modules.basic.enums.BillType;
-import org.jeecg.modules.basic.enums.RowSts;
+import org.jeecg.common.enums.BillStatus;
+import org.jeecg.common.enums.BillType;
+import org.jeecg.common.enums.RowSts;
 import org.jeecg.modules.inventory.entity.InventoryOut;
 import org.jeecg.modules.inventory.service.InventoryOutService;
 import org.jeecg.modules.saleorder.entity.SaleOrder;
@@ -67,6 +67,6 @@ public class SaleOrderServiceImpl extends ServiceImpl<SaleOrderMapper, SaleOrder
         inventoryOutService.saveToInventoryOut(inventoryOut);
         // 更新销售订单信息
         updateById(saleOrder);
-        saleOrderDeliveryInfoService.saveOrUpdate(cdi);
+        saleOrderDeliveryInfoService.saveSaleOrderDelivery(cdi);
     }
 }

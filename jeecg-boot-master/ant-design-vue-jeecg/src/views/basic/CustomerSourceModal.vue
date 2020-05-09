@@ -79,6 +79,11 @@
         validatorRules: {
           name: {
             rules: [
+              {required: true, message: '请输入来源名称!'}
+            ]
+          },
+          content: {
+            rules: [
               { min: 0, max: 126, message: '长度不超过 126 个字符', trigger: 'blur' }
             ]
           }

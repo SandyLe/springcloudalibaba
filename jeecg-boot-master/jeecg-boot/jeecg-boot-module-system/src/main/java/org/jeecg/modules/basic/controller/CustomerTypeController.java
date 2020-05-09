@@ -11,7 +11,7 @@ import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.modules.basic.entity.CustomerType;
-import org.jeecg.modules.basic.enums.BillType;
+import org.jeecg.common.enums.BillType;
 import org.jeecg.modules.basic.service.BillCodeBuilderService;
 import org.jeecg.modules.basic.service.CustomerTypeService;
 import org.springframework.beans.factory.annotation.Autowired;

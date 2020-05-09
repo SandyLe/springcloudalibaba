@@ -204,6 +204,47 @@ const addSaleOrderReturnExpense = (params)=>postAction("/saleOrderReturnExpense/
 const editSaleOrderReturnExpense = (params)=>postAction("/saleOrderReturnExpense/edit",params)
 
 
+// 采购批次
+const addPurchaseBatch = (params)=>postAction("/purchaseBatch/add", params)
+const getPurchaseBatchOne = (params)=>getAction("/purchaseBatch/getOne",params)
+const editPurchaseBatch = (params)=>postAction("/purchaseBatch/edit",params)
+const getPurchaseBatchList = (params)=>getAction("/purchaseBatch/getList",params)
+
+// 库存
+const getinventoryList = (params)=>getAction("/inventory/getList",params)
+
+// 调拨单
+const getAllotOne = (params)=>getAction("/allot/getOne",params)
+const allotDtlDelete = (params)=>deleteAction("/allotDtl/delete",params)
+
+// 组装单
+const getAssembleOne = (params)=>getAction("/assemble/getOne",params)
+const assembleDtlDelete = (params)=>deleteAction("/assembleDtl/delete",params)
+
+// 拆卸单
+const getTeardownOne = (params)=>getAction("/teardown/getOne",params)
+const teardownDtlDelete = (params)=>deleteAction("/teardownDtl/delete",params)
+
+// 工单
+const getWorkOrderOne = (params)=>getAction("/workOrder/getOne",params)
+const workOrderDtlDelete = (params)=>deleteAction("/workOrderDtl/delete",params)
+const updateWorkOrderStatus = (params)=>putAction("/workOrder/updateStatus",params);
+
+// 维修单
+const addRepair = (params)=>postAction("/repairOrder/add", params)
+const getRepairOne = (params)=>getAction("/repairOrder/getOne",params)
+const editRepair = (params)=>postAction("/repairOrder/edit",params)
+const getRepairList = (params)=>getAction("/repairOrder/getList",params)
+
+// 换货单
+
+const getChangeOrderOne = (params)=>getAction("/changeOrder/getOne",params)
+const changeOrderDtlDelete = (params)=>deleteAction("/changeOrderDtl/delete",params)
+
+// 换货单
+const getLogisticsOrderOne = (params)=>getAction("/logisticsOrder/getOne",params)
+const logisticsOrderDtlDelete = (params)=>deleteAction("/logisticsOrderDtl/delete",params)
+
 export {
   // imgView,
   // doMian,
@@ -348,7 +389,29 @@ export {
   purchaseReturnQueryById,
   purchaseReturnDetailDelete,
   searchCustomer,
-  getDeliveryInfoBySourceId
+  getDeliveryInfoBySourceId,
+  addPurchaseBatch,
+  getPurchaseBatchOne,
+  editPurchaseBatch,
+  getPurchaseBatchList,
+  getinventoryList,
+  getAllotOne,
+  allotDtlDelete,
+  getAssembleOne,
+  assembleDtlDelete,
+  getTeardownOne,
+  teardownDtlDelete,
+  getWorkOrderOne,
+  workOrderDtlDelete,
+  updateWorkOrderStatus,
+  addRepair,
+  editRepair,
+  getRepairOne,
+  getRepairList,
+  getChangeOrderOne,
+  changeOrderDtlDelete,
+  getLogisticsOrderOne,
+  logisticsOrderDtlDelete
 }
 
 

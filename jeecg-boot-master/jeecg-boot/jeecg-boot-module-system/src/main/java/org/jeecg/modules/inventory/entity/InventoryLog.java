@@ -14,9 +14,11 @@ public class InventoryLog extends BasicEntity {
 
     @ApiModelProperty("产品ID")
     private String mtlId;
-    @ApiModelProperty("原单ID")
+    @ApiModelProperty("操作单ID")
     private String sourceId;
-    @ApiModelProperty("原单类型ID")
+    @ApiModelProperty("单据ID")
+    private String sourceBillId;
+    @ApiModelProperty("单据类型ID")
     private Integer sourceBillType;
     @TableField(exist=false)
     @ApiModelProperty("产品")
@@ -42,13 +44,16 @@ public class InventoryLog extends BasicEntity {
     @TableField(exist=false)
     @ApiModelProperty("操作")
     private String operation;
+    @ApiModelProperty("批次号")
+    private String batchNo;
 
     public InventoryLog() {
     }
 
-    public InventoryLog(String sourceId, Integer sourceBillType, String mtlId, String warehouseId, BigDecimal stockAmount, BigDecimal optAmount, BigDecimal beforeAmount, String unitId, Integer operationId) {
+    public InventoryLog(String sourceId, String sourceBillId, Integer sourceBillType, String mtlId, String warehouseId, BigDecimal stockAmount, BigDecimal optAmount, BigDecimal beforeAmount, String unitId, Integer operationId, String batchNo) {
         this.mtlId = mtlId;
         this.sourceId = sourceId;
+        this.sourceBillId = sourceBillId;
         this.sourceBillType = sourceBillType;
         this.warehouseId = warehouseId;
         this.stockAmount = stockAmount;
@@ -56,6 +61,7 @@ public class InventoryLog extends BasicEntity {
         this.beforeAmount = beforeAmount;
         this.unitId = unitId;
         this.operationId = operationId;
+        this.batchNo = batchNo;
     }
 
     public String getMtlId() {
@@ -160,5 +166,13 @@ public class InventoryLog extends BasicEntity {
 
     public void setOptAmount(BigDecimal optAmount) {
         this.optAmount = optAmount;
+    }
+
+    public String getBatchNo() {
+        return batchNo;
+    }
+
+    public void setBatchNo(String batchNo) {
+        this.batchNo = batchNo;
     }
 }

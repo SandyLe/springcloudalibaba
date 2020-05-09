@@ -8,7 +8,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
@@ -18,8 +17,8 @@ import org.jeecg.modules.basic.entity.Area;
 import org.jeecg.modules.basic.entity.Customer;
 import org.jeecg.modules.basic.entity.LogisticsCompany;
 import org.jeecg.modules.basic.entity.Warehouse;
-import org.jeecg.modules.basic.enums.BillStatus;
-import org.jeecg.modules.basic.enums.EnumConvertUtils;
+import org.jeecg.common.enums.BillStatus;
+import org.jeecg.common.enums.EnumConvertUtils;
 import org.jeecg.modules.basic.service.*;
 import org.jeecg.modules.saleorder.entity.SaleOrderDeliveryInfo;
 import org.jeecg.modules.saleorder.service.SaleOrderDeliveryInfoService;
@@ -66,7 +65,7 @@ public class SaleOrderDeliveryController {
     @AutoLog(value = "添加销售订单发货信息")
     @ApiOperation(value = "添加销售订单发货信息", notes = "添加销售订单发货信息")
     public Result<?> add(@RequestBody SaleOrderDeliveryInfo saleOrderDeliveryInfo) {
-        saleOrderDeliveryInfoService.save(saleOrderDeliveryInfo);
+        saleOrderDeliveryInfoService.saveSaleOrderDelivery(saleOrderDeliveryInfo);
         return Result.ok(saleOrderDeliveryInfo.getId());
     }
     /**
@@ -94,9 +93,9 @@ public class SaleOrderDeliveryController {
     public Result<?> getBySourceId(@RequestParam(name = "sourceId", required = true) String sourceId) {
         LambdaQueryWrapper<SaleOrderDeliveryInfo> queryWrapper = new LambdaQueryWrapper<SaleOrderDeliveryInfo>().eq(SaleOrderDeliveryInfo::getSourceId, sourceId);
         SaleOrderDeliveryInfo saleOrderDeliveryInfo = saleOrderDeliveryInfoService.getOne(queryWrapper);
-        if (StringUtils.isNotBlank(saleOrderDeliveryInfo.getCdiLogistics())) {
-            LogisticsCompany logisticsCompany = logisticsCompanyService.getById(saleOrderDeliveryInfo.getCdiLogistics());
-            saleOrderDeliveryInfo.setCdiLogistics(null != logisticsCompany ? logisticsCompany.getName() : null);
+        if (StringUtils.isNotBlank(saleOrderDeliveryInfo.getCdiLogisticsId())) {
+            LogisticsCompany logisticsCompany = logisticsCompanyService.getById(saleOrderDeliveryInfo.getCdiLogisticsId());
+            saleOrderDeliveryInfo.setCdiLogisticsId(null != logisticsCompany ? logisticsCompany.getName() : null);
         }
         if (StringUtils.isNotBlank(saleOrderDeliveryInfo.getCdiProvince())) {
             Area area = areaService.getById(saleOrderDeliveryInfo.getCdiProvince());

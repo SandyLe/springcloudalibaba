@@ -189,7 +189,7 @@
                 :wrapperCol="wrapperCol"
                 label="物流"
                 label-width="4">
-                <a-select v-decorator="['cdiLogistics', {}]" placeholder="物流" :disabled="unEditable">
+                <a-select v-decorator="['cdiLogisticsId', {}]" placeholder="物流" :disabled="unEditable">
                   <a-select-option value="">请选择</a-select-option>
                   <a-select-option v-for="(item, key) in logistics" :key="key" :value="item.id">
                     <span style="display: inline-block;width: 100%" :title=" item.name || item.code ">
@@ -353,7 +353,6 @@
             values.sourceId = this.$route.query.id;
             let formData = Object.assign(this.model, values);
             let obj;
-            console.log(formData)
             if(this.model.id){
               obj=delivery(formData);
             }
@@ -437,7 +436,7 @@
               that.model.cdiCity = obj.cdiCity;
               that.model.cdiDistrict = obj.cdiDistrict;
               that.model.cdiAddress = obj.cdiAddress;
-              that.model.cdiLogistics = obj.cdiLogistics;
+              that.model.cdiLogisticsId = obj.cdiLogisticsId;
               that.model.cdiBranch = obj.cdiBranch;
               that.model.cdiTel = obj.cdiTel;
               that.model.cdiCarLicense = obj.cdiCarLicense;
@@ -469,7 +468,7 @@
               }
               this.$nextTick(() => {
                 this.form.setFieldsValue(pick(that.model,'cdiDefaultType','cdiDescription','cdiLinkman','cdiPhone','cdiDeliveryAddress','cdiCarLicense',
-                  'cdiRecipients','cdiRecipientsPhone','cdiProvince','cdiCity','cdiDistrict','cdiAddress','cdiLogistics','cdiBranch','cdiTel','cdiId'));
+                  'cdiRecipients','cdiRecipientsPhone','cdiProvince','cdiCity','cdiDistrict','cdiAddress','cdiLogisticsId','cdiBranch','cdiTel','cdiId'));
               });
             }
           }

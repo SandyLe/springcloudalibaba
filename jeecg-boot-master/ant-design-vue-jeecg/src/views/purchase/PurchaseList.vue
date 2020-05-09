@@ -162,6 +162,11 @@ export default {
                     }
                 },
                 {
+                  title: '批次号',
+                  align: "center",
+                  dataIndex: 'batchNo'
+                },
+                {
                   title: '采购单号',
                   align: "center",
                   dataIndex: '',
@@ -190,11 +195,6 @@ export default {
                             return filterMultiDictText(this.dictOptions['warehouse'], text + "")
                         }
                     }
-                },
-                {
-                    title: '结算账户',
-                    align: "center",
-                    dataIndex: 'account'
                 },
                 {
                     title: '实付金额',

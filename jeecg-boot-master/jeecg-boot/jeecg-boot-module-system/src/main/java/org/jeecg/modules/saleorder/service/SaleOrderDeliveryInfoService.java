@@ -7,5 +7,6 @@ import java.util.List;
 
 public interface SaleOrderDeliveryInfoService extends IService<SaleOrderDeliveryInfo> {
 
+    public String saveSaleOrderDelivery (SaleOrderDeliveryInfo saleOrderDeliveryInfo);
 }
 

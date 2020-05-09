@@ -16,12 +16,11 @@ import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.aspect.annotation.PermissionData;
 import org.jeecg.common.system.query.QueryGenerator;
-import org.jeecg.common.system.vo.DictModel;
 import org.jeecg.modules.basic.dto.CustomerEditDto;
 import org.jeecg.modules.basic.entity.*;
-import org.jeecg.modules.basic.enums.BillType;
-import org.jeecg.modules.basic.enums.EnumConvertUtils;
-import org.jeecg.modules.basic.enums.RowSts;
+import org.jeecg.common.enums.BillType;
+import org.jeecg.common.enums.EnumConvertUtils;
+import org.jeecg.common.enums.RowSts;
 import org.jeecg.modules.basic.service.*;
 import org.jeecg.modules.system.service.ISysDictService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -224,8 +223,8 @@ public class CustomerController {
         CustomerDeliveryInfo result = customerDeliveryInfoService.getOne(QueryGenerator.initQueryWrapper(info, req.getParameterMap()));
         result.setCdiDefaultTypeName(iSysDictService.queryDictTextByKey("delivery_type", result.getCdiDefaultType()));
         result.setCdiFullAddress(getFullAddress(result.getCdiProvince(), result.getCdiCity(), result.getCdiDistrict(), result.getCdiAddress()));
-        if (StringUtils.isNotBlank(result.getCdiLogistics())){
-            LogisticsCompany lc = logisticsCompanyService.getById(result.getCdiLogistics());
+        if (StringUtils.isNotBlank(result.getCdiLogisticsId())){
+            LogisticsCompany lc = logisticsCompanyService.getById(result.getCdiLogisticsId());
             result.setCdiLogisticsName(lc.getName());
         }
         return Result.ok(result);

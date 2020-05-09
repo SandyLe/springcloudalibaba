@@ -61,7 +61,7 @@ public class PurchaseMtl extends BasicEntity {
 
     /*金额*/
     @ApiModelProperty("金额")
-    private String amount;
+    private BigDecimal amount;
     @TableField(exist=false)
     private String info;
 
@@ -114,11 +114,11 @@ public class PurchaseMtl extends BasicEntity {
         this.discount = discount;
     }
 
-    public String getAmount() {
+    public BigDecimal getAmount() {
         return amount;
     }
 
-    public void setAmount(String amount) {
+    public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
 

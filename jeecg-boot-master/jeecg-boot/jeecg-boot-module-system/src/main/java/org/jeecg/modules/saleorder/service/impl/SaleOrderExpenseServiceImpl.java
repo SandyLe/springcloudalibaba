@@ -2,7 +2,6 @@ package org.jeecg.modules.saleorder.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.lang.StringUtils;
-import org.jeecg.modules.basic.enums.DiscountType;
 import org.jeecg.modules.saleorder.entity.SaleOrder;
 import org.jeecg.modules.saleorder.entity.SaleOrderExpense;
 import org.jeecg.modules.saleorder.mapper.SaleOrderExpenseMapper;
@@ -13,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;

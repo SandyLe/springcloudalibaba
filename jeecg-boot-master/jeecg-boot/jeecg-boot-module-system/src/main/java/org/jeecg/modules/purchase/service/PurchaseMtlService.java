@@ -28,4 +28,12 @@ public interface PurchaseMtlService extends IService<PurchaseMtl> {
      * @param sourceId
      */
     List<PurchaseMtl> queryBySourceId(@Param("sourceId")String sourceId);
+
+    /**
+     * 查询采购单产品
+     * @param batchNo
+     * @param mtlId
+     * @return
+     */
+    List<PurchaseMtl> findPurchaseMtls(String batchNo, String mtlId);
 }

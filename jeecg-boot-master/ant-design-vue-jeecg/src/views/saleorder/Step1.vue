@@ -7,12 +7,13 @@
             :labelCol="{span: 5}"
             :wrapperCol="{span: 19}"
             label="客户">
-            <a-select v-decorator="['customerId', {}]" placeholder="请选择客户"  showSearch
+            <a-select v-decorator="['customerId', validatorRules.customerId]" placeholder="请选择客户"  showSearch
                       optionFilterProp="children"
-                      notFoundContent="无法找到" :disabled="unEditable" >
+                      notFoundContent="无法找到，输入名称、编号、手机号回车搜索" @keyup.enter.native="searchCustomer"
+                      :disabled="unEditable" >
               <a-select-option value="">请选择</a-select-option>
               <a-select-option v-for="(item, key) in customerList" :key="key" :value="item.id">
-                {{ item.name || item.code }}
+                {{ item.info }}
               </a-select-option>
             </a-select>
           </a-form-item>
@@ -30,15 +31,15 @@
             :labelCol="{span: 5}"
             :wrapperCol="{span: 19}"
             label="渠道">
-            <j-dict-select-tag v-decorator="['channelId', {}]" placeholder="请选择销售渠道" :type="'select'" style="width: 60%" :triggerChange="true" dictCode="channel" :disabled="unEditable" :readOnly = "unEditable" />
+            <j-dict-select-tag v-decorator="['channelId', {}]" placeholder="请选择销售渠道" :type="'select'" :triggerChange="true" dictCode="channel" :disabled="unEditable" :readOnly = "unEditable" />
           </a-form-item>
         </a-col>
         <a-col :md="6" :sm="6">
           <a-form-item
-            :labelCol="{span: 5}"
-            :wrapperCol="{span: 19}"
+            :labelCol="{span: 6}"
+            :wrapperCol="{span: 18}"
             label="订单日期">
-            <a-date-picker showTime format='YYYY-MM-DD HH:mm:ss' v-decorator="[ 'billDate', {}]" :readOnly = "unEditable" :disabled="unEditable" />
+            <a-date-picker showTime format='YYYY-MM-DD HH:mm:ss' v-decorator="[ 'billDate', validatorRules.billDate]" :readOnly = "unEditable" :disabled="unEditable" />
           </a-form-item>
         </a-col>
       </a-row>
@@ -145,7 +146,7 @@
   import pick from 'lodash.pick'
   import moment from 'moment'
   import JDictSelectTag from '@/components/dict/JDictSelectTag.vue'
-  import {addSaleOrder, editSaleOrder, getCustomerList, getSaleOrderOne, getSaleOrderMtlList } from '@/api/api'
+  import {addSaleOrder, editSaleOrder, getCustomerList, getSaleOrderOne, getSaleOrderMtlList, searchCustomer } from '@/api/api'
   import {JeecgListMixin} from '@/mixins/JeecgListMixin'
   export default {
     name: "Step1",
@@ -174,6 +175,16 @@
           code: {
             rules: [
               { min: 0, max: 126, message: '长度不超过 126 个字符', trigger: 'blur' }
+            ]
+          },
+          customerId: {
+            rules: [
+              {required: true, message: '请选择客户!'}
+            ]
+          },
+          billDate: {
+            rules: [
+              {required: true, message: '单据时间不能为空!'}
             ]
           }
         },
@@ -280,6 +291,7 @@
         });
       },
       saveSaleOrder(id) {
+        var validFlag = true;
         const that = this;
         // 触发表单验证
         this.saleOrderForm.validateFields((err, values) => {
@@ -315,17 +327,35 @@
               that.confirmLoading = false;
               // that.close();
             })
+          } else {
+            validFlag = false;
+          }
+        })
+        return validFlag;
+      },
+      searchCustomer (e) {
+        searchCustomer({"keyword":e.target.valueOf().value}).then((res) => {
+          if (res.success) {
+            this.customerList = res.result;
           }
         })
       },
       handleAddMtl () {
         this.mainId = this.$route.query.id;
-        console.log(this.mainId)
+        var idExists = true;
         if (!this.mainId) {
-          this.saveSaleOrder(this.mainId);
+          this.saleOrderForm.validateFields((err, values) => {
+            if (!err) {
+              this.saveSaleOrder(this.mainId);
+            } else {
+              idExists = false;
+            }
+          })
         }
-        this.$refs.saleOrderMtlModal.add();
-        this.$refs.saleOrderMtlModal.title = "新增";
+        if (idExists) {
+          this.$refs.saleOrderMtlModal.add();
+          this.$refs.saleOrderMtlModal.title = "新增";
+        }
       },
       handleEditMtl (record) {
         this.$refs.saleOrderMtlModal.edit(record);
@@ -336,14 +366,17 @@
       },
       nextStep () {
         this.mainId = this.$route.query.id;
+        var validFlag = true;
         if (!this.unEditable) {
-          this.saveSaleOrder(this.mainId);
+          validFlag =  this.saveSaleOrder(this.mainId);
         }
-        this.$emit('nextStep')
+        if (validFlag) {
+          this.$emit('nextStep')
+        }
       }
     },
     mounted() {
-      getCustomerList().then((res) => {
+      searchCustomer({}).then((res) => {
         if (res.success) {
           this.customerList = res.result;
         }

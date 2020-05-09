@@ -6,8 +6,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import org.jeecg.modules.basic.entity.BasicEntity;
-import org.jeecg.modules.basic.enums.BillStatus;
-import org.jeecg.modules.basic.enums.EnumConvertUtils;
+import org.jeecg.common.enums.BillStatus;
+import org.jeecg.common.enums.EnumConvertUtils;
 import org.jeecgframework.poi.excel.annotation.Excel;
 import org.springframework.format.annotation.DateTimeFormat;
 import java.util.Date;
@@ -58,6 +58,8 @@ public class  Purchase extends BasicEntity {
     @ApiModelProperty("订单状态")
     @TableField(exist=false)
     private String billStatusName;
+    @ApiModelProperty("批次号")
+    private String batchNo;
 
     public String getVendorId() {
         return vendorId;
@@ -124,5 +126,13 @@ public class  Purchase extends BasicEntity {
 
     public void setBillStatusName(String billStatusName) {
         this.billStatusName = billStatusName;
+    }
+
+    public String getBatchNo() {
+        return batchNo;
+    }
+
+    public void setBatchNo(String batchNo) {
+        this.batchNo = batchNo;
     }
 }

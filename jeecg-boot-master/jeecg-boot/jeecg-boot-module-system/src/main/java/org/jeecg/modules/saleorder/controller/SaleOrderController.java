@@ -8,7 +8,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.api.vo.Result;
@@ -19,9 +18,8 @@ import org.jeecg.common.system.vo.DictModel;
 import org.jeecg.modules.basic.dto.DeliveryEditDto;
 import org.jeecg.modules.basic.entity.Customer;
 import org.jeecg.modules.basic.entity.Warehouse;
-import org.jeecg.modules.basic.enums.BillStatus;
-import org.jeecg.modules.basic.enums.BillType;
-import org.jeecg.modules.basic.enums.RowSts;
+import org.jeecg.common.enums.BillStatus;
+import org.jeecg.common.enums.BillType;
 import org.jeecg.modules.basic.service.BillCodeBuilderService;
 import org.jeecg.modules.basic.service.CustomerService;
 import org.jeecg.modules.basic.service.WarehouseService;
@@ -272,7 +270,7 @@ public class SaleOrderController {
     @PostMapping(value = "/delivery")
     @AutoLog(value = "发货")
     @ApiOperation(value = "发货", notes = "发货")
-    public Result<?> edit(@RequestBody DeliveryEditDto deliveryEditDto) throws Exception {
+    public Result<?> delivery(@RequestBody DeliveryEditDto deliveryEditDto) throws Exception {
 
         saleOrderService.delivery(deliveryEditDto);
 

@@ -8,11 +8,9 @@ import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.api.vo.Result;
-import org.jeecg.modules.basic.enums.DiscountType;
-import org.jeecg.modules.basic.enums.EnumConvertUtils;
+import org.jeecg.common.enums.DiscountType;
+import org.jeecg.common.enums.EnumConvertUtils;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @Api(tags = "基础通用接口")
 @RestController
