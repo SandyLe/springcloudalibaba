@@ -206,7 +206,7 @@
         })
       },
       downloadtemplate(){
-        location.href =`${window._CONFIG['domianURL']}/sys/common/sysdownload/systemplate/materialprice.xlsx`;
+        location.href =`${window._CONFIG['domianURL']}/sys/common/download/systemplate/MaterialPrice.xlsx`;
       }
     },
     mounted() {

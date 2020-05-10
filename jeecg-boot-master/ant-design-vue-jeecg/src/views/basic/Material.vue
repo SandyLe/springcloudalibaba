@@ -216,7 +216,7 @@
         this.$router.push({ name: "material-materialEdit", query: {"id": id}})
       },
       downloadtemplate(){
-        location.href =`${window._CONFIG['domianURL']}/sys/common/sysdownload/systemplate/product.xlsx`;
+        location.href =`${window._CONFIG['domianURL']}/sys/common/download/systemplate/Material.xlsx`;
       }
     }
   }

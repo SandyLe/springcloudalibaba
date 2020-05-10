@@ -81,26 +81,26 @@
             <div style="border-bottom: dotted 1px #888888; ">收货信息</div>
             <div><label>默认发货方式：</label>{{deliveryInfo.cdiDefaultTypeName}}</div>
             <div v-if="'ZHIDINGDIAN' === deliveryInfo.cdiDefaultType">
-              <label class="title">说明：</label>{{deliveryInfo.cdiDescription}}<br/>
-              <label class="title">联系人：</label>{{deliveryInfo.cdiLinkman}}<br/>
-              <label class="title">联系电话：</label>{{deliveryInfo.cdiPhone}}<br/>
+              <label>说明：</label>{{deliveryInfo.cdiDescription}}<br/>
+              <label>联系人：</label>{{deliveryInfo.cdiLinkman}}<br/>
+              <label>联系电话：</label>{{deliveryInfo.cdiPhone}}<br/>
             </div>
             <div v-if="'SONGCHE' === deliveryInfo.cdiDefaultType">
-              <label class="title">车牌：</label>{{deliveryInfo.cdiCarLicense}}<br/>
-              <label class="title">司机姓名：</label>{{deliveryInfo.cdiLinkman}}<br/>
-              <label class="title">司机电话：</label>{{deliveryInfo.cdiPhone}}<br/>
-              <label class="title">发货地址：</label>{{deliveryInfo.cdiDeliveryAddress}}<br/>
-              <label class="title">收件人：</label>{{deliveryInfo.cdiRecipients}}<br/>
-              <label class="title">联系电话：</label>{{deliveryInfo.cdiRecipientsPhone}}<br/>>
-              <label class="title">地址：</label>{{deliveryInfo.cdiProvince + deliveryInfo.cdiCity + deliveryInfo.cdiDistrict + deliveryInfo.cdiAddress}}<br/>
+              <label>车牌：</label>{{deliveryInfo.cdiCarLicense}}<br/>
+              <label>司机姓名：</label>{{deliveryInfo.cdiLinkman}}<br/>
+              <label>司机电话：</label>{{deliveryInfo.cdiPhone}}<br/>
+              <label>发货地址：</label>{{deliveryInfo.cdiDeliveryAddress}}<br/>
+              <label>收件人：</label>{{deliveryInfo.cdiRecipients}}<br/>
+              <label>联系电话：</label>{{deliveryInfo.cdiRecipientsPhone}}<br/>>
+              <label>地址：</label>{{deliveryInfo.cdiProvince + deliveryInfo.cdiCity + deliveryInfo.cdiDistrict + deliveryInfo.cdiAddress}}<br/>
             </div>
             <div v-if="'WULIU' === deliveryInfo.cdiDefaultType">
-              <label class="title">物流：</label>{{deliveryInfo.cdiLogistics}}<br/>
-              <label class="title">网点：</label>{{deliveryInfo.cdiBranch}}<br/>
-              <label class="title">电话：</label>{{deliveryInfo.cdiTel}}<br/>
-              <label class="title">收件人：</label>{{deliveryInfo.cdiRecipients}}<br/>
-              <label class="title">联系电话：</label>{{deliveryInfo.cdiRecipientsPhone}}<br/>
-              <label class="title">地址：</label>{{deliveryInfo.cdiProvince + deliveryInfo.cdiCity + deliveryInfo.cdiDistrict + deliveryInfo.cdiAddress}}<br/>
+              <label>物流：</label>{{deliveryInfo.cdiLogistics}}<br/>
+              <label>网点：</label>{{deliveryInfo.cdiBranch}}<br/>
+              <label>电话：</label>{{deliveryInfo.cdiTel}}<br/>
+              <label>收件人：</label>{{deliveryInfo.cdiRecipients}}<br/>
+              <label>联系电话：</label>{{deliveryInfo.cdiRecipientsPhone}}<br/>
+              <label>地址：</label>{{deliveryInfo.cdiProvince + deliveryInfo.cdiCity + deliveryInfo.cdiDistrict + deliveryInfo.cdiAddress}}<br/>
             </div>
           </div>
         </div>

@@ -117,7 +117,7 @@
                                 <a>删除</a>
                             </a-popconfirm>
                         </a-menu-item>
-                        <a-menu-item v-if="record.billStatus == 15">
+                        <a-menu-item v-if="record.billStatus == 15 || record.billStatus == 8">
                             <a-popconfirm title="确定开始工单吗?" @confirm="() => handleStatus(record, 16)">
                                 <a>开始</a>
                             </a-popconfirm>

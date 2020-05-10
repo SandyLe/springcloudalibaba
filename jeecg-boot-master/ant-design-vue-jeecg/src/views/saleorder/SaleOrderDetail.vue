@@ -31,18 +31,18 @@
           style="margin-bottom: 24px; text-align: center; font-weight: bolder"
         />
         <table style="width: 100%;">
-          <tr>
-            <td class="titletd">订单号：</td><td>{{this.saleOrder.code}}</td>
-            <td class="titletd">客户：</td><td>{{this.saleOrder.customer}}</td>
-            <td class="titletd">单据时间：</td><td>{{this.saleOrder.billDate}}</td>
-            <td class="titletd">金额：</td><td>{{this.saleOrder.totalamount}}</td>
-          </tr>
-          <tr>
-            <td class="titletd">渠道：</td><td>{{this.saleOrder.channel}}</td>
-            <td class="titletd">发货时间：</td><td>{{this.saleOrder.deliveryTime}}</td>
-            <td class="titletd">安装时间：</td><td>{{this.saleOrder.installTime}}</td>
-            <td class="titletd">出货仓库：</td><td>{{this.saleOrder.warehouse}}</td>
-          </tr>
+          <a-row>
+            <a-col :sm="4" :xs="4" class="titletd">订单号：</a-col><a-col :sm="8" :xs="8">{{this.saleOrder.code}}</a-col>
+            <a-col :sm="4" :xs="4" class="titletd">客户：</a-col><a-col :sm="8" :xs="8">{{this.saleOrder.customer}}</a-col>
+            <a-col :sm="4" :xs="4" class="titletd">单据时间：</a-col><a-col :sm="8" :xs="8">{{this.saleOrder.billDate}}</a-col>
+            <a-col :sm="4" :xs="4" class="titletd">金额：</a-col><a-col :sm="8" :xs="8">{{this.saleOrder.totalamount}}</a-col>
+          </a-row>
+          <a-row>
+            <a-col :sm="4" :xs="4" class="titletd">渠道：</a-col><a-col :sm="8" :xs="8">{{this.saleOrder.channel}}</a-col>
+            <a-col :sm="4" :xs="4" class="titletd">发货时间：</a-col><a-col :sm="8" :xs="8">{{this.saleOrder.deliveryTime}}</a-col>
+            <a-col :sm="4" :xs="4" class="titletd">安装时间：</a-col><a-col :sm="8" :xs="8">{{this.saleOrder.installTime}}</a-col>
+            <a-col :sm="4" :xs="4" class="titletd">出货仓库：</a-col><a-col :sm="8" :xs="8">{{this.saleOrder.warehouse}}</a-col>
+          </a-row>
         </table>
         <div style="margin-top: 15px">
           <div class="title">订单产品</div>
