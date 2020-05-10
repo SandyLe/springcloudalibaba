@@ -8,6 +8,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
@@ -101,27 +102,28 @@ public class StockingController {
 
         IPage<Stocking> pageList = stockingService.page(page, queryWrapper);
         List<Stocking> stockingList = pageList.getRecords();
-        List<String> mtlIds = stockingList.stream().map(Stocking::getMtlId).collect(Collectors.toList());
-        List<String> warehouseIds = stockingList.stream().map(Stocking::getWarehouseId).collect(Collectors.toList());
-        List<String> unitIds = stockingList.stream().map(Stocking::getUnitId).collect(Collectors.toList());
-        Collection<Material> materials = materialService.listByIds(mtlIds);
-        Collection<Warehouse> warehouses = warehouseService.listByIds(warehouseIds);
-        Collection<MaterialUnit> units = materialUnitService.listByIds(unitIds);
-        Map<String, String> materialMap = materials.stream().collect(Collectors.toMap(Material::getId, Material::getName));
-        Map<String, String> mtlCodeMap = materials.stream().collect(Collectors.toMap(Material::getId, Material::getCode));
-        Map<String, String> specMap = materials.stream().filter(o->StringUtils.isNotBlank(o.getSpecification())).collect(Collectors.toMap(Material::getId, Material::getSpecification));
-        Map<String, String> barCodeMap = materials.stream().collect(Collectors.toMap(Material::getId, Material::getBarCode));
-        Map<String, String> warehouseMap = warehouses.stream().collect(Collectors.toMap(Warehouse:: getId, Warehouse:: getName));
-        Map<String, String> unitMap = units.stream().collect(Collectors.toMap(MaterialUnit::getId, MaterialUnit::getName));
-        stockingList.stream().forEach(o->{
-            o.setWarehouse(warehouseMap.get(o.getWarehouseId()));
-            o.setMaterial(materialMap.get(o.getMtlId()));
-            o.setUnit(unitMap.get(o.getUnitId()));
-            o.setBarCode(barCodeMap.get(o.getMtlId()));
-            o.setSpecification(specMap.get(o.getMtlId()));
-            o.setMtlCode(mtlCodeMap.get(o.getMtlId()));
-        });
-
+        if (CollectionUtils.isNotEmpty(stockingList)) {
+            List<String> mtlIds = stockingList.stream().map(Stocking::getMtlId).collect(Collectors.toList());
+            List<String> warehouseIds = stockingList.stream().map(Stocking::getWarehouseId).collect(Collectors.toList());
+            List<String> unitIds = stockingList.stream().map(Stocking::getUnitId).collect(Collectors.toList());
+            Collection<Material> materials = materialService.listByIds(mtlIds);
+            Collection<Warehouse> warehouses = warehouseService.listByIds(warehouseIds);
+            Collection<MaterialUnit> units = materialUnitService.listByIds(unitIds);
+            Map<String, String> materialMap = materials.stream().collect(Collectors.toMap(Material::getId, Material::getName));
+            Map<String, String> mtlCodeMap = materials.stream().collect(Collectors.toMap(Material::getId, Material::getCode));
+            Map<String, String> specMap = materials.stream().filter(o->StringUtils.isNotBlank(o.getSpecification())).collect(Collectors.toMap(Material::getId, Material::getSpecification));
+            Map<String, String> barCodeMap = materials.stream().collect(Collectors.toMap(Material::getId, Material::getBarCode));
+            Map<String, String> warehouseMap = warehouses.stream().collect(Collectors.toMap(Warehouse:: getId, Warehouse:: getName));
+            Map<String, String> unitMap = units.stream().collect(Collectors.toMap(MaterialUnit::getId, MaterialUnit::getName));
+            stockingList.stream().forEach(o->{
+                o.setWarehouse(warehouseMap.get(o.getWarehouseId()));
+                o.setMaterial(materialMap.get(o.getMtlId()));
+                o.setUnit(unitMap.get(o.getUnitId()));
+                o.setBarCode(barCodeMap.get(o.getMtlId()));
+                o.setSpecification(specMap.get(o.getMtlId()));
+                o.setMtlCode(mtlCodeMap.get(o.getMtlId()));
+            });
+        }
         log.info("查询当前页：" + pageList.getCurrent());
         log.info("查询当前页数量：" + pageList.getSize());
         log.info("查询结果数量：" + pageList.getRecords().size());

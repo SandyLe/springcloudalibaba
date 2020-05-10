@@ -68,20 +68,22 @@ public class MaterialPriceController {
         Page<MaterialPrice> page = new Page<MaterialPrice>(pageNo, pageSize);
         IPage<MaterialPrice> pageList = materialPriceService.page(page, queryWrapper);
         List<MaterialPrice> records = pageList.getRecords();
-        List<String> mtlIds = records.stream().map(MaterialPrice::getMaterialId).collect(Collectors.toList());
-        List<String> typeIds = records.stream().map(MaterialPrice::getCustomerTypeId).collect(Collectors.toList());
-        List<String> unitIds = records.stream().map(MaterialPrice::getUnitId).collect(Collectors.toList());
-        Collection<Material> materials = materialService.listByIds(mtlIds);
-        Collection<CustomerType> types = customerTypeService.listByIds(typeIds);
-        Collection<MaterialUnit> units = materialUnitService.listByIds(unitIds);
-        Map<String, String> mtlMap = materials.stream().collect(Collectors.toMap(Material::getId, Material::getName));
-        Map<String, String> typeMap = types.stream().collect(Collectors.toMap(CustomerType::getId, CustomerType::getName));
-        Map<String, String> unitMap = units.stream().collect(Collectors.toMap(MaterialUnit::getId, MaterialUnit::getName));
-        records.stream().forEach(o->{
-            o.setCustomerType(typeMap.get(o.getCustomerTypeId()));
-            o.setMaterial(mtlMap.get(o.getMaterialId()));
-            o.setUnit(unitMap.get(o.getUnitId()));
-        });
+        if (CollectionUtils.isNotEmpty(records)) {
+            List<String> mtlIds = records.stream().map(MaterialPrice::getMaterialId).collect(Collectors.toList());
+            List<String> typeIds = records.stream().map(MaterialPrice::getCustomerTypeId).collect(Collectors.toList());
+            List<String> unitIds = records.stream().map(MaterialPrice::getUnitId).collect(Collectors.toList());
+            Collection<Material> materials = materialService.listByIds(mtlIds);
+            Collection<CustomerType> types = customerTypeService.listByIds(typeIds);
+            Collection<MaterialUnit> units = materialUnitService.listByIds(unitIds);
+            Map<String, String> mtlMap = materials.stream().collect(Collectors.toMap(Material::getId, Material::getName));
+            Map<String, String> typeMap = types.stream().collect(Collectors.toMap(CustomerType::getId, CustomerType::getName));
+            Map<String, String> unitMap = units.stream().collect(Collectors.toMap(MaterialUnit::getId, MaterialUnit::getName));
+            records.stream().forEach(o->{
+                o.setCustomerType(typeMap.get(o.getCustomerTypeId()));
+                o.setMaterial(mtlMap.get(o.getMaterialId()));
+                o.setUnit(unitMap.get(o.getUnitId()));
+            });
+        }
         pageList.setRecords(records);
         log.info("查询当前页：" + pageList.getCurrent());
         log.info("查询当前页数量：" + pageList.getSize());

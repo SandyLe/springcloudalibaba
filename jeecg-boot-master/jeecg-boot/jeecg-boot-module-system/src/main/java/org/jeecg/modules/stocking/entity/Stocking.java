@@ -42,8 +42,6 @@ public class Stocking extends BasicEntity {
     @ApiModelProperty("条形码")
     @TableField(exist=false)
     private String barCode;
-    @ApiModelProperty("批次号")
-    private String batchNo;
 
     public String getMtlId() {
         return mtlId;
