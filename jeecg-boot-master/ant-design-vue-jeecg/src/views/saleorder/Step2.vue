@@ -457,8 +457,9 @@
       showTotalMount(data){
         this.saleOrder.totalamount = data;
         this.model.payamount = data; // 默认填充
+        this.model.totalamount = data;
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'payamount'))
+          this.form.setFieldsValue(pick(this.model,'payamount', 'totalamount'))
         });
       },
       handleOk () {
@@ -502,7 +503,6 @@
     },
     mounted() {
       if (this.$route.query.id) {
-        console.log(this.form)
         getSaleOrderOne({id:this.$route.query.id}).then((res) => {
           if (res.success) {
             this.saleOrder = res.result;
