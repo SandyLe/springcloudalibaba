@@ -10,18 +10,18 @@
                   </a-form-item>
                 </a-col>
                 <a-col :md="6" :sm="8">
-                    <a-form-item label="供应商">
-                        <a-select v-model="queryParam.vendorId" placeholder="请输入供应商">
-                            <a-select-option value="">请选择</a-select-option>
-                            <a-select-option v-for="(item, key) in vendorList" :key="key" :value="item.id">
-                                {{ item.name }}
-                            </a-select-option>
-                        </a-select>
-                    </a-form-item>
+                  <a-form-item label="调出仓库">
+                    <a-select v-model="queryParam.fromWarehouseId" placeholder="请输入仓库">
+                      <a-select-option value="">请选择</a-select-option>
+                      <a-select-option v-for="(item, key) in warehouseList" :key="key" :value="item.id">
+                        {{ item.name }}
+                      </a-select-option>
+                    </a-select>
+                  </a-form-item>
                 </a-col>
                 <a-col :md="6" :sm="16">
-                    <a-form-item label="仓库">
-                        <a-select v-model="queryParam.warehouseId" placeholder="请输入仓库">
+                    <a-form-item label="调入仓库">
+                        <a-select v-model="queryParam.toWarehouseId" placeholder="请输入仓库">
                             <a-select-option value="">请选择</a-select-option>
                             <a-select-option v-for="(item, key) in warehouseList" :key="key" :value="item.id">
                                 {{ item.name }}

@@ -79,7 +79,8 @@
         validatorRules: {
           name: {
             rules: [
-              { min: 0, max: 126, message: '长度不超过 126 个字符', trigger: 'blur' }
+              { min: 0, max: 126, message: '长度不超过 126 个字符', trigger: 'blur' },
+              {required: true, message: '名称不能为空!'}
             ]
           }
         }

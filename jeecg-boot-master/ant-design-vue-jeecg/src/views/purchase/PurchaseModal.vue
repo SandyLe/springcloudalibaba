@@ -5,7 +5,7 @@
             <a-row>
               <a-col :span="12">
                 <a-form-item label="采购批次号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <a-select v-decorator="['batchNo', {}]" placeholder="请输入批次号，入库计算同批次产品平均采购成本">
+                  <a-select v-decorator="['batchNo', validatorRules.batchNo]" placeholder="请输入批次号，入库计算同批次产品平均采购成本">
                     <a-select-option v-for="(item, key) in dictOptions.purchaseBatch" :key="key" :value="item.code">
                       {{ item.code }}
                     </a-select-option>
@@ -16,7 +16,7 @@
             <a-row>
                 <a-col :span="12">
                     <a-form-item label="供应商" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                        <a-select v-decorator="['vendorId', {}]" placeholder="请选择供应商">
+                        <a-select v-decorator="['vendorId', validatorRules.vendorId]" placeholder="请选择供应商">
                             <a-select-option v-for="(item, key) in dictOptions.vendorId" :key="key" :value="item.id">
                                 {{ item.name }}
                             </a-select-option>
@@ -200,11 +200,16 @@ export default {
             },
             confirmLoading: false,
             validatorRules: {
-                vendorId: {},
-                businessDate: {
+              vendorId: {
+                rules: [{
+                  required: true,
+                  message: '请选择供应商!'
+                }]
+              },
+              batchNo: {
                     rules: [{
                         required: true,
-                        message: '请输入业务时间!'
+                        message: '请选择批次编号!'
                     }]
                 },
                 amount: {},

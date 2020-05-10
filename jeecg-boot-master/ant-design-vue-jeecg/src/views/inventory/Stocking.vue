@@ -5,10 +5,16 @@
     <div class="table-page-search-wrapper">
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
-          <a-col :md="6" :sm="12">
-            <a-form-item label="账号">
-              <!--<a-input placeholder="请输入账号查询" v-model="queryParam.username"></a-input>-->
-              <j-input placeholder="输入账号模糊查询" v-model="queryParam.username"></j-input>
+          <a-col :md="8" :sm="18">
+            <a-form-item label="产品">
+              <a-select v-model="queryParam.mtlId" placeholder="请选择产品"  showSearch
+                        optionFilterProp="children"
+                        notFoundContent="无法找到，输入关键词Enter搜索" @keyup.enter.native="searchMtl" >
+                <a-select-option value="">请选择</a-select-option>
+                <a-select-option v-for="(item, key) in mtlList" :key="key" :value="item.id">
+                  {{ item.info }}
+                </a-select-option>
+              </a-select>
             </a-form-item>
           </a-col>
 
@@ -70,7 +76,7 @@
   import StockingModal from './StockingModal'
   import JInput from '@/components/jeecg/JInput'
   import {JeecgListMixin} from '@/mixins/JeecgListMixin'
-  import {handleStocking} from '@/api/api'
+  import {handleStocking, searchMaterial} from '@/api/api'
   export default {
     name: "",
     mixins: [JeecgListMixin],
@@ -80,6 +86,7 @@
     },
     data () {
       return {
+        mtlList:[],
         queryParam:{},
         columns: [
 
@@ -136,6 +143,13 @@
       }
     },
     methods: {
+      searchMtl (e) {
+        searchMaterial({"keyword":e.target.valueOf().value}).then((res) => {
+          if (res.success) {
+            this.mtlList = res.result;
+          }
+        })
+      },
       status_change:function (row) {
         if(row.rowSts===6){
           return 'demo-table-info-row';
@@ -165,13 +179,14 @@
           }
         });
 
-      },
-      searchQuery () {
-
-      },
-      searchReset () {
-
       }
+    },
+    mounted() {
+      searchMaterial().then((res) => {
+        if (res.success) {
+          this.mtlList = res.result;
+        }
+      })
     }
   }
 </script>

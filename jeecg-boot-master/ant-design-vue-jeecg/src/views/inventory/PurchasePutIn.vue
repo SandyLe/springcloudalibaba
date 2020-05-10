@@ -22,7 +22,7 @@
       </a-form>
     </div>
     <!-- 操作按钮区域 -->
-    <div class="table-operator"  style="margin-top: 5px">
+    <!--<div class="table-operator"  style="margin-top: 5px">
       <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
       <a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
@@ -32,7 +32,7 @@
           批量操作 <a-icon type="down" />
         </a-button>
       </a-dropdown>
-    </div>
+    </div>-->
     <div>
       <a-table
         ref="table"

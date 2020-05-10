@@ -18,7 +18,7 @@
               :labelCol="labelCol"
               :wrapperCol="wrapperCol"
               label="产品">
-              <a-select v-decorator="['materialId', {}]" placeholder="产品" >
+              <a-select v-decorator="['materialId', validatorRules.materialId]" placeholder="产品" >
                 <a-select-option value="">请选择</a-select-option>
                 <a-select-option v-for="(item, key) in materialList" :key="key" :value="item.id">
                     <span style="display: inline-block;width: 100%" :title=" item.name || item.code ">
@@ -117,9 +117,19 @@
         model: {},
         form: this.$form.createForm(this),
         validatorRules: {
-          name: {
+          materialId: {
+            rules: [
+              {required: true, message: '请选择产品!'}
+            ]
+          },
+          content: {
             rules: [
               { min: 0, max: 126, message: '长度不超过 126 个字符', trigger: 'blur' }
+            ]
+          },
+          price: {
+            rules: [
+              {required: true, message: '请输入价格!'}
             ]
           }
         }

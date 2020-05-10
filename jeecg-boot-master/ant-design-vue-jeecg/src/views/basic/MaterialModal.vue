@@ -53,7 +53,7 @@
               :labelCol="labelCol"
               :wrapperCol="wrapperCol"
               label="类型">
-              <a-select v-decorator="['typeId', {}]" placeholder="类型" >
+              <a-select v-decorator="['typeId', validatorRules.typeId]" placeholder="类型" >
                 <a-select-option value="">请选择</a-select-option>
                 <a-select-option v-for="(item, key) in typeList" :key="key" :value="item.id">
                     <span style="display: inline-block;width: 100%" :title=" item.name || item.code ">
@@ -101,7 +101,7 @@
               :labelCol="labelCol"
               :wrapperCol="wrapperCol"
               label="单位">
-              <a-select v-decorator="['unitId', {}]" placeholder="单位" >
+              <a-select v-decorator="['unitId', validatorRules.unitId]" placeholder="单位" >
                 <a-select-option value="">请选择</a-select-option>
                 <a-select-option v-for="(item, key) in unitList" :key="key" :value="item.id">
                     <span style="display: inline-block;width: 100%" :title=" item.name || item.code ">
@@ -161,7 +161,18 @@
         validatorRules: {
           name: {
             rules: [
-              { min: 0, max: 126, message: '长度不超过 126 个字符', trigger: 'blur' }
+              { min: 1, max: 126, message: '长度不超过 126 个字符', trigger: 'blur' },
+              {required: true, message: '名称不能为空!'}
+            ]
+          },
+          unitId: {
+            rules: [
+              {required: true, message: '请选择产品单位!'}
+            ]
+          },
+          typeId: {
+            rules: [
+              {required: true, message: '请选择产品类型!'}
             ]
           }
         },

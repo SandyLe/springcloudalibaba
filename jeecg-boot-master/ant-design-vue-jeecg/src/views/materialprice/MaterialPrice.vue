@@ -6,13 +6,20 @@
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
 
-          <a-col :md="6" :sm="12">
-            <a-form-item label="名称">
-              <j-input placeholder="输入名称模糊查询" v-model="queryParam.name"></j-input>
+          <a-col :md="12" :sm="18">
+            <a-form-item label="产品">
+              <a-select v-model="queryParam.materialId" placeholder="请选择产品"  showSearch
+                        optionFilterProp="children"
+                        notFoundContent="无法找到，输入关键词Enter搜索" @keyup.enter.native="searchMtl" >
+                <a-select-option value="">请选择</a-select-option>
+                <a-select-option v-for="(item, key) in mtlList" :key="key" :value="item.id">
+                  {{ item.info }}
+                </a-select-option>
+              </a-select>
             </a-form-item>
           </a-col>
 
-          <a-col :md="6" :sm="12">
+          <a-col :md="6" :sm="6">
             <a-form-item label="代码">
               <j-input placeholder="输入代码模糊查询" v-model="queryParam.code"></j-input>
             </a-form-item>
@@ -109,6 +116,7 @@
   import MaterialPriceModal from './MaterialPriceModal'
   import JInput from '@/components/jeecg/JInput'
   import {JeecgListMixin} from '@/mixins/JeecgListMixin'
+  import {searchMaterial} from '@/api/api'
   export default {
     name: "MaterialPrice",
     mixins: [JeecgListMixin],
@@ -118,6 +126,7 @@
     },
     data() {
       return {
+        mtlList: [],
         queryParam: {},
         // 表头
         columns: [
@@ -189,9 +198,23 @@
       },
     },
     methods: {
+      searchMtl (e) {
+        searchMaterial({"keyword":e.target.valueOf().value}).then((res) => {
+          if (res.success) {
+            this.mtlList = res.result;
+          }
+        })
+      },
       downloadtemplate(){
         location.href =`${window._CONFIG['domianURL']}/sys/common/sysdownload/systemplate/materialprice.xlsx`;
       }
+    },
+    mounted() {
+      searchMaterial().then((res) => {
+        if (res.success) {
+          this.mtlList = res.result;
+        }
+      })
     }
   }
 </script>

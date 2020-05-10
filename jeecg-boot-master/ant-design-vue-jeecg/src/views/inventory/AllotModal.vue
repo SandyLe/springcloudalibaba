@@ -5,7 +5,7 @@
           <a-row>
               <a-col :span="12">
                 <a-form-item label="调出仓库" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <a-select v-decorator="['fromWarehouseId', {}]" ref="fromWarehouseId" placeholder="请选择仓库">
+                  <a-select v-decorator="['fromWarehouseId', validatorRules.fromWarehouseId]" ref="fromWarehouseId" placeholder="请选择仓库">
                     <a-select-option v-for="(item, key) in warehouseList" :key="key" :value="item.id">
                       {{ item.name }}
                     </a-select-option>
@@ -14,7 +14,7 @@
               </a-col>
               <a-col :span="12">
                 <a-form-item label="调入仓库" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <a-select v-decorator="['toWarehouseId', {}]" ref="toWarehouseId" placeholder="请选择仓库">
+                  <a-select v-decorator="['toWarehouseId', validatorRules.toWarehouseId]" ref="toWarehouseId" placeholder="请选择仓库">
                     <a-select-option v-for="(item, key) in warehouseList" :key="key" :value="item.id">
                       {{ item.name }}
                     </a-select-option>
@@ -172,17 +172,16 @@ export default {
             },
             confirmLoading: false,
             validatorRules: {
-                fromWarehouseId: {},
-                toWarehouseId: {},
-                billdate: {
-                    rules: [{
-                        required: true,
-                        message: '请输入业务时间!'
-                    }]
-                },
-                amount: {},
-                description: {},
-                states: {}
+              fromWarehouseId: {
+                rules: [
+                  {required: true, message: '请选择调出仓库!'}
+                ]
+              },
+              toWarehouseId: {
+                rules: [
+                  {required: true, message: '请输入掉入仓库!'}
+                ]
+              }
             },
             url: {
                 add: '/allot/add',

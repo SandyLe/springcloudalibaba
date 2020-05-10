@@ -20,7 +20,7 @@
                   :labelCol="labelCol"
                   :wrapperCol="wrapperCol"
                   label="单据类型">
-                  <a-select v-decorator="['sourceBillType', {}]" placeholder="请选择单据类型" showSearch optionFilterProp="children"
+                  <a-select v-decorator="['sourceBillType', validatorRules.sourceBillType]" placeholder="请选择单据类型" showSearch optionFilterProp="children"
                             notFoundContent="没有匹配的单据类型"  >
                     <a-select-option value="">请选择</a-select-option>
                     <a-select-option v-for="(item, key) in billTypeList" :key="key" :value="item.id">
@@ -330,16 +330,30 @@ export default {
             },
             confirmLoading: false,
             validatorRules: {
-                vendorId: {},
-                businessDate: {
+              sourceBillType: {
                     rules: [{
                         required: true,
-                        message: '请输入业务时间!'
+                        message: '请选择单据类型!'
                     }]
                 },
-                amount: {},
-                description: {},
-                states: {}
+              cdiRecipients: {
+                rules: [{
+                  required: true,
+                  message: '请输入收件人!'
+                }]
+              },
+              cdiRecipientsPhone: {
+                rules: [{
+                  required: true,
+                  message: '请输入收件人电话!'
+                }]
+              },
+              cdiAddress: {
+                rules: [{
+                  required: true,
+                  message: '请输入收件人地址!'
+                }]
+              }
             },
             url: {
                 add: '/logisticsOrder/add',

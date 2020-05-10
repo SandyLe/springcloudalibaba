@@ -9,8 +9,8 @@
               :wrapperCol="{span: 19}"
               label="原单编号">
               <!--<a-input placeholder="请输入账号查询" v-model="queryParam.username"></a-input>-->
-              <a-input placeholder="输入原采购单号" ref=purchaseReturnNo v-decorator="[ 'sourceCode', {}]" ></a-input>
-              <a-input v-decorator="[ 'sourceId', {}]" ref=saleOrderReturnId placeholder="原单ID" type="hidden" />
+              <a-input placeholder="输入原采购单号" ref=purchaseReturnNo v-decorator="[ 'sourceCode', validatorRules.sourceCode]" ></a-input>
+              <a-input v-decorator="[ 'sourceId', validatorRules.sourceId]" ref=purchaseReturnId placeholder="原单ID" type="hidden" />
             </a-form-item>
           </a-col>
           <a-col :span="12">
@@ -214,11 +214,15 @@
         },
         confirmLoading: false,
         validatorRules: {
-          vendorId: {},
-          businessDate: {
+          sourceCode: {
             rules: [{
               required: true,
-              message: '请输入业务时间!'
+              message: '请输入原单编号!'
+            }]},
+          sourceId: {
+            rules: [{
+              required: true,
+              message: '请输查询原单编号查询原单信息!'
             }]
           },
           amount: {},
@@ -467,59 +471,65 @@
         const that = this
         // 触发表单验证
 
-        this.form.validateFields((err, values) => {
-          if (!err) {
-            that.confirmLoading = true
-            let httpurl = ''
-            let method = ''
-            if (!this.model.id) {
-              httpurl += this.url.add
-              method = 'post'
-            } else {
-              httpurl += this.url.edit
-              method = 'put'
-            }
-            if(!values.putOutTime){
-              values.putOutTime = '';
-            }else{
-              values.putOutTime = values.putOutTime.format(this.dateFormat);
-            }
-            let formData = Object.assign(this.model, values)
-            formData.detaillist = that.tabledata;
-            console.log('表单提交数据', formData)
-            httpAction(httpurl, formData, method)
-              .then(res => {
-                console.log(res);
-                if (res.success) {
-                  that.$message.success(res.message)
-                  that.$emit('ok')
-                  that.hasaddmain = true;
-                  that.$emit('close')
+        let purchaseReturnId = this.$refs.purchaseReturnId.value;
+        if (purchaseReturnId) {
+          this.form.validateFields((err, values) => {
+            if (!err) {
+              that.confirmLoading = true
+              let httpurl = ''
+              let method = ''
+              if (!this.model.id) {
+                httpurl += this.url.add
+                method = 'post'
+              } else {
+                httpurl += this.url.edit
+                method = 'put'
+              }
+              if(!values.putOutTime){
+                values.putOutTime = '';
+              }else{
+                values.putOutTime = values.putOutTime.format(this.dateFormat);
+              }
+              let formData = Object.assign(this.model, values)
+              formData.detaillist = that.tabledata;
+              console.log('表单提交数据', formData)
+              httpAction(httpurl, formData, method)
+                .then(res => {
+                  console.log(res);
+                  if (res.success) {
+                    that.$message.success(res.message)
+                    that.$emit('ok')
+                    that.hasaddmain = true;
+                    that.$emit('close')
 
-                  /*
-                  if (!that.model.id) {
-                      that.$refs.inventorymodalForm.add();
+                    /*
+                    if (!that.model.id) {
+                        that.$refs.inventorymodalForm.add();
+                    } else {
+                        that.$refs.inventorymodalForm.edit(res.result.inventory);
+                    }
+                    that.$refs.inventorymodalForm.disableSubmit = false;*/
+                    //
+
+                    // this.$router.replace({
+                    //     path: '/purchase/PurchaseList'
+                    // });
                   } else {
-                      that.$refs.inventorymodalForm.edit(res.result.inventory);
+                    that.$message.warning(res.message)
                   }
-                  that.$refs.inventorymodalForm.disableSubmit = false;*/
-                  //
+                })
+                .finally(() => {
+                  that.confirmLoading = false
+                  that.close()
+                  that.$parent.closeRouteViewTab(this.$route.path)
+                  that.$router.push({ path:'/purchase/PurchasereturnList' });
+                })
+            }
+          })
+        } else {
+          this.$message.warning('请输入原单编号点击查询，查询原单信息！');
+        }
 
-                  // this.$router.replace({
-                  //     path: '/purchase/PurchaseList'
-                  // });
-                } else {
-                  that.$message.warning(res.message)
-                }
-              })
-              .finally(() => {
-                that.confirmLoading = false
-                that.close()
-                that.$parent.closeRouteViewTab(this.$route.path)
-                that.$router.push({ path:'/purchase/PurchasereturnList' });
-              })
-          }
-        })
       },
       handleCancel() {
         this.close()

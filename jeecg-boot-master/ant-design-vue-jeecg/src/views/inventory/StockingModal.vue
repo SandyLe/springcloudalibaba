@@ -29,7 +29,7 @@
               :labelCol="labelCol"
               :wrapperCol="wrapperCol"
               label="仓库">
-              <a-select v-decorator="['warehouseId', {}]" placeholder="请选择仓库" showSearch optionFilterProp="children"
+              <a-select v-decorator="['warehouseId', validatorRules.warehouseId]" placeholder="请选择仓库" showSearch optionFilterProp="children"
                         @change="mtlChange" notFoundContent="没有匹配的仓库"  >
                 <a-select-option value="">请选择</a-select-option>
                 <a-select-option v-for="(item, key) in warehouseList" :key="key" :value="item.id">
@@ -45,7 +45,7 @@
               :labelCol="labelCol"
               :wrapperCol="wrapperCol"
               label="产品">
-              <a-select v-decorator="['mtlId', {}]" placeholder="请选择产品" showSearch optionFilterProp="children"
+              <a-select v-decorator="['mtlId', validatorRules.mtlId]" placeholder="请选择产品" showSearch optionFilterProp="children"
                         @change="mtlChange" notFoundContent="没有匹配的产品"  >
                 <a-select-option value="">请选择</a-select-option>
                 <a-select-option v-for="(item, key) in mtlList" :key="key" :value="item.id">
@@ -87,7 +87,7 @@
               :labelCol="labelCol"
               :wrapperCol="wrapperCol"
               label="盘点数量">
-              <a-input placeholder="请输入数量" v-decorator="[ 'stockAmount', {}]" />
+              <a-input placeholder="请输入数量" v-decorator="[ 'stockAmount', validatorRules.stockAmount]" />
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="6">
@@ -159,9 +159,24 @@
         model: {},
         form: this.$form.createForm(this),
         validatorRules: {
-          rcontent: {
+          mtlId: {
+            rules: [
+              {required: true, message: '请选择产品!'}
+            ]
+          },
+          content: {
             rules: [
               { min: 0, max: 126, message: '长度不超过 126 个字符', trigger: 'blur' }
+            ]
+          },
+          warehouseId: {
+            rules: [
+              {required: true, message: '请选择仓库!'}
+            ]
+          },
+          stockAmount: {
+            rules: [
+              {required: true, message: '请输入盘点数量!'}
             ]
           }
         },

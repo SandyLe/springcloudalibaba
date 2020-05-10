@@ -69,9 +69,10 @@
         model: {},
         form: this.$form.createForm(this),
         validatorRules: {
-          name: {
+          code: {
             rules: [
-              { min: 0, max: 126, message: '长度不超过 126 个字符', trigger: 'blur' }
+              { min: 0, max: 126, message: '长度不超过 126 个字符', trigger: 'blur' },
+              {required: true, message: '批次号不能为空!'}
             ]
           }
         }

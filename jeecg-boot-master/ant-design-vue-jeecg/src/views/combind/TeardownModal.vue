@@ -8,7 +8,7 @@
                 :labelCol="labelCol"
                 :wrapperCol="wrapperCol"
                 label="产品">
-                <a-select v-decorator="['mtlId', {}]" placeholder="请选择产品"  showSearch
+                <a-select v-decorator="['mtlId', validatorRules.mtlId]" placeholder="请选择产品"  showSearch
                           optionFilterProp="children"
                           notFoundContent="无法找到，输入关键词Enter搜索" @keyup.enter.native="searchMtl" >
                   <a-select-option value="">请选择</a-select-option>
@@ -200,16 +200,11 @@ export default {
             },
             confirmLoading: false,
             validatorRules: {
-                vendorId: {},
-                businessDate: {
-                    rules: [{
-                        required: true,
-                        message: '请输入业务时间!'
-                    }]
-                },
-                amount: {},
-                description: {},
-                states: {}
+              mtlId: {
+                rules: [
+                  {required: true, message: '请选择产品!'}
+                ]
+              }
             },
             url: {
                 add: '/teardown/add',

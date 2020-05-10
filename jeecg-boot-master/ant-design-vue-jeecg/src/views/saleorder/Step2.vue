@@ -456,6 +456,10 @@
       },
       showTotalMount(data){
         this.saleOrder.totalamount = data;
+        this.model.payamount = data; // 默认填充
+        this.$nextTick(() => {
+          this.form.setFieldsValue(pick(this.model,'payamount'))
+        });
       },
       handleOk () {
         const that = this;
@@ -503,7 +507,7 @@
           if (res.success) {
             this.saleOrder = res.result;
             this.model = Object.assign({}, this.saleOrder);
-            // this.model.payamount = this.model.totalamount; // 默认填充
+            this.model.payamount = this.model.totalamount; // 默认填充
             this.$nextTick(() => {
               this.form.setFieldsValue(pick(this.model,'payamount','receiptType'))
             });
