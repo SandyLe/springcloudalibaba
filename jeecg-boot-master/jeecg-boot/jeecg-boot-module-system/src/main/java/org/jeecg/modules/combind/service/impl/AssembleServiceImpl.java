@@ -135,7 +135,7 @@ public class AssembleServiceImpl extends ServiceImpl<AssembleMapper, Assemble> i
 
         inventoryOutService.deleteBySourceId(assembledto.getId());
         if (StringUtils.isNotBlank(assembledto.getWarehouseId())) {
-            // 销售出库
+            // 配件出库
             InventoryOut inventoryOut = new InventoryOut(assembledto.getId(), assembledto.getCode(), BillType.STOREOUT.getId(), BillType.ASSEMBLE.getId(), assembledto.getWarehouseId(), new Date(), BillStatus.TOSTOCKOUT.getId());
             inventoryOut.setRowSts(RowSts.EFFECTIVE.getId());
             inventoryOutService.saveToInventoryOut(inventoryOut);

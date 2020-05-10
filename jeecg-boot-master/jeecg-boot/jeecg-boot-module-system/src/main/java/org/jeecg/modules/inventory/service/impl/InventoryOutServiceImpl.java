@@ -17,6 +17,7 @@ import org.jeecg.modules.changeorder.entity.ChangeOrderDtl;
 import org.jeecg.modules.changeorder.service.ChangeOrderDtlService;
 import org.jeecg.modules.changeorder.service.ChangeOrderService;
 import org.jeecg.modules.combind.entity.Assemble;
+import org.jeecg.modules.combind.entity.AssembleDtl;
 import org.jeecg.modules.combind.entity.Teardown;
 import org.jeecg.modules.combind.entity.TeardownDtl;
 import org.jeecg.modules.combind.service.AssembleDtlService;
@@ -36,6 +37,10 @@ import org.jeecg.modules.saleorder.entity.SaleOrder;
 import org.jeecg.modules.saleorder.entity.SaleOrderMtl;
 import org.jeecg.modules.saleorder.service.SaleOrderMtlService;
 import org.jeecg.modules.saleorder.service.SaleOrderService;
+import org.jeecg.modules.workorder.entity.WorkOrder;
+import org.jeecg.modules.workorder.entity.WorkOrderDtl;
+import org.jeecg.modules.workorder.service.WorkOrderDtlService;
+import org.jeecg.modules.workorder.service.WorkOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -81,6 +86,10 @@ public class InventoryOutServiceImpl extends ServiceImpl<InventoryOutMapper, Inv
     private ChangeOrderDtlService changeOrderDtlService;
     @Autowired
     private ChangeOrderService changeOrderService;
+    @Autowired
+    private WorkOrderService workOrderService;
+    @Autowired
+    private WorkOrderDtlService workOrderDtlService;
     @Autowired
     private BillCodeBuilderService billCodeBuilderService;
 
@@ -156,6 +165,16 @@ public class InventoryOutServiceImpl extends ServiceImpl<InventoryOutMapper, Inv
                     info.setBillStatus(BillStatus.STOCKED.getId());
                 }
                 changeOrderService.updateById(changeOrder);
+            } else if (mtls.get(0).getSourceBillType() == BillType.WORKORDER.getId()) {
+                WorkOrder workOrder = workOrderService.getById(info.getSourceId());
+                if (CollectionUtils.isNotEmpty(deliveryMtls)) {
+                    workOrder.setBillStatus(BillStatus.PARTICIALSTOCK.getId());
+                    info.setBillStatus(BillStatus.PARTICIALSTOCK.getId());
+                } else {
+                    workOrder.setBillStatus(BillStatus.STOCKED.getId());
+                    info.setBillStatus(BillStatus.STOCKED.getId());
+                }
+                workOrderService.updateById(workOrder);
             }
             updateById(info);
         }
@@ -195,8 +214,13 @@ public class InventoryOutServiceImpl extends ServiceImpl<InventoryOutMapper, Inv
                 });
             }
         } else if (inventoryOut.getSourceBillType() == BillType.ASSEMBLE.getId()) {
-            Assemble assemble = assembleService.getById(inventoryOut.getSourceId());
-            inventoryOutMtls.add(new InventoryOutMtl(inventoryOut.getId(), assemble.getId(), inventoryOut.getSourceBillType(), assemble.getMtlId(), assemble.getQuantity(), assemble.getUnitId(), RowSts.EFFECTIVE.getId()));
+            LambdaQueryWrapper<AssembleDtl> queryWrapper = new LambdaQueryWrapper<AssembleDtl>().eq(AssembleDtl::getSourceId, inventoryOut.getSourceId());
+            List<AssembleDtl> assembleDtls = assembleDtlService.list(queryWrapper);
+            if (CollectionUtils.isNotEmpty(assembleDtls)) {
+                assembleDtls.forEach(o ->{
+                    inventoryOutMtls.add(new InventoryOutMtl(inventoryOut.getId(), o.getSourceId(), inventoryOut.getSourceBillType(), o.getMtlId(), o.getQuantity(), o.getUnitId(), RowSts.EFFECTIVE.getId()));
+                });
+            }
         } else if (inventoryOut.getSourceBillType() == BillType.TEARDOWN.getId()) {
             Teardown teardown = teardownService.getById(inventoryOut.getSourceId());
             inventoryOutMtls.add(new InventoryOutMtl(inventoryOut.getId(), teardown.getId(), inventoryOut.getSourceBillType(), teardown.getMtlId(), teardown.getQuantity(), teardown.getUnitId(), RowSts.EFFECTIVE.getId()));
@@ -206,6 +230,14 @@ public class InventoryOutServiceImpl extends ServiceImpl<InventoryOutMapper, Inv
             if (CollectionUtils.isNotEmpty(allotDtls)) {
                 allotDtls.forEach(o ->{
                     inventoryOutMtls.add(new InventoryOutMtl(inventoryOut.getId(), o.getSourceId(), inventoryOut.getSourceBillType(), o.getNewMtlId(), o.getNewQuantity(), o.getNewUnitId(), RowSts.EFFECTIVE.getId()));
+                });
+            }
+        } else if (inventoryOut.getSourceBillType() == BillType.WORKORDER.getId()) {
+            LambdaQueryWrapper<WorkOrderDtl> queryWrapper = new LambdaQueryWrapper<WorkOrderDtl>().eq(WorkOrderDtl::getSourceId, inventoryOut.getSourceId());
+            List<WorkOrderDtl> workOrderDtls = workOrderDtlService.list(queryWrapper);
+            if (CollectionUtils.isNotEmpty(workOrderDtls)) {
+                workOrderDtls.forEach(o ->{
+                    inventoryOutMtls.add(new InventoryOutMtl(inventoryOut.getId(), o.getSourceId(), inventoryOut.getSourceBillType(), o.getMtlId(), o.getQuantity(), o.getUnitId(), RowSts.EFFECTIVE.getId()));
                 });
             }
         }

@@ -162,7 +162,8 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
                 || inventoryLog.getOperationId() == InventoryOperation.TEARDOWNOUT.getId()
                 || inventoryLog.getOperationId() == InventoryOperation.ASSEMBLEOUT.getId()
                 || inventoryLog.getOperationId() == InventoryOperation.ALLOTOUT.getId()
-                || inventoryLog.getOperationId() == InventoryOperation.CHANGEOUT.getId()) {
+                || inventoryLog.getOperationId() == InventoryOperation.CHANGEOUT.getId()
+                || inventoryLog.getOperationId() == InventoryOperation.WORKOUT.getId()) {
 
             if (null == inventory || inventory.getStockAmount().compareTo(inventoryLog.getOptAmount()) < 0) {
                 Material material = materialService.getById(inventoryLog.getMtlId());

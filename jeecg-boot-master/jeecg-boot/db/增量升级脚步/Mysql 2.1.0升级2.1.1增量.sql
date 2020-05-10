@@ -1028,7 +1028,133 @@ CREATE TABLE `sl_logistics_order_dtl` (
   `quantity` decimal(10,0) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+
+DROP TABLE IF EXISTS `sl_purchase_batch`;
+CREATE TABLE `sl_purchase_batch` (
+
+  `id` varchar(30) NOT NULL,
+  `name` varchar(50) DEFAULT NULL,
+  `code` varchar(30) DEFAULT NULL,
+  `content` varchar(100) DEFAULT NULL,
+  `create_time` datetime DEFAULT NULL,
+  `update_time` datetime DEFAULT NULL,
+  `create_by` varchar(30) DEFAULT NULL,
+  `update_by` varchar(30) DEFAULT NULL,
+  `row_sts` int(11) DEFAULT NULL,
+  `sort` int(11) DEFAULT NULL,
+
+  `company_id` varchar(50) DEFAULT NULL
+
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+DROP TABLE IF EXISTS `sl_purchase_cost`;
+CREATE TABLE `sl_purchase_cost` (
+  `id` varchar(30) NOT NULL,
+  `name` varchar(50) DEFAULT NULL,
+  `code` varchar(30) DEFAULT NULL,
+  `content` varchar(1000) DEFAULT NULL,
+  `create_time` datetime DEFAULT NULL,
+  `update_time` datetime DEFAULT NULL,
+  `create_by` varchar(30) DEFAULT NULL,
+  `update_by` varchar(30) DEFAULT NULL,
+  `mtl_id` varchar(30) DEFAULT NULL,
+  `average_price` decimal(10,4) DEFAULT NULL,
+  `unit_id` varchar(30) DEFAULT NULL,
+  `batch_no` varchar(30)  DEFAULT NULL,
+  `row_sts` int(11) DEFAULT NULL,
+  `sort` int(11) DEFAULT NULL,
+	`company_id` varchar(30) DEFAULT NULL
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+DROP TABLE IF EXISTS `sl_allot_dtl`;
+CREATE TABLE `sl_allot_dtl` (
+  `id` varchar(30) NOT NULL,
+  `name` varchar(50) DEFAULT NULL,
+  `code` varchar(30) DEFAULT NULL,
+  `content` varchar(1000) DEFAULT NULL,
+  `create_time` datetime DEFAULT NULL,
+  `update_time` datetime DEFAULT NULL,
+  `create_by` varchar(30) DEFAULT NULL,
+  `update_by` varchar(30) DEFAULT NULL,
+  `row_sts` int(11) DEFAULT NULL,
+  `sort` int(11) DEFAULT NULL,
+  `mtl_id` varchar(30) NOT NULL,
+  `source_id` varchar(30) NOT NULL,
+  `allot_amount` decimal(10,2) NOT NULL,
+  `unit_id` varchar(30) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+DROP TABLE IF EXISTS `sl_allot`;
+CREATE TABLE `sl_allot` (
+  `id` varchar(30) NOT NULL,
+  `name` varchar(50) DEFAULT NULL,
+  `code` varchar(30) DEFAULT NULL,
+  `content` varchar(1000) DEFAULT NULL,
+  `create_time` datetime DEFAULT NULL,
+  `update_time` datetime DEFAULT NULL,
+  `create_by` varchar(30) DEFAULT NULL,
+  `update_by` varchar(30) DEFAULT NULL,
+  `row_sts` int(11) DEFAULT NULL,
+  `sort` int(11) DEFAULT NULL,
+  `billdate` datetime DEFAULT NULL,
+  `from_warehouse_id` varchar(30) DEFAULT NULL,
+  `to_warehouse_id` varchar(30) DEFAULT NULL,
+  `unit_id` varchar(30) DEFAULT NULL,
+  `bill_status` int(3) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+DROP TABLE IF EXISTS `sl_inventory_dtl`;
+CREATE TABLE `sl_inventory_dtl` (
+  `id` varchar(30) NOT NULL,
+  `name` varchar(50) DEFAULT NULL,
+  `code` varchar(30) DEFAULT NULL,
+  `content` varchar(1000) DEFAULT NULL,
+  `create_time` datetime DEFAULT NULL,
+  `update_time` datetime DEFAULT NULL,
+  `create_by` varchar(30) DEFAULT NULL,
+  `update_by` varchar(30) DEFAULT NULL,
+  `source_id` varchar(30) DEFAULT NULL,
+  `warehouse_id` varchar(30) DEFAULT NULL,
+  `batch_no` varchar(30) DEFAULT NULL,
+  `unit_id` varchar(30) DEFAULT NULL,
+  `mtl_id` varchar(30) DEFAULT NULL,
+  `stock_amount` decimal(10,0) DEFAULT NULL,
+  `available_amount` decimal(10,0) DEFAULT NULL,
+  `row_sts` int(11) DEFAULT NULL,
+  `sort` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+DROP TABLE IF EXISTS `sl_inventory_opt_dtl`;
+CREATE TABLE `sl_inventory_opt_dtl` (
+  `id` varchar(30) NOT NULL,
+  `name` varchar(50) DEFAULT NULL,
+  `code` varchar(30) DEFAULT NULL,
+  `content` varchar(1000) DEFAULT NULL,
+  `create_time` datetime DEFAULT NULL,
+  `update_time` datetime DEFAULT NULL,
+  `create_by` varchar(30) DEFAULT NULL,
+  `update_by` varchar(30) DEFAULT NULL,
+  `source_id` varchar(30) DEFAULT NULL,
+  `dtl_id` varchar(30) DEFAULT NULL,
+  `opt_amount` decimal(10,0) DEFAULT NULL,
+  `source_bill_type` int(11) DEFAULT NULL,
+  `unit_id` varchar(30) DEFAULT NULL,
+  `operation_id` int(11) DEFAULT NULL,
+  `row_sts` int(11) DEFAULT NULL,
+  `sort` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 alter  table sl_customer_delivery_info CHANGE cdi_logistics cdi_logistics_id  VARCHAR(30) DEFAULT NULL COMMENT '物流公司';
 
 alter  table sl_saleorder_delivery_info CHANGE cdi_logistics cdi_logistics_id  VARCHAR(30) DEFAULT NULL COMMENT '物流公司';
 
+ALTER TABLE `sl_purchase` ADD COLUMN `batch_no` varchar(20) DEFAULT NULL COMMENT '批次号';
+ALTER TABLE `sl_inventory` ADD COLUMN `batch_no` varchar(20) DEFAULT NULL COMMENT '批次号';
+
+alter  table sl_inventory_log  ADD COLUMN `source_bill_id` varchar(20) DEFAULT NULL COMMENT '原单ID';
+ALTER TABLE `sl_inventory_log` ADD COLUMN `batch_no` varchar(20) DEFAULT NULL COMMENT '批次号';

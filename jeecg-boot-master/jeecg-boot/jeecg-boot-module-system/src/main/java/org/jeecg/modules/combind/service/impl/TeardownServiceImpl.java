@@ -90,7 +90,7 @@ public class TeardownServiceImpl extends ServiceImpl<TeardownMapper, Teardown> i
             inventoryInService.saveToInventoryIn(inventoryIn);
         }
         if (StringUtils.isNotBlank(teardownDto.getWarehouseId())) {
-            // 销售出库
+            // 拆卸出库
             InventoryOut inventoryOut = new InventoryOut(teardownDto.getId(), teardownDto.getCode(), BillType.STOREOUT.getId(), BillType.TEARDOWN.getId(), teardownDto.getWarehouseId(), new Date(), BillStatus.TOSTOCKOUT.getId());
             inventoryOut.setRowSts(RowSts.EFFECTIVE.getId());
             inventoryOutService.saveToInventoryOut(inventoryOut);

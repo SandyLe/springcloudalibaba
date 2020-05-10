@@ -30,6 +30,7 @@ public class Constants {
         OUTOPERATIONS.put(BillType.ASSEMBLE.getId(), InventoryOperation.ASSEMBLEOUT.getId());
         OUTOPERATIONS.put(BillType.TEARDOWN.getId(), InventoryOperation.TEARDOWNOUT.getId());
         OUTOPERATIONS.put(BillType.CHANGEORDER.getId(), InventoryOperation.CHANGEOUT.getId());
+        OUTOPERATIONS.put(BillType.WORKORDER.getId(), InventoryOperation.WORKOUT.getId());
 
         INOPERATIONS.put(BillType.SALERETURNORDER.getId(), InventoryOperation.SALERETURNIN.getId());
         INOPERATIONS.put(BillType.PURCHASEORDER.getId(), InventoryOperation.PURCHASEIN.getId());

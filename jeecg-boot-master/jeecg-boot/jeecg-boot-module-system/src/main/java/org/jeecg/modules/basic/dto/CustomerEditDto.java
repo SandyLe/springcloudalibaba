@@ -145,7 +145,7 @@ public class CustomerEditDto {
     @ApiModelProperty("详细地址")
     private String cdiAddress;
     @ApiModelProperty("物流公司")
-    private String cdiLogistics;
+    private String cdiLogisticsId;
     @ApiModelProperty("网点")
     private String cdiBranch;
     @ApiModelProperty("电话")
@@ -631,12 +631,12 @@ public class CustomerEditDto {
         this.cdiAddress = cdiAddress;
     }
 
-    public String getCdiLogistics() {
-        return cdiLogistics;
+    public String getCdiLogisticsId() {
+        return cdiLogisticsId;
     }
 
-    public void setCdiLogistics(String cdiLogistics) {
-        this.cdiLogistics = cdiLogistics;
+    public void setCdiLogisticsId(String cdiLogisticsId) {
+        this.cdiLogisticsId = cdiLogisticsId;
     }
 
     public String getCdiBranch() {
