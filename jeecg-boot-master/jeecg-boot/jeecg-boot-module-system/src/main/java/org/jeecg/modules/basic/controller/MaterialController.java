@@ -107,6 +107,22 @@ public class MaterialController {
         List<Material> list = materialService.list(queryWrapper);
         return Result.ok(list);
     }
+
+    /**
+     * 根据IDS获取
+     *
+     * @param ids
+     * @return
+     */
+    @ApiOperation(value = "根据IDS获取", notes = "根据IDS获取")
+    @GetMapping(value = "/getListByIds")
+    public Result<?> getListByIds(@RequestParam(name = "ids") List<String> ids) {
+        LambdaQueryWrapper<Material> queryWrapper = new LambdaQueryWrapper<Material>();
+        queryWrapper.in(Material::getId, ids);
+        List<Material> list = materialService.list(queryWrapper);
+        return Result.ok(list);
+    }
+
     /**
      * 添加
      *
