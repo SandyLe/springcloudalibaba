@@ -153,6 +153,10 @@ public class SysUser implements Serializable {
      * 同步工作流引擎1同步0不同步
      */
     private String activitiSync;
+    /**
+     * 平台标识
+     */
+    private Integer platformFlag;
 
 
 }
