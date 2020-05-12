@@ -76,10 +76,10 @@
               更多 <a-icon type="down" />
             </a>
             <a-menu slot="overlay">
-              <a-menu-item  v-if="record.billStatus < 4 && record.billStatus != -1">
+              <a-menu-item  v-if="record.billStatus != -1">
                 <a @click="popDetail(record)">详情打印</a>
               </a-menu-item>
-              <a-menu-item  v-if="record.billStatus < 4 && record.billStatus != -1">
+              <a-menu-item  v-if="record.billStatus != -1">
                 <a @click="addWorkOrder(record)">安排工单</a>
               </a-menu-item>
               <a-menu-item  v-if="record.billStatus < 4 && record.billStatus != -1">

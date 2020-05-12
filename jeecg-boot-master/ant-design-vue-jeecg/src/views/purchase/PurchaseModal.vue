@@ -156,7 +156,8 @@ import {
     getMaterialUnitList,
     purchasequeryById,
     purchasedetailDelete,
-    getPurchaseBatchList
+    getPurchaseBatchList,
+    getMaterialListByIds
 } from '@/api/api'
 export default {
     name: 'PurchasesModal',
@@ -302,6 +303,7 @@ export default {
                 }
             ],
             tabledata: [],
+            mtlIds: [],
             unEditable: true
         }
     },
@@ -355,20 +357,6 @@ export default {
                     this.$set(this.dictOptions, 'warehouse', res.result)
                 }
             });
-            //产品
-            searchMaterial('').then((res) => {
-                if (res.success) {
-                    if (res.result && res.result.length > 0) {
-                        res.result.forEach(function (option) {
-                            option.value = option.id;
-                            option.text = option.name;
-                        })
-                    }
-                    this.columns[0].list = res.result;
-                    this.$set(this.dictOptions, 0, this.columns[0])
-                    // this.$set(this.dictOptions, 'materiallist', res.result)
-                }
-            });
             //单位
             getMaterialUnitList('').then((res) => {
                 if (res.success) {
@@ -404,7 +392,22 @@ export default {
                             this.tabledata = res.result.detaillist;
                             for(let i=0;i < this.tabledata.length ; i++){
                                 this.tabledata[i].key = i;
+                                this.mtlIds[i] = this.tabledata[i].mtlId;
                             }
+                            //产品
+                            getMaterialListByIds({"ids": this.mtlIds.join(",")}).then((res) => {
+                              if (res.success) {
+                                if (res.result && res.result.length > 0) {
+                                  res.result.forEach(function (option) {
+                                    option.value = option.id;
+                                    option.text = option.name;
+                                  })
+                                }
+                                this.columns[0].list = res.result;
+                                this.$set(this.dictOptions, 0, this.columns[0])
+                                // this.$set(this.dictOptions, 'materiallist', res.result)
+                              }
+                            });
                         }
                         this.edit(res.result);
                     }
