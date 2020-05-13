@@ -19,7 +19,7 @@ import java.util.Objects;
  * <p>
  * 部门表
  * <p>
- * 
+ *
  * @Author Steve
  * @Since  2019-01-22
  */
@@ -27,12 +27,14 @@ import java.util.Objects;
 @TableName("sys_depart")
 public class SysDepart implements Serializable {
     private static final long serialVersionUID = 1L;
-    
+
 	/**ID*/
 	@TableId(type = IdType.ID_WORKER_STR)
 	private String id;
 	/**父机构ID*/
 	private String parentId;
+	/**所有父机构IDS*/
+	private String parentIds;
 	/**机构/部门名称*/
 	@Excel(name="机构/部门名称",width=15)
 	private String departName;
@@ -88,7 +90,7 @@ public class SysDepart implements Serializable {
 	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
 	private Date updateTime;
-	
+
 	/**
 	 * 重写equals方法
 	 */
@@ -132,9 +134,9 @@ public class SysDepart implements Serializable {
     @Override
     public int hashCode() {
 
-        return Objects.hash(super.hashCode(), id, parentId, departName, 
-        		departNameEn, departNameAbbr, departOrder, description,orgCategory, 
-        		orgType, orgCode, mobile, fax, address, memo, status, 
+        return Objects.hash(super.hashCode(), id, parentId, departName,
+        		departNameEn, departNameAbbr, departOrder, description,orgCategory,
+        		orgType, orgCode, mobile, fax, address, memo, status,
         		delFlag, createBy, createTime, updateBy, updateTime);
     }
 }
