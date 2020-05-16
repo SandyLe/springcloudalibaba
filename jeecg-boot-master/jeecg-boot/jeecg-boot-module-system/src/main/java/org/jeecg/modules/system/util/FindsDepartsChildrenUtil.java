@@ -1,6 +1,8 @@
 package org.jeecg.modules.system.util;
 
+import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.constant.CommonConstant;
+import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.RedisUtil;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.system.entity.SysDepart;
@@ -10,12 +12,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * <P>
  * 对应部门的表,处理并查找树级数据
  * <P>
- * 
+ *
  * @Author: Steve
  * @Date: 2019-01-22
  */
@@ -23,7 +26,7 @@ public class FindsDepartsChildrenUtil {
 
 	//部门树信息-树结构
 	//private static List<SysDepartTreeModel> sysDepartTreeList = new ArrayList<SysDepartTreeModel>();
-	
+
 	//部门树id-树结构
     //private static List<DepartIdModel> idList = new ArrayList<>();
 
@@ -72,16 +75,25 @@ public class FindsDepartsChildrenUtil {
                                                          List<DepartIdModel> departIdList) {
 
         List<SysDepartTreeModel> treeList = new ArrayList<>();
-        for (int i = 0; i < recordList.size(); i++) {
-            SysDepartTreeModel branch = recordList.get(i);
-            if (oConvertUtils.isEmpty(branch.getParentId())) {
-                treeList.add(branch);
-                DepartIdModel departIdModel = new DepartIdModel().convert(branch);
-                departIdList.add(departIdModel);
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        if (null != sysUser.getPlatformFlag() && sysUser.getPlatformFlag().intValue() == 1) {
+            SysDepartTreeModel branch = recordList.stream().filter(o->"0".equals(o.getId())).collect(Collectors.toList()).get(0);
+            treeList.add(branch);
+            DepartIdModel departIdModel = new DepartIdModel().convert(branch);
+            departIdList.add(departIdModel);
+        } else {
+            for (int i = 0; i < recordList.size(); i++) {
+                SysDepartTreeModel branch = recordList.get(i);
+//            if (oConvertUtils.isEmpty(branch.getParentId())) {
+                if ("0".equals(branch.getParentId())) {
+                    treeList.add(branch);
+                    DepartIdModel departIdModel = new DepartIdModel().convert(branch);
+                    departIdList.add(departIdModel);
+                }
             }
         }
         getGrandChildren(treeList,recordList,departIdList);
-        
+
         //idList = departIdList;
         return treeList;
     }
@@ -107,7 +119,7 @@ public class FindsDepartsChildrenUtil {
         }
 
     }
-    
+
 
     /**
      * queryTreeList的子方法 ====4====

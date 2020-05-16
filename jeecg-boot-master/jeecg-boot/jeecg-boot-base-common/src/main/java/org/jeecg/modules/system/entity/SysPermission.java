@@ -1,7 +1,5 @@
 package org.jeecg.modules.system.entity;
 
-import java.io.Serializable;
-import java.util.Date;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -9,7 +7,9 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 import org.jeecg.common.aspect.annotation.Dict;
-import org.jeecgframework.poi.excel.annotation.Excel;
+
+import java.io.Serializable;
+import java.util.Date;
 
 /**
  * <p>
@@ -151,7 +151,7 @@ public class SysPermission implements Serializable {
 	private Date updateTime;
 
 	/**按钮权限状态(0无效1有效)*/
-	private java.lang.String status;
+	private String status;
 
 	/**alwaysShow*/
     private boolean alwaysShow;
@@ -160,6 +160,7 @@ public class SysPermission implements Serializable {
     /** 外链菜单打开方式 0/内部打开 1/外部打开 */
     private boolean internalOrExternal;
 	/*update_end author:wuxianquan date:20190908 for:实体增加字段 */
+
 	/**
 	 * 企业ID
 	 */

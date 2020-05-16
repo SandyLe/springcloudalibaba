@@ -72,7 +72,9 @@ public class SysDepartController {
 //			if (CollectionUtils.isEmpty(list)) {
 //				list = sysDepartService.queryTreeList();
 //			}
-			List<SysDepartTreeModel> list = sysDepartService.queryTreeList();
+
+			LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+			List<SysDepartTreeModel> list = sysDepartService.queryTreeList(sysUser.getCompanyId());
 			result.setResult(list);
 			result.setSuccess(true);
 		} catch (Exception e) {
@@ -106,13 +108,14 @@ public class SysDepartController {
 	 * @return
 	 */
 	@RequestMapping(value = "/add", method = RequestMethod.POST)
-	@CacheEvict(value= {CacheConstant.SYS_DEPARTS_CACHE,CacheConstant.SYS_DEPART_IDS_CACHE}, allEntries=true)
+
 	public Result<SysDepart> add(@RequestBody SysDepart sysDepart, HttpServletRequest request) {
 		Result<SysDepart> result = new Result<SysDepart>();
 		String username = JwtUtil.getUserNameByToken(request);
 		try {
 			sysDepart.setCreateBy(username);
-			sysDepartService.saveDepartData(sysDepart, username);
+			LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+			sysDepartService.saveDepartData(sysDepart, username, sysUser.getCompanyId());
 			//清除部门树内存
 			// FindsDepartsChildrenUtil.clearSysDepartTreeList();
 			// FindsDepartsChildrenUtil.clearDepartIdModel();

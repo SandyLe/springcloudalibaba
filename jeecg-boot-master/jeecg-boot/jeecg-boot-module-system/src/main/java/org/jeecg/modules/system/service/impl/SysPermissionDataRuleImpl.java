@@ -6,8 +6,12 @@ import java.util.Set;
 
 import javax.annotation.Resource;
 
+import com.google.common.collect.Lists;
+import org.apache.commons.lang.StringUtils;
+import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.system.query.QueryGenerator;
+import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.system.entity.SysPermission;
 import org.jeecg.modules.system.entity.SysPermissionDataRule;
@@ -41,8 +45,16 @@ public class SysPermissionDataRuleImpl extends ServiceImpl<SysPermissionDataRule
 	 */
 	@Override
 	public List<SysPermissionDataRule> getPermRuleListByPermId(String permissionId) {
+
+		List<String> ccids = Lists.newArrayList("0");
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		if (sysUser.getPlatformFlag() == CommonConstant.STATUS_INT_0) {
+			ccids.add(sysUser.getCompanyId());
+		}
+
 		LambdaQueryWrapper<SysPermissionDataRule> query = new LambdaQueryWrapper<SysPermissionDataRule>();
 		query.eq(SysPermissionDataRule::getPermissionId, permissionId);
+		query.in(SysPermissionDataRule::getCompanyId, ccids);
 		query.orderByDesc(SysPermissionDataRule::getCreateTime);
 		List<SysPermissionDataRule> permRuleList = this.list(query);
 		return permRuleList;
@@ -58,8 +70,8 @@ public class SysPermissionDataRuleImpl extends ServiceImpl<SysPermissionDataRule
 	}
 
 	@Override
-	public List<SysPermissionDataRule> queryPermissionDataRules(String username,String permissionId) {
-		List<String> idsList = this.baseMapper.queryDataRuleIds(username, permissionId);
+	public List<SysPermissionDataRule> queryPermissionDataRules(String username,List<String> permissionIds) {
+		List<String> idsList = this.baseMapper.queryDataRuleIds(username, StringUtils.join(permissionIds, ","));
 		if(idsList==null || idsList.size()==0 || idsList.get(0)==null ) {
 			return null;
 		}
@@ -108,7 +120,7 @@ public class SysPermissionDataRuleImpl extends ServiceImpl<SysPermissionDataRule
 				}
 			}
 		}
-		
+
 	}
 
 }

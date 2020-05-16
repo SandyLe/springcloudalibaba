@@ -8,6 +8,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.aspect.annotation.PermissionData;
@@ -106,22 +107,24 @@ public class SaleOrderReturnController {
 
         IPage<SaleOrderReturn> pageList = saleOrderReturnService.page(page, queryWrapper);
         List<SaleOrderReturn> saleOrderReturnList = pageList.getRecords();
-        List<String> customerIds = saleOrderReturnList.stream().map(SaleOrderReturn::getCustomerId).collect(Collectors.toList());
-        List<String> warehouseIds = saleOrderReturnList.stream().map(SaleOrderReturn::getWarehouseId).collect(Collectors.toList());
-        Collection<Customer> customers = customerService.listByIds(customerIds);
-        Collection<Warehouse> warehouses = warehouseService.listByIds(warehouseIds);
-        Collection<DictModel> sysDict = iSysDictService.queryDictItemsByCode("receipt_type");
-        Collection<DictModel> channelDicts = iSysDictService.queryDictItemsByCode("channel");
-        Map<String, String> customerMap = customers.stream().collect(Collectors.toMap(Customer::getId, Customer::getName));
-        Map<String, String> warehouseMap = warehouses.stream().collect(Collectors.toMap(Warehouse:: getId, Warehouse:: getName));
-        Map<String, String> dictModelMap = sysDict.stream().collect(Collectors.toMap(DictModel::getValue, DictModel::getText));
-        Map<String, String> channelMap = channelDicts.stream().collect(Collectors.toMap(DictModel::getValue, DictModel::getText));
-        saleOrderReturnList.stream().forEach(o->{
-            o.setWarehouse(warehouseMap.get(o.getWarehouseId()));
-            o.setCustomer(customerMap.get(o.getCustomerId()));
-            o.setPayTypeName(dictModelMap.get(o.getPayType()));
-            o.setBillStatusName(BillStatus.getName(o.getBillStatus()));
-        });
+        if (CollectionUtils.isNotEmpty(saleOrderReturnList)) {
+            List<String> customerIds = saleOrderReturnList.stream().map(SaleOrderReturn::getCustomerId).collect(Collectors.toList());
+            List<String> warehouseIds = saleOrderReturnList.stream().map(SaleOrderReturn::getWarehouseId).collect(Collectors.toList());
+            Collection<Customer> customers = customerService.listByIds(customerIds);
+            Collection<Warehouse> warehouses = warehouseService.listByIds(warehouseIds);
+            Collection<DictModel> sysDict = iSysDictService.queryDictItemsByCode("receipt_type");
+            Collection<DictModel> channelDicts = iSysDictService.queryDictItemsByCode("channel");
+            Map<String, String> customerMap = customers.stream().collect(Collectors.toMap(Customer::getId, Customer::getName));
+            Map<String, String> warehouseMap = warehouses.stream().collect(Collectors.toMap(Warehouse:: getId, Warehouse:: getName));
+            Map<String, String> dictModelMap = sysDict.stream().collect(Collectors.toMap(DictModel::getValue, DictModel::getText));
+            Map<String, String> channelMap = channelDicts.stream().collect(Collectors.toMap(DictModel::getValue, DictModel::getText));
+            saleOrderReturnList.stream().forEach(o->{
+                o.setWarehouse(warehouseMap.get(o.getWarehouseId()));
+                o.setCustomer(customerMap.get(o.getCustomerId()));
+                o.setPayTypeName(dictModelMap.get(o.getPayType()));
+                o.setBillStatusName(BillStatus.getName(o.getBillStatus()));
+            });
+        }
 
         log.info("查询当前页：" + pageList.getCurrent());
         log.info("查询当前页数量：" + pageList.getSize());

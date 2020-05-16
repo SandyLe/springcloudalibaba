@@ -41,21 +41,21 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @Slf4j
 public class PermissionDataAspect {
-	
+
 	@Autowired
 	private ISysPermissionService sysPermissionService;
-	
+
 	@Autowired
 	private ISysPermissionDataRuleService sysPermissionDataRuleService;
-	
+
 	@Autowired
 	private ISysUserService sysUserService;
-	
+
 	@Pointcut("@annotation(org.jeecg.common.aspect.annotation.PermissionData)")
 	public void pointCut() {
-		
+
 	}
-	
+
 	@Around("pointCut()")
 	public Object arround(ProceedingJoinPoint point) throws  Throwable{
 		HttpServletRequest request = SpringContextUtils.getHttpServletRequest();
@@ -94,10 +94,10 @@ public class PermissionDataAspect {
 			String username = JwtUtil.getUserNameByToken(request);
 			List<SysPermissionDataRule> dataRules = new ArrayList<SysPermissionDataRule>();
 			for (SysPermission sysPermission : currentSyspermission) {
-				List<SysPermissionDataRule> temp = sysPermissionDataRuleService.queryPermissionDataRules(username, sysPermission.getId());
+				/*List<SysPermissionDataRule> temp = sysPermissionDataRuleService.queryPermissionDataRules(username, sysPermission.getId());
 				if(temp!=null && temp.size()>0) {
 					dataRules.addAll(temp);
-				}
+				}*/
 			}
 			if(dataRules!=null && dataRules.size()>0) {
 				JeecgDataAutorUtils.installDataSearchConditon(request, dataRules);
@@ -107,7 +107,7 @@ public class PermissionDataAspect {
 		}
 		return  point.proceed();
 	}
-	
+
 	private String filterUrl(String requestPath){
 		String url = "";
 		if(oConvertUtils.isNotEmpty(requestPath)){
@@ -122,7 +122,7 @@ public class PermissionDataAspect {
 		}
 		return url;
 	}
-	
+
 	/**
 	 * 获取请求地址
 	 * @param request
@@ -147,7 +147,7 @@ public class PermissionDataAspect {
 		requestPath = requestPath.substring(request.getContextPath().length() + 1);// 去掉项目路径
 		return filterUrl(requestPath);
 	}
-	
+
 	private boolean moHuContain(List<String> list,String key){
 		for(String str : list){
 			if(key.contains(str)){
@@ -156,7 +156,7 @@ public class PermissionDataAspect {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * 匹配前端传过来的地址 匹配成功返回正则地址
 	 * AntPathMatcher匹配地址
@@ -175,5 +175,5 @@ public class PermissionDataAspect {
 		}
 		return null;
 	}
-	
+
 }

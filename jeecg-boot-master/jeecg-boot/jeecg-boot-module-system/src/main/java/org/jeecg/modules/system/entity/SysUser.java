@@ -157,6 +157,10 @@ public class SysUser implements Serializable {
      * 平台标识
      */
     private Integer platformFlag;
+    /**
+     * 企业ID
+     */
+    private String companyId;
 
 
 }

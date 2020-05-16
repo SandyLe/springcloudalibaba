@@ -6,8 +6,10 @@ import java.util.List;
 import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.constant.CommonConstant;
+import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.YouBianCodeUtil;
 import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.mapper.SysDepartMapper;
@@ -15,6 +17,7 @@ import org.jeecg.modules.system.model.DepartIdModel;
 import org.jeecg.modules.system.model.SysDepartTreeModel;
 import org.jeecg.modules.system.service.ISysDepartService;
 import org.jeecg.modules.system.util.FindsDepartsChildrenUtil;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,13 +41,16 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 	/**
 	 * queryTreeList 对应 queryTreeList 查询所有的部门数据,以树结构形式响应给前端
 	 */
-	@Cacheable(value = CacheConstant.SYS_DEPARTS_CACHE)
+	@Cacheable(value = CacheConstant.SYS_DEPARTS_CACHE, key = "#id")
 	@Override
-	public List<SysDepartTreeModel> queryTreeList() {
+	public List<SysDepartTreeModel> queryTreeList(String id) {
+
 		LambdaQueryWrapper<SysDepart> query = new LambdaQueryWrapper<SysDepart>();
 		query.eq(SysDepart::getDelFlag, CommonConstant.DEL_FLAG_0.toString());
+		query.like(SysDepart::getParentIds, "/" + id + "/");
 		query.orderByAsc(SysDepart::getDepartOrder);
 		List<SysDepart> list = this.list(query);
+		list.add(0, this.getById(id));
 		// 调用wrapTreeDataToTreeList方法生成树状数据
 		List<SysDepartTreeModel> listResult = FindsDepartsChildrenUtil.wrapTreeDataToTreeList(list);
 		return listResult;
@@ -66,8 +72,8 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 	 * saveDepartData 对应 add 保存用户在页面添加的新的部门对象数据
 	 */
 	@Override
-	@Transactional
-	public void saveDepartData(SysDepart sysDepart, String username) {
+	@Transactional@CacheEvict(value= {CacheConstant.SYS_DEPARTS_CACHE,CacheConstant.SYS_DEPART_IDS_CACHE}, allEntries=true, key = "#companyId")
+	public void saveDepartData(SysDepart sysDepart, String username, String companyId) {
 		if (sysDepart != null && username != null) {
 			if (sysDepart.getParentId() == null) {
 				sysDepart.setParentId("");
@@ -86,7 +92,12 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 
 			SysDepart parent = getById(parentId);
 			if (null != parent) {
-				sysDepart.setParentIds(parent.getParentIds() + "\\" + parentId);
+				String parentIds = parent.getParentIds();
+				if (StringUtils.isNotBlank(parentIds)) {
+					parentIds = parentIds.indexOf("/") != 0 ? ("/" + parentIds) : parentIds;
+					parentIds = parentIds.endsWith("/") ? parentIds : (parentIds + "/") ;
+				}
+				sysDepart.setParentIds(parent.getParentIds() + "/" + parentId + "/");
 			}
 
 			this.save(sysDepart);

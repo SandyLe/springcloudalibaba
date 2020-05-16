@@ -14,13 +14,23 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.google.common.collect.Lists;
 import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.constant.CommonConstant;
+import org.jeecg.common.system.api.ISysPermissionAPI;
 import org.jeecg.common.system.util.JeecgDataAutorUtils;
 import org.jeecg.common.system.util.JwtUtil;
+import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.common.util.SpringContextUtils;
 import org.jeecg.common.util.SqlInjectionUtil;
 import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.modules.system.entity.SysPermission;
 import org.jeecg.modules.system.entity.SysPermissionDataRule;
 import org.springframework.util.NumberUtils;
 
@@ -94,7 +104,9 @@ public class QueryGenerator {
 
 		//区间条件组装 模糊查询 高级查询组装 简单排序 权限查询
 		PropertyDescriptor origDescriptors[] = PropertyUtils.getPropertyDescriptors(searchObj);
-		Map<String,SysPermissionDataRule> ruleMap = getRuleMap();
+		String billType = searchObj.getClass().getSimpleName();
+		billType = StringUtils.uncapitalize(billType);
+		Map<String,SysPermissionDataRule> ruleMap = getRuleMapNew(billType);
 
 		//权限规则自定义SQL表达式
 		for (String c : ruleMap.keySet()) {
@@ -440,12 +452,59 @@ public class QueryGenerator {
 	}
 
 
+	/**
+	 *
+	 * @return
+	 */
+	public static Map<String, SysPermissionDataRule> getRuleMapNew(String billType) {
+
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		ISysPermissionAPI iSysPermissionAPI = SpringContextUtils.getBean(ISysPermissionAPI.class);
+
+		Map<String, SysPermissionDataRule> ruleMap = new HashMap<String, SysPermissionDataRule>();
+		LambdaQueryWrapper<SysPermission> query = new LambdaQueryWrapper<SysPermission>();
+		query.eq(SysPermission::getPcode, billType);
+		query.eq(SysPermission::getMenuType, "2");
+		query.in(SysPermission::getCompanyId, Lists.newArrayList("0", sysUser.getCompanyId()));
+		List<SysPermission> currentSyspermission = iSysPermissionAPI.list(query);
+		List<SysPermissionDataRule> list = Lists.newArrayList();
+		if (CollectionUtils.isNotEmpty(currentSyspermission)) {
+			List<String> syspIs = currentSyspermission.stream().map(SysPermission::getId).collect(Collectors.toList());
+			list = iSysPermissionAPI.queryPermissionDataRules(sysUser.getUsername(), syspIs);
+
+			SysPermissionDataRule spdr = new SysPermissionDataRule();
+			spdr.setRuleColumn("companyId");
+			spdr.setRuleConditions("=");
+			spdr.setRuleValue(sysUser.getCompanyId());
+			list.add(spdr);
+		}
+		if(CollectionUtils.isNotEmpty(list)){
+			if(list.get(0)==null){
+				return ruleMap;
+			}
+			for (SysPermissionDataRule rule : list) {
+				String column = rule.getRuleColumn();
+				if(QueryRuleEnum.SQL_RULES.getValue().equals(rule.getRuleConditions())) {
+					column = SQL_RULES_COLUMN+rule.getId();
+				}
+				ruleMap.put(column, rule);
+			}
+		}
+		return ruleMap;
+	}
 
 	/**
 	 *
 	 * @return
 	 */
 	public static Map<String, SysPermissionDataRule> getRuleMap() {
+		ISysPermissionAPI iSysPermissionAPI = SpringContextUtils.getBean(ISysPermissionAPI.class);
+
+		LambdaQueryWrapper<SysPermission> query = new LambdaQueryWrapper<SysPermission>();
+		query.eq(SysPermission::getMenuType,2);
+		query.eq(SysPermission::getDelFlag,0);
+		query.eq(SysPermission::getUrl, "/saleOrder/getPage");
+		List<SysPermission> currentSyspermission = iSysPermissionAPI.list(query);
 		Map<String, SysPermissionDataRule> ruleMap = new HashMap<String, SysPermissionDataRule>();
 		List<SysPermissionDataRule> list =JeecgDataAutorUtils.loadDataSearchConditon();
 		if(list != null&&list.size()>0){

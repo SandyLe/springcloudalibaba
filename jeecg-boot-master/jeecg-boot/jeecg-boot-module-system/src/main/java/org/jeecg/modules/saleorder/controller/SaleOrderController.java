@@ -112,7 +112,7 @@ public class SaleOrderController {
      */
     @ApiOperation(value = "获取销售订单数据列表", notes = "获取所有销售订单数据列表")
     @GetMapping(value = "/getPage")
-    @PermissionData
+//    @PermissionData
     public Result<?> list(SaleOrder saleOrder, @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo, @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
                           HttpServletRequest req) {
         QueryWrapper<SaleOrder> queryWrapper = QueryGenerator.initQueryWrapper(saleOrder, req.getParameterMap());

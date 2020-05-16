@@ -14,7 +14,10 @@ public class SysPermissionTree implements Serializable {
 	 * id
 	 */
 	private String id;
-
+	/**
+	 * 菜单权限标识
+	 */
+	private String pcode;
 	private String key;
 	private String title;
 
@@ -51,7 +54,7 @@ public class SysPermissionTree implements Serializable {
 	 * 跳转网页链接
 	 */
 	private String url;
-	
+
 	/**
 	 * 一级菜单跳转地址
 	 */
@@ -71,7 +74,7 @@ public class SysPermissionTree implements Serializable {
 	 * 是否叶子节点: 1:是 0:不是
 	 */
 	private boolean isLeaf;
-	
+
 	/**
 	 * 是否路由菜单: 0:不是  1:是（默认值1）
 	 */
@@ -118,7 +121,7 @@ public class SysPermissionTree implements Serializable {
     private boolean alwaysShow;
     /**是否隐藏路由菜单: 0否,1是（默认值0）*/
     private boolean hidden;
-    
+
     /**按钮权限状态(0无效1有效)*/
 	private java.lang.String status;
 
@@ -134,6 +137,7 @@ public class SysPermissionTree implements Serializable {
 	public SysPermissionTree(SysPermission permission) {
 		this.key = permission.getId();
 		this.id = permission.getId();
+		this.pcode = permission.getPcode();
 		this.perms = permission.getPerms();
 		this.permsType = permission.getPermsType();
 		this.component = permission.getComponent();
@@ -391,4 +395,12 @@ public class SysPermissionTree implements Serializable {
 		this.internalOrExternal = internalOrExternal;
 	}
 	/*update_end author:wuxianquan date:20190908 for:get set 方法 */
+
+	public String getPcode() {
+		return pcode;
+	}
+
+	public void setPcode(String pcode) {
+		this.pcode = pcode;
+	}
 }

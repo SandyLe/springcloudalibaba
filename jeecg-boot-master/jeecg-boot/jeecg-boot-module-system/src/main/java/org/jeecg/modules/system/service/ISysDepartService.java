@@ -21,7 +21,7 @@ public interface ISysDepartService extends IService<SysDepart>{
      * 查询所有部门信息,并分节点进行显示
      * @return
      */
-    List<SysDepartTreeModel> queryTreeList();
+    List<SysDepartTreeModel> queryTreeList(String id);
 
     /**
      * 查询所有部门DepartId信息,并分节点进行显示
@@ -33,7 +33,7 @@ public interface ISysDepartService extends IService<SysDepart>{
      * 保存部门数据
      * @param sysDepart
      */
-    void saveDepartData(SysDepart sysDepart,String username);
+    void saveDepartData(SysDepart sysDepart,String username,String companyId);
 
     /**
      * 更新depart数据
@@ -80,7 +80,7 @@ public interface ISysDepartService extends IService<SysDepart>{
 
 	 /**
      * 根据部门id批量删除并删除其可能存在的子级部门
-     * @param id
+     * @param ids
      * @return
      */
 	void deleteBatchWithChildren(List<String> ids);

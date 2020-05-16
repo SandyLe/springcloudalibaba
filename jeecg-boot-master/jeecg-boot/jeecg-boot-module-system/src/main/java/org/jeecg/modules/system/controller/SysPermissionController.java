@@ -7,11 +7,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.jeecg.common.api.vo.Result;
-import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.system.util.JwtUtil;
+import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.MD5Util;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.system.entity.SysPermission;
@@ -24,8 +26,6 @@ import org.jeecg.modules.system.service.ISysPermissionService;
 import org.jeecg.modules.system.service.ISysRolePermissionService;
 import org.jeecg.modules.system.util.PermissionDataUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -219,6 +219,10 @@ public class SysPermissionController {
 		Result<SysPermission> result = new Result<SysPermission>();
 		try {
 			permission = PermissionDataUtil.intelligentProcessData(permission);
+			if (StringUtils.isBlank(permission.getCompanyId())) {
+				LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+				permission.setCompanyId(sysUser.getCompanyId());
+			}
 			sysPermissionService.addPermission(permission);
 			result.success("添加成功！");
 		} catch (Exception e) {
@@ -239,6 +243,10 @@ public class SysPermissionController {
 		Result<SysPermission> result = new Result<>();
 		try {
 			permission = PermissionDataUtil.intelligentProcessData(permission);
+			if (StringUtils.isBlank(permission.getCompanyId())) {
+				LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+				permission.setCompanyId(sysUser.getCompanyId());
+			}
 			sysPermissionService.editPermission(permission);
 			result.success("修改成功！");
 		} catch (Exception e) {
@@ -653,6 +661,11 @@ public class SysPermissionController {
 		Result<SysPermissionDataRule> result = new Result<SysPermissionDataRule>();
 		try {
 			sysPermissionDataRule.setCreateTime(new Date());
+
+			if (StringUtils.isBlank(sysPermissionDataRule.getCompanyId())) {
+				LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+				sysPermissionDataRule.setCompanyId(sysUser.getCompanyId());
+			}
 			sysPermissionDataRuleService.savePermissionDataRule(sysPermissionDataRule);
 			result.success("添加成功！");
 		} catch (Exception e) {
@@ -666,6 +679,10 @@ public class SysPermissionController {
 	public Result<SysPermissionDataRule> editPermissionRule(@RequestBody SysPermissionDataRule sysPermissionDataRule) {
 		Result<SysPermissionDataRule> result = new Result<SysPermissionDataRule>();
 		try {
+			if (StringUtils.isBlank(sysPermissionDataRule.getCompanyId())) {
+				LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+				sysPermissionDataRule.setCompanyId(sysUser.getCompanyId());
+			}
 			sysPermissionDataRuleService.saveOrUpdate(sysPermissionDataRule);
 			result.success("更新成功！");
 		} catch (Exception e) {

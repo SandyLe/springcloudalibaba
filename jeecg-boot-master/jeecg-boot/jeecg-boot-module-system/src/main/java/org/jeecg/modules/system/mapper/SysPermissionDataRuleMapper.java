@@ -16,13 +16,13 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * @since 2019-04-01
  */
 public interface SysPermissionDataRuleMapper extends BaseMapper<SysPermissionDataRule> {
-	
+
 	/**
 	  * 根据用户名和权限id查询
 	 * @param username
-	 * @param permissionId
+	 * @param permissionIds
 	 * @return
 	 */
-	public List<String> queryDataRuleIds(@Param("username") String username,@Param("permissionId") String permissionId);
+	public List<String> queryDataRuleIds(@Param("username") String username,@Param("permissionIds") String permissionIds);
 
 }

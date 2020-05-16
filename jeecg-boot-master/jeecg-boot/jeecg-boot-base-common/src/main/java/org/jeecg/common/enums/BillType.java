@@ -2,12 +2,12 @@ package org.jeecg.common.enums;
 
 public enum BillType implements AbstractEnum {
 
-    SALEORDER(0, "sale_order", "销售订单"),
+    SALEORDER(0, "saleOrder", "销售订单"),
     CUSTOMER(1, "customer", "客户"),
     VENDOR(2, "vendor", "供应商"),
-    SALERETURNORDER(3, "sale_return_order", "销售退货"),
-    PURCHASEORDER(4, "purchase_order", "采购订单"),
-    PURCHASERETURNORDER(5, "purchase_return_order", "采购退货"),
+    SALERETURNORDER(3, "saleOrderReturn", "销售退货"),
+    PURCHASEORDER(4, "purchase", "采购订单"),
+    PURCHASERETURNORDER(5, "purchaseReturn", "采购退货"),
     MATERIAL(6, "material", "产品"),
     STOCKING(7, "stocking", "库存盘点"),
     INVENTORY(8, "inventory", "库存单"),
@@ -18,10 +18,10 @@ public enum BillType implements AbstractEnum {
     ALLOT(13, "allot", "调拨单"),
     ASSEMBLE(14, "assemble", "组装单"),
     TEARDOWN(15, "teardown", "拆卸单"),
-    WORKORDER(16, "workorder", "工单"),
-    REPAIR(17, "repair", "维修单"),
-    CHANGEORDER(18, "changeorder", "换货单"),
-    LOGISTICSORDER(19, "logisticsorder", "物流单");
+    WORKORDER(16, "workOrder", "工单"),
+    REPAIR(17, "repairOrder", "维修单"),
+    CHANGEORDER(18, "changeOrder", "换货单"),
+    LOGISTICSORDER(19, "logisticsOrder", "物流单");
 
     private Integer id;
     private String code;
