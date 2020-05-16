@@ -49,6 +49,22 @@
         </a-form-item>
 
         <a-form-item
+          v-show="!show"
+          :labelCol="labelCol"
+          :wrapperCol="wrapperCol"
+          label="权限标识">
+          <a-select v-decorator="['pcode', validatorRules.pcode]" placeholder="请选择单据类型" showSearch optionFilterProp="children"
+                    notFoundContent="没有匹配的单据类型"  >
+            <a-select-option value="">请选择</a-select-option>
+            <a-select-option v-for="(item, key) in billTypeList" :key="key" :value="item.code">
+                    <span style="display: inline-block;width: 100%" :title=" item.name || item.code ">
+                      {{ item.name || item.code }}
+                    </span>
+            </a-select-option>
+          </a-select>
+        </a-form-item>
+
+        <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="菜单路径">
@@ -175,7 +191,7 @@
 </template>
 
 <script>
-  import {addPermission,editPermission,queryTreeList} from '@/api/api'
+  import {getBillTypeList, addPermission,editPermission,queryTreeList} from '@/api/api'
   import Icons from './icon/Icons'
   import pick from 'lodash.pick'
 
@@ -216,7 +232,8 @@
         form: this.$form.createForm(this),
 
         iconChooseVisible: false,
-        validateStatus:""
+        validateStatus:"",
+        billTypeList: []
       }
     },
     computed:{
@@ -226,6 +243,7 @@
           component:{rules: [{ required: this.show, message: '请输入前端组件!' }]},
           url:{rules: [{ required: this.show, message: '请输入菜单路径!' }]},
           permsType:{rules: [{ required: true, message: '请输入授权策略!' }]},
+          pcode:{rules: [{ required: true, message: '请选择权限标识!' }]},
           sortNo:{initialValue:1.0},
         }
       }
@@ -258,6 +276,7 @@
         this.resetScreenSize(); // 调用此方法,根据屏幕宽度自适应调整抽屉的宽度
         this.form.resetFields();
         this.model = Object.assign({}, record);
+
         //--------------------------------------------------------------------------------------------------
         //根据菜单类型，动态展示页面字段
         console.log(record)
@@ -296,7 +315,7 @@
 
         this.visible = true;
         this.loadTree();
-        let fieldsVal = pick(this.model,'name','perms','permsType','component','url','sortNo','menuType','status');
+        let fieldsVal = pick(this.model,'name','perms','permsType','component','url','sortNo','menuType','status','pcode');
         this.$nextTick(() => {
           this.form.setFieldsValue(fieldsVal)
         });
@@ -395,6 +414,11 @@
         }
       },
       initDictConfig() {
+        getBillTypeList().then((res) => {
+          if (res.success) {
+            this.billTypeList = res.result;
+          }
+        })
       },
       handleParentIdChange(value){
         if(!value){
