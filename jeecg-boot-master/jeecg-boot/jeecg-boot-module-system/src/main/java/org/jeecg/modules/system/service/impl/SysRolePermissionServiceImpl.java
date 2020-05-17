@@ -31,14 +31,14 @@ import org.springframework.stereotype.Service;
 public class SysRolePermissionServiceImpl extends ServiceImpl<SysRolePermissionMapper, SysRolePermission> implements ISysRolePermissionService {
 
 	@Override
-	public void saveRolePermission(String roleId, String permissionIds) {
+	public void saveRolePermission(String roleId, String permissionIds, Integer permissionType) {
 		LambdaQueryWrapper<SysRolePermission> query = new QueryWrapper<SysRolePermission>().lambda().eq(SysRolePermission::getRoleId, roleId);
 		this.remove(query);
 		List<SysRolePermission> list = new ArrayList<SysRolePermission>();
         String[] arr = permissionIds.split(",");
 		for (String p : arr) {
 			if(oConvertUtils.isNotEmpty(p)) {
-				SysRolePermission rolepms = new SysRolePermission(roleId, p);
+				SysRolePermission rolepms = new SysRolePermission(roleId, p, permissionType);
 				list.add(rolepms);
 			}
 		}
@@ -46,19 +46,19 @@ public class SysRolePermissionServiceImpl extends ServiceImpl<SysRolePermissionM
 	}
 
 	@Override
-	public void saveRolePermission(String roleId, String permissionIds, String lastPermissionIds) {
+	public void saveRolePermission(String roleId, String permissionIds, String lastPermissionIds, Integer permissionType) {
 		List<String> add = getDiff(lastPermissionIds,permissionIds);
 		if(add!=null && add.size()>0) {
 			List<SysRolePermission> list = new ArrayList<SysRolePermission>();
 			for (String p : add) {
 				if(oConvertUtils.isNotEmpty(p)) {
-					SysRolePermission rolepms = new SysRolePermission(roleId, p);
+					SysRolePermission rolepms = new SysRolePermission(roleId, p, permissionType);
 					list.add(rolepms);
 				}
 			}
 			this.saveBatch(list);
 		}
-		
+
 		List<String> delete = getDiff(permissionIds,lastPermissionIds);
 		if(delete!=null && delete.size()>0) {
 			for (String permissionId : delete) {
@@ -66,7 +66,7 @@ public class SysRolePermissionServiceImpl extends ServiceImpl<SysRolePermissionM
 			}
 		}
 	}
-	
+
 	/**
 	 * 从diff中找出main中没有的元素
 	 * @param main
@@ -80,7 +80,7 @@ public class SysRolePermissionServiceImpl extends ServiceImpl<SysRolePermissionM
 		if(oConvertUtils.isEmpty(main)) {
 			return Arrays.asList(diff.split(","));
 		}
-		
+
 		String[] mainArr = main.split(",");
 		String[] diffArr = diff.split(",");
 		Map<String, Integer> map = new HashMap<>();

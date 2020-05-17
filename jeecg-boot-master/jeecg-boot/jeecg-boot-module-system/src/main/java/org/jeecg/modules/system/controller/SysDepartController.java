@@ -207,7 +207,7 @@ public class SysDepartController {
 	 * @return
 	 */
 	@RequestMapping(value = "/queryIdTree", method = RequestMethod.GET)
-	public Result<List<DepartIdModel>> queryIdTree() {
+	public Result<List<DepartIdModel>> queryIdTree(@RequestParam(name = "orgType", required = false) String orgType) {
 //		Result<List<DepartIdModel>> result = new Result<List<DepartIdModel>>();
 //		List<DepartIdModel> idList;
 //		try {
@@ -229,7 +229,8 @@ public class SysDepartController {
 //		}
 		Result<List<DepartIdModel>> result = new Result<>();
 		try {
-			List<DepartIdModel> list = sysDepartService.queryDepartIdTreeList();
+			LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+			List<DepartIdModel> list = sysDepartService.queryDepartIdTreeList(sysUser.getCompanyId(), orgType);
 			result.setResult(list);
 			result.setSuccess(true);
 		} catch (Exception e) {
@@ -265,6 +266,32 @@ public class SysDepartController {
 		}
 	}
 
+	/**
+	 * <p>
+	 * 根据ID查询
+	 * </p>
+	 *
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping(value = "/getOne", method = RequestMethod.GET)
+	public Result<SysDepart> getOne(@RequestParam(name = "id", required = true) String id) {
+		Result<SysDepart> result = new Result<SysDepart>();
+		try {
+			SysDepart sysDepart = this.sysDepartService.getById(id);
+			if (sysDepart == null) {
+				throw new Exception();
+			}
+			result.setSuccess(true);
+			result.setResult(sysDepart);
+			return result;
+		} catch (Exception e) {
+			e.fillInStackTrace();
+			result.setSuccess(false);
+			result.setMessage("查询失败或没有您想要的数据!");
+			return result;
+		}
+	}
 
 	/**
      * 导出excel

@@ -8,10 +8,13 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.common.collect.Lists;
+import org.apache.commons.collections.CollectionUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.system.query.QueryGenerator;
@@ -366,7 +369,22 @@ public class SysRoleController {
 		//全部权限ids
 		List<String> ids = new ArrayList<>();
 		try {
+
 			LambdaQueryWrapper<SysPermission> query = new LambdaQueryWrapper<SysPermission>();
+			List<String> pids = Lists.newArrayList();
+			LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+			if (sysUser.getPlatformFlag() == CommonConstant.STATUS_INT_0) {
+				LambdaQueryWrapper<SysRolePermission> srpQuery = new LambdaQueryWrapper<SysRolePermission>();
+				srpQuery.eq(SysRolePermission::getPermissionType, CommonConstant.STATUS_INT_1);
+				srpQuery.eq(SysRolePermission::getRoleId, sysUser.getCompanyId());
+				List<SysRolePermission> srpList = sysRolePermissionService.list(srpQuery);
+				if (CollectionUtils.isNotEmpty(srpList)) {
+					pids = srpList.stream().map(SysRolePermission::getPermissionId).collect(Collectors.toList());;
+					query.in(SysPermission::getId, pids);
+				} else {
+					query.eq(SysPermission::getId, "-1"); //没有即为未授权不能查数据
+				}
+			}
 			query.eq(SysPermission::getDelFlag, CommonConstant.DEL_FLAG_0);
 			query.orderByAsc(SysPermission::getSortNo);
 			List<SysPermission> list = sysPermissionService.list(query);

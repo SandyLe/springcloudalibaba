@@ -56,13 +56,18 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 		return listResult;
 	}
 
-	@Cacheable(value = CacheConstant.SYS_DEPART_IDS_CACHE)
+	@Cacheable(value = CacheConstant.SYS_DEPART_IDS_CACHE, key = "#companyId+#orgType")
 	@Override
-	public List<DepartIdModel> queryDepartIdTreeList() {
+	public List<DepartIdModel> queryDepartIdTreeList(String companyId, String orgType) {
 		LambdaQueryWrapper<SysDepart> query = new LambdaQueryWrapper<SysDepart>();
 		query.eq(SysDepart::getDelFlag, CommonConstant.DEL_FLAG_0.toString());
+		query.like(SysDepart::getParentIds, "/" + companyId + "/");
+		if (StringUtils.isNotBlank(orgType)) {
+			query.le(SysDepart::getOrgType, orgType);
+		}
 		query.orderByAsc(SysDepart::getDepartOrder);
 		List<SysDepart> list = this.list(query);
+		list.add(0, this.getById(companyId));
 		// 调用wrapTreeDataToTreeList方法生成树状数据
 		List<DepartIdModel> listResult = FindsDepartsChildrenUtil.wrapTreeDataToDepartIdTreeList(list);
 		return listResult;

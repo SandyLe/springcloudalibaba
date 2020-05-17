@@ -387,7 +387,8 @@ public class SysPermissionController {
 			String roleId = json.getString("roleId");
 			String permissionIds = json.getString("permissionIds");
 			String lastPermissionIds = json.getString("lastpermissionIds");
-			this.sysRolePermissionService.saveRolePermission(roleId, permissionIds, lastPermissionIds);
+			Integer permissionType = json.getInteger("permissionType");
+			this.sysRolePermissionService.saveRolePermission(roleId, permissionIds, lastPermissionIds, permissionType);
 			result.success("保存成功！");
 			log.info("======角色授权成功=====耗时:" + (System.currentTimeMillis() - start) + "毫秒");
 		} catch (Exception e) {

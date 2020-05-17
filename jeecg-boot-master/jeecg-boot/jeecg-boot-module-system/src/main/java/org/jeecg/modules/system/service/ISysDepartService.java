@@ -27,7 +27,7 @@ public interface ISysDepartService extends IService<SysDepart>{
      * 查询所有部门DepartId信息,并分节点进行显示
      * @return
      */
-    public List<DepartIdModel> queryDepartIdTreeList();
+    public List<DepartIdModel> queryDepartIdTreeList(String companyId, String orgType);
 
     /**
      * 保存部门数据

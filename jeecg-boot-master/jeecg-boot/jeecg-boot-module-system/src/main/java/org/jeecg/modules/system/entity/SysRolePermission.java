@@ -29,7 +29,7 @@ public class SysRolePermission implements Serializable {
      */
     @TableId(type = IdType.ID_WORKER_STR)
     private String id;
-    
+
     /**
      * 角色id
      */
@@ -39,18 +39,24 @@ public class SysRolePermission implements Serializable {
      * 权限id
      */
     private String permissionId;
-    
+
     /**
      * 数据权限
      */
     private String dataRuleIds;
 
+    /**
+     * 权限类型：0-权限，1-企业
+     */
+    private Integer permissionType;
+
     public SysRolePermission() {
    	}
-       
-   	public SysRolePermission(String roleId, String permissionId) {
+
+   	public SysRolePermission(String roleId, String permissionId, Integer permissionType) {
    		this.roleId = roleId;
    		this.permissionId = permissionId;
+   		this.permissionType = permissionType;
    	}
 
 }
