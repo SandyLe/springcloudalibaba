@@ -55,6 +55,7 @@ const queryIdTree = (params)=>getAction("/sys/sysDepart/queryIdTree",params);
 const queryParentName   = (params)=>getAction("/sys/sysDepart/queryParentName",params);
 const searchByKeywords   = (params)=>getAction("/sys/sysDepart/searchBy",params);
 const deleteByDepartId   = (params)=>deleteAction("/sys/sysDepart/delete",params);
+const getDepartById = (params)=>getAction("/sys/sysDepart/getOne",params);
 
 //日志管理
 //const getLogList = (params)=>getAction("/sys/log/list",params);
@@ -276,6 +277,7 @@ export {
   queryParentName,
   searchByKeywords,
   deleteByDepartId,
+  getDepartById,
   deleteLog,
   deleteLogList,
   addDict,

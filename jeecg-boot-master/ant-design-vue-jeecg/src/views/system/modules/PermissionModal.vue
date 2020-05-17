@@ -53,7 +53,7 @@
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="权限标识">
-          <a-select v-decorator="['pcode', validatorRules.pcode]" placeholder="请选择单据类型" showSearch optionFilterProp="children"
+          <a-select v-decorator="['pcode', {}]" placeholder="请选择单据类型" showSearch optionFilterProp="children"
                     notFoundContent="没有匹配的单据类型"  >
             <a-select-option value="">请选择</a-select-option>
             <a-select-option v-for="(item, key) in billTypeList" :key="key" :value="item.code">
@@ -243,7 +243,6 @@
           component:{rules: [{ required: this.show, message: '请输入前端组件!' }]},
           url:{rules: [{ required: this.show, message: '请输入菜单路径!' }]},
           permsType:{rules: [{ required: true, message: '请输入授权策略!' }]},
-          pcode:{rules: [{ required: true, message: '请选择权限标识!' }]},
           sortNo:{initialValue:1.0},
         }
       }

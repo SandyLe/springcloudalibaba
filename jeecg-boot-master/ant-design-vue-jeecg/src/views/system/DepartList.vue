@@ -6,7 +6,7 @@
         <!-- 按钮操作区域 -->
         <a-row style="margin-left: 14px">
           <a-button @click="handleAdd(2)" type="primary">添加子部门</a-button>
-          <a-button @click="handleAdd(1)" type="primary">添加一级部门</a-button>
+          <!--<a-button @click="handleAdd(1)" type="primary">添加一级部门</a-button>-->
           <a-button type="primary" icon="download" @click="handleExportXls('部门信息')">导出</a-button>
           <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
             <a-button type="primary" icon="import">导入</a-button>
@@ -44,6 +44,7 @@
                 </span>
                 <!--新增右键点击事件,和增加添加和删除功能-->
                 <a-menu slot="overlay">
+                  <a-menu-item @click="handleAuth()" v-if="isCompany" key="0">授权</a-menu-item>
                   <a-menu-item @click="handleAdd(3)" key="1">添加</a-menu-item>
                   <a-menu-item @click="handleDelete" key="2">删除</a-menu-item>
                   <a-menu-item @click="closeDrop" key="3">取消</a-menu-item>
@@ -150,10 +151,12 @@
       </a-card>
     </a-col>
     <depart-modal ref="departModal" @ok="loadTree"></depart-modal>
+    <user-role-modal ref="modalUserRole"></user-role-modal>
   </a-row>
 </template>
 <script>
   import DepartModal from './modules/DepartModal'
+  import UserRoleModal from './modules/UserRoleModal'
   import pick from 'lodash.pick'
   import {queryDepartTreeList, searchByKeywords, deleteByDepartId} from '@/api/api'
   import {httpAction, deleteAction} from '@/api/manage'
@@ -201,10 +204,12 @@
     name: 'DepartList',
     mixins: [JeecgListMixin],
     components: {
-      DepartModal
+      DepartModal,
+      UserRoleModal
     },
     data() {
       return {
+        isCompany: false,
         iExpandedKeys: [],
         loading: false,
         autoExpandParent: true,
@@ -301,6 +306,11 @@
       rightHandle(node) {
         this.dropTrigger = 'contextmenu'
         console.log(node.node.eventKey)
+        if (node.node.$parent.eventKey == '0') {
+          this.isCompany = true;
+        } else {
+          this.isCompany = false;
+        }
         this.rightClickSelectedKey = node.node.eventKey
       },
       onExpand(expandedKeys) {
@@ -469,6 +479,10 @@
       openSelect() {
         this.$refs.sysDirectiveModal.show()
       },
+      handleAuth() {
+        console.log(this.rightClickSelectedKey)
+        this.$refs.modalUserRole.show(this.rightClickSelectedKey, 1);
+      },
       handleAdd(num) {
         if (num == 1) {
           this.$refs.departModal.add()
@@ -549,7 +563,7 @@
         }
       }
       // <!---- author:os_chengtgen -- date:20190827 --  for:切换父子勾选模式 =======------>
-      
+
     },
     created() {
       this.currFlowId = this.$route.params.id

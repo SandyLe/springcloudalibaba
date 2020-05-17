@@ -180,7 +180,7 @@
     methods: {
       handlePerssion: function(roleId){
        // alert(roleId);
-        this.$refs.modalUserRole.show(roleId);
+        this.$refs.modalUserRole.show(roleId, 0);
       },
       onChangeDate(date, dateString) {
         console.log(date, dateString);

@@ -61,13 +61,22 @@
           </a-select>
         </a-form-item>
 
+        <a-form-item label="企业" :labelCol="labelCol" :wrapperCol="wrapperCol" v-show="!departDisabled">
+          <a-input-search
+            placeholder="点击右侧按钮选择企业"
+            v-model="checkedCompanyNameString"
+            disabled
+            @search="onSearch(1)">
+            <a-button slot="enterButton" icon="search" :disabled="disabledChoose">选择</a-button>
+          </a-input-search>
+        </a-form-item>
         <!--部门分配-->
         <a-form-item label="部门分配" :labelCol="labelCol" :wrapperCol="wrapperCol" v-show="!departDisabled">
           <a-input-search
             placeholder="点击右侧按钮选择部门"
             v-model="checkedDepartNameString"
             disabled
-            @search="onSearch">
+            @search="onSearch(null)">
             <a-button slot="enterButton" icon="search">选择</a-button>
           </a-input-search>
         </a-form-item>
@@ -122,7 +131,7 @@
 
       </a-form>
     </a-spin>
-    <depart-window ref="departWindow" @ok="modalFormOk"></depart-window>
+    <depart-window ref="departWindow" @ok="modalFormOk" :level="level"></depart-window>
 
     <div class="drawer-bootom-button" v-show="!disableSubmit">
       <a-popconfirm title="确定放弃编辑？" @confirm="handleCancel" okText="确定" cancelText="取消">
@@ -142,7 +151,7 @@
   import JSelectPosition from '@/components/jeecgbiz/JSelectPosition'
   import { ACCESS_TOKEN } from "@/store/mutation-types"
   import { getAction } from '@/api/manage'
-  import {addUser,editUser,queryUserRole,queryall } from '@/api/api'
+  import {addUser,editUser,queryUserRole,queryall,getDepartById } from '@/api/api'
   import { disabledAuthFilter } from "@/utils/authFilter"
   import {duplicateCheck } from '@/api/api'
 
@@ -154,6 +163,9 @@
     },
     data () {
       return {
+        disabledChoose: true,
+        level: 0,
+        companyId: '',
         departDisabled: false, //是否是我的部门调用该页面
         roleDisabled: false, //是否是角色维护调用该页面
         modalWidth:800,
@@ -162,8 +174,10 @@
         confirmDirty: false,
         selectedDepartKeys:[], //保存用户选择部门id
         checkedDepartKeys:[],
+        checkedCompanyIdKeys:[],
         checkedDepartNames:[], // 保存部门的名称 =>title
         checkedDepartNameString:"", // 保存部门的名称 =>title
+        checkedCompanyNameString:"", // 企业的名称 =>title
         userId:"", //保存用户id
         disableSubmit:false,
         userDepartModel:{userId:'',departIdList:[]}, // 保存SysUserDepart的用户部门中间表数据需要的对象
@@ -248,6 +262,9 @@
     computed:{
       uploadAction:function () {
         return this.url.fileUpload;
+      },
+      userInfo() {
+        return this.$store.getters.userInfo
       }
     },
     methods: {
@@ -284,8 +301,10 @@
       refresh () {
           this.selectedDepartKeys=[];
           this.checkedDepartKeys=[];
+          this.checkedCompanyIdKeys=[];
           this.checkedDepartNames=[];
           this.checkedDepartNameString = "";
+          this.checkedCompanyNameString = "";
           this.userId=""
       },
       add () {
@@ -294,10 +313,16 @@
         this.edit({activitiSync:'1'});
       },
       edit (record) {
+        if (this.userInfo.platformFlag == 1) {
+          this.disabledChoose = false;
+        } else {
+          this.disabledChoose = true;
+        }
         this.resetScreenSize(); // 调用此方法,根据屏幕宽度自适应调整抽屉的宽度
         let that = this;
         that.initialRoleList();
         that.checkedDepartNameString = "";
+        that.checkedCompanyNameString = "";
         that.form.resetFields();
         if(record.hasOwnProperty("id")){
           that.loadUserRoles(record.id);
@@ -309,9 +334,24 @@
         that.$nextTick(() => {
           that.form.setFieldsValue(pick(this.model,'username','sex','realname','email','phone','activitiSync','workNo','telephone','post'))
         });
+        if (!record.companyId) {
+          record.companyId = this.userInfo.companyId;
+        }
+        that.companyId = record.companyId;
         // 调用查询用户对应的部门信息的方法
         that.checkedDepartKeys = [];
+        that.checkedCompanyIdKeys = [record.companyId];
         that.loadCheckedDeparts();
+        that.getDepartById(record.companyId);
+      },
+      getDepartById(companyId) {
+        getDepartById({id:companyId}).then((res)=>{
+          if(res.success){
+            this.checkedCompanyNameString = res.result.departName;
+          }else{
+            console.log(res.message);
+          }
+        })
       },
       //
       loadCheckedDeparts(){
@@ -339,8 +379,10 @@
         this.userDepartModel = {userId:'',departIdList:[]};
         this.checkedDepartNames = [];
         this.checkedDepartNameString='';
+        this.checkedCompanyNameString = "";
         this.checkedDepartKeys = [];
         this.selectedDepartKeys = [];
+        this.companyId = '';
       },
       moment,
       handleSubmit () {
@@ -360,7 +402,7 @@
             formData.avatar = avatar;
             formData.selectedroles = this.selectedRole.length>0?this.selectedRole.join(","):'';
             formData.selecteddeparts = this.userDepartModel.departIdList.length>0?this.userDepartModel.departIdList.join(","):'';
-
+            formData.companyId = this.companyId;
             // that.addDepartsToUser(that,formData); // 调用根据当前用户添加部门信息的方法
             let obj;
             if(!this.model.id){
@@ -532,24 +574,36 @@
         return this.url.imgerver +"/"+ this.model.avatar;
       },
       // 搜索用户对应的部门API
-      onSearch(){
-        this.$refs.departWindow.add(this.checkedDepartKeys,this.userId);
+      onSearch(level){
+        var checkedKeys = [];
+        if (level == 1) {
+          checkedKeys = this.checkedCompanyIdKeys;
+        } else {
+          checkedKeys = this.checkedDepartKeys;
+        }
+        this.$refs.departWindow.add(checkedKeys,this.userId,level);
       },
 
       // 获取用户对应部门弹出框提交给返回的数据
       modalFormOk (formData) {
-        this.checkedDepartNames = [];
-        this.selectedDepartKeys = [];
-        this.checkedDepartNameString = '';
-        this.userId = formData.userId;
-        this.userDepartModel.userId = formData.userId;
-        for (let i = 0; i < formData.departIdList.length; i++) {
-          this.selectedDepartKeys.push(formData.departIdList[i].key);
-          this.checkedDepartNames.push(formData.departIdList[i].title);
-          this.checkedDepartNameString = this.checkedDepartNames.join(",");
+        if (formData.orgType == 1) {
+          this.checkedCompanyNameString = "";
+          this.companyId= formData.departIdList[0].key;
+          this.checkedCompanyNameString = formData.departIdList[0].title;
+        } else {
+          this.checkedDepartNames = [];
+          this.selectedDepartKeys = [];
+          this.checkedDepartNameString = '';
+          this.userId = formData.userId;
+          this.userDepartModel.userId = formData.userId;
+          for (let i = 0; i < formData.departIdList.length; i++) {
+            this.selectedDepartKeys.push(formData.departIdList[i].key);
+            this.checkedDepartNames.push(formData.departIdList[i].title);
+            this.checkedDepartNameString = this.checkedDepartNames.join(",");
+          }
+          this.userDepartModel.departIdList = this.selectedDepartKeys;
+          this.checkedDepartKeys = this.selectedDepartKeys  //更新当前的选择keys
         }
-        this.userDepartModel.departIdList = this.selectedDepartKeys;
-        this.checkedDepartKeys = this.selectedDepartKeys  //更新当前的选择keys
        },
       // 根据屏幕变化,设置抽屉尺寸
       resetScreenSize(){

@@ -65,6 +65,7 @@
     data(){
       return {
         roleId:"",
+        permissionType: 0, //0-角色，1-菜单
         treeData: [],
         defaultCheckedKeys:[],
         checkedKeys:[],
@@ -92,8 +93,9 @@
           this.checkedKeys = o
         }
       },
-      show(roleId){
-        this.roleId=roleId
+      show(roleId, permissionType){
+        this.roleId=roleId;
+        this.permissionType = permissionType;
         this.visible = true;
       },
       close () {
@@ -137,6 +139,7 @@
       handleSubmit(){
         let that = this;
         let params =  {
+          permissionType: that.permissionType,
           roleId:that.roleId,
           permissionIds:that.checkedKeys.join(","),
           lastpermissionIds:that.defaultCheckedKeys.join(","),

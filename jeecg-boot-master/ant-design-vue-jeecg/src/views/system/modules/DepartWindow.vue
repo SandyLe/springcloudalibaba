@@ -42,6 +42,12 @@
     components: {
       userModal,
     },
+    props: {
+      level: {
+        type: Number,
+        required: false,
+      }
+    },
     data () {
       return {
         checkedKeys:[], // 存储选中的部门id
@@ -70,14 +76,15 @@
       }
     },
     methods: {
-      add (checkedDepartKeys,userId) {
+      add (checkedDepartKeys,userId,level) {
         this.checkedKeys = checkedDepartKeys;
         this.userId = userId;
-        this.edit({});
+        this.edit({level:level});
       },
       edit (record) {
+        this.level = record.level;
         this.departList = [];
-        this.queryDepartTree();
+        this.queryDepartTree(record.level);
         this.form.resetFields();
         this.visible = true;
         this.model = Object.assign({}, record);
@@ -102,7 +109,7 @@
               getAction(this.url.userId).then((res)=>{
                 if(res.success){
                   let formData = {userId:res.result,
-                  departIdList:this.departList}
+                  departIdList:this.departList,orgType:that.level}
                   console.log(formData)
                   that.$emit('ok', formData);
                 }
@@ -113,7 +120,7 @@
               })
             }else {
               let formData = {userId:this.userId,
-                departIdList:this.departList}
+                departIdList:this.departList,orgType:that.level}
               console.log(formData)
               that.departList = [];
               that.$emit('ok', formData);
@@ -142,8 +149,8 @@
         }
         console.log('onCheck', checkedKeys, info);
       },
-      queryDepartTree(){
-        queryIdTree().then((res)=>{
+      queryDepartTree(level){
+        queryIdTree({orgType:level}).then((res)=>{
           if(res.success){
             this.departTree = res.result;
           }
