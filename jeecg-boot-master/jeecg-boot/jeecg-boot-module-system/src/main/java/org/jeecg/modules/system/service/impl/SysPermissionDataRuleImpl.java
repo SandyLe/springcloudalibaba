@@ -73,7 +73,7 @@ public class SysPermissionDataRuleImpl extends ServiceImpl<SysPermissionDataRule
 	public List<SysPermissionDataRule> queryPermissionDataRules(String username,List<String> permissionIds) {
 		List<String> idsList = this.baseMapper.queryDataRuleIds(username, StringUtils.join(permissionIds, ","));
 		if(idsList==null || idsList.size()==0 || idsList.get(0)==null ) {
-			return null;
+			return Lists.newArrayList();
 		}
 		Set<String> set = new HashSet<String>();
 		for (String ids : idsList) {
@@ -88,7 +88,7 @@ public class SysPermissionDataRuleImpl extends ServiceImpl<SysPermissionDataRule
 			}
 		}
 		if(set.size()==0) {
-			return null;
+			return Lists.newArrayList();
 		}
 		return this.baseMapper.selectList(new QueryWrapper<SysPermissionDataRule>().in("id", set).eq("status",CommonConstant.STATUS_1));
 	}

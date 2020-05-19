@@ -182,6 +182,15 @@ public class SysPermissionController {
 			log.info(" ------ 通过令牌获取用户拥有的访问菜单 ---- TOKEN ------ " + token);
 			String username = JwtUtil.getUsername(token);
 			List<SysPermission> metaList = sysPermissionService.queryByUser(username);
+
+			LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+			if (sysUser.getPlatformFlag().intValue() == CommonConstant.STATUS_INT_0.intValue()) {
+
+				List<SysRolePermission> sysRolePermissions = sysRolePermissionService.list(new LambdaQueryWrapper<SysRolePermission>().eq(SysRolePermission::getRoleId, sysUser.getCompanyId()));
+				List<String> permissionIds = sysRolePermissions.stream().map(SysRolePermission::getPermissionId).collect(Collectors.toList());
+				metaList = metaList.stream().filter(o->permissionIds.contains(o.getId())).collect(Collectors.toList());
+			}
+
 			PermissionDataUtil.addIndexPage(metaList);
 			JSONObject json = new JSONObject();
 			JSONArray menujsonArray = new JSONArray();

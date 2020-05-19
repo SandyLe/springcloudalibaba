@@ -27,3 +27,4 @@ ALTER TABLE `sl_sale_order_return` ADD COLUMN `company_id` varchar(50) DEFAULT N
 
 6. 角色菜单权限
 ALTER TABLE `sys_role_permission` ADD COLUMN `permission_type` int(1) DEFAULT NULL COMMENT '类型ID';
+ALTER TABLE `sys_role` ADD COLUMN `company_id` varchar(50) DEFAULT NULL COMMENT '企业ID';

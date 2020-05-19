@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.google.common.collect.Lists;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.system.query.QueryGenerator;
@@ -110,6 +111,10 @@ public class SysRoleController {
 		Result<SysRole> result = new Result<SysRole>();
 		try {
 			role.setCreateTime(new Date());
+			if (StringUtils.isBlank(role.getCompanyId())) {
+				LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+				role.setCompanyId(sysUser.getCompanyId());
+			}
 			sysRoleService.save(role);
 			result.success("添加成功！");
 		} catch (Exception e) {
@@ -131,6 +136,10 @@ public class SysRoleController {
 		if(sysrole==null) {
 			result.error500("未找到对应实体");
 		}else {
+			if (StringUtils.isBlank(role.getCompanyId())) {
+				LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+				role.setCompanyId(sysUser.getCompanyId());
+			}
 			role.setUpdateTime(new Date());
 			boolean ok = sysRoleService.updateById(role);
 			//TODO 返回false说明什么？
@@ -199,9 +208,17 @@ public class SysRoleController {
 	}
 
 	@RequestMapping(value = "/queryall", method = RequestMethod.GET)
-	public Result<List<SysRole>> queryall() {
+	public Result<List<SysRole>> queryall(SysRole role, HttpServletRequest req) {
 		Result<List<SysRole>> result = new Result<>();
-		List<SysRole> list = sysRoleService.list();
+		QueryWrapper<SysRole> queryWrapper = QueryGenerator.initQueryWrapper(role, req.getParameterMap());
+		List<SysRole> list = sysRoleService.list(queryWrapper);
+
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		if (sysUser.getPlatformFlag() == CommonConstant.STATUS_INT_0) {
+			LambdaQueryWrapper<SysRole> ccAdmin = new LambdaQueryWrapper<SysRole>();
+			ccAdmin.eq(SysRole::getRoleCode, "admin");
+			list.addAll(sysRoleService.list(ccAdmin));
+		}
 		if(list==null||list.size()<=0) {
 			result.error500("未找到角色信息");
 		}else {

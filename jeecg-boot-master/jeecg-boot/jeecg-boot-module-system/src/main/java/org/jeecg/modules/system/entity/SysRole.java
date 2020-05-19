@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Date;
 
+import com.baomidou.mybatisplus.annotation.TableField;
+import io.swagger.annotations.ApiModelProperty;
 import org.jeecgframework.poi.excel.annotation.Excel;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -35,19 +37,19 @@ public class SysRole implements Serializable {
      */
     @TableId(type = IdType.ID_WORKER_STR)
     private String id;
-    
+
     /**
      * 角色名称
      */
     @Excel(name="角色名",width=15)
     private String roleName;
-    
+
     /**
      * 角色编码
      */
     @Excel(name="角色编码",width=15)
     private String roleCode;
-    
+
     /**
           * 描述
      */
@@ -78,5 +80,10 @@ public class SysRole implements Serializable {
     @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private Date updateTime;
 
+
+    @ApiModelProperty("企业ID")
+    private String companyId;
+    @TableField(exist=false)
+    private String companyName;
 
 }

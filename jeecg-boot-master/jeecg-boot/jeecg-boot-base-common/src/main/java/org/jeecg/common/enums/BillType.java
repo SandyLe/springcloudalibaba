@@ -21,7 +21,8 @@ public enum BillType implements AbstractEnum {
     WORKORDER(16, "workOrder", "工单"),
     REPAIR(17, "repairOrder", "维修单"),
     CHANGEORDER(18, "changeOrder", "换货单"),
-    LOGISTICSORDER(19, "logisticsOrder", "物流单");
+    LOGISTICSORDER(19, "logisticsOrder", "物流单"),
+    SYSROLE(20, "sysRole", "系统角色");
 
     private Integer id;
     private String code;
