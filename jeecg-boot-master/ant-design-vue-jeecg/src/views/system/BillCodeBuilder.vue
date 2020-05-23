@@ -6,9 +6,14 @@
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
           <a-col :md="6" :sm="12">
-            <a-form-item label="账号">
-              <!--<a-input placeholder="请输入账号查询" v-model="queryParam.username"></a-input>-->
-              <j-input placeholder="输入账号模糊查询" v-model="queryParam.username"></j-input>
+            <a-form-item label="单据类型">
+              <a-select placeholder="请选择单据类型" v-model="queryParam.billType" showSearch optionFilterProp="children"
+                        notFoundContent="没有匹配的单据类型"  >
+                <a-select-option value="">请选择</a-select-option>
+                <a-select-option v-for="(item, key) in billTypeList" :key="key" :value="item.id">
+                  {{ item.name || item.code}}
+                </a-select-option>
+              </a-select>
             </a-form-item>
           </a-col>
 
@@ -68,6 +73,7 @@
   import BillCodeBuilderModal from './modules/BillCodeBuilderModal'
   import JInput from '@/components/jeecg/JInput'
   import {JeecgListMixin} from '@/mixins/JeecgListMixin'
+  import {getBillTypeList} from '@/api/api'
   export default {
     name: "BillCodeBuilder",
     mixins: [JeecgListMixin],
@@ -141,6 +147,7 @@
           exportXlsUrl: "/billCodeBuilder/exportXls",
           importExcelUrl: "/billCodeBuilder/importExcel",
         },
+        billTypeList: []
       }
     },
     methods: {
@@ -148,13 +155,14 @@
         if(row.rowSts===6){
           return 'demo-table-info-row';
         }
-      },
-      searchQuery () {
-
-      },
-      searchReset () {
-
       }
+    },
+    mounted() {
+      getBillTypeList().then((res) => {
+        if (res.success) {
+          this.billTypeList = res.result;
+        }
+      })
     }
   }
 </script>

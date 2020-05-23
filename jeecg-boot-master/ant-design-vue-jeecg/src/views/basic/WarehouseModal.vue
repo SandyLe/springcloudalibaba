@@ -132,7 +132,7 @@
         this.model = Object.assign({}, record);
         this.visible = true;
 
-        loadShopData({orgType : '1'}).then((res) => {
+        loadShopData({orgType : '2'}).then((res) => {
           if (res.success) {
             this.shopList = res.result;
           }
