@@ -9,9 +9,12 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.system.query.QueryGenerator;
+import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.modules.basic.entity.Material;
 import org.jeecg.modules.basic.entity.MaterialUnit;
 import org.jeecg.modules.basic.service.MaterialService;
@@ -51,6 +54,11 @@ public class PurchaseCostController {
     @AutoLog(value = "添加采购批次平均价格")
     @ApiOperation(value = "添加采购批次平均价格", notes = "添加采购批次平均价格")
     public Result<?> add(@RequestBody PurchaseCost purchaseCost) {
+
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        if (StringUtils.isBlank(purchaseCost.getCompanyId())) {
+            purchaseCost.setCompanyId(sysUser.getCompanyId());
+        }
         PurchaseCost existCode = purchaseCostService.getOne(new LambdaQueryWrapper<PurchaseCost>().eq(PurchaseCost::getCode, purchaseCost.getCode()).ne(PurchaseCost::getId, purchaseCost.getId()));
         Assert.isNull(existCode, "单号已存在！");
         purchaseCostService.save(purchaseCost);
@@ -120,6 +128,11 @@ public class PurchaseCostController {
     @AutoLog(value = "修改采购批次平均价格")
     @ApiOperation(value = "修改采购批次平均价格", notes = "修改采购批次平均价格")
     public Result<?> edit(@RequestBody PurchaseCost purchaseCost){
+
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        if (StringUtils.isBlank(purchaseCost.getCompanyId())) {
+            purchaseCost.setCompanyId(sysUser.getCompanyId());
+        }
         PurchaseCost existCode = purchaseCostService.getOne(new LambdaQueryWrapper<PurchaseCost>().eq(PurchaseCost::getCode, purchaseCost.getCode()).ne(PurchaseCost::getId, purchaseCost.getId()));
         Assert.isNull(existCode, "单号已存在！");
         purchaseCostService.updateById(purchaseCost);

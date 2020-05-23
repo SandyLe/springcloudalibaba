@@ -4,13 +4,13 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import org.jeecg.modules.basic.entity.BasicEntity;
+import org.jeecg.modules.basic.entity.CBasicEntity;
 
 import java.math.BigDecimal;
 
 @Data
 @TableName("sl_inventory_log")
-public class InventoryLog extends BasicEntity {
+public class InventoryLog extends CBasicEntity {
 
     @ApiModelProperty("产品ID")
     private String mtlId;
@@ -20,13 +20,13 @@ public class InventoryLog extends BasicEntity {
     private String sourceBillId;
     @ApiModelProperty("单据类型ID")
     private Integer sourceBillType;
-    @TableField(exist=false)
+    @TableField(exist = false)
     @ApiModelProperty("产品")
     private String material;
     @ApiModelProperty("仓库ID")
     private String warehouseId;
     @ApiModelProperty("仓库")
-    @TableField(exist=false)
+    @TableField(exist = false)
     private String warehouse;
     @ApiModelProperty("库存")
     private BigDecimal stockAmount;
@@ -36,12 +36,12 @@ public class InventoryLog extends BasicEntity {
     private BigDecimal beforeAmount;
     @ApiModelProperty("单位ID")
     private String unitId;
-    @TableField(exist=false)
+    @TableField(exist = false)
     @ApiModelProperty("单位")
     private String unit;
     @ApiModelProperty("操作ID")
     private Integer operationId;
-    @TableField(exist=false)
+    @TableField(exist = false)
     @ApiModelProperty("操作")
     private String operation;
     @ApiModelProperty("批次号")
@@ -50,7 +50,7 @@ public class InventoryLog extends BasicEntity {
     public InventoryLog() {
     }
 
-    public InventoryLog(String sourceId, String sourceBillId, Integer sourceBillType, String mtlId, String warehouseId, BigDecimal stockAmount, BigDecimal optAmount, BigDecimal beforeAmount, String unitId, Integer operationId, String batchNo) {
+    public InventoryLog(String sourceId, String sourceBillId, Integer sourceBillType, String mtlId, String warehouseId, BigDecimal stockAmount, BigDecimal optAmount, BigDecimal beforeAmount, String unitId, Integer operationId, String batchNo, String companyId) {
         this.mtlId = mtlId;
         this.sourceId = sourceId;
         this.sourceBillId = sourceBillId;
@@ -62,6 +62,7 @@ public class InventoryLog extends BasicEntity {
         this.unitId = unitId;
         this.operationId = operationId;
         this.batchNo = batchNo;
+        this.setCompanyId(companyId);
     }
 
     public String getMtlId() {

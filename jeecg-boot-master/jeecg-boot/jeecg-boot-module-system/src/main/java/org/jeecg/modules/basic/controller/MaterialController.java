@@ -12,9 +12,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.system.query.QueryGenerator;
+import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.modules.basic.dto.MaterialExcelDto;
 import org.jeecg.modules.basic.entity.Material;
 import org.jeecg.modules.basic.entity.MaterialBrand;
@@ -133,6 +135,10 @@ public class MaterialController {
     @AutoLog(value = "添加产品")
     @ApiOperation(value = "添加产品", notes = "添加产品")
     public Result<?> add(@RequestBody Material material) {
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        if (StringUtils.isBlank(material.getCompanyId())) {
+            material.setCompanyId(sysUser.getCompanyId());
+        }
         if (StringUtils.isEmpty(material.getId())) {
             material.setCode(billCodeBuilderService.getBillCode(BillType.MATERIAL.getId()));
         }
@@ -152,6 +158,10 @@ public class MaterialController {
     @AutoLog(value = "修改产品")
     @ApiOperation(value = "修改产品", notes = "修改产品")
     public Result<?> edit(@RequestBody Material material){
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        if (StringUtils.isBlank(material.getCompanyId())) {
+            material.setCompanyId(sysUser.getCompanyId());
+        }
         Material existCode = materialService.getOne(new LambdaQueryWrapper<Material>().eq(Material::getCode, material.getCode()).ne(Material::getId, material.getId()));
         Assert.isNull(existCode, "编号已存在！");
         materialService.updateById(material);

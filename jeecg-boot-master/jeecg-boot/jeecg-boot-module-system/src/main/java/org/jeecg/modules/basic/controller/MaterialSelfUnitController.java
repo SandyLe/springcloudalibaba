@@ -10,9 +10,11 @@ import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.system.query.QueryGenerator;
+import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.modules.basic.entity.Material;
 import org.jeecg.modules.basic.entity.MaterialSelfUnit;
 import org.jeecg.modules.basic.entity.MaterialUnit;
@@ -124,6 +126,10 @@ public class MaterialSelfUnitController {
     @AutoLog(value = "添加产品自身单位")
     @ApiOperation(value = "添加产品自身单位", notes = "添加产品自身单位")
     public Result<?> add(@RequestBody MaterialSelfUnit materialSelfUnit) {
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        if (StringUtils.isBlank(materialSelfUnit.getCompanyId())) {
+            materialSelfUnit.setCompanyId(sysUser.getCompanyId());
+        }
         materialSelfUnitService.save(materialSelfUnit);
         return Result.ok("添加成功！");
     }
@@ -138,6 +144,10 @@ public class MaterialSelfUnitController {
     @AutoLog(value = "修改产品自身单位")
     @ApiOperation(value = "修改产品自身单位", notes = "修改产品自身单位")
     public Result<?> edit(@RequestBody MaterialSelfUnit materialSelfUnit){
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        if (StringUtils.isBlank(materialSelfUnit.getCompanyId())) {
+            materialSelfUnit.setCompanyId(sysUser.getCompanyId());
+        }
         materialSelfUnitService.updateById(materialSelfUnit);
         return Result.ok("修改成功！");
     }

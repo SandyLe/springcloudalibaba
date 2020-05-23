@@ -6,7 +6,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.jeecg.common.util.DateUtils;
-import org.jeecg.modules.basic.entity.BasicEntity;
+import org.jeecg.modules.basic.entity.CBasicEntity;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -14,7 +14,7 @@ import java.util.Date;
 @Data
 @TableName("sl_inventory_out")
 @ApiModel(value = "InventoryOut", description = "出库单")
-public class InventoryOut extends BasicEntity {
+public class InventoryOut extends CBasicEntity {
 
     @ApiModelProperty("原单ID：销售出库，采购退货")
     private String sourceId;

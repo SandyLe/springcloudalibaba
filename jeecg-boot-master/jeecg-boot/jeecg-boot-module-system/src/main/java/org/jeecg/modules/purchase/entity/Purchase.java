@@ -5,9 +5,9 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import org.jeecg.modules.basic.entity.BasicEntity;
 import org.jeecg.common.enums.BillStatus;
 import org.jeecg.common.enums.EnumConvertUtils;
+import org.jeecg.modules.basic.entity.CBasicEntity;
 import org.jeecgframework.poi.excel.annotation.Excel;
 import org.springframework.format.annotation.DateTimeFormat;
 import java.util.Date;
@@ -20,7 +20,7 @@ import java.util.Date;
  */
 @TableName("sl_purchase")
 @ApiModel(value = "Purchase", description = "采购订单")
-public class  Purchase extends BasicEntity {
+public class  Purchase extends CBasicEntity {
 
     /*供应商*/
     @Excel(name = "供应商", width = 15)

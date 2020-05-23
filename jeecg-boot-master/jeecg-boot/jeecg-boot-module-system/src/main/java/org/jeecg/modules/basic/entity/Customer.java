@@ -7,11 +7,10 @@ import io.swagger.annotations.ApiModelProperty;
 import org.apache.commons.lang.StringUtils;
 
 import java.math.BigDecimal;
-import java.util.Date;
 
 @TableName("sl_customer")
 @ApiModel(value = "Customer", description = "客户")
-public class Customer extends BasicEntity {
+public class Customer extends CBasicEntity {
 
     @ApiModelProperty("客户类型ID")
     private String customerTypeId;

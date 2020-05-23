@@ -98,15 +98,15 @@ public class InventoryInServiceImpl extends ServiceImpl<InventoryInMapper, Inven
         List<InventoryInMtl> inventoryInMtls = inventoryInMtlService.list(querySaleMtlWrapper);
         List<InventoryLog> inventoryLogs = inventoryLogService.list(queryInventoryLogWrapper);
         Map<String, BigDecimal> mtlDeliveryQtyMap = new HashMap<>();
-        inventoryLogs.stream().forEach(o->{
+        inventoryLogs.stream().forEach(o -> {
             mtlDeliveryQtyMap.put(o.getMtlId(), null == mtlDeliveryQtyMap.get(o.getMtlId()) ? o.getOptAmount() : mtlDeliveryQtyMap.get(o.getMtlId()).add(o.getOptAmount()));
         });
-        inventoryInMtls.forEach(o->{
+        inventoryInMtls.forEach(o -> {
             BigDecimal tempAmout = o.getQuantity();
             if (null != mtlDeliveryQtyMap.get(o.getMtlId())) {
                 tempAmout = tempAmout.subtract(mtlDeliveryQtyMap.get(o.getMtlId()));
             }
-            if (tempAmout.compareTo(BigDecimal.ZERO) > 0 ) {
+            if (tempAmout.compareTo(BigDecimal.ZERO) > 0) {
                 PreInventoryOutMtl preInventoryOutMtl = new PreInventoryOutMtl();
                 preInventoryOutMtl.setBillId(id);
                 preInventoryOutMtl.setSourceId(sourceId);
@@ -136,7 +136,7 @@ public class InventoryInServiceImpl extends ServiceImpl<InventoryInMapper, Inven
             LambdaQueryWrapper<PurchaseMtl> queryWrapper = new LambdaQueryWrapper<PurchaseMtl>().eq(PurchaseMtl::getSourceId, inventoryIn.getSourceId());
             List<PurchaseMtl> purchaseDtls = purchaseMtlService.list(queryWrapper);
             if (CollectionUtils.isNotEmpty(purchaseDtls)) {
-                purchaseDtls.forEach(o ->{
+                purchaseDtls.forEach(o -> {
                     inventoryInMtls.add(new InventoryInMtl(inventoryIn.getId(), o.getSourceId(), inventoryIn.getSourceBillType(), o.getMtlId(), o.getQuantity(), o.getUnitId(), RowSts.EFFECTIVE.getId()));
                 });
             }
@@ -144,7 +144,7 @@ public class InventoryInServiceImpl extends ServiceImpl<InventoryInMapper, Inven
             LambdaQueryWrapper<SaleOrderReturnMtl> queryWrapper = new LambdaQueryWrapper<SaleOrderReturnMtl>().eq(SaleOrderReturnMtl::getSourceId, inventoryIn.getSourceId());
             List<SaleOrderReturnMtl> saleOrderReturnMtls = saleOrderReturnMtlService.list(queryWrapper);
             if (CollectionUtils.isNotEmpty(saleOrderReturnMtls)) {
-                saleOrderReturnMtls.forEach(o ->{
+                saleOrderReturnMtls.forEach(o -> {
                     inventoryInMtls.add(new InventoryInMtl(inventoryIn.getId(), o.getSourceId(), inventoryIn.getSourceBillType(), o.getMtlId(), o.getQuantity(), o.getUnitId(), RowSts.EFFECTIVE.getId()));
                 });
             }
@@ -152,7 +152,7 @@ public class InventoryInServiceImpl extends ServiceImpl<InventoryInMapper, Inven
             LambdaQueryWrapper<AllotDtl> queryWrapper = new LambdaQueryWrapper<AllotDtl>().eq(AllotDtl::getSourceId, inventoryIn.getSourceId());
             List<AllotDtl> allotDtls = allotDtlService.list(queryWrapper);
             if (CollectionUtils.isNotEmpty(allotDtls)) {
-                allotDtls.forEach(o ->{
+                allotDtls.forEach(o -> {
                     inventoryInMtls.add(new InventoryInMtl(inventoryIn.getId(), o.getSourceId(), inventoryIn.getSourceBillType(), o.getMtlId(), o.getAllotAmount(), o.getUnitId(), RowSts.EFFECTIVE.getId()));
                 });
             }
@@ -165,7 +165,7 @@ public class InventoryInServiceImpl extends ServiceImpl<InventoryInMapper, Inven
             LambdaQueryWrapper<TeardownDtl> queryWrapper = new LambdaQueryWrapper<TeardownDtl>().eq(TeardownDtl::getSourceId, inventoryIn.getSourceId());
             List<TeardownDtl> teardownDtls = teardownDtlService.list(queryWrapper);
             if (CollectionUtils.isNotEmpty(teardownDtls)) {
-                teardownDtls.forEach(o ->{
+                teardownDtls.forEach(o -> {
                     inventoryInMtls.add(new InventoryInMtl(inventoryIn.getId(), o.getSourceId(), inventoryIn.getSourceBillType(), o.getMtlId(), o.getQuantity(), o.getUnitId(), RowSts.EFFECTIVE.getId()));
                 });
             }
@@ -173,7 +173,7 @@ public class InventoryInServiceImpl extends ServiceImpl<InventoryInMapper, Inven
             LambdaQueryWrapper<ChangeOrderDtl> queryWrapper = new LambdaQueryWrapper<ChangeOrderDtl>().eq(ChangeOrderDtl::getSourceId, inventoryIn.getSourceId());
             List<ChangeOrderDtl> changeOrderDtls = changeOrderDtlService.list(queryWrapper);
             if (CollectionUtils.isNotEmpty(changeOrderDtls)) {
-                changeOrderDtls.forEach(o ->{
+                changeOrderDtls.forEach(o -> {
                     inventoryInMtls.add(new InventoryInMtl(inventoryIn.getId(), o.getSourceId(), inventoryIn.getSourceBillType(), o.getMtlId(), o.getQuantity(), o.getUnitId(), RowSts.EFFECTIVE.getId()));
                 });
             }
@@ -189,6 +189,7 @@ public class InventoryInServiceImpl extends ServiceImpl<InventoryInMapper, Inven
         InventoryIn info = getById(mtls.get(0).getBillId());
         if (null != info) {
             Integer billType = info.getSourceBillType();
+            String companyId = null;
             SaleOrderReturn saleOrderReturn = null;
             Purchase purchase = null;
             Allot allot = null;
@@ -199,20 +200,25 @@ public class InventoryInServiceImpl extends ServiceImpl<InventoryInMapper, Inven
             Integer billStatus = BillStatus.ALLSTOCKINED.getId();
             if (billType == BillType.PURCHASEORDER.getId()) {
                 purchase = purchaseService.getById(info.getSourceId());
+                companyId = purchase.getCompanyId();
                 batchNo = purchase.getBatchNo();
             } else if (billType == BillType.ALLOT.getId()) {
                 allot = allotService.getById(info.getSourceId());
+                companyId = allot.getCompanyId();
             } else if (billType == BillType.ASSEMBLE.getId()) {
                 assemble = assembleService.getById(info.getSourceId());
+                companyId = assemble.getCompanyId();
             } else if (billType == BillType.TEARDOWN.getId()) {
                 teardown = teardownService.getById(info.getSourceId());
+                companyId = teardown.getCompanyId();
             } else if (billType == BillType.CHANGEORDER.getId()) {
                 changeOrder = changeOrderService.getById(info.getSourceId());
+                companyId = changeOrder.getCompanyId();
             }
             for (PreInventoryOutMtl mtl : mtls) {
                 // 入库更新库存
                 InventoryLog inventoryLog = new InventoryLog(info.getId(), mtl.getSourceId(), info.getSourceBillType(), mtl.getMtlId(),
-                        info.getWarehouseId(), null, mtl.getQuantity(), null, mtl.getUnitId(), mtl.getOperationId(), batchNo);
+                        info.getWarehouseId(), null, mtl.getQuantity(), null, mtl.getUnitId(), mtl.getOperationId(), batchNo, companyId);
                 inventoryService.updateInventory(inventoryLog);
 
                 // 更新采购产品批次平均价格
@@ -220,11 +226,11 @@ public class InventoryInServiceImpl extends ServiceImpl<InventoryInMapper, Inven
                     if (StringUtils.isNotBlank(batchNo)) {
 
                         List<PurchaseMtl> purchaseMtls = purchaseMtlService.findPurchaseMtls(batchNo, mtl.getMtlId());
-                        purchaseMtls = purchaseMtls.stream().filter(o->o.getUnitId().equals(mtl.getUnitId())).collect(Collectors.toList());
+                        purchaseMtls = purchaseMtls.stream().filter(o -> o.getUnitId().equals(mtl.getUnitId())).collect(Collectors.toList());
                         if (CollectionUtils.isNotEmpty(purchaseMtls)) {
                             BigDecimal totalAmount = BigDecimal.ZERO;
                             BigDecimal totalQty = BigDecimal.ZERO;
-                            for (PurchaseMtl purchaseMtl: purchaseMtls){
+                            for (PurchaseMtl purchaseMtl : purchaseMtls) {
                                 totalAmount = totalAmount.add(purchaseMtl.getAmount());
                                 totalQty = totalQty.add(purchaseMtl.getQuantity());
                             }
@@ -234,6 +240,7 @@ public class InventoryInServiceImpl extends ServiceImpl<InventoryInMapper, Inven
                                 purchaseCost.setBatchNo(batchNo);
                                 purchaseCost.setMtlId(mtl.getMtlId());
                                 purchaseCost.setUnitId(mtl.getUnitId());
+                                purchaseCost.setCompanyId(companyId);
                             }
                             purchaseCost.setAveragePrice(BigDecimal.ZERO.compareTo(totalQty) < 0 ? totalAmount.divide(totalQty, 6, BigDecimal.ROUND_HALF_UP) : BigDecimal.ZERO);
                             purchaseCostService.saveOrUpdate(purchaseCost);
@@ -293,7 +300,7 @@ public class InventoryInServiceImpl extends ServiceImpl<InventoryInMapper, Inven
 
             List<InventoryInMtl> inventoryInMtls = inventoryInMtlService.list(new LambdaQueryWrapper<InventoryInMtl>().eq(InventoryInMtl::getSourceId, exist.getId()));
             if (CollectionUtils.isNotEmpty(inventoryInMtls)) {
-                inventoryInMtls.stream().forEach(o->{
+                inventoryInMtls.stream().forEach(o -> {
                     o.setRowSts(RowSts.DELETED.getId());
                 });
                 inventoryInMtlService.updateBatchById(inventoryInMtls);

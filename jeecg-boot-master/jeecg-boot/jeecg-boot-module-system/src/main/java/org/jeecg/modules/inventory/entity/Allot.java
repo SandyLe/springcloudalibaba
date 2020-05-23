@@ -8,17 +8,16 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.jeecg.common.enums.BillStatus;
 import org.jeecg.common.enums.EnumConvertUtils;
-import org.jeecg.modules.basic.entity.BasicEntity;
+import org.jeecg.modules.basic.entity.CBasicEntity;
 import org.jeecgframework.poi.excel.annotation.Excel;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import java.math.BigDecimal;
 import java.util.Date;
 
 @Data
 @TableName("sl_allot")
 @ApiModel(value = "Allot", description = "调拨单")
-public class Allot extends BasicEntity {
+public class Allot extends CBasicEntity {
 
     @Excel(name = "订单日期",width = 20 , format = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")

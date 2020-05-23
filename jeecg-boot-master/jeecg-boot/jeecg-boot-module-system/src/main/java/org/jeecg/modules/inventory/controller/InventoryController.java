@@ -9,9 +9,11 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.system.query.QueryGenerator;
+import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.modules.basic.entity.Material;
 import org.jeecg.modules.basic.entity.MaterialUnit;
 import org.jeecg.modules.basic.entity.Warehouse;
@@ -60,6 +62,11 @@ public class InventoryController {
     @AutoLog(value = "添加库存")
     @ApiOperation(value = "添加库存", notes = "添加库存")
     public Result<?> add(@RequestBody Inventory inventory) {
+
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        if (org.apache.commons.lang.StringUtils.isBlank(inventory.getCompanyId())) {
+            inventory.setCompanyId(sysUser.getCompanyId());
+        }
         if (StringUtils.isEmpty(inventory.getId())) {
             inventory.setCode(billCodeBuilderService.getBillCode(BillType.INVENTORY.getId()));
         }

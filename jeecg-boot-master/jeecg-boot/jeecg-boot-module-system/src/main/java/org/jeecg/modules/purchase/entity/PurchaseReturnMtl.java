@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import org.jeecg.modules.basic.entity.BasicEntity;
+import org.jeecg.modules.basic.entity.CBasicEntity;
 
 import java.math.BigDecimal;
 
@@ -16,7 +16,7 @@ import java.math.BigDecimal;
  */
 @TableName("sl_purchase_return_mtl")
 @ApiModel(value = "PurchaseReturnMtl", description = "采购退货明细")
-public class PurchaseReturnMtl extends BasicEntity {
+public class PurchaseReturnMtl extends CBasicEntity {
 
     /*采购订单id*/
     @ApiModelProperty("采购订单id")

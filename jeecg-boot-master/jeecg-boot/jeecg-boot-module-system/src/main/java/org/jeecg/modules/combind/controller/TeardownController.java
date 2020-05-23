@@ -8,12 +8,14 @@ import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.base.controller.JeecgController;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.enums.BillStatus;
 import org.jeecg.common.enums.BillType;
 import org.jeecg.common.enums.RowSts;
+import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.modules.basic.entity.Material;
 import org.jeecg.modules.basic.entity.MaterialUnit;
 import org.jeecg.modules.basic.entity.Warehouse;
@@ -98,6 +100,10 @@ public class TeardownController extends JeecgController<Teardown, TeardownServic
 
     @PostMapping("/add")
     public Result<?> add(@RequestBody TeardownDto teardowndto){
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        if (StringUtils.isBlank(teardowndto.getCompanyId())) {
+            teardowndto.setCompanyId(sysUser.getCompanyId());
+        }
         teardownService.saveOrder(teardowndto);
         return Result.ok();
     }
@@ -105,6 +111,10 @@ public class TeardownController extends JeecgController<Teardown, TeardownServic
     @PutMapping("/edit")
     public Result<?> edit(@RequestBody TeardownDto teardowndtldto){
 
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        if (StringUtils.isBlank(teardowndtldto.getCompanyId())) {
+            teardowndtldto.setCompanyId(sysUser.getCompanyId());
+        }
         teardownService.editOrder(teardowndtldto);
         return Result.ok();
     }

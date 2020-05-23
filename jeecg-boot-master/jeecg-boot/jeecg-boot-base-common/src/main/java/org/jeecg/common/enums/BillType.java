@@ -22,7 +22,15 @@ public enum BillType implements AbstractEnum {
     REPAIR(17, "repairOrder", "维修单"),
     CHANGEORDER(18, "changeOrder", "换货单"),
     LOGISTICSORDER(19, "logisticsOrder", "物流单"),
-    SYSROLE(20, "sysRole", "系统角色");
+    SYSROLE(20, "sysRole", "系统角色"),
+    MATERIALTYPE(21, "materialType", "产品类型"),
+    MATERIALBRAND(22, "materialBrand", "产品品牌"),
+    MATERIALUNIT(23, "materialUnit", "产品单位"),
+    EXPENSE(24, "expense", "费用名称"),
+    LOGISTICSCOMPANY(25, "logisticsCompany", "物流公司"),
+    WAREHOUSE(26, "warehouse", "仓库"),
+    PURCHASEBATCH(27, "purchaseBatch", "采购批次"),
+    ;
 
     private Integer id;
     private String code;

@@ -7,9 +7,12 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
+import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.system.query.QueryGenerator;
+import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.modules.basic.entity.LogisticsCompany;
 import org.jeecg.modules.basic.service.LogisticsCompanyService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,6 +78,11 @@ public class LogisticsCompanyController {
     @AutoLog(value = "添加物流公司")
     @ApiOperation(value = "添加物流公司", notes = "添加物流公司")
     public Result<?> add(@RequestBody LogisticsCompany logisticsCompany) {
+
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        if (StringUtils.isBlank(logisticsCompany.getCompanyId())) {
+            logisticsCompany.setCompanyId(sysUser.getCompanyId());
+        }
         logisticsCompanyService.save(logisticsCompany);
         return Result.ok("添加成功！");
     }
@@ -89,6 +97,11 @@ public class LogisticsCompanyController {
     @AutoLog(value = "修改物流公司")
     @ApiOperation(value = "修改物流公司", notes = "修改物流公司")
     public Result<?> edit(@RequestBody LogisticsCompany logisticsCompany){
+
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        if (StringUtils.isBlank(logisticsCompany.getCompanyId())) {
+            logisticsCompany.setCompanyId(sysUser.getCompanyId());
+        }
         logisticsCompanyService.updateById(logisticsCompany);
         return Result.ok("修改成功！");
     }

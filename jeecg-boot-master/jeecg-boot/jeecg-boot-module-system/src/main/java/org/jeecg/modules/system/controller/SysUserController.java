@@ -103,6 +103,11 @@ public class SysUserController {
     public Result<List<SysUser>> queryPageList(SysUser user, HttpServletRequest req) {
         Result<List<SysUser>> result = new Result<List<SysUser>>();
         QueryWrapper<SysUser> queryWrapper = QueryGenerator.initQueryWrapper(user, req.getParameterMap());
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        if (sysUser.getPlatformFlag() == CommonConstant.STATUS_INT_0) {
+            queryWrapper.eq("company_id", sysUser.getCompanyId());
+        }
+
         List<SysUser> list = sysUserService.list(queryWrapper);
         result.setSuccess(true);
         result.setResult(list);

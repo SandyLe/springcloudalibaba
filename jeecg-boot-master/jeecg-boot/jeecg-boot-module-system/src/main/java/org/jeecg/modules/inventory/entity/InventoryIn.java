@@ -6,10 +6,10 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import org.jeecg.modules.basic.entity.BasicEntity;
 import org.jeecg.common.enums.BillStatus;
 import org.jeecg.common.enums.BillType;
 import org.jeecg.common.enums.EnumConvertUtils;
+import org.jeecg.modules.basic.entity.CBasicEntity;
 import org.jeecgframework.poi.excel.annotation.Excel;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -18,7 +18,7 @@ import java.util.Date;
 @Data
 @TableName("sl_inventory_in")
 @ApiModel(value = "InventoryIn", description = "入库单")
-public class InventoryIn extends BasicEntity {
+public class InventoryIn extends CBasicEntity {
 
     @ApiModelProperty("原单ID：销售退货，采购入库")
     private String sourceId;

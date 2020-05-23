@@ -4,13 +4,13 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import org.jeecg.modules.basic.entity.BasicEntity;
+import org.jeecg.modules.basic.entity.CBasicEntity;
 
 import java.math.BigDecimal;
 
 @Data
 @TableName("sl_inventory_opt_dtl")
-public class InventoryOptDtl extends BasicEntity {
+public class InventoryOptDtl extends CBasicEntity {
 
     @ApiModelProperty("库存明细ID")
     private String dtlId;

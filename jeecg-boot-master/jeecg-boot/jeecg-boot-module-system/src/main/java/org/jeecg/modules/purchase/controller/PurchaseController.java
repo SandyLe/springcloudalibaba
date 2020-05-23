@@ -8,12 +8,14 @@ import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.base.controller.JeecgController;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.enums.BillStatus;
 import org.jeecg.common.enums.BillType;
 import org.jeecg.common.enums.RowSts;
+import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.modules.basic.service.BillCodeBuilderService;
 import org.jeecg.modules.inventory.entity.InventoryIn;
 import org.jeecg.modules.inventory.entity.InventoryInMtl;
@@ -69,6 +71,10 @@ public class PurchaseController extends JeecgController<Purchase, PurchaseServic
     public Result<?> add(@RequestBody PurchaseDtlDto purchasedtldto){
         PurchaseInventoryDto dto = new PurchaseInventoryDto();
         dto.setMsg("添加失败");
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        if (StringUtils.isBlank(purchasedtldto.getCompanyId())) {
+            purchasedtldto.setCompanyId(sysUser.getCompanyId());
+        }
 
         // 采购主表
         String code = billCodeBuilderService.getBillCode(BillType.PURCHASEORDER.getId());
@@ -82,6 +88,7 @@ public class PurchaseController extends JeecgController<Purchase, PurchaseServic
             mtls.stream().forEach(o->{
                 //采购商品详情
                 o.setCode(code);
+                o.setCompanyId(purchasedtldto.getCompanyId());
                 o.setSourceId(purchasedtldto.getId());
             });
             purchaseMtlService.saveBatch(mtls);
@@ -90,6 +97,7 @@ public class PurchaseController extends JeecgController<Purchase, PurchaseServic
 
             // 入库单主表
             InventoryIn inventoryIn = new InventoryIn();
+            inventoryIn.setCompanyId(purchasedtldto.getCompanyId());
             inventoryIn.setBillStatus(BillStatus.TOSTOCKIN.getId());
             inventoryIn.setWarehouseId(purchasedtldto.getWarehouseId());
             inventoryIn.setPutInTime(purchasedtldto.getPutInTime());
@@ -111,11 +119,16 @@ public class PurchaseController extends JeecgController<Purchase, PurchaseServic
     public Result<?> edit(@RequestBody PurchaseDtlDto purchasedtldto){
         PurchaseInventoryDto dto = new PurchaseInventoryDto();
         dto.setMsg("编辑失败");
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        if (StringUtils.isBlank(purchasedtldto.getCompanyId())) {
+            purchasedtldto.setCompanyId(sysUser.getCompanyId());
+        }
 
         // 采购主表
         purchaseService.updateById(purchasedtldto);
         if (purchasedtldto.getDetaillist().size() > 0){
             for (PurchaseMtl item: purchasedtldto.getDetaillist()){
+                item.setCompanyId(purchasedtldto.getCompanyId());
                 //采购商品详情
                 if (item.getId() != null && item.getId().length() > 0)
                     purchaseMtlService.updateById(item);
@@ -133,6 +146,7 @@ public class PurchaseController extends JeecgController<Purchase, PurchaseServic
 
             // 入库单主表
             InventoryIn inventoryIn = new InventoryIn();
+            inventoryIn.setCompanyId(purchasedtldto.getCompanyId());
             inventoryIn.setBillStatus(BillStatus.TOSTOCKIN.getId());
             inventoryIn.setWarehouseId(purchasedtldto.getWarehouseId());
             inventoryIn.setPutInTime(purchasedtldto.getPutInTime());
@@ -169,7 +183,6 @@ public class PurchaseController extends JeecgController<Purchase, PurchaseServic
     @GetMapping("/queryById")
     public Result<?> queryById(@RequestParam(name = "id", required = true) String id){
         Purchase purchase = purchaseService.getById(id);
-        System.out.println(purchase.getId());
         if (purchase == null){
             return Result.ok("未找到对应数据");
         }
@@ -185,6 +198,7 @@ public class PurchaseController extends JeecgController<Purchase, PurchaseServic
         purchasedtldto.setCode(purchase.getCode());
         purchasedtldto.setCreateTime(purchase.getCreateTime());
         purchasedtldto.setBatchNo(purchase.getBatchNo());
+        purchasedtldto.setCompanyId(purchase.getCompanyId());
         purchasedtldto.setDetaillist(purchaseMtlService.queryBySourceId(purchase.getId()));
 
         return Result.ok(purchasedtldto);

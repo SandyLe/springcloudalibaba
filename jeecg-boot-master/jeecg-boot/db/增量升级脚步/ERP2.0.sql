@@ -28,3 +28,38 @@ ALTER TABLE `sl_sale_order_return` ADD COLUMN `company_id` varchar(50) DEFAULT N
 6. 角色菜单权限
 ALTER TABLE `sys_role_permission` ADD COLUMN `permission_type` int(1) DEFAULT NULL COMMENT '类型ID';
 ALTER TABLE `sys_role` ADD COLUMN `company_id` varchar(50) DEFAULT NULL COMMENT '企业ID';
+
+7. 基础数据
+ALTER TABLE `sl_customer` ADD COLUMN `company_id` varchar(50) DEFAULT NULL COMMENT '企业ID';
+ALTER TABLE `sl_customer_delivery_info` ADD COLUMN `company_id` varchar(50) DEFAULT NULL COMMENT '企业ID';
+ALTER TABLE `sl_customer_source` ADD COLUMN `company_id` varchar(50) DEFAULT NULL COMMENT '企业ID';
+ALTER TABLE `sl_customer_type` ADD COLUMN `company_id` varchar(50) DEFAULT NULL COMMENT '企业ID';
+ALTER TABLE `sl_expense` ADD COLUMN `company_id` varchar(50) DEFAULT NULL COMMENT '企业ID';
+ALTER TABLE `sl_logistics_company` ADD COLUMN `company_id` varchar(50) DEFAULT NULL COMMENT '企业ID';
+ALTER TABLE `sl_material` ADD COLUMN `company_id` varchar(50) DEFAULT NULL COMMENT '企业ID';
+ALTER TABLE `sl_material_brand` ADD COLUMN `company_id` varchar(50) DEFAULT NULL COMMENT '企业ID';
+ALTER TABLE `sl_material_price` ADD COLUMN `company_id` varchar(50) DEFAULT NULL COMMENT '企业ID';
+ALTER TABLE `sl_material_self_unit` ADD COLUMN `company_id` varchar(50) DEFAULT NULL COMMENT '企业ID';
+ALTER TABLE `sl_material_type` ADD COLUMN `company_id` varchar(50) DEFAULT NULL COMMENT '企业ID';
+ALTER TABLE `sl_material_unit` ADD COLUMN `company_id` varchar(50) DEFAULT NULL COMMENT '企业ID';
+ALTER TABLE `sl_vendor` ADD COLUMN `company_id` varchar(50) DEFAULT NULL COMMENT '企业ID';
+ALTER TABLE `sl_warehouse` ADD COLUMN `company_id` varchar(50) DEFAULT NULL COMMENT '企业ID';
+ALTER TABLE `sl_allot` ADD COLUMN `company_id` varchar(50) DEFAULT NULL COMMENT '企业ID';
+ALTER TABLE `sl_allot_dtl` ADD COLUMN `company_id` varchar(50) DEFAULT NULL COMMENT '企业ID';
+ALTER TABLE `sl_inventory` ADD COLUMN `company_id` varchar(50) DEFAULT NULL COMMENT '企业ID';
+ALTER TABLE `sl_inventory_dtl` ADD COLUMN `company_id` varchar(50) DEFAULT NULL COMMENT '企业ID';
+ALTER TABLE `sl_inventory_in` ADD COLUMN `company_id` varchar(50) DEFAULT NULL COMMENT '企业ID';
+ALTER TABLE `sl_inventory_in_mtl` ADD COLUMN `company_id` varchar(50) DEFAULT NULL COMMENT '企业ID';
+ALTER TABLE `sl_inventory_log` ADD COLUMN `company_id` varchar(50) DEFAULT NULL COMMENT '企业ID';
+ALTER TABLE `sl_inventory_opt_dtl` ADD COLUMN `company_id` varchar(50) DEFAULT NULL COMMENT '企业ID';
+ALTER TABLE `sl_inventory_out` ADD COLUMN `company_id` varchar(50) DEFAULT NULL COMMENT '企业ID';
+ALTER TABLE `sl_inventory_out_mtl` ADD COLUMN `company_id` varchar(50) DEFAULT NULL COMMENT '企业ID';
+ALTER TABLE `sl_purchase` ADD COLUMN `company_id` varchar(50) DEFAULT NULL COMMENT '企业ID';
+ALTER TABLE `sl_purchase_mtl` ADD COLUMN `company_id` varchar(50) DEFAULT NULL COMMENT '企业ID';
+ALTER TABLE `sl_purchase_return` ADD COLUMN `company_id` varchar(50) DEFAULT NULL COMMENT '企业ID';
+ALTER TABLE `sl_purchase_return_mtl` ADD COLUMN `company_id` varchar(50) DEFAULT NULL COMMENT '企业ID';
+ALTER TABLE `sl_saleorder_delivery_info` ADD COLUMN `company_id` varchar(50) DEFAULT NULL COMMENT '企业ID';
+ALTER TABLE `sl_sale_order_mtl` ADD COLUMN `company_id` varchar(50) DEFAULT NULL COMMENT '企业ID';
+ALTER TABLE `sl_sale_order_return_mtl` ADD COLUMN `company_id` varchar(50) DEFAULT NULL COMMENT '企业ID';
+ALTER TABLE `sl_stocking` ADD COLUMN `company_id` varchar(50) DEFAULT NULL COMMENT '企业ID';
+ALTER TABLE `sl_stocking_dtl` ADD COLUMN `company_id` varchar(50) DEFAULT NULL COMMENT '企业ID';

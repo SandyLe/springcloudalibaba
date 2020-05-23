@@ -287,7 +287,9 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 	public List<SysDepart> getSysDepartList(String orgType) {
 		LambdaQueryWrapper<SysDepart> query = new LambdaQueryWrapper<SysDepart>();
 		if(StringUtils.isNotBlank(orgType)){
+			LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 			query.eq(SysDepart::getOrgType,orgType);
+			query.eq(SysDepart::getParentId, sysUser.getCompanyId());
 		}
 		List<SysDepart> departList = this.list(query);
 		return departList;

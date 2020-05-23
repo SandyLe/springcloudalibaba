@@ -65,6 +65,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
             List<InventoryOptDtl> optDtls = Lists.newArrayList();
             if( null == inventory ) {
                 inventory = new Inventory();
+                inventory.setCompanyId(inventoryLog.getCompanyId());
                 inventory.setMtlId(inventoryLog.getMtlId());
                 inventory.setWarehouseId(inventoryLog.getWarehouseId());
                 inventory.setUnitId(inventoryLog.getUnitId());

@@ -63,6 +63,7 @@ public class ChangeOrderServiceImpl extends ServiceImpl<ChangeOrderMapper, Chang
             mtls.stream().forEach(o->{
                 //组装商品详情
                 o.setCode(code);
+                o.setCompanyId(changeOrderdto.getCompanyId());
                 o.setSourceId(changeOrderdto.getId());
             });
             changeOrderDtlService.saveBatch(mtls);
@@ -72,9 +73,11 @@ public class ChangeOrderServiceImpl extends ServiceImpl<ChangeOrderMapper, Chang
             // 配件出库
             InventoryOut inventoryOut = new InventoryOut(changeOrderdto.getId(), changeOrderdto.getCode(), BillType.STOREOUT.getId(), BillType.CHANGEORDER.getId(), changeOrderdto.getWarehouseId(), new Date(), BillStatus.TOSTOCKOUT.getId());
             inventoryOut.setRowSts(RowSts.EFFECTIVE.getId());
+            inventoryOut.setCompanyId(changeOrderdto.getCompanyId());
             inventoryOutService.saveToInventoryOut(inventoryOut);
             // 入库单主表
             InventoryIn inventoryIn = new InventoryIn();
+            inventoryIn.setCompanyId(changeOrderdto.getCompanyId());
             inventoryIn.setBillStatus(BillStatus.TOSTOCKIN.getId());
             inventoryIn.setWarehouseId(changeOrderdto.getWarehouseId());
             inventoryIn.setPutInTime(new Date());
@@ -97,6 +100,9 @@ public class ChangeOrderServiceImpl extends ServiceImpl<ChangeOrderMapper, Chang
         super.updateById(changeOrderdto);
         if (changeOrderdto.getDetaillist().size() > 0){
             for (ChangeOrderDtl item: changeOrderdto.getDetaillist()){
+                if (StringUtils.isBlank(item.getCompanyId())) {
+                    item.setCompanyId(changeOrderdto.getCompanyId());
+                }
                 //组装商品详情
                 if (item.getId() != null && item.getId().length() > 0)
                     changeOrderDtlService.updateById(item);
@@ -112,11 +118,13 @@ public class ChangeOrderServiceImpl extends ServiceImpl<ChangeOrderMapper, Chang
             inventoryOutService.deleteBySourceId(changeOrderdto.getId());
             InventoryOut inventoryOut = new InventoryOut(changeOrderdto.getId(), changeOrderdto.getCode(), BillType.STOREOUT.getId(), BillType.CHANGEORDER.getId(), changeOrderdto.getWarehouseId(), new Date(), BillStatus.TOSTOCKOUT.getId());
             inventoryOut.setRowSts(RowSts.EFFECTIVE.getId());
+            inventoryOut.setCompanyId(changeOrderdto.getCompanyId());
             inventoryOutService.saveToInventoryOut(inventoryOut);
 
 
             inventoryInService.deleteBySourceId(changeOrderdto.getId());
             InventoryIn inventoryIn = new InventoryIn();
+            inventoryIn.setCompanyId(changeOrderdto.getCompanyId());
             inventoryIn.setBillStatus(BillStatus.TOSTOCKIN.getId());
             inventoryIn.setWarehouseId(changeOrderdto.getWarehouseId());
             inventoryIn.setPutInTime(new Date());

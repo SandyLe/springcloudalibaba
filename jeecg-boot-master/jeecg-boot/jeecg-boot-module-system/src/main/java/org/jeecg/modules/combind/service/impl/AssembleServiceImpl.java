@@ -67,6 +67,7 @@ public class AssembleServiceImpl extends ServiceImpl<AssembleMapper, Assemble> i
             mtls.stream().forEach(o->{
                 //组装商品详情
                 o.setCode(code);
+                o.setCompanyId(assembledto.getCompanyId());
                 o.setSourceId(assembledto.getId());
             });
             assembleDtlService.saveBatch(mtls);
@@ -75,6 +76,7 @@ public class AssembleServiceImpl extends ServiceImpl<AssembleMapper, Assemble> i
 
             // 入库单主表
             InventoryIn inventoryIn = new InventoryIn();
+            inventoryIn.setCompanyId(assembledto.getCompanyId());
             inventoryIn.setBillStatus(BillStatus.TOSTOCKIN.getId());
             inventoryIn.setWarehouseId(assembledto.getWarehouseId());
             inventoryIn.setPutInTime(new Date());
@@ -91,6 +93,7 @@ public class AssembleServiceImpl extends ServiceImpl<AssembleMapper, Assemble> i
             // 出库
             InventoryOut inventoryOut = new InventoryOut(assembledto.getId(), assembledto.getCode(), BillType.STOREOUT.getId(), BillType.ASSEMBLE.getId(), assembledto.getWarehouseId(), new Date(), BillStatus.TOSTOCKOUT.getId());
             inventoryOut.setRowSts(RowSts.EFFECTIVE.getId());
+            inventoryOut.setCompanyId(assembledto.getCompanyId());
             inventoryOutService.saveToInventoryOut(inventoryOut);
         }
         return assembledto.getId();
@@ -104,6 +107,7 @@ public class AssembleServiceImpl extends ServiceImpl<AssembleMapper, Assemble> i
         super.updateById(assembledto);
         if (assembledto.getDetaillist().size() > 0){
             for (AssembleDtl item: assembledto.getDetaillist()){
+                item.setCompanyId(assembledto.getCompanyId());
                 //组装商品详情
                 if (item.getId() != null && item.getId().length() > 0)
                     assembleDtlService.updateById(item);
@@ -121,6 +125,7 @@ public class AssembleServiceImpl extends ServiceImpl<AssembleMapper, Assemble> i
 
             // 入库单主表
             InventoryIn inventoryIn = new InventoryIn();
+            inventoryIn.setCompanyId(assembledto.getCompanyId());
             inventoryIn.setBillStatus(BillStatus.TOSTOCKIN.getId());
             inventoryIn.setWarehouseId(assembledto.getWarehouseId());
             inventoryIn.setPutInTime(new Date());
@@ -138,6 +143,7 @@ public class AssembleServiceImpl extends ServiceImpl<AssembleMapper, Assemble> i
             // 配件出库
             InventoryOut inventoryOut = new InventoryOut(assembledto.getId(), assembledto.getCode(), BillType.STOREOUT.getId(), BillType.ASSEMBLE.getId(), assembledto.getWarehouseId(), new Date(), BillStatus.TOSTOCKOUT.getId());
             inventoryOut.setRowSts(RowSts.EFFECTIVE.getId());
+            inventoryOut.setCompanyId(assembledto.getCompanyId());
             inventoryOutService.saveToInventoryOut(inventoryOut);
         }
         return assembledto.getId();

@@ -5,14 +5,14 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import org.jeecg.modules.basic.entity.BasicEntity;
+import org.jeecg.modules.basic.entity.CBasicEntity;
 
 import java.math.BigDecimal;
 
 @Data
 @TableName("sl_stocking")
 @ApiModel(value = "Stocking", description = "盘点单")
-public class Stocking extends BasicEntity {
+public class Stocking extends CBasicEntity {
 
     @ApiModelProperty("产品ID")
     private String mtlId;

@@ -10,9 +10,11 @@ import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.system.query.QueryGenerator;
+import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.modules.basic.entity.Material;
 import org.jeecg.modules.basic.entity.MaterialUnit;
 import org.jeecg.modules.basic.entity.Warehouse;
@@ -60,6 +62,10 @@ public class StockingController {
     @AutoLog(value = "添加盘点单")
     @ApiOperation(value = "添加盘点单", notes = "添加盘点单")
     public Result<?> add(@RequestBody Stocking stocking) {
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        if (StringUtils.isBlank(stocking.getCompanyId())) {
+            stocking.setCompanyId(sysUser.getCompanyId());
+        }
         if (StringUtils.isEmpty(stocking.getId())) {
             stocking.setCode(billCodeBuilderService.getBillCode(BillType.STOCKING.getId()));
         }
@@ -141,6 +147,10 @@ public class StockingController {
     @AutoLog(value = "修改盘点单")
     @ApiOperation(value = "修改盘点单", notes = "修改盘点单")
     public Result<?> edit(@RequestBody Stocking stocking){
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        if (StringUtils.isBlank(stocking.getCompanyId())) {
+            stocking.setCompanyId(sysUser.getCompanyId());
+        }
         stockingService.updateById(stocking);
         Result<Object> result = Result.ok();
         result.setResult(stocking);

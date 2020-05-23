@@ -5,5 +5,5 @@ import io.swagger.annotations.ApiModel;
 
 @TableName("sl_customer_source")
 @ApiModel(value = "CustomerSource", description = "客户来源")
-public class CustomerSource extends BasicEntity {
+public class CustomerSource extends CBasicEntity {
 }

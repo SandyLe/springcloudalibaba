@@ -7,9 +7,11 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.system.query.QueryGenerator;
+import org.jeecg.common.util.LoginUtils;
 import org.jeecg.modules.basic.entity.CustomerType;
 import org.jeecg.common.enums.BillType;
 import org.jeecg.modules.basic.service.BillCodeBuilderService;
@@ -80,6 +82,9 @@ public class CustomerTypeController {
     @AutoLog(value = "添加客户类型")
     @ApiOperation(value = "添加客户类型", notes = "添加客户类型")
     public Result<?> add(@RequestBody CustomerType customerType) {
+        if (StringUtils.isBlank(customerType.getCompanyId())) {
+            customerType.setCompanyId(LoginUtils.getLoginUser().getCompanyId());
+        }
         customerType.setCode(billCodeBuilderService.getBillCode(BillType.CUSTOMERTYPE.getId()));
         customerTypeService.save(customerType);
         return Result.ok("添加成功！");
@@ -95,6 +100,9 @@ public class CustomerTypeController {
     @AutoLog(value = "修改客户类型")
     @ApiOperation(value = "修改客户类型", notes = "修改客户类型")
     public Result<?> edit(@RequestBody CustomerType customerType){
+        if (StringUtils.isBlank(customerType.getCompanyId())) {
+            customerType.setCompanyId(LoginUtils.getLoginUser().getCompanyId());
+        }
         customerTypeService.updateById(customerType);
         return Result.ok("修改成功！");
     }

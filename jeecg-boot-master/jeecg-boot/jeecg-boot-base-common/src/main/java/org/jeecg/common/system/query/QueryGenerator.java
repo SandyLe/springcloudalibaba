@@ -448,7 +448,7 @@ public class QueryGenerator {
 		return "class".equals(name) || "ids".equals(name)
 				|| "page".equals(name) || "rows".equals(name)
 				|| "sort".equals(name) || "order".equals(name)
-				|| "info".equals(name);
+				|| "info".equals(name) || name.endsWith("Name");
 	}
 
 
@@ -476,6 +476,9 @@ public class QueryGenerator {
 			spdr.setRuleColumn("companyId");
 			spdr.setRuleConditions("=");
 			spdr.setRuleValue(sysUser.getCompanyId());
+
+			/*spdr.setRuleConditions("IN");
+			spdr.setRuleValue("0," + sysUser.getCompanyId());*/
 			list.add(spdr);
 		}
 		if(CollectionUtils.isNotEmpty(list)){

@@ -7,7 +7,7 @@ import io.swagger.annotations.ApiModelProperty;
 
 @TableName("sl_warehouse")
 @ApiModel(value = "Warehouse", description = "仓库")
-public class Warehouse extends BasicEntity {
+public class Warehouse extends CBasicEntity {
 
     @ApiModelProperty("负责人ID")
     private String principalId;

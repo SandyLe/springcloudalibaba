@@ -101,7 +101,7 @@ public class InventoryOutServiceImpl extends ServiceImpl<InventoryOutMapper, Inv
         if (null != info) {
             for (PreInventoryOutMtl mtl : mtls) {
                 InventoryLog inventoryLog = new InventoryLog(info.getId(), mtl.getSourceId(), info.getSourceBillType(), mtl.getMtlId(),
-                        info.getWarehouseId(), null, mtl.getQuantity(), null, mtl.getUnitId(), mtl.getOperationId(), null);
+                        info.getWarehouseId(), null, mtl.getQuantity(), null, mtl.getUnitId(), mtl.getOperationId(), null, info.getCompanyId());
                 inventoryService.updateInventory(inventoryLog);
             }
             List<PreInventoryOutMtl> deliveryMtls = getDeliveryMtlList(info.getId(), info.getSourceId());

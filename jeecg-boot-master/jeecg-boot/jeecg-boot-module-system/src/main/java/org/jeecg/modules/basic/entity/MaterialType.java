@@ -5,5 +5,5 @@ import io.swagger.annotations.ApiModel;
 
 @TableName("sl_material_type")
 @ApiModel(value = "MaterialType", description = "产品类型")
-public class MaterialType extends BasicEntity {
+public class MaterialType extends CBasicEntity {
 }

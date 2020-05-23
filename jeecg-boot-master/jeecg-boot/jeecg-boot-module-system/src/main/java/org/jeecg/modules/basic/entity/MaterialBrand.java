@@ -6,7 +6,7 @@ import io.swagger.annotations.ApiModelProperty;
 
 @TableName("sl_material_brand")
 @ApiModel(value = "MaterialBrand", description = "产品品牌")
-public class MaterialBrand extends BasicEntity {
+public class MaterialBrand extends CBasicEntity {
 
     @ApiModelProperty("官网")
     private String webSite;

@@ -10,11 +10,13 @@ import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.aspect.annotation.PermissionData;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.DictModel;
+import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.modules.basic.dto.DeliveryEditDto;
 import org.jeecg.modules.basic.entity.Customer;
 import org.jeecg.modules.basic.entity.Warehouse;
@@ -78,6 +80,10 @@ public class SaleOrderController {
     @ApiOperation(value = "添加销售订单", notes = "添加销售订单")
     public Result<?> add(@RequestBody SaleOrder saleOrder) {
 
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        if (StringUtils.isBlank(saleOrder.getCompanyId())) {
+            saleOrder.setCompanyId(sysUser.getCompanyId());
+        }
         saleOrder.setBillStatus(BillStatus.NEW.getId());
         saleOrder.setCode(billCodeBuilderService.getBillCode(BillType.SALEORDER.getId()));
         SaleOrder exists = saleOrderService.getOne(new LambdaQueryWrapper<SaleOrder>().eq(SaleOrder::getCode, saleOrder.getCode()).ne(SaleOrder::getId, saleOrder.getId()));
@@ -157,6 +163,10 @@ public class SaleOrderController {
     @AutoLog(value = "修改销售订单")
     @ApiOperation(value = "修改销售订单", notes = "修改销售订单")
     public Result<?> edit(@RequestBody SaleOrder saleOrder){
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        if (StringUtils.isBlank(saleOrder.getCompanyId())) {
+            saleOrder.setCompanyId(sysUser.getCompanyId());
+        }
         SaleOrder exists = saleOrderService.getById(saleOrder.getId());
         SaleOrder existCode = saleOrderService.getOne(new LambdaQueryWrapper<SaleOrder>().eq(SaleOrder::getCode, saleOrder.getCode()).ne(SaleOrder::getId, saleOrder.getId()));
         Assert.isNull(existCode, "单号已存在！");

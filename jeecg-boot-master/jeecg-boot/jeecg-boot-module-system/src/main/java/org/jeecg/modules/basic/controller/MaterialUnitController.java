@@ -7,9 +7,12 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
+import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.system.query.QueryGenerator;
+import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.modules.basic.entity.MaterialUnit;
 import org.jeecg.modules.basic.service.MaterialUnitService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,6 +79,10 @@ public class MaterialUnitController {
     @AutoLog(value = "添加产品单位")
     @ApiOperation(value = "添加产品单位", notes = "添加产品单位")
     public Result<?> add(@RequestBody MaterialUnit materialUnit) {
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        if (StringUtils.isBlank(materialUnit.getCompanyId())) {
+            materialUnit.setCompanyId(sysUser.getCompanyId());
+        }
         materialUnitService.save(materialUnit);
         return Result.ok("添加成功！");
     }
@@ -90,6 +97,10 @@ public class MaterialUnitController {
     @AutoLog(value = "修改产品单位")
     @ApiOperation(value = "修改产品单位", notes = "修改产品单位")
     public Result<?> edit(@RequestBody MaterialUnit materialUnit){
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        if (StringUtils.isBlank(materialUnit.getCompanyId())) {
+            materialUnit.setCompanyId(sysUser.getCompanyId());
+        }
         materialUnitService.updateById(materialUnit);
         return Result.ok("修改成功！");
     }

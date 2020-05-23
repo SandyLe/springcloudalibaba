@@ -4,11 +4,11 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import org.jeecg.modules.basic.entity.BasicEntity;
+import org.jeecg.modules.basic.entity.CBasicEntity;
 
 @TableName("sl_saleorder_delivery_info")
 @ApiModel(value = "SaleOrderDeliveryInfo", description = "客户发货信息")
-public class SaleOrderDeliveryInfo extends BasicEntity {
+public class SaleOrderDeliveryInfo extends CBasicEntity {
 
     @ApiModelProperty("销售订单ID")
     private String sourceId;

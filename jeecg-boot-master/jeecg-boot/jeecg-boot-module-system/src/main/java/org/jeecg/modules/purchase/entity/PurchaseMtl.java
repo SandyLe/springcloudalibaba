@@ -1,20 +1,12 @@
 package org.jeecg.modules.purchase.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import org.apache.commons.lang.StringUtils;
-import org.jeecg.modules.basic.entity.BasicEntity;
-import org.springframework.format.annotation.DateTimeFormat;
-import lombok.Data;
-
-import java.io.Serializable;
+import org.jeecg.modules.basic.entity.CBasicEntity;
 import java.math.BigDecimal;
-import java.util.Date;
 
 /**
  * @Description:
@@ -24,7 +16,7 @@ import java.util.Date;
  */
 @TableName("sl_purchase_mtl")
 @ApiModel(value = "PurchaseMtl", description = "采购订单产品明细")
-public class PurchaseMtl extends BasicEntity {
+public class PurchaseMtl extends CBasicEntity {
 
     /*采购订单id*/
     @ApiModelProperty("采购订单id")

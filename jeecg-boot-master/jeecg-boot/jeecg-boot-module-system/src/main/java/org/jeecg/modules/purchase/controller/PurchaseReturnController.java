@@ -7,9 +7,11 @@ import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.base.controller.JeecgController;
 import org.jeecg.common.system.query.QueryGenerator;
+import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.DateUtils;
 import org.jeecg.modules.basic.entity.Vendor;
 import org.jeecg.modules.basic.entity.Warehouse;
@@ -114,6 +116,10 @@ public class PurchaseReturnController extends JeecgController<PurchaseReturn, Pu
             rtn.setVendorId(purchase.getVendorId());
             rtn.setBillStatus(BillStatus.NEW.getId());
             rtn.setAccount(purchase.getAccount());
+            LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+            if (StringUtils.isBlank(rtn.getCompanyId())) {
+                rtn.setCompanyId(sysUser.getCompanyId());
+            }
             purchaseReturnService.save(rtn);
 
             List<PurchaseReturnMtl> list = dto.getDetaillist();
@@ -121,6 +127,7 @@ public class PurchaseReturnController extends JeecgController<PurchaseReturn, Pu
                 for (PurchaseReturnMtl item:list){
                     // 退货商品表
                     PurchaseReturnMtl purchaseReturnDtl = new PurchaseReturnMtl();
+                    purchaseReturnDtl.setCompanyId(rtn.getCompanyId());
                     purchaseReturnDtl.setSourceId(rtn.getId());
                     purchaseReturnDtl.setCode(code);
                     purchaseReturnDtl.setMtlId(item.getMtlId());
@@ -135,6 +142,7 @@ public class PurchaseReturnController extends JeecgController<PurchaseReturn, Pu
             //出库单
             String stockcode = billCodeBuilderService.getBillCode(BillType.STOREOUT.getId());
             InventoryOut inventoryOut = new InventoryOut();
+            inventoryOut.setCompanyId(rtn.getCompanyId());
             inventoryOut.setSourceId(rtn.getId());
             inventoryOut.setCode(stockcode);
             inventoryOut.setBillType(BillType.STOREOUT.getId());
@@ -153,12 +161,17 @@ public class PurchaseReturnController extends JeecgController<PurchaseReturn, Pu
     @PutMapping("/edit")
     public Result<?> edit(@RequestBody PurchaseReturnInDto purchasedtldto){
         PurchaseInventoryDto dto = new PurchaseInventoryDto();
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        if (StringUtils.isBlank(purchasedtldto.getCompanyId())) {
+            purchasedtldto.setCompanyId(sysUser.getCompanyId());
+        }
         dto.setMsg("编辑失败");
 
         // 采购退货主表
         purchaseReturnService.updateById(purchasedtldto);
         if (purchasedtldto.getDetaillist().size() > 0){
             for (PurchaseReturnMtl item: purchasedtldto.getDetaillist()){
+                item.setCompanyId(purchasedtldto.getCompanyId());
                 //采购商品详情
                 if (item.getId() != null && item.getId().length() > 0)
                     purchaseReturnMtlService.updateById(item);
@@ -176,6 +189,7 @@ public class PurchaseReturnController extends JeecgController<PurchaseReturn, Pu
 
             // 出库单主表
             InventoryOut inventoryOut = new InventoryOut();
+            inventoryOut.setCompanyId(purchasedtldto.getCompanyId());
             inventoryOut.setBillStatus(BillStatus.TOSEND.getId());
             inventoryOut.setWarehouseId(purchasedtldto.getWarehouseId());
             inventoryOut.setPutOutTime(purchasedtldto.getPutOutTime());
@@ -229,6 +243,7 @@ public class PurchaseReturnController extends JeecgController<PurchaseReturn, Pu
         purchasedtldto.setAmount(purchasereturn.getAmount());
         purchasedtldto.setCode(purchasereturn.getCode());
         purchasedtldto.setCreateTime(purchasereturn.getCreateTime());
+        purchasedtldto.setCompanyId(purchasereturn.getCompanyId());
         purchasedtldto.setDetaillist(purchaseReturnMtlService.queryBySourceId(purchasereturn.getId()));
 
         InventoryOut inventoryOut = inventoryOutService.queryBySourceId(purchasereturn.getId());

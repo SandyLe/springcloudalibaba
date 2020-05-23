@@ -6,7 +6,7 @@ import io.swagger.annotations.ApiModelProperty;
 
 @TableName("sl_customer_type")
 @ApiModel(value = "CustomerType", description = "客户类型")
-public class CustomerType extends BasicEntity {
+public class CustomerType extends CBasicEntity {
 
     @ApiModelProperty("价格状态")
     private String priceFlag;

@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 
 @TableName("sl_material_price")
 @ApiModel(value = "MaterialPrice", description = "产品价格")
-public class MaterialPrice extends BasicEntity {
+public class MaterialPrice extends CBasicEntity {
 
     @ApiModelProperty("产品ID")
     private String materialId;

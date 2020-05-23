@@ -9,11 +9,14 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.aspect.annotation.PermissionData;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.DictModel;
+import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.modules.basic.entity.Customer;
 import org.jeecg.modules.basic.entity.Warehouse;
 import org.jeecg.common.enums.BillStatus;
@@ -65,6 +68,10 @@ public class SaleOrderReturnController {
     @ApiOperation(value = "添加销售退货", notes = "添加销售退货")
     public Result<?> add(@RequestBody SaleOrderReturn saleOrderReturn) {
 
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        if (StringUtils.isBlank(saleOrderReturn.getCompanyId())) {
+            saleOrderReturn.setCompanyId(sysUser.getCompanyId());
+        }
         saleOrderReturn.setBillStatus(BillStatus.NEW.getId());
         saleOrderReturn.setCode(billCodeBuilderService.getBillCode(BillType.SALERETURNORDER.getId()));
         SaleOrderReturn exists = saleOrderReturnService.getOne(new LambdaQueryWrapper<SaleOrderReturn>().eq(SaleOrderReturn::getCode, saleOrderReturn.getCode()).ne(SaleOrderReturn::getId, saleOrderReturn.getId()));
@@ -143,6 +150,10 @@ public class SaleOrderReturnController {
     @AutoLog(value = "修改销售退货")
     @ApiOperation(value = "修改销售退货", notes = "修改销售退货")
     public Result<?> edit(@RequestBody SaleOrderReturn saleOrderReturn){
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        if (StringUtils.isBlank(saleOrderReturn.getCompanyId())) {
+            saleOrderReturn.setCompanyId(sysUser.getCompanyId());
+        }
         SaleOrderReturn exists = saleOrderReturnService.getById(saleOrderReturn.getId());
         SaleOrderReturn existCode = saleOrderReturnService.getOne(new LambdaQueryWrapper<SaleOrderReturn>().eq(SaleOrderReturn::getCode, saleOrderReturn.getCode()).ne(SaleOrderReturn::getId, saleOrderReturn.getId()));
         Assert.isNull(existCode, "单号已存在！");
@@ -154,6 +165,7 @@ public class SaleOrderReturnController {
 
             // 入库单主表
             InventoryIn inventoryIn = new InventoryIn();
+            inventoryIn.setCompanyId(saleOrderReturn.getCompanyId());
             inventoryIn.setBillStatus(BillStatus.TOSTOCKIN.getId());
             inventoryIn.setWarehouseId(saleOrderReturn.getWarehouseId());
             inventoryIn.setPutInTime(new Date());

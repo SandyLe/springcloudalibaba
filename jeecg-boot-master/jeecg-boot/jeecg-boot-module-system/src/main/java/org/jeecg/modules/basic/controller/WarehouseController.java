@@ -8,9 +8,13 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.system.query.QueryGenerator;
+import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.modules.basic.entity.Vendor;
 import org.jeecg.modules.basic.entity.Warehouse;
 import org.jeecg.modules.basic.service.WarehouseService;
@@ -59,16 +63,19 @@ public class WarehouseController {
 
         IPage<Warehouse> pageList = warehouseService.page(page, queryWrapper);
         List<Warehouse> resultList = pageList.getRecords();
-        List<String> shopIdList = resultList.stream().map(o->o.getBelongsToId()).collect(Collectors.toList());
-        List<String> principalIdLIst = resultList.stream().map(o->o.getPrincipalId()).collect(Collectors.toList());
-        Collection<SysDepart> shopList = sysDepartService.listByIds(shopIdList);
-        Collection<SysUser> principalLIst = sysUserService.listByIds(principalIdLIst);
-        Map<String, String> shopNameMap = shopList.stream().collect(Collectors.toMap(SysDepart::getId, SysDepart::getDepartName));
-        Map<String, String> userNameMap = principalLIst.stream().collect(Collectors.toMap(SysUser::getId, SysUser::getRealname));
-        resultList.stream().forEach(o->{
-            o.setBelongsToName(shopNameMap.get(o.getBelongsToId()));
-            o.setPrincipalName(userNameMap.get(o.getPrincipalId()));
-        });
+        if (CollectionUtils.isNotEmpty(resultList)) {
+
+            List<String> shopIdList = resultList.stream().map(o -> o.getBelongsToId()).collect(Collectors.toList());
+            List<String> principalIdLIst = resultList.stream().map(o -> o.getPrincipalId()).collect(Collectors.toList());
+            Collection<SysDepart> shopList = sysDepartService.listByIds(shopIdList);
+            Collection<SysUser> principalLIst = sysUserService.listByIds(principalIdLIst);
+            Map<String, String> shopNameMap = shopList.stream().collect(Collectors.toMap(SysDepart::getId, SysDepart::getDepartName));
+            Map<String, String> userNameMap = principalLIst.stream().collect(Collectors.toMap(SysUser::getId, SysUser::getRealname));
+            resultList.stream().forEach(o -> {
+                o.setBelongsToName(shopNameMap.get(o.getBelongsToId()));
+                o.setPrincipalName(userNameMap.get(o.getPrincipalId()));
+            });
+        }
         pageList.setRecords(resultList);
         log.info("查询当前页：" + pageList.getCurrent());
         log.info("查询当前页数量：" + pageList.getSize());
@@ -102,6 +109,10 @@ public class WarehouseController {
     @AutoLog(value = "添加仓库")
     @ApiOperation(value = "添加仓库", notes = "添加仓库")
     public Result<?> add(@RequestBody Warehouse warehouse) {
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        if (StringUtils.isBlank(warehouse.getCompanyId())) {
+            warehouse.setCompanyId(sysUser.getCompanyId());
+        }
         warehouseService.save(warehouse);
         return Result.ok("添加成功！");
     }
@@ -115,7 +126,12 @@ public class WarehouseController {
     @PostMapping(value = "/edit")
     @AutoLog(value = "修改仓库")
     @ApiOperation(value = "修改仓库", notes = "修改仓库")
-    public Result<?> edit(@RequestBody Warehouse warehouse){
+    public Result<?> edit(@RequestBody Warehouse warehouse) {
+
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        if (StringUtils.isBlank(warehouse.getCompanyId())) {
+            warehouse.setCompanyId(sysUser.getCompanyId());
+        }
         warehouseService.updateById(warehouse);
         return Result.ok("修改成功！");
     }

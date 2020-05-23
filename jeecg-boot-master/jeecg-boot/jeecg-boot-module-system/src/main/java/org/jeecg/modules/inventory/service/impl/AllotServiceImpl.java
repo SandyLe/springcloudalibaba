@@ -57,6 +57,7 @@ public class AllotServiceImpl extends ServiceImpl<AllotMapper, Allot>  implement
             List<AllotDtl> mtls = allotdto.getDetaillist().stream().filter(o -> StringUtils.isNotBlank(o.getMtlId())).collect(Collectors.toList());
             mtls.stream().forEach(o -> {
                 //调拨商品详情
+                o.setCompanyId(allotdto.getCompanyId());
                 o.setCode(code);
                 o.setSourceId(allotdto.getId());
             });
@@ -66,6 +67,7 @@ public class AllotServiceImpl extends ServiceImpl<AllotMapper, Allot>  implement
 
             // 入库单主表
             InventoryIn inventoryIn = new InventoryIn();
+            inventoryIn.setCompanyId(allotdto.getCompanyId());
             inventoryIn.setBillStatus(BillStatus.TOSTOCKIN.getId());
             inventoryIn.setWarehouseId(allotdto.getToWarehouseId());
             inventoryIn.setPutInTime(new Date());
@@ -81,6 +83,7 @@ public class AllotServiceImpl extends ServiceImpl<AllotMapper, Allot>  implement
             // 销售出库
             InventoryOut inventoryOut = new InventoryOut(allotdto.getId(), allotdto.getCode(), BillType.STOREOUT.getId(), BillType.ALLOT.getId(), allotdto.getFromWarehouseId(), new Date(), BillStatus.TOSTOCKOUT.getId());
             inventoryOut.setRowSts(RowSts.EFFECTIVE.getId());
+            inventoryOut.setCompanyId(allotdto.getCompanyId());
             inventoryOutService.saveToInventoryOut(inventoryOut);
         }
         return allotdto.getId();
@@ -93,6 +96,7 @@ public class AllotServiceImpl extends ServiceImpl<AllotMapper, Allot>  implement
         super.updateById(allotdto);
         if (allotdto.getDetaillist().size() > 0) {
             for (AllotDtl item : allotdto.getDetaillist()) {
+                item.setCompanyId(allotdto.getCompanyId());
                 //调拨商品详情
                 if (item.getId() != null && item.getId().length() > 0)
                     allotDtlService.updateById(item);
@@ -107,6 +111,7 @@ public class AllotServiceImpl extends ServiceImpl<AllotMapper, Allot>  implement
         inventoryInService.deleteBySourceId(allotdto.getId());
         if (StringUtils.isNotBlank(allotdto.getFromWarehouseId())) {
             InventoryIn inventoryIn = new InventoryIn();
+            inventoryIn.setCompanyId(allotdto.getCompanyId());
             inventoryIn.setBillStatus(BillStatus.TOSTOCKIN.getId());
             inventoryIn.setWarehouseId(allotdto.getFromWarehouseId());
             inventoryIn.setPutInTime(new Date());
@@ -124,6 +129,7 @@ public class AllotServiceImpl extends ServiceImpl<AllotMapper, Allot>  implement
             // 销售出库
             InventoryOut inventoryOut = new InventoryOut(allotdto.getId(), allotdto.getCode(), BillType.STOREOUT.getId(), BillType.ALLOT.getId(), allotdto.getFromWarehouseId(), new Date(), BillStatus.TOSTOCKOUT.getId());
             inventoryOut.setRowSts(RowSts.EFFECTIVE.getId());
+            inventoryOut.setCompanyId(allotdto.getCompanyId());
             inventoryOutService.saveToInventoryOut(inventoryOut);
         }
         return allotdto.getId();

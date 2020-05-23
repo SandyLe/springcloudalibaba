@@ -6,9 +6,12 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
+import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.base.controller.JeecgController;
 import org.jeecg.common.system.query.QueryGenerator;
+import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.modules.basic.entity.Customer;
 import org.jeecg.modules.basic.service.CustomerService;
 import org.jeecg.modules.system.service.ISysUserService;
@@ -58,12 +61,20 @@ public class RepairOrderController extends JeecgController<RepairOrder, RepairOr
     @PostMapping("/add")
     @Transactional
     public Result<?> add(@RequestBody RepairOrder repairOrder) {
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        if (StringUtils.isBlank(repairOrder.getCompanyId())) {
+            repairOrder.setCompanyId(sysUser.getCompanyId());
+        }
         repairOrderService.saveOrder(repairOrder);
         return Result.ok();
     }
 
     @PostMapping("/edit")
     public Result<?> edit(@RequestBody RepairOrder repairOrder) {
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        if (StringUtils.isBlank(repairOrder.getCompanyId())) {
+            repairOrder.setCompanyId(sysUser.getCompanyId());
+        }
         repairOrderService.editOrder(repairOrder);
         return Result.ok();
     }

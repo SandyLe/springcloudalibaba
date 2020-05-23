@@ -12,10 +12,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.aspect.annotation.PermissionData;
 import org.jeecg.common.system.query.QueryGenerator;
+import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.modules.basic.dto.CustomerEditDto;
 import org.jeecg.modules.basic.entity.*;
 import org.jeecg.common.enums.BillType;
@@ -119,16 +121,24 @@ public class CustomerController {
     @AutoLog(value = "添加客户")
     @ApiOperation(value = "添加客户", notes = "添加客户")
     public Result<?> add(@RequestBody CustomerEditDto customerEditDto) throws Exception {
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        if (StringUtils.isBlank(customerEditDto.getCompanyId())) {
+            customerEditDto.setCompanyId(sysUser.getCompanyId());
+        }
         Customer customer = new Customer();
         BeanUtils.copyProperties(customer, customerEditDto);
         customer.setId(customerEditDto.getId());
         Customer exists = null;
         if (StringUtils.isEmpty(customerEditDto.getId())) {
             customer.setCode(billCodeBuilderService.getBillCode(BillType.CUSTOMER.getId()));
-            exists = customerService.getOne(new LambdaQueryWrapper<Customer>().eq(Customer::getCode, customer.getCode()).ne(Customer::getId, "-1"));
+            LambdaQueryWrapper<Customer> lambdaQueryWrapper = new LambdaQueryWrapper<Customer>().eq(Customer::getCode, customer.getCode());
+            lambdaQueryWrapper.eq(Customer::getCompanyId, customerEditDto.getCompanyId());
+            exists = customerService.getOne(lambdaQueryWrapper);
         } else {
             customer.setCode(customerEditDto.getCode());
-            exists = customerService.getOne(new LambdaQueryWrapper<Customer>().eq(Customer::getCode, customer.getCode()).ne(Customer::getId, customer.getId()));
+            LambdaQueryWrapper<Customer> lambdaQueryWrapper = new LambdaQueryWrapper<Customer>().eq(Customer::getCode, customer.getCode()).ne(Customer::getId, customer.getId());
+            lambdaQueryWrapper.eq(Customer::getCompanyId, customerEditDto.getCompanyId());
+            exists = customerService.getOne(lambdaQueryWrapper);
         }
         Assert.isNull(exists, "编号已存在！");
         customerService.saveOrUpdate(customer);

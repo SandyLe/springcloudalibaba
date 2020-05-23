@@ -150,6 +150,26 @@ public class CustomerEditDto {
     private String cdiBranch;
     @ApiModelProperty("电话")
     private String cdiTel;
+    @ApiModelProperty("企业ID")
+    private String companyId;
+    @TableField(exist=false)
+    private String companyName;
+
+    public String getCompanyId() {
+        return companyId;
+    }
+
+    public void setCompanyId(String companyId) {
+        this.companyId = companyId;
+    }
+
+    public String getCompanyName() {
+        return companyName;
+    }
+
+    public void setCompanyName(String companyName) {
+        this.companyName = companyName;
+    }
 
     public String getId() {
         return id;

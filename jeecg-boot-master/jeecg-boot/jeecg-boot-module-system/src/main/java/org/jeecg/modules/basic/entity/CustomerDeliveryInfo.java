@@ -7,7 +7,7 @@ import io.swagger.annotations.ApiModelProperty;
 
 @TableName("sl_customer_delivery_info")
 @ApiModel(value = "CustomerDeliveryInfo", description = "客户发货信息")
-public class CustomerDeliveryInfo extends BasicEntity {
+public class CustomerDeliveryInfo extends CBasicEntity {
 
     @ApiModelProperty("客户")
     private String cdiSourceId;

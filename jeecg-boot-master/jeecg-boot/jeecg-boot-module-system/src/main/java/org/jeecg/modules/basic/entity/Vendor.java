@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 
 @TableName("sl_vendor")
 @ApiModel(value = "Vendor", description = "供应商")
-public class Vendor extends BasicEntity {
+public class Vendor extends CBasicEntity {
 
     @ApiModelProperty("负责人")
     private String linkman;
