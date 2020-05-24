@@ -81,6 +81,16 @@
             label="机构名称">
             <a-input placeholder="请输入机构/部门名称" v-decorator="['departName', validatorRules.departName ]"/>
           </a-form-item>
+          <template v-if="orgCategoryDisabled">
+            <a-form-item
+              :labelCol="labelCol"
+              :wrapperCol="wrapperCol"
+              label="英文名称"
+              :hidden="false"
+              hasFeedback >
+              <a-input id="departNameEn" placeholder="请输入机构/部门英文名称" v-decorator="['departNameEn', validatorRules.departNameEn ]"/>
+            </a-form-item>
+          </template>
           <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="上级部门">
             <a-tree-select
               style="width:100%"
@@ -119,6 +129,26 @@
               </a-radio-group>
             </template>
           </a-form-item>
+          <template v-if="orgCategoryDisabled">
+            <a-form-item label="LOGO" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-upload
+                listType="picture-card"
+                class="avatar-uploader"
+                :showUploadList="false"
+                :action="uploadAction"
+                :data="{'isup':1}"
+                :headers="headers"
+                :beforeUpload="beforeUpload"
+                @change="handleChange"
+              >
+                <img v-if="picUrl" :src="getAvatarView()" alt="LOGO" style="height:104px;max-width:300px"/>
+                <div v-else>
+                  <a-icon :type="uploadLoading ? 'loading' : 'plus'" />
+                  <div class="ant-upload-text">上传</div>
+                </div>
+              </a-upload>
+            </a-form-item>
+          </template>
           <a-form-item
             :labelCol="labelCol"
             :wrapperCol="wrapperCol"
@@ -161,6 +191,8 @@
   import {queryDepartTreeList, searchByKeywords, deleteByDepartId} from '@/api/api'
   import {httpAction, deleteAction} from '@/api/manage'
   import {JeecgListMixin} from '@/mixins/JeecgListMixin'
+  import Vue from 'vue'
+  import { ACCESS_TOKEN } from "@/store/mutation-types"
   // 表头
   const columns = [
     {
@@ -249,6 +281,7 @@
         },
         validatorRules: {
           departName: {rules: [{required: true, message: '请输入机构/部门名称!'}]},
+          departNameEn: {rules: [{required: true, message: '请输入机构/部门英文名称!'}]},
           orgCode: {rules: [{required: true, message: '请输入机构编码!'}]},
           orgCategory: {rules: [{required: true, message: '请输入机构类型!'}]},
           mobile: {rules: [{validator: this.validateMobile}]}
@@ -259,13 +292,22 @@
           deleteBatch: '/sys/sysDepart/deleteBatch',
           exportXlsUrl: "sys/sysDepart/exportXls",
           importExcelUrl: "sys/sysDepart/importExcel",
+          fileUpload: window._CONFIG['domianURL']+"/sys/common/upload",
+          imgerver: window._CONFIG['domianURL']+"/sys/common/view"
         },
         orgCategoryDisabled:false,
+        dictDisabled:true,
+        uploadLoading:false,
+        confirmLoading: false,
+        headers:{}
       }
     },
     computed: {
       importExcelUrl: function () {
         return `${window._CONFIG['domianURL']}/${this.url.importExcelUrl}`;
+      },
+      uploadAction:function () {
+        return this.url.fileUpload;
       }
     },
     methods: {
@@ -413,18 +455,20 @@
         this.selectedKeys = [record.key]
         this.model.parentId = record.parentId
         this.setValuesToForm(record)
-
-
       },
       // 触发onSelect事件时,为部门树右侧的form表单赋值
       setValuesToForm(record) {
-        if(record.orgCategory == '1'){
+        this.picUrl = "Has no pic url yet";
+        const token = Vue.ls.get(ACCESS_TOKEN);
+        this.headers = {"X-Access-Token":token}
+        this.model.avatar = record.avatar;
+        if(record.orgCategory == '1' || record.orgCategory == '0'){
           this.orgCategoryDisabled = true;
         }else{
           this.orgCategoryDisabled = false;
         }
         this.form.getFieldDecorator('fax', {initialValue: ''})
-        this.form.setFieldsValue(pick(record, 'departName','orgCategory', 'orgCode', 'departOrder', 'mobile', 'fax', 'address', 'memo'))
+        this.form.setFieldsValue(pick(record, 'avatar', 'departName','departNameEn','orgCategory', 'orgCode', 'departOrder', 'mobile', 'fax', 'address', 'memo'))
       },
       getCurrSelectedTitle() {
         return !this.currSelected.title ? '' : this.currSelected.title
@@ -561,15 +605,43 @@
             this.getAllKeys(node.children[a])
           }
         }
+      },
+      beforeUpload: function(file){
+        var fileType = file.type;
+        if(fileType.indexOf('image')<0){
+          this.$message.warning('请上传图片');
+          return false;
+        }
+        //TODO 验证文件大小
+      },
+      handleChange (info) {
+        this.picUrl = "";
+        if (info.file.status === 'uploading') {
+          this.uploadLoading = true;
+          return
+        }
+        if (info.file.status === 'done') {
+          var response = info.file.response;
+          this.uploadLoading = false;
+          console.log(response);
+          if(response.success){
+            this.model.avatar = response.message;
+            this.picUrl = "Has no pic url yet";
+          }else{
+            this.$message.warning(response.message);
+          }
+        }
+      },
+      getAvatarView(){
+        return this.url.imgerver +"/"+ this.model.avatar;
       }
-      // <!---- author:os_chengtgen -- date:20190827 --  for:切换父子勾选模式 =======------>
 
     },
     created() {
       this.currFlowId = this.$route.params.id
       this.currFlowName = this.$route.params.name
       // this.loadTree()
-    },
+    }
 
   }
 </script>

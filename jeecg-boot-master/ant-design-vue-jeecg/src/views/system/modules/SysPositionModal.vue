@@ -90,6 +90,7 @@
                       tableName: 'sys_position',
                       fieldName: 'code',
                       fieldVal: value,
+                      companyId: this.userInfo.companyId,
                       dataId: this.model.id
                     }).then((res) => {
                       if (res.success) {
@@ -169,9 +170,12 @@
       handleCancel() {
         this.close()
       },
-
-
-    }
+    },
+    computed:{
+      userInfo() {
+        return this.$store.getters.userInfo
+      }
+    },
   }
 </script>
 

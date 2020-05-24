@@ -112,7 +112,7 @@
 
         </a-table>
     </div>
-    <<!--inventory-modal ref="inventorymodalForm" ></inventory-modal>
+    <!--<inventory-modal ref="inventorymodalForm" ></inventory-modal>
     <inventory-out-modal ref="inventoryOutmodalForm" ></inventory-out-modal>-->
 </a-card>
 </template>

@@ -20,6 +20,16 @@
           hasFeedback >
           <a-input id="departName" placeholder="请输入机构/部门名称" v-decorator="['departName', validatorRules.departName ]"/>
         </a-form-item>
+        <template v-if="seen">
+          <a-form-item
+            :labelCol="labelCol"
+            :wrapperCol="wrapperCol"
+            label="英文名称"
+            :hidden="false"
+            hasFeedback >
+            <a-input id="departNameEn" placeholder="请输入机构/部门英文名称" v-decorator="['departNameEn', validatorRules.departNameEn ]"/>
+          </a-form-item>
+        </template>
         <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" :hidden="seen" label="上级部门" hasFeedback>
         <a-tree-select
           style="width:100%"
@@ -30,6 +40,26 @@
           :disabled="condition">
         </a-tree-select>
         </a-form-item>
+        <template v-if="seen">
+          <a-form-item label="LOGO" :labelCol="labelCol" :wrapperCol="wrapperCol">
+            <a-upload
+              listType="picture-card"
+              class="avatar-uploader"
+              :showUploadList="false"
+              :action="uploadAction"
+              :data="{'isup':1}"
+              :headers="headers"
+              :beforeUpload="beforeUpload"
+              @change="handleChange"
+            >
+              <img v-if="picUrl" :src="getAvatarView()" alt="LOGO" style="height:104px;max-width:300px"/>
+              <div v-else>
+                <a-icon :type="uploadLoading ? 'loading' : 'plus'" />
+                <div class="ant-upload-text">上传</div>
+              </div>
+            </a-upload>
+          </a-form-item>
+        </template>
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
@@ -93,6 +123,8 @@
   import { queryIdTree } from '@/api/api'
   import pick from 'lodash.pick'
   import ATextarea from 'ant-design-vue/es/input/TextArea'
+  import Vue from 'vue'
+  import { ACCESS_TOKEN } from "@/store/mutation-types"
   export default {
     name: "SysDepartModal",
     components: { ATextarea },
@@ -123,16 +155,24 @@
         form: this.$form.createForm(this),
         validatorRules:{
         departName:{rules: [{ required: true, message: '请输入机构/部门名称!' }]},
+        departNameEn:{rules: [{ required: true, message: '请输入机构/部门英文名称!' }]},
         orgCode:{rules: [{ required: true, message: '请输入机构编码!' }]},
          mobile:{rules: [{validator:this.validateMobile}]}
         },
         url: {
           add: "/sys/sysDepart/add",
+          fileUpload: window._CONFIG['domianURL']+"/sys/common/upload",
+          imgerver: window._CONFIG['domianURL']+"/sys/common/view"
         },
         dictDisabled:true,
+        uploadLoading:false,
+        confirmLoading: false,
+        headers:{}
       }
     },
     created () {
+      const token = Vue.ls.get(ACCESS_TOKEN);
+      this.headers = {"X-Access-Token":token}
     },
     methods: {
       loadTreeData(){
@@ -149,12 +189,15 @@
         })
       },
       add (depart) {
-        if(depart){
+        if(depart != '0'){
           this.seen = false;
           this.dictDisabled = false;
         }else{
+          this.picUrl = "";
           this.seen = true;
           this.dictDisabled = true;
+          const token = Vue.ls.get(ACCESS_TOKEN);
+          this.headers = {"X-Access-Token":token}
         }
         this.edit(depart);
       },
@@ -212,7 +255,40 @@
         }else{
           callback("您的手机号码格式不正确!");
         }
-
+      },
+      beforeUpload: function(file){
+        var fileType = file.type;
+        if(fileType.indexOf('image')<0){
+          this.$message.warning('请上传图片');
+          return false;
+        }
+        //TODO 验证文件大小
+      },
+      handleChange (info) {
+        this.picUrl = "";
+        if (info.file.status === 'uploading') {
+          this.uploadLoading = true;
+          return
+        }
+        if (info.file.status === 'done') {
+          var response = info.file.response;
+          this.uploadLoading = false;
+          console.log(response);
+          if(response.success){
+            this.model.avatar = response.message;
+            this.picUrl = "Has no pic url yet";
+          }else{
+            this.$message.warning(response.message);
+          }
+        }
+      },
+      getAvatarView(){
+        return this.url.imgerver +"/"+ this.model.avatar;
+      }
+    },
+    computed:{
+      uploadAction:function () {
+        return this.url.fileUpload;
       }
     }
   }

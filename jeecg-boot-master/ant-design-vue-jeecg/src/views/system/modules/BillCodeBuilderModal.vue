@@ -33,9 +33,7 @@
                         notFoundContent="没有匹配的单据类型"  >
                 <a-select-option value="">请选择</a-select-option>
                 <a-select-option v-for="(item, key) in billTypeList" :key="key" :value="item.id">
-                    <span style="display: inline-block;width: 100%" :title=" item.name || item.code ">
-                      {{ item.name || item.code }}
-                    </span>
+                  {{ item.name || item.code }}
                 </a-select-option>
               </a-select>
             </a-form-item>

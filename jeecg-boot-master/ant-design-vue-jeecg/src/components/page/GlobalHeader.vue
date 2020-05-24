@@ -17,7 +17,7 @@
         :type="collapsed ? 'menu-unfold' : 'menu-fold'"
         @click.native="toggle"/>
 
-      <span v-if="device === 'desktop'">欢迎进入 WENJIANG-上海文疆商贸 企业ERP平台</span>
+      <span v-if="device === 'desktop'">欢迎进入 {{title}} 企业ERP平台！</span>
       <span v-else>WJ-ERP</span>
 
       <user-menu :theme="theme"/>
@@ -157,6 +157,14 @@
         }
       }
       //update-begin--author:sunjianlei---date:20190508------for: 顶部导航栏过长时显示更多按钮-----
+    },
+    computed:{
+      userInfo() {
+        return this.$store.getters.userInfo
+      },
+      title () {
+        return this.userInfo.company;
+      }
     }
   }
 </script>

@@ -1,14 +1,14 @@
 <template>
   <div class="user-wrapper" :class="theme">
     <span class="action">
-      <a class="logout_title" target="_blank" href="http://jeecg-boot.mydoc.io">
+      <!--<a class="logout_title" target="_blank" href="http://jeecg-boot.mydoc.io">
         <a-icon type="question-circle-o"></a-icon>
-      </a>
+      </a>-->
     </span>
     <header-notice class="action"/>
     <a-dropdown>
       <span class="action action-full ant-dropdown-link user-dropdown-menu">
-        <a-avatar class="avatar" size="small" :src="getAvatar()"/>
+        <a-avatar clasWs="avatar" size="small" :src="getAvatar()"/>
         <span v-if="isDesktop()">欢迎您，{{ nickname() }}</span>
       </span>
       <a-menu slot="overlay" class="user-dropdown-menu-wrapper">

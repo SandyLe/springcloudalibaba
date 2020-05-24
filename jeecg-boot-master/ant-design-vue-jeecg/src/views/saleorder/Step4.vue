@@ -95,7 +95,7 @@
               <label>地址：</label>{{deliveryInfo.cdiProvince + deliveryInfo.cdiCity + deliveryInfo.cdiDistrict + deliveryInfo.cdiAddress}}<br/>
             </div>
             <div v-if="'WULIU' === deliveryInfo.cdiDefaultType">
-              <label>物流：</label>{{deliveryInfo.cdiLogistics}}<br/>
+              <label>物流：</label>{{deliveryInfo.cdiLogisticsName}}<br/>
               <label>网点：</label>{{deliveryInfo.cdiBranch}}<br/>
               <label>电话：</label>{{deliveryInfo.cdiTel}}<br/>
               <label>收件人：</label>{{deliveryInfo.cdiRecipients}}<br/>
