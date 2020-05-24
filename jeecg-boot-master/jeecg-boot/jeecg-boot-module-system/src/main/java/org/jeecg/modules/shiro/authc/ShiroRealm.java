@@ -2,6 +2,7 @@ package org.jeecg.modules.shiro.authc;
 
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
@@ -17,7 +18,9 @@ import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.RedisUtil;
 import org.jeecg.common.util.SpringContextUtils;
 import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.entity.SysUser;
+import org.jeecg.modules.system.service.ISysDepartService;
 import org.jeecg.modules.system.service.ISysUserService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +48,9 @@ public class ShiroRealm extends AuthorizingRealm {
 	@Autowired
 	@Lazy
 	private RedisUtil redisUtil;
+	@Autowired
+	@Lazy
+	private ISysDepartService sysDepartService;
 
 	/**
 	 * 必须重写此方法，不然Shiro会报错
@@ -127,6 +133,16 @@ public class ShiroRealm extends AuthorizingRealm {
 		// 校验token是否超时失效 & 或者账号密码是否错误
 		if (!jwtTokenRefresh(token, username, loginUser.getPassword())) {
 			throw new AuthenticationException("Token失效，请重新登录!");
+		}
+		// 企业Code
+		if (StringUtils.isNotBlank(loginUser.getCompanyId())) {
+			SysDepart sysDepart = sysDepartService.getById(loginUser.getCompanyId());
+			if (null != sysDepart) {
+				loginUser.setCompanyCode(sysDepart.getOrgCode());
+				loginUser.setCompany(sysDepart.getDepartName());
+				loginUser.setCompanyAvatar(sysDepart.getAvatar());
+				loginUser.setCompanyEn(sysDepart.getDepartNameEn());
+			}
 		}
 
 		return loginUser;

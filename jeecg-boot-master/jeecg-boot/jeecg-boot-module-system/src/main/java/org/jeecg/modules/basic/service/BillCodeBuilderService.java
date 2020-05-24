@@ -7,4 +7,6 @@ public interface BillCodeBuilderService extends IService<BillCodeBuilder> {
 
     public String getBillCode(Integer billType);
 
+    public String getBillCode(Integer billType, String companyId, String companyCode);
+
 }

@@ -76,7 +76,7 @@ public class InventoryInController {
             inventoryIn.setCompanyId(sysUser.getCompanyId());
         }
         if (StringUtils.isEmpty(inventoryIn.getId())) {
-            inventoryIn.setCode(billCodeBuilderService.getBillCode(BillType.STOREIN.getId()));
+            inventoryIn.setCode(billCodeBuilderService.getBillCode(BillType.INVENTORYIN.getId()));
         }
         InventoryIn existCode = inventoryInService.getOne(new LambdaQueryWrapper<InventoryIn>().eq(InventoryIn::getCode, inventoryIn.getCode()).ne(InventoryIn::getId, inventoryIn.getId()));
         Assert.isNull(existCode, "单号已存在！");

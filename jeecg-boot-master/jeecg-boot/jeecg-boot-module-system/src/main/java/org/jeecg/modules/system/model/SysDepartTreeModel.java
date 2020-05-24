@@ -12,14 +12,14 @@ import java.util.Objects;
  * <p>
  * 部门表 存储树结构数据的实体类
  * <p>
- * 
+ *
  * @Author Steve
- * @Since 2019-01-22 
+ * @Since 2019-01-22
  */
 public class SysDepartTreeModel implements Serializable{
-	
+
     private static final long serialVersionUID = 1L;
-    
+
     /** 对应SysDepart中的id字段,前端数据树中的key*/
     private String key;
 
@@ -32,7 +32,7 @@ public class SysDepartTreeModel implements Serializable{
 
     private boolean isLeaf;
     // 以下所有字段均与SysDepart相同
-    
+
     private String id;
 
     private String parentId;
@@ -46,7 +46,7 @@ public class SysDepartTreeModel implements Serializable{
     private Integer departOrder;
 
     private Object description;
-    
+
     private String orgCategory;
 
     private String orgType;
@@ -72,6 +72,10 @@ public class SysDepartTreeModel implements Serializable{
     private String updateBy;
 
     private Date updateTime;
+    /**
+     * LOGO
+     */
+    private String avatar;
 
     private List<SysDepartTreeModel> children = new ArrayList<>();
 
@@ -104,6 +108,7 @@ public class SysDepartTreeModel implements Serializable{
         this.createTime = sysDepart.getCreateTime();
         this.updateBy = sysDepart.getUpdateBy();
         this.updateTime = sysDepart.getUpdateTime();
+        this.avatar = sysDepart.getAvatar();
     }
 
     public boolean getIsLeaf() {
@@ -182,7 +187,7 @@ public class SysDepartTreeModel implements Serializable{
     public void setDepartName(String departName) {
         this.departName = departName;
     }
-    
+
     public String getOrgCategory() {
 		return orgCategory;
 	}
@@ -319,6 +324,14 @@ public class SysDepartTreeModel implements Serializable{
         this.updateTime = updateTime;
     }
 
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
+    }
+
     public SysDepartTreeModel() { }
 
     /**
@@ -355,7 +368,7 @@ public class SysDepartTreeModel implements Serializable{
                 Objects.equals(updateTime, model.updateTime) &&
                 Objects.equals(children, model.children);
     }
-    
+
     /**
      * 重写hashCode方法
      */
@@ -363,8 +376,8 @@ public class SysDepartTreeModel implements Serializable{
     public int hashCode() {
 
         return Objects.hash(id, parentId, departName, departNameEn, departNameAbbr,
-        		departOrder, description, orgCategory, orgType, orgCode, mobile, fax, address, 
-        		memo, status, delFlag, createBy, createTime, updateBy, updateTime, 
+        		departOrder, description, orgCategory, orgType, orgCode, mobile, fax, address,
+        		memo, status, delFlag, createBy, createTime, updateBy, updateTime,
         		children);
     }
 

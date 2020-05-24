@@ -90,6 +90,10 @@ public class SysDepart implements Serializable {
 	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
 	private Date updateTime;
+	/**
+	 * LOGO
+	 */
+	private String avatar;
 
 	/**
 	 * 重写equals方法

@@ -1,11 +1,13 @@
 package org.jeecg.modules.basic.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.util.DateUtils;
+import org.jeecg.common.util.LoginUtils;
 import org.jeecg.common.util.RedisUtil;
 import org.jeecg.modules.basic.entity.BillCodeBuilder;
 import org.jeecg.common.enums.BillType;
@@ -27,20 +29,32 @@ public class BillCodeBuilderServiceImpl extends ServiceImpl<BillCodeBuilderMappe
 
     @Override
     public String getBillCode(Integer billType) {
-        String code = EnumConvertUtils.getOne(BillType.class, billType).getCode();
+
+        return getBillCode(billType, LoginUtils.getLoginUser().getCompanyId(), LoginUtils.getLoginUser().getCompanyCode());
+    }
+
+    @Override
+    public String getBillCode(Integer billType, String companyId, String companyCode) {
+        String key = companyId + ":" + EnumConvertUtils.getOne(BillType.class, billType).getCode();
         Long value = 0l;
-        BillCodeBuilder bcb = getOne(new QueryWrapper<BillCodeBuilder>().lambda().eq(BillCodeBuilder::getBillType, billType));
+        LambdaQueryWrapper<BillCodeBuilder> lambdaQueryWrapper = new LambdaQueryWrapper<BillCodeBuilder>();
+        lambdaQueryWrapper.eq(BillCodeBuilder::getBillType, billType);
+        lambdaQueryWrapper.eq(BillCodeBuilder::getCompanyId, companyId);
+        BillCodeBuilder bcb = getOne(lambdaQueryWrapper);
         if (null == bcb) {
             throw new JeecgBootException("【\"" +EnumConvertUtils.getName(BillType.class, billType) + "\"】编号器不存在，请核实!");
         }
-        if (redisUtil.hasKey(code)) {
-            value = redisUtil.incr(code, 1l);
+        if (redisUtil.hasKey(key)) {
+            value = redisUtil.incr(key, 1l);
         } else {
             value = bcb.getCurrentLevel() * 10 + 1l;
-            redisUtil.set(code, value);
+            redisUtil.set(key, value);
         }
 
         StringBuilder sb = new StringBuilder();
+        if (StringUtils.isNotBlank(companyCode)) {
+            sb.append(companyCode);
+        }
         if (StringUtils.isNotBlank(bcb.getPrefix())) {
             sb.append(bcb.getPrefix());
         }

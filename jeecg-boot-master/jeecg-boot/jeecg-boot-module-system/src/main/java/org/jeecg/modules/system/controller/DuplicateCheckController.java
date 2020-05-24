@@ -33,7 +33,7 @@ public class DuplicateCheckController {
 
 	/**
 	 * 校验数据是否在系统中是否存在
-	 * 
+	 *
 	 * @return
 	 */
 	@RequestMapping(value = "/check", method = RequestMethod.GET)
@@ -44,10 +44,18 @@ public class DuplicateCheckController {
 		log.info("----duplicate check------："+ duplicateCheckVo.toString());
 		if (StringUtils.isNotBlank(duplicateCheckVo.getDataId())) {
 			// [2].编辑页面校验
-			num = sysDictMapper.duplicateCheckCountSql(duplicateCheckVo);
+			if (StringUtils.isNotBlank(duplicateCheckVo.getCompanyId())) {
+				num = sysDictMapper.duplicateCheckCountSqlCompanyId(duplicateCheckVo);
+			} else {
+				num = sysDictMapper.duplicateCheckCountSql(duplicateCheckVo);
+			}
 		} else {
 			// [1].添加页面校验
-			num = sysDictMapper.duplicateCheckCountSqlNoDataId(duplicateCheckVo);
+			if (StringUtils.isNotBlank(duplicateCheckVo.getCompanyId())) {
+				num = sysDictMapper.duplicateCheckCountSqlNoDataIdCompanyId(duplicateCheckVo);
+			} else {
+				num = sysDictMapper.duplicateCheckCountSqlNoDataId(duplicateCheckVo);
+			}
 		}
 
 		if (num == null || num == 0) {

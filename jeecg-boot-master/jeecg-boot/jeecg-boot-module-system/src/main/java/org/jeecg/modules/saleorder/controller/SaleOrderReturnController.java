@@ -171,10 +171,10 @@ public class SaleOrderReturnController {
             inventoryIn.setPutInTime(new Date());
             inventoryIn.setSourceCode(saleOrderReturn.getCode());
             inventoryIn.setSourceId(saleOrderReturn.getId());
-            inventoryIn.setBillType(BillType.STOREIN.getId());
+            inventoryIn.setBillType(BillType.INVENTORYIN.getId());
             inventoryIn.setRowSts(RowSts.EFFECTIVE.getId());
             inventoryIn.setSourceBillType(BillType.SALERETURNORDER.getId());
-            inventoryIn.setCode(billCodeBuilderService.getBillCode(BillType.STOREIN.getId()));
+            inventoryIn.setCode(billCodeBuilderService.getBillCode(BillType.INVENTORYIN.getId()));
             inventoryInService.saveToInventoryIn(inventoryIn);
 
         }

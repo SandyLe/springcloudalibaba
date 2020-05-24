@@ -9,11 +9,10 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
-import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.system.query.QueryGenerator;
-import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.common.util.LoginUtils;
 import org.jeecg.modules.basic.entity.Vendor;
 import org.jeecg.common.enums.BillType;
 import org.jeecg.modules.basic.service.BillCodeBuilderService;
@@ -86,9 +85,8 @@ public class VendorController {
     @AutoLog(value = "添加供应商")
     @ApiOperation(value = "添加供应商", notes = "添加供应商")
     public Result<?> add(@RequestBody Vendor vendor) {
-        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-        if (StringUtils.isBlank(sysUser.getCompanyId())) {
-            sysUser.setCompanyId(sysUser.getCompanyId());
+        if (StringUtils.isBlank(vendor.getCompanyId())) {
+            vendor.setCompanyId(LoginUtils.getLoginUser().getCompanyId());
         }
         if (StringUtils.isBlank(vendor.getId())) {
             vendor.setCode(billCodeBuilderService.getBillCode(BillType.VENDOR.getId()));
@@ -110,9 +108,8 @@ public class VendorController {
     @ApiOperation(value = "修改供应商", notes = "修改供应商")
     public Result<?> edit(@RequestBody Vendor vendor){
 
-        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         if (StringUtils.isBlank(vendor.getCompanyId())) {
-            vendor.setCompanyId(sysUser.getCompanyId());
+            vendor.setCompanyId(LoginUtils.getLoginUser().getCompanyId());
         }
         Vendor existCode = vendorService.getOne(new LambdaQueryWrapper<Vendor>().eq(Vendor::getCode, vendor.getCode()).ne(Vendor::getId, vendor.getId()));
         Assert.isNull(existCode, "编号已存在！");

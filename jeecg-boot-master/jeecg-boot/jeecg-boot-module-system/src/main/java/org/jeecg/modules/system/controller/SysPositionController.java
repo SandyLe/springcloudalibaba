@@ -7,9 +7,11 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.system.query.QueryGenerator;
+import org.jeecg.common.util.LoginUtils;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.system.entity.SysPosition;
 import org.jeecg.modules.system.service.ISysPositionService;
@@ -85,6 +87,9 @@ public class SysPositionController {
     public Result<SysPosition> add(@RequestBody SysPosition sysPosition) {
         Result<SysPosition> result = new Result<SysPosition>();
         try {
+            if (StringUtils.isBlank(sysPosition.getCompanyId())) {
+                sysPosition.setCompanyId(LoginUtils.getLoginUser().getCompanyId());
+            }
             sysPositionService.save(sysPosition);
             result.success("添加成功！");
         } catch (Exception e) {
@@ -105,6 +110,9 @@ public class SysPositionController {
     @PutMapping(value = "/edit")
     public Result<SysPosition> edit(@RequestBody SysPosition sysPosition) {
         Result<SysPosition> result = new Result<SysPosition>();
+        if (StringUtils.isBlank(sysPosition.getCompanyId())) {
+            sysPosition.setCompanyId(LoginUtils.getLoginUser().getCompanyId());
+        }
         SysPosition sysPositionEntity = sysPositionService.getById(sysPosition.getId());
         if (sysPositionEntity == null) {
             result.error500("未找到对应实体");

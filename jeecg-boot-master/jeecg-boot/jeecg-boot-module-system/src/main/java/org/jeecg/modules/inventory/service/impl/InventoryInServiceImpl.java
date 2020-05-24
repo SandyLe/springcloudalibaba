@@ -126,7 +126,7 @@ public class InventoryInServiceImpl extends ServiceImpl<InventoryInMapper, Inven
 
         // 保存主表
         if (StringUtils.isEmpty(inventoryIn.getId())) {
-            inventoryIn.setCode(billCodeBuilderService.getBillCode(BillType.STOREIN.getId()));
+            inventoryIn.setCode(billCodeBuilderService.getBillCode(BillType.INVENTORYIN.getId()));
         }
         save(inventoryIn);
 

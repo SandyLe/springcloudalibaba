@@ -17,6 +17,7 @@ import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.common.util.LoginUtils;
 import org.jeecg.modules.basic.dto.MaterialExcelDto;
 import org.jeecg.modules.basic.entity.Material;
 import org.jeecg.modules.basic.entity.MaterialBrand;
@@ -232,6 +233,7 @@ public class MaterialController {
     @GetMapping(value = "/search")
     public Result<?> search(@ApiParam(name = "keyword", value = "关键词", required = true) @RequestParam(name = "keyword", required = false) String keyword) {
         LambdaQueryWrapper<Material> queryWrapper = new LambdaQueryWrapper<Material>();
+        queryWrapper.eq(Material::getCompanyId, LoginUtils.getLoginUser().getCompanyId());
         if (StringUtils.isNotBlank(keyword)) {
             queryWrapper.like(Material::getName, keyword).or().like(Material::getCode, keyword).or().like(Material::getSpecification, keyword);
         }
@@ -300,8 +302,8 @@ public class MaterialController {
                     List<Material> excelMaterial = new ArrayList<>();
                     Material material;
                     for (MaterialExcelDto materialExcelDto : materialList) {
-                        System.out.println(JSON.toJSONString(materialExcelDto));
                         material = new Material();
+                        material.setCompanyId(LoginUtils.getLoginUser().getCompanyId());
                         material.setName(materialExcelDto.getName());
                         material.setCode(billCodeBuilderService.getBillCode(BillType.MATERIAL.getId()));
                         material.setSpecification(materialExcelDto.getSpecification());

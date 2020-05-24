@@ -41,6 +41,7 @@ public class SaleOrderServiceImpl extends ServiceImpl<SaleOrderMapper, SaleOrder
 
         SaleOrderDeliveryInfo cdi = new SaleOrderDeliveryInfo();
         BeanUtils.copyProperties(cdi,deliveryEditDto);
+        cdi.setCompanyId(saleOrder.getCompanyId());
         cdi.setCdiSourceId(saleOrder.getCustomerId());
         cdi.setSourceId(saleOrder.getId());
         cdi.setSourceBillCode(saleOrder.getCode());
@@ -62,8 +63,9 @@ public class SaleOrderServiceImpl extends ServiceImpl<SaleOrderMapper, SaleOrder
         }
 
         // 销售出库
-        InventoryOut inventoryOut = new InventoryOut(saleOrder.getId(),saleOrder.getCode(), BillType.STOREOUT.getId(), BillType.SALEORDER.getId(), saleOrder.getWarehouseId(), saleOrder.getDeliveryTime(), BillStatus.TOSEND.getId());
+        InventoryOut inventoryOut = new InventoryOut(saleOrder.getId(),saleOrder.getCode(), BillType.INVENTORYOUT.getId(), BillType.SALEORDER.getId(), saleOrder.getWarehouseId(), saleOrder.getDeliveryTime(), BillStatus.TOSEND.getId());
         inventoryOut.setRowSts(RowSts.EFFECTIVE.getId());
+        inventoryOut.setCompanyId(saleOrder.getCompanyId());
         inventoryOutService.saveToInventoryOut(inventoryOut);
         // 更新销售订单信息
         updateById(saleOrder);

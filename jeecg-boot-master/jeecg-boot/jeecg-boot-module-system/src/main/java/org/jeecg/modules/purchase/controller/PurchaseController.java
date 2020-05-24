@@ -103,10 +103,10 @@ public class PurchaseController extends JeecgController<Purchase, PurchaseServic
             inventoryIn.setPutInTime(purchasedtldto.getPutInTime());
             inventoryIn.setSourceCode(code);
             inventoryIn.setSourceId(purchasedtldto.getId());
-            inventoryIn.setBillType(BillType.STOREIN.getId());
+            inventoryIn.setBillType(BillType.INVENTORYIN.getId());
             inventoryIn.setRowSts(RowSts.EFFECTIVE.getId());
             inventoryIn.setSourceBillType(BillType.PURCHASEORDER.getId());
-            inventoryIn.setCode(billCodeBuilderService.getBillCode(BillType.STOREIN.getId()));
+            inventoryIn.setCode(billCodeBuilderService.getBillCode(BillType.INVENTORYIN.getId()));
             inventoryInService.saveToInventoryIn(inventoryIn);
         }
 
@@ -152,10 +152,10 @@ public class PurchaseController extends JeecgController<Purchase, PurchaseServic
             inventoryIn.setPutInTime(purchasedtldto.getPutInTime());
             inventoryIn.setSourceCode(purchasedtldto.getCode());
             inventoryIn.setSourceId(purchasedtldto.getId());
-            inventoryIn.setBillType(BillType.STOREIN.getId());
+            inventoryIn.setBillType(BillType.INVENTORYIN.getId());
             inventoryIn.setRowSts(RowSts.EFFECTIVE.getId());
             inventoryIn.setSourceBillType(BillType.PURCHASEORDER.getId());
-            inventoryIn.setCode(billCodeBuilderService.getBillCode(BillType.STOREIN.getId()));
+            inventoryIn.setCode(billCodeBuilderService.getBillCode(BillType.INVENTORYIN.getId()));
             inventoryInService.saveToInventoryIn(inventoryIn);
             dto.setInventory(inventoryIn);
         }

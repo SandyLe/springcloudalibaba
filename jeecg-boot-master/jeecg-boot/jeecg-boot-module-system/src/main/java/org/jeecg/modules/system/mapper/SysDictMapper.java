@@ -23,14 +23,16 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * @since 2018-12-28
  */
 public interface SysDictMapper extends BaseMapper<SysDict> {
-	
+
 	/**
 	  *  重复检查SQL
 	 * @return
 	 */
 	public Long duplicateCheckCountSql(DuplicateCheckVo duplicateCheckVo);
 	public Long duplicateCheckCountSqlNoDataId(DuplicateCheckVo duplicateCheckVo);
-	
+	public Long duplicateCheckCountSqlCompanyId(DuplicateCheckVo duplicateCheckVo);
+	public Long duplicateCheckCountSqlNoDataIdCompanyId(DuplicateCheckVo duplicateCheckVo);
+
 	public List<DictModel> queryDictItemsByCode(@Param("code") String code);
 	public List<DictModel> queryTableDictItemsByCode(@Param("table") String table,@Param("text") String text,@Param("code") String code);
 	public List<DictModel> queryTableDictItemsByCodeAndFilter(@Param("table") String table,@Param("text") String text,@Param("code") String code,@Param("filterSql") String filterSql);
@@ -47,13 +49,13 @@ public interface SysDictMapper extends BaseMapper<SysDict> {
 	 * @return
 	 */
 	public List<DictModel> queryAllDepartBackDictModel();
-	
+
 	/**
 	 * 查询所有用户  作为字典信息 username -->value,realname -->text
 	 * @return
 	 */
 	public List<DictModel> queryAllUserBackDictModel();
-	
+
 	/**
 	 * 通过关键字查询出字典表
 	 * @param table
@@ -62,7 +64,7 @@ public interface SysDictMapper extends BaseMapper<SysDict> {
 	 * @param keyword
 	 * @return
 	 */
-	public List<DictModel> queryTableDictItems(@Param("table") String table,@Param("text") String text,@Param("code") String code,@Param("keyword") String keyword); 
+	public List<DictModel> queryTableDictItems(@Param("table") String table,@Param("text") String text,@Param("code") String code,@Param("keyword") String keyword);
 
 	/**
 	  * 根据表名、显示字段名、存储字段名 查询树

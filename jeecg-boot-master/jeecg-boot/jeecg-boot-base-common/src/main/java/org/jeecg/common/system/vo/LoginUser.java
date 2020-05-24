@@ -97,5 +97,20 @@ public class LoginUser {
 	 * 企业ID
 	 */
 	private String companyId;
-
+	/**
+	 * 企业Code
+	 */
+	private String companyCode;
+	/**
+	 * LOGO
+	 */
+	private String companyAvatar;
+	/**
+	 * 企业
+	 */
+	private String company;
+	/**
+	 * 企业英文名称
+	 */
+	private String companyEn;
 }

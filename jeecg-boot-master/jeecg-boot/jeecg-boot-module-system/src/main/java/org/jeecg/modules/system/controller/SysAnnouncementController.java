@@ -11,6 +11,8 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.common.collect.Lists;
+import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CommonConstant;
@@ -18,6 +20,7 @@ import org.jeecg.common.constant.CommonSendStatus;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.util.JwtUtil;
 import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.common.util.LoginUtils;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.message.websocket.WebSocket;
 import org.jeecg.modules.system.entity.SysAnnouncement;
@@ -92,6 +95,7 @@ public class SysAnnouncementController {
 				queryWrapper.orderByDesc(oConvertUtils.camelToUnderline(column));
 			}
 		}
+		queryWrapper.in("company_id", Lists.newArrayList("0", LoginUtils.getLoginUser().getCompanyId()));
 		IPage<SysAnnouncement> pageList = sysAnnouncementService.page(page, queryWrapper);
 		log.info("查询当前页："+pageList.getCurrent());
 		log.info("查询当前页数量："+pageList.getSize());
@@ -111,6 +115,9 @@ public class SysAnnouncementController {
 	public Result<SysAnnouncement> add(@RequestBody SysAnnouncement sysAnnouncement) {
 		Result<SysAnnouncement> result = new Result<SysAnnouncement>();
 		try {
+			if (StringUtils.isBlank(sysAnnouncement.getCompanyId())) {
+				sysAnnouncement.setCompanyId(LoginUtils.getLoginUser().getCompanyId());
+			}
 			sysAnnouncement.setDelFlag(CommonConstant.DEL_FLAG_0.toString());
 			sysAnnouncement.setSendStatus(CommonSendStatus.UNPUBLISHED_STATUS_0);//未发布
 			sysAnnouncementService.saveAnnouncement(sysAnnouncement);
@@ -130,6 +137,9 @@ public class SysAnnouncementController {
 	@RequestMapping(value = "/edit", method = RequestMethod.PUT)
 	public Result<SysAnnouncement> eidt(@RequestBody SysAnnouncement sysAnnouncement) {
 		Result<SysAnnouncement> result = new Result<SysAnnouncement>();
+		if (StringUtils.isBlank(sysAnnouncement.getCompanyId())) {
+			sysAnnouncement.setCompanyId(LoginUtils.getLoginUser().getCompanyId());
+		}
 		SysAnnouncement sysAnnouncementEntity = sysAnnouncementService.getById(sysAnnouncement.getId());
 		if(sysAnnouncementEntity==null) {
 			result.error500("未找到对应实体");
@@ -289,6 +299,7 @@ public class SysAnnouncementController {
 		querySaWrapper.eq(SysAnnouncement::getDelFlag,CommonConstant.DEL_FLAG_0.toString());  // 未删除
 		querySaWrapper.eq(SysAnnouncement::getSendStatus, CommonConstant.HAS_SEND); //已发布
 		querySaWrapper.ge(SysAnnouncement::getEndTime, sysUser.getCreateTime()); //新注册用户不看结束通知
+		querySaWrapper.in(SysAnnouncement::getCompanyId, Lists.newArrayList("0", LoginUtils.getLoginUser().getCompanyId()));
 		if(anntIds!=null&&anntIds.size()>0) {
 			querySaWrapper.notIn(SysAnnouncement::getId, anntIds);
 		}

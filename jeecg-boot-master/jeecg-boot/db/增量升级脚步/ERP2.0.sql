@@ -63,3 +63,8 @@ ALTER TABLE `sl_sale_order_mtl` ADD COLUMN `company_id` varchar(50) DEFAULT NULL
 ALTER TABLE `sl_sale_order_return_mtl` ADD COLUMN `company_id` varchar(50) DEFAULT NULL COMMENT '企业ID';
 ALTER TABLE `sl_stocking` ADD COLUMN `company_id` varchar(50) DEFAULT NULL COMMENT '企业ID';
 ALTER TABLE `sl_stocking_dtl` ADD COLUMN `company_id` varchar(50) DEFAULT NULL COMMENT '企业ID';
+ALTER TABLE `sl_bill_code_builder` ADD COLUMN `company_id` varchar(50) DEFAULT NULL COMMENT '企业ID';
+ALTER TABLE `sl_logistics_order` ADD COLUMN `company_id` varchar(50) DEFAULT NULL COMMENT '企业ID';
+ALTER TABLE `sys_announcement` ADD COLUMN `company_id` varchar(50) DEFAULT NULL COMMENT '企业ID';
+ALTER TABLE `sys_depart` ADD COLUMN `avatar` varchar(255) DEFAULT NULL COMMENT 'LOGO';
+ALTER TABLE `sys_depart` ADD COLUMN `avatar` varchar(255) DEFAULT NULL COMMENT 'LOGO';

@@ -49,6 +49,8 @@ public class SaleOrderDeliveryInfo extends CBasicEntity {
     private String cdiAddress;
     @ApiModelProperty("物流公司")
     private String cdiLogisticsId;
+    @TableField(exist=false)
+    private String cdiLogisticsName;
     @ApiModelProperty("网点")
     private String cdiBranch;
     @ApiModelProperty("电话")
@@ -253,5 +255,13 @@ public class SaleOrderDeliveryInfo extends CBasicEntity {
 
     public void setBillStatusName(String billStatusName) {
         this.billStatusName = billStatusName;
+    }
+
+    public String getCdiLogisticsName() {
+        return cdiLogisticsName;
+    }
+
+    public void setCdiLogisticsName(String cdiLogisticsName) {
+        this.cdiLogisticsName = cdiLogisticsName;
     }
 }

@@ -13,8 +13,8 @@ public enum BillType implements AbstractEnum {
     INVENTORY(8, "inventory", "库存单"),
     CUSTOMERSOURCE(9, "customerSource", "客户来源"),
     CUSTOMERTYPE(10, "customerType", "客户类型"),
-    STOREIN(11, "storeIn", "入库单"),
-    STOREOUT(12, "storeOut", "出库单"),
+    INVENTORYIN(11, "inventoryIn", "入库单"),
+    INVENTORYOUT(12, "inventoryOut", "出库单"),
     ALLOT(13, "allot", "调拨单"),
     ASSEMBLE(14, "assemble", "组装单"),
     TEARDOWN(15, "teardown", "拆卸单"),
@@ -30,6 +30,10 @@ public enum BillType implements AbstractEnum {
     LOGISTICSCOMPANY(25, "logisticsCompany", "物流公司"),
     WAREHOUSE(26, "warehouse", "仓库"),
     PURCHASEBATCH(27, "purchaseBatch", "采购批次"),
+    BILLCODEBUILDER(27, "billCodeBuilder", "单据编号"),
+    MATERIALPRICE(28, "materialPrice", "产品定价"),
+    PURCHASECOST(29, "purchaseCost", "采购成本"),
+    SYSPOSITION(30, "sysPosition", "职务")
     ;
 
     private Integer id;

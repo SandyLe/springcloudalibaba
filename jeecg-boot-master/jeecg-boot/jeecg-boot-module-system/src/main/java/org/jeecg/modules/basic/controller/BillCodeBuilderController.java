@@ -7,9 +7,11 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.system.query.QueryGenerator;
+import org.jeecg.common.util.LoginUtils;
 import org.jeecg.modules.basic.entity.BillCodeBuilder;
 import org.jeecg.modules.basic.service.BillCodeBuilderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,6 +78,9 @@ public class BillCodeBuilderController {
     @AutoLog(value = "添加地区")
     @ApiOperation(value = "添加地区", notes = "添加地区")
     public Result<?> add(@RequestBody BillCodeBuilder billCodeBuilder) {
+        if (StringUtils.isBlank(billCodeBuilder.getCompanyId())) {
+            billCodeBuilder.setCompanyId(LoginUtils.getLoginUser().getCompanyId());
+        }
         billCodeBuilderService.save(billCodeBuilder);
         return Result.ok("添加成功！");
     }
@@ -90,6 +95,9 @@ public class BillCodeBuilderController {
     @AutoLog(value = "修改地区")
     @ApiOperation(value = "修改地区", notes = "修改地区")
     public Result<?> edit(@RequestBody BillCodeBuilder billCodeBuilder){
+        if (StringUtils.isBlank(billCodeBuilder.getCompanyId())) {
+            billCodeBuilder.setCompanyId(LoginUtils.getLoginUser().getCompanyId());
+        }
         billCodeBuilderService.updateById(billCodeBuilder);
         return Result.ok("修改成功！");
     }

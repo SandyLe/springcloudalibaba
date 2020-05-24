@@ -146,6 +146,11 @@ public class SysUserController {
 			user.setPassword(passwordEncode);
 			user.setStatus(1);
 			user.setDelFlag("0");
+			if (CommonConstant.STATUS_0.equals(user.getCompanyId())) {
+			    user.setPlatformFlag(CommonConstant.STATUS_INT_1);
+            } else {
+			    user.setPlatformFlag(CommonConstant.STATUS_INT_0);
+            }
 			sysUserService.addUserWithRole(user, selectedRoles);
             sysUserService.addUserWithDepart(user, selectedDeparts);
 			result.success("添加成功！");
@@ -168,6 +173,11 @@ public class SysUserController {
 			}else {
 				SysUser user = JSON.parseObject(jsonObject.toJSONString(), SysUser.class);
 				user.setUpdateTime(new Date());
+                if (CommonConstant.STATUS_0.equals(user.getCompanyId())) {
+                    user.setPlatformFlag(CommonConstant.STATUS_INT_1);
+                } else {
+                    user.setPlatformFlag(CommonConstant.STATUS_INT_0);
+                }
 				//String passwordEncode = PasswordUtil.encrypt(user.getUsername(), user.getPassword(), sysUser.getSalt());
 				user.setPassword(sysUser.getPassword());
 				String roles = jsonObject.getString("selectedroles");

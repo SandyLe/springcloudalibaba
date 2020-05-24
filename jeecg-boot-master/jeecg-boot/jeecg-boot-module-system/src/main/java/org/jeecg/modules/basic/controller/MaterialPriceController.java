@@ -15,6 +15,7 @@ import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.common.util.LoginUtils;
 import org.jeecg.modules.basic.dto.MaterialPriceExcelDto;
 import org.jeecg.modules.basic.dto.SaleOrderMtlPriceDto;
 import org.jeecg.modules.basic.entity.*;
@@ -272,6 +273,7 @@ public class MaterialPriceController {
                     for (MaterialPriceExcelDto materialExcelDto : materialList) {
 //                        System.out.println(JSON.toJSONString(materialExcelDto));
                         materialPrice = new MaterialPrice();
+                        materialPrice.setCompanyId(LoginUtils.getLoginUser().getCompanyId());
                         materialPrice.setPrice(new BigDecimal(materialExcelDto.getPrice()));
                         materialPrice.setCustomerTypeId(customerTypes.stream().filter(p-> ObjectUtils.equals(p.getName(), materialExcelDto.getCustomerType()) ).findFirst().get().getId());
                         materialPrice.setUnitId(materialUnits.stream().filter(p-> ObjectUtils.equals(p.getName(), materialExcelDto.getUnit()) ).findFirst().get().getId());

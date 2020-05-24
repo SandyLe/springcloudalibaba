@@ -55,6 +55,7 @@ public class SaleOrderDeliveryInfoServiceImpl extends ServiceImpl<SaleOrderDeliv
             orderDto.setBillType(BillType.LOGISTICSORDER.getId());
             orderDto.setSourceBillType(BillType.SALEORDER.getId());
             orderDto.setSourceCode(saleOrderDeliveryInfo.getSourceBillCode());
+            orderDto.setCompanyId(saleOrderDeliveryInfo.getCompanyId());
 
             List<LogisticsOrderDtl> dtls = Lists.newArrayList();
             BigDecimal totalQty = BigDecimal.ZERO;

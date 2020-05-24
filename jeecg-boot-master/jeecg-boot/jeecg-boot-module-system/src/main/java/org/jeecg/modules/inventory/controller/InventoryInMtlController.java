@@ -56,7 +56,7 @@ public class InventoryInMtlController {
     @ApiOperation(value = "添加入库单", notes = "添加入库单")
     public Result<?> add(@RequestBody InventoryInMtl inventoryInMtl) {
         if (StringUtils.isEmpty(inventoryInMtl.getId())) {
-            inventoryInMtl.setCode(billCodeBuilderService.getBillCode(BillType.STOREIN.getId()));
+            inventoryInMtl.setCode(billCodeBuilderService.getBillCode(BillType.INVENTORYIN.getId()));
         }
         InventoryInMtl existCode = inventoryInMtlService.getOne(new LambdaQueryWrapper<InventoryInMtl>().eq(InventoryInMtl::getCode, inventoryInMtl.getCode()).ne(InventoryInMtl::getId, inventoryInMtl.getId()));
         Assert.isNull(existCode, "单号已存在！");

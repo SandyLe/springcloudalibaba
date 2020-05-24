@@ -6,6 +6,7 @@ import java.util.Date;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.jeecg.common.aspect.annotation.Dict;
@@ -63,7 +64,7 @@ public class SysAnnouncement implements Serializable {
     @Excel(name = "优先级", width = 15, dicCode = "priority")
     @Dict(dicCode = "priority")
     private java.lang.String priority;
-    
+
     /**
      * 消息类型1:通知公告2:系统消息
      */
@@ -124,4 +125,9 @@ public class SysAnnouncement implements Serializable {
      * 指定用户
      **/
     private java.lang.String userIds;
+    /**
+     * 企业ID
+     */
+    @ApiModelProperty(value="企业ID",name="companyId",example="2000")
+    private String companyId;
 }

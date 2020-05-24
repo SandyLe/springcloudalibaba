@@ -22,23 +22,29 @@ public class DuplicateCheckVo implements Serializable {
 	 */
 	@ApiModelProperty(value="表名",name="tableName",example="sys_log")
 	private String tableName;
-	
+
 	/**
 	 * 字段名
 	 */
 	@ApiModelProperty(value="字段名",name="fieldName",example="id")
 	private String fieldName;
-	
+
 	/**
 	 * 字段值
 	 */
 	@ApiModelProperty(value="字段值",name="fieldVal",example="1000")
 	private String fieldVal;
-	
+
 	/**
 	 * 数据ID
 	*/
 	@ApiModelProperty(value="数据ID",name="dataId",example="2000")
 	private String dataId;
+
+	/**
+	 * 企业ID
+	 */
+	@ApiModelProperty(value="企业ID",name="companyId",example="2000")
+	private String companyId;
 
 }

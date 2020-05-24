@@ -101,7 +101,7 @@ public class SaleOrderDeliveryController {
         SaleOrderDeliveryInfo saleOrderDeliveryInfo = saleOrderDeliveryInfoService.getOne(queryWrapper);
         if (StringUtils.isNotBlank(saleOrderDeliveryInfo.getCdiLogisticsId())) {
             LogisticsCompany logisticsCompany = logisticsCompanyService.getById(saleOrderDeliveryInfo.getCdiLogisticsId());
-            saleOrderDeliveryInfo.setCdiLogisticsId(null != logisticsCompany ? logisticsCompany.getName() : null);
+            saleOrderDeliveryInfo.setCdiLogisticsName(null != logisticsCompany ? logisticsCompany.getName() : null);
         }
         if (StringUtils.isNotBlank(saleOrderDeliveryInfo.getCdiProvince())) {
             Area area = areaService.getById(saleOrderDeliveryInfo.getCdiProvince());

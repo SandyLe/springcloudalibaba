@@ -131,7 +131,7 @@ public class CustomerController {
         Customer exists = null;
         if (StringUtils.isEmpty(customerEditDto.getId())) {
             customer.setCode(billCodeBuilderService.getBillCode(BillType.CUSTOMER.getId()));
-            LambdaQueryWrapper<Customer> lambdaQueryWrapper = new LambdaQueryWrapper<Customer>().eq(Customer::getCode, customer.getCode());
+                LambdaQueryWrapper<Customer> lambdaQueryWrapper = new LambdaQueryWrapper<Customer>().eq(Customer::getCode, customer.getCode());
             lambdaQueryWrapper.eq(Customer::getCompanyId, customerEditDto.getCompanyId());
             exists = customerService.getOne(lambdaQueryWrapper);
         } else {

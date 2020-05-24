@@ -9,10 +9,11 @@ import org.jeecg.common.util.DateUtils;
 import org.jeecg.common.enums.BillType;
 import org.jeecg.common.enums.DateFormat;
 import org.jeecg.common.enums.EnumConvertUtils;
+import org.jeecg.common.util.LoginUtils;
 
 @TableName("sl_bill_code_builder")
 @ApiModel(value = "BillCodeBuilder", description = "编号规则")
-public class BillCodeBuilder extends BasicEntity {
+public class BillCodeBuilder extends CBasicEntity {
 
     @ApiModelProperty("单据类型")
     private Integer billType;
@@ -47,6 +48,7 @@ public class BillCodeBuilder extends BasicEntity {
     public String getPreview() {
 
         StringBuilder sb = new StringBuilder();
+        sb.append(LoginUtils.getLoginUser().getCompanyCode());
         if (StringUtils.isNotBlank(this.prefix)) {
             sb.append(this.prefix);
         }

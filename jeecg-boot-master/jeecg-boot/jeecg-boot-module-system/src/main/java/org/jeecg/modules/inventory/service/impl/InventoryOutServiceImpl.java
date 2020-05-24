@@ -183,7 +183,7 @@ public class InventoryOutServiceImpl extends ServiceImpl<InventoryOutMapper, Inv
     @Override
     public String saveToInventoryOut (InventoryOut inventoryOut) {
         if (StringUtils.isEmpty(inventoryOut.getId())) {
-            inventoryOut.setCode(billCodeBuilderService.getBillCode(BillType.STOREOUT.getId()));
+            inventoryOut.setCode(billCodeBuilderService.getBillCode(BillType.INVENTORYOUT.getId()));
         }
         // 保存主表
         save(inventoryOut);

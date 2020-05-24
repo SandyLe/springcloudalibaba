@@ -140,12 +140,12 @@ public class PurchaseReturnController extends JeecgController<PurchaseReturn, Pu
                 }
             }
             //出库单
-            String stockcode = billCodeBuilderService.getBillCode(BillType.STOREOUT.getId());
+            String stockcode = billCodeBuilderService.getBillCode(BillType.INVENTORYOUT.getId());
             InventoryOut inventoryOut = new InventoryOut();
             inventoryOut.setCompanyId(rtn.getCompanyId());
             inventoryOut.setSourceId(rtn.getId());
             inventoryOut.setCode(stockcode);
-            inventoryOut.setBillType(BillType.STOREOUT.getId());
+            inventoryOut.setBillType(BillType.INVENTORYOUT.getId());
             inventoryOut.setSourceBillType(BillType.PURCHASERETURNORDER.getId());
             inventoryOut.setWarehouseId(purchase.getWarehouseId());
             inventoryOut.setRowSts(RowSts.EFFECTIVE.getId());
@@ -195,10 +195,10 @@ public class PurchaseReturnController extends JeecgController<PurchaseReturn, Pu
             inventoryOut.setPutOutTime(purchasedtldto.getPutOutTime());
             inventoryOut.setSourceCode(purchasedtldto.getCode());
             inventoryOut.setSourceId(purchasedtldto.getId());
-            inventoryOut.setBillType(BillType.STOREOUT.getId());
+            inventoryOut.setBillType(BillType.INVENTORYOUT.getId());
             inventoryOut.setRowSts(RowSts.EFFECTIVE.getId());
             inventoryOut.setSourceBillType(BillType.PURCHASERETURNORDER.getId());
-            inventoryOut.setCode(billCodeBuilderService.getBillCode(BillType.STOREOUT.getId()));
+            inventoryOut.setCode(billCodeBuilderService.getBillCode(BillType.INVENTORYOUT.getId()));
             inventoryOutService.saveToInventoryOut(inventoryOut);
             dto.setInventoryOut(inventoryOut);
         }
