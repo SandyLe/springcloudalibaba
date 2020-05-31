@@ -216,7 +216,7 @@ public class SysRoleController {
 		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 		if (sysUser.getPlatformFlag() == CommonConstant.STATUS_INT_0) {
 			LambdaQueryWrapper<SysRole> ccAdmin = new LambdaQueryWrapper<SysRole>();
-			ccAdmin.eq(SysRole::getRoleCode, "admin");
+			ccAdmin.eq(SysRole::getRoleCode, "ccAdmin");
 			list.addAll(sysRoleService.list(ccAdmin));
 		}
 		if(list==null||list.size()<=0) {

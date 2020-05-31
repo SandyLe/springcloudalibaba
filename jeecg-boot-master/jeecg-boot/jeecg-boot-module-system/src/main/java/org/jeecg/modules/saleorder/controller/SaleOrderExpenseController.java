@@ -129,8 +129,11 @@ public class SaleOrderExpenseController {
     @DeleteMapping(value = "/delete")
     @ApiOperation(value = "通过ID删除销售订单", notes = "通过ID删除销售订单")
     public Result<?> delete(@RequestParam(name = "id", required = true) String id) {
+
+        SaleOrderExpense saleOrderExpense = saleOrderExpenseService.getById(id);
         saleOrderExpenseService.removeById(id);
-        return Result.ok("删除成功!");
+        BigDecimal totalAmount = saleOrderExpenseService.updateSaleOrderTotalAmount(saleOrderExpense.getSourceId());
+        return Result.ok(totalAmount);
     }
 
     /**
@@ -142,8 +145,12 @@ public class SaleOrderExpenseController {
     @DeleteMapping(value = "/deleteBatch")
     @ApiOperation(value = "批量删除销售订单", notes = "批量删除销售订单")
     public Result<?> deleteBatch(@RequestParam(name = "ids", required = true) String ids) {
-        this.saleOrderExpenseService.removeByIds(Arrays.asList(ids.split(",")));
-        return Result.ok("批量删除成功！");
+
+        List<String> idList = Arrays.asList(ids.split(","));
+        SaleOrderExpense saleOrderExpense = saleOrderExpenseService.getById(idList.get(0));
+        this.saleOrderExpenseService.removeByIds(idList);
+        BigDecimal totalAmount = saleOrderExpenseService.updateSaleOrderTotalAmount(saleOrderExpense.getSourceId());
+        return Result.ok(totalAmount);
     }
 
     /**

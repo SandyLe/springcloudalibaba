@@ -33,7 +33,8 @@ public enum BillType implements AbstractEnum {
     BILLCODEBUILDER(27, "billCodeBuilder", "单据编号"),
     MATERIALPRICE(28, "materialPrice", "产品定价"),
     PURCHASECOST(29, "purchaseCost", "采购成本"),
-    SYSPOSITION(30, "sysPosition", "职务")
+    SYSPOSITION(30, "sysPosition", "职务"),
+    ANNOUNTCEMENT(31, "annountCement", "通告")
     ;
 
     private Integer id;

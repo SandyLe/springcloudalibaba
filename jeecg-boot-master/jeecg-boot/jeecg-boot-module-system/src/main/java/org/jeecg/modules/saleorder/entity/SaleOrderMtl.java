@@ -35,6 +35,8 @@ public class SaleOrderMtl extends CBasicEntity {
     private BigDecimal quantity;
     @ApiModelProperty("单价")
     private BigDecimal price;
+    @ApiModelProperty("成交单价")
+    private BigDecimal transactionPrice;
     @ApiModelProperty("折扣")
     private BigDecimal discount;
     @ApiModelProperty("折扣类型")
@@ -159,6 +161,14 @@ public class SaleOrderMtl extends CBasicEntity {
 
     public void setBillStatus(Integer billStatus) {
         this.billStatus = billStatus;
+    }
+
+    public BigDecimal getTransactionPrice() {
+        return transactionPrice;
+    }
+
+    public void setTransactionPrice(BigDecimal transactionPrice) {
+        this.transactionPrice = transactionPrice;
     }
 
     public String getInfo() {

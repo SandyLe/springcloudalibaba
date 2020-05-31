@@ -45,11 +45,11 @@ public class PurchaseMtl extends CBasicEntity {
 
     /*单价*/
     @ApiModelProperty("单价")
-    private String price;
+    private BigDecimal price;
 
     /*折扣*/
     @ApiModelProperty("折扣")
-    private String discount;
+    private BigDecimal discount;
 
     /*金额*/
     @ApiModelProperty("金额")
@@ -90,19 +90,19 @@ public class PurchaseMtl extends CBasicEntity {
         this.quantity = quantity;
     }
 
-    public String getPrice() {
+    public BigDecimal getPrice() {
         return price;
     }
 
-    public void setPrice(String price) {
+    public void setPrice(BigDecimal price) {
         this.price = price;
     }
 
-    public String getDiscount() {
+    public BigDecimal getDiscount() {
         return discount;
     }
 
-    public void setDiscount(String discount) {
+    public void setDiscount(BigDecimal discount) {
         this.discount = discount;
     }
 

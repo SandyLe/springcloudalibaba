@@ -34,16 +34,22 @@ public class SaleOrderExpenseServiceImpl extends ServiceImpl<SaleOrderExpenseMap
         } else {
             super.save(saleOrderExpense);
         }
+        return updateSaleOrderTotalAmount(saleOrderExpense.getSourceId());
+    }
+
+    @Override
+    public BigDecimal updateSaleOrderTotalAmount(String billId) {
+
         BigDecimal totalAmount = BigDecimal.ZERO;
         Map<String,Object> columns = new HashMap<>();
-        columns.put("source_id", saleOrderExpense.getSourceId());
+        columns.put("source_id", billId);
         Collection<SaleOrderExpense> list = listByMap(columns);
         for (SaleOrderExpense o: list){
             if (null != o.getAmount()){
                 totalAmount = totalAmount.add(o.getAmount());
             }
         }
-        SaleOrder saleOrder = saleOrderService.getById(saleOrderExpense.getSourceId());
+        SaleOrder saleOrder = saleOrderService.getById(billId);
         saleOrder.setOtheramount(totalAmount);
         BigDecimal tempTotalAmount = BigDecimal.ZERO.add(totalAmount);
         if (null != saleOrder.getMtlamount()){

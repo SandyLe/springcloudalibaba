@@ -214,6 +214,9 @@ public class InventoryInServiceImpl extends ServiceImpl<InventoryInMapper, Inven
             } else if (billType == BillType.CHANGEORDER.getId()) {
                 changeOrder = changeOrderService.getById(info.getSourceId());
                 companyId = changeOrder.getCompanyId();
+            } else if (billType == BillType.SALERETURNORDER.getId()) {
+                saleOrderReturn = saleOrderReturnService.getById(info.getSourceId());
+                companyId = saleOrderReturn.getCompanyId();
             }
             for (PreInventoryOutMtl mtl : mtls) {
                 // 入库更新库存

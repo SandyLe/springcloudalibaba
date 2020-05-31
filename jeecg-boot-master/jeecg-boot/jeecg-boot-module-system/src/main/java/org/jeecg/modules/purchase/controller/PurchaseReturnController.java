@@ -145,6 +145,7 @@ public class PurchaseReturnController extends JeecgController<PurchaseReturn, Pu
             inventoryOut.setCompanyId(rtn.getCompanyId());
             inventoryOut.setSourceId(rtn.getId());
             inventoryOut.setCode(stockcode);
+            inventoryOut.setSourceCode(code);
             inventoryOut.setBillType(BillType.INVENTORYOUT.getId());
             inventoryOut.setSourceBillType(BillType.PURCHASERETURNORDER.getId());
             inventoryOut.setWarehouseId(purchase.getWarehouseId());

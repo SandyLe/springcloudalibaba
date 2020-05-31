@@ -76,6 +76,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             // 配件出库
             InventoryOut inventoryOut = new InventoryOut(workOrderdto.getId(), workOrderdto.getCode(), BillType.INVENTORYOUT.getId(), BillType.WORKORDER.getId(), workOrderdto.getWarehouseId(), new Date(), BillStatus.TOSTOCKOUT.getId());
             inventoryOut.setRowSts(RowSts.EFFECTIVE.getId());
+            inventoryOut.setCompanyId(workOrderdto.getCompanyId());
             inventoryOutService.saveToInventoryOut(inventoryOut);
         }
         return workOrderdto.getId();
@@ -111,6 +112,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
             // 配件出库
             InventoryOut inventoryOut = new InventoryOut(workOrderdto.getId(), workOrderdto.getCode(), BillType.INVENTORYOUT.getId(), BillType.WORKORDER.getId(), workOrderdto.getWarehouseId(), new Date(), BillStatus.TOSTOCKOUT.getId());
             inventoryOut.setRowSts(RowSts.EFFECTIVE.getId());
+            inventoryOut.setCompanyId(workOrderdto.getCompanyId());
             inventoryOutService.saveToInventoryOut(inventoryOut);
         }
         return workOrderdto.getId();
