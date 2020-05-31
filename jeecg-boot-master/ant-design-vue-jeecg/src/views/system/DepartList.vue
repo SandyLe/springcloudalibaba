@@ -85,9 +85,7 @@
             <a-form-item
               :labelCol="labelCol"
               :wrapperCol="wrapperCol"
-              label="英文名称"
-              :hidden="false"
-              hasFeedback >
+              label="英文名称">
               <a-input id="departNameEn" placeholder="请输入机构/部门英文名称" v-decorator="['departNameEn', validatorRules.departNameEn ]"/>
             </a-form-item>
           </template>
@@ -198,6 +196,10 @@
     {
       title: '机构名称',
       dataIndex: 'departName'
+    },
+    {
+      title: '机构英文名称',
+      dataIndex: 'departNameEn'
     },
     {
       title: '机构类型',
@@ -379,7 +381,6 @@
         this.$refs.nodeModal.add(this.currFlowId, '')
       },
       batchDel: function () {
-        console.log(this.checkedKeys)
         if (this.checkedKeys.length <= 0) {
           this.$message.warning('请选择一条记录！')
         } else {
@@ -430,7 +431,6 @@
       nodeModalClose() {
       },
       hide() {
-        console.log(111)
         this.visible = false
       },
       onCheck(checkedKeys, info) {
@@ -468,7 +468,10 @@
           this.orgCategoryDisabled = false;
         }
         this.form.getFieldDecorator('fax', {initialValue: ''})
-        this.form.setFieldsValue(pick(record, 'avatar', 'departName','departNameEn','orgCategory', 'orgCode', 'departOrder', 'mobile', 'fax', 'address', 'memo'))
+        this.$nextTick(() => {
+          this.form.setFieldsValue(pick(record, 'avatar', 'departName','departNameEn','orgCategory', 'orgCode', 'departOrder', 'mobile', 'fax', 'address', 'memo'))
+        });
+
       },
       getCurrSelectedTitle() {
         return !this.currSelected.title ? '' : this.currSelected.title

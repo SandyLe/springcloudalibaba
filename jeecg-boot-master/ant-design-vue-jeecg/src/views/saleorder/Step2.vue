@@ -403,6 +403,12 @@
           if (res.success) {
             that.$message.success(res.message)
             that.loadData2()
+            that.saleOrder.totalamount = res.result;
+            that.model.payamount = res.result; // 默认填充
+            that.model.totalamount = res.result;
+            that.$nextTick(() => {
+              that.form.setFieldsValue(pick(this.model,'payamount', 'totalamount'))
+            });
           } else {
             that.$message.warning(res.message)
           }
@@ -433,6 +439,12 @@
                   that.$message.success(res.message)
                   that.loadData2()
                   that.onClearSelected()
+                  that.saleOrder.totalamount = res.result;
+                  that.model.payamount = res.result; // 默认填充
+                  that.model.totalamount = res.result;
+                  that.$nextTick(() => {
+                    that.form.setFieldsValue(pick(this.model,'payamount', 'totalamount'))
+                  });
                 } else {
                   that.$message.warning(res.message)
                 }

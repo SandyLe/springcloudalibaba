@@ -60,8 +60,8 @@
             <a-form-item
               :labelCol="labelCol"
               :wrapperCol="wrapperCol"
-              label="单价">
-              <a-input placeholder="请输入单价" v-decorator="[ 'price', {}]" />
+              label="指导价">
+              <a-input placeholder="请输入销售指导价" ref="priceInput" :disabled="true" v-decorator="[ 'price', {}]" />
             </a-form-item>
           </a-col>
         </a-row>
@@ -93,14 +93,23 @@
             <a-form-item
               :labelCol="labelCol"
               :wrapperCol="wrapperCol"
-              label="折扣">
-              <a-input placeholder="请输入折扣" v-decorator="[ 'discount', {}]" />
+              label="折扣%">
+              <a-input placeholder="请输入折扣%" ref="discountInput" @blur.native.capture="handleDiscountBlur" v-decorator="[ 'discount', {}]" />
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="6">
             <a-form-item
               :labelCol="labelCol"
               :wrapperCol="wrapperCol"
+              label="成交价">
+              <a-input placeholder="请输入成交价" ref="transactionPriceInput" @blur.native.capture="handleTransactionPriceBlur" v-decorator="[ 'transactionPrice', {}]" />
+            </a-form-item>
+          </a-col>
+          <a-col :md="6" :sm="6">
+            <a-form-item
+              :labelCol="labelCol"
+              :wrapperCol="wrapperCol"
+              :hidden = true
               label="折扣方式">
               <a-select v-decorator="['discountType', {}]" placeholder="折扣方式" >
                 <a-select-option value="">请选择</a-select-option>
@@ -174,12 +183,38 @@
     created () {
     },
     methods: {
+      handleDiscountBlur(e){
+        const price = this.$refs.priceInput.value;
+        const discount = e.target.valueOf().value;
+        if (price) {
+          this.model.transactionPrice = price * discount * 0.01;
+          this.$nextTick(() => {
+            this.form.setFieldsValue(pick(this.model,'transactionPrice'))
+          });
+        } else {
+          this.$message.warning('没有获取到销售指导价！请联系管理员！');
+        }
+      },
+      handleTransactionPriceBlur(e){
+        const price = this.$refs.priceInput.value;
+        const transactionPriceInput = e.target.valueOf().value;
+        if (price) {
+          this.model.discount = (transactionPriceInput / price).toFixed(4) * 100 ;
+          this.$nextTick(() => {
+            this.form.setFieldsValue(pick(this.model,'discount'))
+          });
+        } else {
+          this.$message.warning('没有获取到销售指导价！请联系管理员！');
+        }
+      },
       add () {
         this.edit({});
       },
       edit (record) {
         this.form.resetFields();
+
         record.sourceId = this.$route.query.id;
+        record.discountType = '0';//比例折扣
         this.model = Object.assign({}, record);
         this.visible = true;
         let that = this;
@@ -203,7 +238,7 @@
           this.unitList = [];
         }
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'mtlId', 'mtlCode','specification','unitId','price','discount','quantity','discountType'))
+          this.form.setFieldsValue(pick(this.model,'mtlId', 'mtlCode','specification','unitId','price','transactionPrice','discount','quantity','discountType'))
         });
 
       },
@@ -220,9 +255,11 @@
             this.model.mtlCode = mtlPrice.mtlCode;
             this.model.unitId = mtlPrice.unitId;
             this.model.specification = mtlPrice.specification;
+            this.model.discount = 100;
             this.model.price = mtlPrice.price;
+            this.model.transactionPrice = mtlPrice.price;
             this.$nextTick(() => {
-              this.form.setFieldsValue(pick(this.model,'mtlCode','specification','unitId','price'))
+              this.form.setFieldsValue(pick(this.model,'mtlCode','specification','unitId','price','discount','transactionPrice'))
             });
           }
         })

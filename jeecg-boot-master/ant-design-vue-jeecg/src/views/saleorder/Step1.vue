@@ -232,8 +232,8 @@
             dataIndex: 'discount'
           },
           {
-            title: '折扣类型',
-            dataIndex: 'discountTypeName',
+            title: '成交价',
+            dataIndex: 'transactionPrice',
             align:"center"
           },
           {
