@@ -37,7 +37,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
-@Api(tags = "单表库存")
+@Api(tags = "库存表单")
 @RestController
 @RequestMapping("/inventory")
 public class InventoryController {

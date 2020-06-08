@@ -30,13 +30,13 @@ import java.util.*;
  * 用户表 服务实现类
  * </p>
  *
- * @Author: scott
- * @Date: 2018-12-20
+ * @Author: lixt
+ * @Date: 2019-12-01
  */
 @Service
 @Slf4j
 public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> implements ISysUserService {
-	
+
 	@Autowired
 	private SysUserMapper userMapper;
 	@Autowired
@@ -117,8 +117,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 	public SysUser getUserByName(String username) {
 		return userMapper.getUserByName(username);
 	}
-	
-	
+
+
 	@Override
 	@Transactional
 	public void addUserWithRole(SysUser user, String roles) {
@@ -153,7 +153,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 	public List<String> getRole(String username) {
 		return sysUserRoleMapper.getRoleByUserName(username);
 	}
-	
+
 	/**
 	 * 通过用户名获取用户角色集合
 	 * @param username 用户名
@@ -197,7 +197,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 //		SysUser user = userMapper.getUserByName(username);
 //		info.setSysUserCode(user.getUsername());
 //		info.setSysUserName(user.getRealname());
-		
+
 
 		LoginUser user = sysBaseAPI.getUserByName(username);
 		if(user!=null) {
@@ -205,7 +205,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 			info.setSysUserName(user.getRealname());
 			info.setSysOrgCode(user.getOrgCode());
 		}
-		
+
 		//多部门支持in查询
 		List<SysDepart> list = sysDepartMapper.queryUserDeparts(user.getId());
 		List<String> sysMultiOrgCode = new ArrayList<String>();
@@ -221,7 +221,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 			}
 		}
 		info.setSysMultiOrgCode(sysMultiOrgCode);
-		
+
 		return info;
 	}
 

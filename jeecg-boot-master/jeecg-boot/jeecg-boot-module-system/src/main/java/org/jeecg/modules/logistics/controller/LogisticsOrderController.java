@@ -40,7 +40,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
-@Api(tags = "换货单列表")
+@Api(tags = "物流单列表")
 @RestController
 @RequestMapping("/logisticsOrder")
 public class LogisticsOrderController extends JeecgController<LogisticsOrder, LogisticsOrderService> {
