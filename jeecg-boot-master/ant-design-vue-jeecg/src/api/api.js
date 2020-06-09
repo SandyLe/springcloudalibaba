@@ -161,6 +161,11 @@ const addSaleOrderExpense = (params)=>postAction("/saleOrderExpense/add",params)
 const editSaleOrderExpense = (params)=>postAction("/saleOrderExpense/edit",params)
 const getSaleOrderExpenseList = (params)=>getAction("/saleOrderExpense/getList",params)
 const getSaleOrderExpenseOne = (params)=>getAction("/saleOrderExpense/expense/getOne",params)
+const addSaleOrderCost = (params)=>postAction("/saleOrderCost/add",params)
+const editSaleOrderCost = (params)=>postAction("/saleOrderCost/edit",params)
+const getSaleOrderCostList = (params)=>getAction("/saleOrderCost/getList",params)
+const getSaleOrderCostOne = (params)=>getAction("/saleOrderCost/expense/getOne",params)
+const handleSaleOrderCost = (params)=>getAction("/saleOrderCost/handle",params)
 const addStocking = (params)=>postAction("/stocking/add",params)
 const editStocking = (params)=>postAction("/stocking/edit",params)
 const handleStocking = (params)=>postAction("/stocking/handleStocking",params)
@@ -247,6 +252,10 @@ const changeOrderDtlDelete = (params)=>deleteAction("/changeOrderDtl/delete",par
 const getLogisticsOrderOne = (params)=>getAction("/logisticsOrder/getOne",params)
 const logisticsOrderDtlDelete = (params)=>deleteAction("/logisticsOrderDtl/delete",params)
 
+// 服务机构
+const saveServiceInstitution = (params)=>postAction("/serviceInstitution/save", params)
+const getServiceInstitutionList =  (params)=>getAction("/serviceInstitution/getList",params)
+const searchInstitution = (params)=>getAction("/serviceInstitution/search",params)
 export {
   // imgView,
   // doMian,
@@ -350,6 +359,9 @@ export {
   addExpense,
   editExpense,
   getExpenseList,
+  addSaleOrderCost,
+  editSaleOrderCost,
+  getSaleOrderCostList,
   addSaleOrderExpense,
   editSaleOrderExpense,
   getSaleOrderExpenseList,
@@ -415,7 +427,11 @@ export {
   getChangeOrderOne,
   changeOrderDtlDelete,
   getLogisticsOrderOne,
-  logisticsOrderDtlDelete
+  logisticsOrderDtlDelete,
+  saveServiceInstitution,
+  getServiceInstitutionList,
+  searchInstitution,
+  handleSaleOrderCost
 }
 
 

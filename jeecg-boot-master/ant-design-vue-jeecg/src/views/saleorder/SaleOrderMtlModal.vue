@@ -29,7 +29,6 @@
               :labelCol="labelCol"
               :wrapperCol="wrapperCol"
               label="产品">
-
               <a-select v-decorator="['mtlId', {}]" placeholder="请选择产品"  showSearch
                         optionFilterProp="children" @change="mtlChange"
                         notFoundContent="无法找到，输入关键词Enter搜索" @keyup.enter.native="searchMtl" >

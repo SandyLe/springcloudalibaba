@@ -1,6 +1,6 @@
 <template>
   <div>
-    <a-form style="max-width: 500px; margin: 40px auto 0;" :form="form">
+    <a-form style="max-width: 700px; margin: 40px auto 0;" :form="form">
       <a-alert
         :closable="true"
         message="请确认订单信息及费用信息。"
@@ -48,7 +48,6 @@
           :dataSource="dataSource"
           :pagination="ipagination"
           :loading="loading"
-          :rowSelection="{selectedRowKeys: selectedRowKeys1, onChange: onSelectChange1}"
           @change="handleTableChange">
           <span slot="nameAction" slot-scope="text, record">
             <a @click="goDetail(record.mtlId)">{{record.mtl}}</a>
@@ -76,19 +75,6 @@
           <!-- 操作按钮区域 -->
           <div class="table-operator" style="border-top: 5px" v-if = "!unEditable">
             <a-button @click="handleAddExpense" type="primary" icon="plus">添加费用</a-button>
-            <a-dropdown v-if="selectedRowKeys.length > 0">
-              <a-menu slot="overlay">
-                <a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>
-              </a-menu>
-              <a-button style="margin-left: 8px">
-                批量操作 <a-icon type="down" />
-              </a-button>
-            </a-dropdown>
-          </div>
-          <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;">
-            <i class="anticon anticon-info-circle ant-alert-icon"></i> 已选择 <a style="font-weight: 600">{{
-            selectedRowKeys2.length }}</a>项
-            <a style="margin-left: 24px" @click="onClearSelected2">清空</a>
           </div>
           <a-table
             ref="table2"
@@ -99,23 +85,39 @@
             :dataSource="dataSource2"
             :pagination="ipagination2"
             :loading="loading2"
-            :rowSelection="{selectedRowKeys: selectedRowKeys2, onChange: onSelectChange2}"
             @change="handleTableChange2">
            <span slot="action" slot-scope="text, record" v-if = "!unEditable">
             <a @click="handleEdit2(record)">编辑</a>
             <a-divider type="vertical"/>
-            <a-dropdown>
-              <a class="ant-dropdown-link">
-                更多 <a-icon type="down"/>
-              </a>
-              <a-menu slot="overlay">
-                <a-menu-item>
-                  <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete2(record.id)">
-                    <a>删除</a>
-                  </a-popconfirm>
-                </a-menu-item>
-              </a-menu>
-            </a-dropdown>
+            <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete2(record.id)">
+              <a>删除</a>
+            </a-popconfirm>
+          </span>
+          </a-table>
+        </a-card>
+      </div>
+      <div>
+        <a-card class="card" title="成本" :bordered="true">
+          <!-- 操作按钮区域 -->
+          <div class="table-operator" style="border-top: 5px" v-if = "!unEditable">
+            <a-button @click="handleAddCost" type="primary" icon="plus">添加成本</a-button>
+          </div>
+          <a-table
+            ref="table3"
+            bordered
+            size="middle"
+            rowKey="id"
+            :columns="columns3"
+            :dataSource="dataSource3"
+            :pagination="ipagination3"
+            :loading="loading3"
+            @change="handleTableChange3">
+           <span slot="action" slot-scope="text, record" v-if = "!unEditable">
+            <a @click="handleEdit3(record)">编辑</a>
+            <a-divider type="vertical"/>
+            <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete3(record.id)">
+              <a>删除</a>
+            </a-popconfirm>
           </span>
           </a-table>
         </a-card>
@@ -156,12 +158,14 @@
     </a-form>
 
     <sale-order-expense-modal ref="saleOrderExpenseModal" :saleOrder = "saleOrder" @ok="modalFormOk2" v-on:listenToTotalamont="showTotalMount"></sale-order-expense-modal>
+    <sale-order-cost-modal ref="saleOrderCostModal" :saleOrder = "saleOrder" @ok="modalFormOk3"></sale-order-cost-modal>
   </div>
 </template>
 
 <script>
   import pick from 'lodash.pick'
   import SaleOrderExpenseModal from './SaleOrderExpenseModal'
+  import SaleOrderCostModal from './SaleOrderCostModal'
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import { deleteAction, postAction, getAction } from '@/api/manage'
   import {checkout, getSaleOrderOne, getSaleOrderMtlList } from '@/api/api'
@@ -171,6 +175,7 @@
     mixins: [JeecgListMixin],
     components: {
       SaleOrderExpenseModal,
+      SaleOrderCostModal,
       JDictSelectTag
     },
     data() {
@@ -178,11 +183,14 @@
         saleOrder: {},
         model1: {},
         model2: {},
+        model3: {},
         currentRoleId: '',
         queryParam1: {},
         queryParam2: {},
+        queryParam3: {},
         dataSource1: [],
         dataSource2: [],
+        dataSource3: [],
         ipagination1: {
           current: 1,
           pageSize: 10,
@@ -205,6 +213,17 @@
           showSizeChanger: true,
           total: 0
         },
+        ipagination3: {
+          current: 1,
+          pageSize: 10,
+          pageSizeOptions: ['10', '20', '30'],
+          showTotal: (total, range) => {
+            return range[0] + '-' + range[1] + ' 共' + total + '条'
+          },
+          showQuickJumper: true,
+          showSizeChanger: true,
+          total: 0
+        },
         isorter1: {
           column: 'createTime',
           order: 'desc'
@@ -213,14 +232,16 @@
           column: 'createTime',
           order: 'desc'
         },
+        isorter3: {
+          column: 'createTime',
+          order: 'desc'
+        },
         filters1: {},
         filters2: {},
+        filters3: {},
         loading1: false,
         loading2: false,
-        selectedRowKeys1: [],
-        selectedRowKeys2: [],
-        selectionRows1: [],
-        selectionRows2: [],
+        loading3: false,
         columns:
           [
             {
@@ -294,40 +315,45 @@
             align: 'center',
             width: 120
           }],
+        columns3: [{
+            title: '收款方',
+            align: 'center',
+            dataIndex: 'payee',
+            width: 120
+          },
+          {
+            title: '费用名称',
+            align: 'center',
+            dataIndex: 'expense',
+            width: 120
+          },
+          {
+            title: '费用',
+            align: 'center',
+            width: 100,
+            dataIndex: 'amount'
+          },
+          {
+            title: '操作',
+            dataIndex: 'action',
+            scopedSlots: { customRender: 'action' },
+            align: 'center',
+            width: 120
+          }],
         form: this.$form.createForm(this),
         url: {
           list: "/saleOrderMtl/getPage",
           list2: '/saleOrderExpense/getPage',
           delete2: '/saleOrderExpense/delete',
           deleteBatch2: '/saleOrderExpense/deleteBatch',
+          list3: '/saleOrderCost/getPage',
+          delete3: '/saleOrderCost/delete',
+          deleteBatch3: '/saleOrderCost/deleteBatch',
         },
         unEditable: true
       }
     },
     methods: {
-      onSelectChange2(selectedRowKeys, selectionRows) {
-        this.selectedRowKeys2 = selectedRowKeys
-        this.selectionRows2 = selectionRows
-      },
-      onClearSelected2() {
-        this.selectedRowKeys2 = []
-        this.selectionRows2 = []
-      },
-      onClearSelected1() {
-        this.selectedRowKeys1 = []
-        this.selectionRows1 = []
-      },
-      onSelectChange1(selectedRowKeys, selectionRows) {
-        this.selectedRowKeys1 = selectedRowKeys
-        this.selectionRows1 = selectionRows
-        this.model1 = Object.assign({}, selectionRows[0])
-        console.log(this.model1)
-        this.currentRoleId = selectedRowKeys[0]
-        this.loadData2()
-      },
-      onClearSelected() {
-      },
-
       getQueryParams(){
         let param = {};
         if(this.$route.query.id){
@@ -350,9 +376,29 @@
         param2.pageSize = this.ipagination2.pageSize
         return param2;
       },
+      getQueryParams3() {
+        //获取查询条件
+        let param3 = {};
+        if(this.$route.query.id){
+          param3.sourceId = this.$route.query.id
+        }else{
+          param3.sourceId = -1;
+        }
+        param3.field = this.getQueryField3()
+        param3.pageNo = this.ipagination3.current
+        param3.pageSize = this.ipagination3.pageSize
+        return param3;
+      },
       getQueryField2() {
         var str = 'id,'
         this.columns2.forEach(function(value) {
+          str += ',' + value.dataIndex
+        })
+        return str
+      },
+      getQueryField3() {
+        var str = 'id,'
+        this.columns3.forEach(function(value) {
           str += ',' + value.dataIndex
         })
         return str
@@ -362,9 +408,18 @@
         this.$refs.saleOrderExpenseModal.roleDisabled = true
         this.$refs.saleOrderExpenseModal.edit(record)
       },
+      handleEdit3: function(record) {
+        this.$refs.saleOrderCostModal.title = '编辑'
+        this.$refs.saleOrderCostModal.roleDisabled = true
+        this.$refs.saleOrderCostModal.edit(record)
+      },
       modalFormOk2() {
         // 新增/修改 成功时，重载列表
         this.loadData2()
+      },
+      modalFormOk3() {
+        // 新增/修改 成功时，重载列表
+        this.loadData3()
       },
       loadData2(arg) {
         if (!this.url.list2) {
@@ -385,6 +440,28 @@
 
           }
           this.loading2 = false
+        })
+
+      },
+      loadData3(arg) {
+        if (!this.url.list2) {
+          this.$message.error('请设置url.list3属性!')
+          return
+        }
+        //加载数据 若传入参数1则加载第一页的内容
+        if (arg === 1) {
+          this.ipagination3.current = 1
+        }
+        let params = this.getQueryParams3()//查询条件
+        params.roleId = this.currentRoleId
+        this.loading3 = true
+        getAction(this.url.list3, params).then((res) => {
+          if (res.success) {
+            this.dataSource3 = res.result.records
+            this.ipagination3.total = res.result.total
+
+          }
+          this.loading3 = false
         })
 
       },
@@ -409,6 +486,21 @@
             that.$nextTick(() => {
               that.form.setFieldsValue(pick(this.model,'payamount', 'totalamount'))
             });
+          } else {
+            that.$message.warning(res.message)
+          }
+        })
+      },
+      handleDelete3: function(id) {
+        if (!this.url.delete2) {
+          this.$message.error('请设置url.delete3属性!')
+          return
+        }
+        var that = this
+        deleteAction(that.url.delete3, { id: id }).then((res) => {
+          if (res.success) {
+            that.$message.success(res.message)
+            that.loadData3();
           } else {
             that.$message.warning(res.message)
           }
@@ -453,6 +545,39 @@
           })
         }
       },
+      batchDel3: function() {
+
+        if (!this.url.deleteBatch3) {
+          this.$message.error('请设置url.deleteBatch3属性!')
+          return
+        }
+        if (this.selectedRowKeys3.length <= 0) {
+          this.$message.warning('请选择一条记录！')
+          return
+        } else {
+          var ids = ''
+          for (var a = 0; a < this.selectedRowKeys3.length; a++) {
+            ids += this.selectedRowKeys3[a] + ','
+          }
+          var that = this
+          console.log(this.currentDeptId)
+          this.$confirm({
+            title: '确认删除',
+            content: '是否删除选中数据?',
+            onOk: function() {
+              deleteAction(that.url.deleteBatch3, { id: ids }).then((res) => {
+                if (res.success) {
+                  that.$message.success(res.message)
+                  that.loadData2()
+                  that.onClearSelected();
+                } else {
+                  that.$message.warning(res.message)
+                }
+              })
+            }
+          })
+        }
+      },
       handleTableChange2(pagination, filters, sorter) {
         //分页、排序、筛选变化时触发
         if (Object.keys(sorter).length > 0) {
@@ -462,9 +587,22 @@
         this.ipagination2 = pagination
         this.loadData2()
       },
+      handleTableChange3(pagination, filters, sorter) {
+        //分页、排序、筛选变化时触发
+        if (Object.keys(sorter).length > 0) {
+          this.isorter3.column = sorter.field
+          this.isorter3.order = 'ascend' == sorter.order ? 'asc' : 'desc'
+        }
+        this.ipagination3 = pagination
+        this.loadData3()
+      },
       handleAddExpense(){
         this.$refs.saleOrderExpenseModal.add();
-        this.$refs.saleOrderExpenseModal.title = "新增";
+        this.$refs.saleOrderExpenseModal.title = "新增费用";
+      },
+      handleAddCost(){
+        this.$refs.saleOrderCostModal.add();
+        this.$refs.saleOrderCostModal.title = "新增成本";
       },
       showTotalMount(data){
         this.saleOrder.totalamount = data;
@@ -483,7 +621,6 @@
             values.sourceId = this.$route.query.id;
             let formData = Object.assign(this.model, values);
             let obj;
-            console.log(formData)
             if(this.model.id){
               obj=checkout(formData);
             }
@@ -527,6 +664,7 @@
         })
       }
       this.loadData2();
+      this.loadData3();
       this.unEditable = this.$route.query.unEditable;
     }
   }

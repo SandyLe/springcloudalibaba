@@ -78,6 +78,23 @@
             </table>
           </div>
           <div style="margin-top: 15px">
+            <div>成本</div>
+            <table class="saleordertableclass">
+              <thead>
+              <th>编号</th>
+              <th>收款方</th>
+              <th>费用名称</th>
+              <th>费用金额</th>
+              </thead>
+              <tr v-for="(item, index) in costDatas" style="border: dotted 1px #888888; ">
+                <td>{{index +1 }}</td>
+                <td>{{item.payee}}</td>
+                <td>{{item.expense}}</td>
+                <td>{{item.amount}}</td>
+              </tr>
+            </table>
+          </div>
+          <div style="margin-top: 15px">
             <div style="border-bottom: dotted 1px #888888; ">收货信息</div>
             <div><label>默认发货方式：</label>{{deliveryInfo.cdiDefaultTypeName}}</div>
             <div v-if="'ZHIDINGDIAN' === deliveryInfo.cdiDefaultType">
@@ -116,7 +133,7 @@
 
 <script>
   import Result from '../result/Result'
-  import {getSaleOrderOne, getlSaleMtlList, getSaleOrderExpenseList, getDeliveryInfoBySourceId} from '@/api/api'
+  import {getSaleOrderOne, getlSaleMtlList, getSaleOrderExpenseList, getSaleOrderCostList, getDeliveryInfoBySourceId} from '@/api/api'
 
   export default {
     name: "Step3",
@@ -128,6 +145,7 @@
         saleOrder: {},
         loading: false,
         expenseDatas: [],
+        costDatas: [],
         mtlDatas: [],
         deliveryInfo: {}
       }
@@ -156,6 +174,11 @@
         getSaleOrderExpenseList({sourceId:this.$route.query.id}).then((res) => {
           if (res.success) {
             this.expenseDatas = res.result;
+          }
+        })
+        getSaleOrderCostList({sourceId:this.$route.query.id}).then((res) => {
+          if (res.success) {
+            this.costDatas = res.result;
           }
         })
         getDeliveryInfoBySourceId({sourceId:this.$route.query.id}).then((res) => {

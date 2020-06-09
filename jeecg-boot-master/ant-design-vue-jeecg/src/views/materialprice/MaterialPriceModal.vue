@@ -11,23 +11,21 @@
     style="top:5%;height: 65%;overflow-y: hidden">
     <a-spin :spinning="confirmLoading">
       <a-form :form="form">
-
         <a-row>
-          <a-col :md="6" :sm="6">
+          <a-col :md="12" :sm="12">
             <a-form-item
               :labelCol="labelCol"
-              :wrapperCol="wrapperCol"
-              label="产品">
-              <a-select v-decorator="['materialId', validatorRules.materialId]" placeholder="产品" >
+              :wrapperCol="wrapperCol" label="产品">
+              <a-select  v-decorator="['materialId', validatorRules.materialId]" placeholder="请选择产品"  showSearch
+                        optionFilterProp="children" @change="mtlChange"
+                        notFoundContent="无法找到，输入关键词Enter搜索" @keyup.enter.native="searchMtl" >
                 <a-select-option value="">请选择</a-select-option>
-                <a-select-option v-for="(item, key) in materialList" :key="key" :value="item.id">
-                    <span style="display: inline-block;width: 100%" :title=" item.name || item.code ">
-                      {{ item.name || item.code }}
-                    </span>
+                <a-select-option v-for="(item, key) in mtlList" :key="key" :value="item.id">
+                  {{ item.info }}
                 </a-select-option>
               </a-select>
             </a-form-item>
-          </a-col>
+        </a-col><!--
           <a-col :md="6" :sm="6">
             <a-form-item
               :labelCol="labelCol"
@@ -42,7 +40,7 @@
                 </a-select-option>
               </a-select>
             </a-form-item>
-          </a-col>
+          </a-col>-->
           <a-col :md="6" :sm="6">
             <a-form-item
               :labelCol="labelCol"
@@ -86,7 +84,7 @@
 <script>
   import pick from 'lodash.pick'
   import AFormItem from "ant-design-vue/es/form/FormItem";
-  import {addMaterialPrice,editMaterialPrice,getCustomerTypeList,getMaterialUnitList,getMaterialList,duplicateCheck } from '@/api/api'
+  import {searchMaterial, addMaterialPrice,editMaterialPrice,getCustomerTypeList,getMaterialUnitList,getMaterialList,duplicateCheck,getMaterialOne } from '@/api/api'
   export default {
     name: "MaterialPriceModal",
     data() {
@@ -111,7 +109,7 @@
           xs: { span: 24 },
           sm: { span: 16 },
         },
-        materialList: [],
+        mtlList: [],
         unitList: [],
         typeList: [],
         model: {},
@@ -205,9 +203,34 @@
           }
         })
       },
+      searchMtl (e) {
+        searchMaterial({"keyword":e.target.valueOf().value}).then((res) => {
+          if (res.success) {
+            this.mtlList = res.result;
+          }
+        })
+      },
       handleCancel () {
         this.close()
+      },
+      mtlChange (val) {
+        getMaterialOne({id:val}).then((res) => {
+          if (res.success) {
+            const material = res.result;
+            this.model.unitId = material.unitId;
+            this.$nextTick(() => {
+              this.form.setFieldsValue(pick(this.model,'unitId'))
+            });
+          }
+        })
       }
+    },
+    mounted() {
+      searchMaterial().then((res) => {
+        if (res.success) {
+          this.mtlList = res.result;
+        }
+      })
     }
   }
 </script>

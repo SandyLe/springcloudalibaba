@@ -5,41 +5,43 @@
     <div class="table-page-search-wrapper">
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
-
-          <a-col :md="12" :sm="18">
-            <a-form-item label="产品">
-              <a-select v-model="queryParam.materialId" placeholder="请选择产品"  showSearch
-                        optionFilterProp="children"
-                        notFoundContent="无法找到，输入关键词Enter搜索" @keyup.enter.native="searchMtl" >
-                <a-select-option value="">请选择</a-select-option>
-                <a-select-option v-for="(item, key) in mtlList" :key="key" :value="item.id">
-                  {{ item.info }}
-                </a-select-option>
-              </a-select>
+          <a-col :md="6" :sm="12">
+            <a-form-item label="名称">
+              <j-input placeholder="输入名称模糊查询" v-model="queryParam.name"></j-input>
             </a-form-item>
           </a-col>
-
-          <a-col :md="6" :sm="6">
+          <a-col :md="6" :sm="12">
             <a-form-item label="代码">
               <j-input placeholder="输入代码模糊查询" v-model="queryParam.code"></j-input>
             </a-form-item>
           </a-col>
-
+          <template v-if="toggleSearchStatus">
+            <a-col :md="6" :sm="8">
+              <a-form-item label="手机号">
+                <j-input placeholder="输入手机号查询" v-model="queryParam.phone"></j-input>
+              </a-form-item>
+            </a-col>
+          </template>
           <a-col :md="6" :sm="8">
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
               <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
               <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
+              <a @click="handleToggleSearch" style="margin-left: 8px">
+                {{ toggleSearchStatus ? '收起' : '展开' }}
+                <a-icon :type="toggleSearchStatus ? 'up' : 'down'"/>
+              </a>
             </span>
           </a-col>
-
         </a-row>
       </a-form>
     </div>
 
     <!-- 操作按钮区域 -->
     <div class="table-operator" style="border-top: 5px">
-      <a-button @click="handleAdd" type="primary" icon="plus">添加产品定价</a-button>
-
+      <a-button @click="handleAdd" type="primary" icon="plus">添加服务机构</a-button>
+      <!-- <router-link to="/serviceInstitution/serviceInstitutionSource">
+        添加服务机构
+      </router-link> -->
       <a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
           <a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>
@@ -48,12 +50,6 @@
           批量操作 <a-icon type="down" />
         </a-button>
       </a-dropdown>
-
-      <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel" style="margin-left: 8px">
-        <a-button type="primary" icon="import">导入</a-button>
-      </a-upload>
-
-      <a-button type="link" @click="downloadtemplate">下载模板</a-button>
     </div>
 
     <!-- table区域-begin -->
@@ -81,6 +77,9 @@
           </div>
         </template>
 
+        <span slot="nameAction" slot-scope="text, record">
+          <a @click="handleDetail(record)">{{record.name}}</a>
+        </span>
         <span slot="action" slot-scope="text, record">
           <a @click="handleEdit(record)">编辑</a>
           <a-divider type="vertical"/>
@@ -93,7 +92,6 @@
               <a-menu-item>
                 <a href="javascript:;" @click="handleDetail(record)">详情</a>
               </a-menu-item>
-
               <a-menu-item>
                 <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
                   <a>删除</a>
@@ -107,26 +105,24 @@
     <!-- table区域-end -->
 
     <!-- 表单区域 -->
-    <material-price-modal ref="modalForm" @ok="modalFormOk"></material-price-modal>
+    <serviceInstitution-modal ref="modalForm" @ok="modalFormOk"></serviceInstitution-modal>
 
   </a-card>
 </template>
 
 <script>
-  import MaterialPriceModal from './MaterialPriceModal'
+  import ServiceInstitutionModal from './ServiceInstitutionModal'
   import JInput from '@/components/jeecg/JInput'
   import {JeecgListMixin} from '@/mixins/JeecgListMixin'
-  import {searchMaterial} from '@/api/api'
   export default {
-    name: "MaterialPrice",
+    name: "ServiceInstitution",
     mixins: [JeecgListMixin],
     components: {
       JInput,
-      MaterialPriceModal
+      ServiceInstitutionModal
     },
     data() {
       return {
-        mtlList: [],
         queryParam: {},
         // 表头
         columns: [
@@ -141,24 +137,20 @@
             }
           },
           {
-            title: '产品名称',
+            title: '名称',
             align:"center",
-            dataIndex: 'material'
-          },/*
-          {
-            title: '客户类型',
-            align:"center",
-            dataIndex: 'customerType'
-          },*/
-          {
-            title: '计量单位',
-            align:"center",
-            dataIndex: 'unit'
+            dataIndex: '',
+            scopedSlots: { customRender: 'nameAction' }
           },
           {
-            title: '价格',
+            title: '编码',
             align:"center",
-            dataIndex: 'price'
+            dataIndex: 'code'
+          },
+          {
+            title: '手机号',
+            align:"center",
+            dataIndex: 'phone'
           },
           {
             title: '备注',
@@ -185,36 +177,13 @@
           }
         ],
         url: {
-          list: "/materialPrice/getPage",
-          delete: "/materialPrice/delete",
-          deleteBatch: "/materialPrice/deleteBatch",
-          importExcelUrl: "/materialPrice/importExcel",
+          list: "/serviceInstitution/getPage",
+          delete: "/serviceInstitution/delete",
+          deleteBatch: "/serviceInstitution/deleteBatch"
         }
       }
-    },
-    computed: {
-      importExcelUrl: function(){
-        return `${window._CONFIG['domianURL']}/${this.url.importExcelUrl}`;
-      },
     },
     methods: {
-      searchMtl (e) {
-        searchMaterial({"keyword":e.target.valueOf().value}).then((res) => {
-          if (res.success) {
-            this.mtlList = res.result;
-          }
-        })
-      },
-      downloadtemplate(){
-        location.href =`${window._CONFIG['domianURL']}/sys/common/download/systemplate/MaterialPrice.xlsx`;
-      }
-    },
-    mounted() {
-      searchMaterial().then((res) => {
-        if (res.success) {
-          this.mtlList = res.result;
-        }
-      })
     }
   }
 </script>
