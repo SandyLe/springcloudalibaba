@@ -14,9 +14,9 @@ public class SaleOrderExpense extends JeecgEntity {
 
     @ApiModelProperty("销售订单ID")
     private String sourceId;
-    @ApiModelProperty("产品ID")
+    @ApiModelProperty("费用ID")
     private String expenseId;
-    @ApiModelProperty("产品")
+    @ApiModelProperty("费用")
     @TableField(exist=false)
     private String expense;
     @ApiModelProperty("费用")

@@ -1158,3 +1158,60 @@ ALTER TABLE `sl_inventory` ADD COLUMN `batch_no` varchar(20) DEFAULT NULL COMMEN
 
 alter  table sl_inventory_log  ADD COLUMN `source_bill_id` varchar(20) DEFAULT NULL COMMENT '原单ID';
 ALTER TABLE `sl_inventory_log` ADD COLUMN `batch_no` varchar(20) DEFAULT NULL COMMENT '批次号';
+
+
+DROP TABLE IF EXISTS `sl_service_institution`;
+CREATE TABLE `sl_service_institution` (
+
+  `id` varchar(30) NOT NULL,
+  `name` varchar(50) DEFAULT NULL,
+  `code` varchar(30) DEFAULT NULL,
+  `content` varchar(100) DEFAULT NULL,
+  `create_time` datetime DEFAULT NULL,
+  `update_time` datetime DEFAULT NULL,
+  `create_by` varchar(30) DEFAULT NULL,
+  `update_by` varchar(30) DEFAULT NULL,
+  `row_sts` int(11) DEFAULT NULL,
+  `sort` int(11) DEFAULT NULL,
+
+  `phone` varchar(30) DEFAULT NULL,
+  `wechat_id` varchar(30) DEFAULT NULL,
+  `wechat_nick_name` varchar(30) DEFAULT NULL,
+  `linkman` varchar(30) DEFAULT NULL,
+  `tel` varchar(30) DEFAULT NULL,
+  `email` varchar(30) DEFAULT NULL,
+  `fax` varchar(30) DEFAULT NULL,
+  `bankaccount` varchar(30) DEFAULT NULL,
+  `bankacct_name` varchar(30) DEFAULT NULL,
+  `bank_name` varchar(30) DEFAULT NULL,
+  `province` varchar(30) DEFAULT NULL,
+  `city` varchar(30) DEFAULT NULL,
+  `district` varchar(30) DEFAULT NULL,
+  `address` varchar(80) DEFAULT NULL,
+  `billing_info` varchar(100) DEFAULT NULL,
+	`company_id` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+DROP TABLE IF EXISTS `sl_sale_order_cost`;
+CREATE TABLE `sl_sale_order_cost` (
+  `id` varchar(30) NOT NULL,
+  `name` varchar(50) DEFAULT NULL,
+  `code` varchar(30) DEFAULT NULL,
+  `content` varchar(1000) DEFAULT NULL,
+  `create_time` datetime DEFAULT NULL,
+  `update_time` datetime DEFAULT NULL,
+  `create_by` varchar(30) DEFAULT NULL,
+  `update_by` varchar(30) DEFAULT NULL,
+  `row_sts` int(11) DEFAULT NULL,
+  `sort` int(11) DEFAULT NULL,
+	`company_id` varchar(50) DEFAULT NULL,
+
+  `source_id` varchar(30) DEFAULT NULL,
+  `source_code` varchar(30) DEFAULT NULL,
+  `payee_id` varchar(30) DEFAULT NULL,
+  `amount` decimal(10,4) DEFAULT NULL,
+  `bill_status_id` int(11) DEFAULT NULL,
+  `expense_id` varchar(30)  DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

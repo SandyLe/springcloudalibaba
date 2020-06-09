@@ -1,5 +1,6 @@
 package org.jeecg.modules.basic.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.lang.StringUtils;
@@ -20,19 +21,15 @@ public class MaterialPriceServiceImpl extends ServiceImpl<MaterialPriceMapper, M
     private MaterialPriceMapper materialPriceMapper;
 
     @Override
-    public MaterialPrice getMtlPrice(String customerTypeId, String mtlId, String unitId) {
+    public MaterialPrice getMtlPrice(String ccId, String mtlId, String unitId) {
 
-        MaterialPrice mtlPrice = new MaterialPrice();
-        mtlPrice.setCustomerTypeId(customerTypeId);
-        mtlPrice.setMaterialId(mtlId);
-        mtlPrice.setUnitId(unitId);
-        Map<String, String[]> params = new HashMap<>();
-        params.put("materialId", new String[]{mtlId});
-        params.put("unitId", new String[]{unitId});
-        if (StringUtils.isNotBlank(customerTypeId)) {
-            params.put("customerTypeId", new String[]{customerTypeId});
+        LambdaQueryWrapper<MaterialPrice> lambdaQueryWrapper = new LambdaQueryWrapper<MaterialPrice>();
+        lambdaQueryWrapper.eq(MaterialPrice::getCompanyId, ccId);
+        lambdaQueryWrapper.eq(MaterialPrice::getMaterialId, mtlId);
+        if (StringUtils.isNotBlank(unitId)) {
+            lambdaQueryWrapper.eq(MaterialPrice::getUnitId, unitId);
         }
-        QueryWrapper<MaterialPrice> queryWrapper = QueryGenerator.initQueryWrapper(mtlPrice, params);
-        return materialPriceMapper.selectOne(queryWrapper);
+        return materialPriceMapper.selectOne(lambdaQueryWrapper);
     }
+
 }

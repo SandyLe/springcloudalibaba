@@ -48,8 +48,6 @@ public class MaterialPriceController {
     @Autowired
     private MaterialService materialService;
     @Autowired
-    private CustomerTypeService customerTypeService;
-    @Autowired
     private CustomerService customerService;
 
 
@@ -76,13 +74,10 @@ public class MaterialPriceController {
             List<String> typeIds = records.stream().map(MaterialPrice::getCustomerTypeId).collect(Collectors.toList());
             List<String> unitIds = records.stream().map(MaterialPrice::getUnitId).collect(Collectors.toList());
             Collection<Material> materials = materialService.listByIds(mtlIds);
-            Collection<CustomerType> types = customerTypeService.listByIds(typeIds);
             Collection<MaterialUnit> units = materialUnitService.listByIds(unitIds);
             Map<String, String> mtlMap = materials.stream().collect(Collectors.toMap(Material::getId, Material::getName));
-            Map<String, String> typeMap = types.stream().collect(Collectors.toMap(CustomerType::getId, CustomerType::getName));
             Map<String, String> unitMap = units.stream().collect(Collectors.toMap(MaterialUnit::getId, MaterialUnit::getName));
             records.stream().forEach(o->{
-                o.setCustomerType(typeMap.get(o.getCustomerTypeId()));
                 o.setMaterial(mtlMap.get(o.getMaterialId()));
                 o.setUnit(unitMap.get(o.getUnitId()));
             });
@@ -205,7 +200,7 @@ public class MaterialPriceController {
         dto.setUnitId(StringUtils.isNotBlank(unitId) ? unitId : material.getUnitId());
 
         Customer customer = customerService.getById(customerId);
-        MaterialPrice materialPrice = materialPriceService.getMtlPrice(customer.getCustomerTypeId(), mtlId, dto.getUnitId());
+        MaterialPrice materialPrice = materialPriceService.getMtlPrice(customer.getCompanyId(), mtlId, dto.getUnitId());
         dto.setPrice(null != materialPrice ? materialPrice.getPrice() : null);
         return Result.ok(dto);
     }
@@ -225,7 +220,6 @@ public class MaterialPriceController {
         MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
         Map<String, MultipartFile> fileMap = multipartRequest.getFileMap();
 
-        Collection<CustomerType> customerTypes = customerTypeService.list();
         Collection<Material> materials = materialService.list();
         Collection<MaterialUnit> materialUnits = materialUnitService.list();
 
@@ -247,23 +241,12 @@ public class MaterialPriceController {
                         return Result.error(String.format("抱歉！请先新增以下产品: %s", StringUtils.join(brandsSubtract.toArray(),",")));
                     }
 
-
-                    if (materialList.stream().anyMatch(p->StringUtils.isEmpty(p.getCustomerType()))){
-                        return Result.error(String.format("抱歉！“客户类型”列不能为空"));
-                    }
-                    Collection<String> typesSubtract = CollectionUtils.removeAll(materialList.stream().map(p->p.getCustomerType()).collect(Collectors.toList()),
-                            customerTypes.stream().map(p->p.getName()).collect(Collectors.toList()));
-                    if (CollectionUtils.isNotEmpty(typesSubtract)){
-                        return Result.error(String.format("抱歉！请先新增以下客户类型: %s", StringUtils.join(typesSubtract.toArray(),",")));
-                    }
-
-
                     if (materialList.stream().anyMatch(p->StringUtils.isEmpty(p.getUnit()))){
                         return Result.error(String.format("抱歉！“计量单位”列不能为空"));
                     }
                     Collection<String> unitsSubtract = CollectionUtils.removeAll(materialList.stream().map(p->p.getUnit()).collect(Collectors.toList()),
                             materialUnits.stream().map(p->p.getName()).collect(Collectors.toList()));
-                    if (CollectionUtils.isNotEmpty(typesSubtract)){
+                    if (CollectionUtils.isNotEmpty(unitsSubtract)){
                         return Result.error(String.format("抱歉！请先新增以下计量单位: %s", StringUtils.join(unitsSubtract.toArray(),",")));
                     }
 
@@ -271,11 +254,9 @@ public class MaterialPriceController {
                     List<MaterialPrice> excelMaterial = new ArrayList<>();
                     MaterialPrice materialPrice;
                     for (MaterialPriceExcelDto materialExcelDto : materialList) {
-//                        System.out.println(JSON.toJSONString(materialExcelDto));
                         materialPrice = new MaterialPrice();
                         materialPrice.setCompanyId(LoginUtils.getLoginUser().getCompanyId());
                         materialPrice.setPrice(new BigDecimal(materialExcelDto.getPrice()));
-                        materialPrice.setCustomerTypeId(customerTypes.stream().filter(p-> ObjectUtils.equals(p.getName(), materialExcelDto.getCustomerType()) ).findFirst().get().getId());
                         materialPrice.setUnitId(materialUnits.stream().filter(p-> ObjectUtils.equals(p.getName(), materialExcelDto.getUnit()) ).findFirst().get().getId());
                         materialPrice.setMaterialId(materials.stream().filter(p-> ObjectUtils.equals(p.getName(), materialExcelDto.getName()) ).findFirst().get().getId());
                         excelMaterial.add(materialPrice);
