@@ -170,3 +170,33 @@ UPDATE `sl_customer` SET company_id = '2d9c18e2454e4708a23e1a80f089332d' WHERE c
 UPDATE `sl_customer_type` SET company_id = '2d9c18e2454e4708a23e1a80f089332d' WHERE company_id IS null;
 UPDATE `sl_customer_source` SET company_id = '2d9c18e2454e4708a23e1a80f089332d' WHERE company_id IS null;
 UPDATE `sl_customer_delivery_info` SET company_id = '2d9c18e2454e4708a23e1a80f089332d' WHERE company_id IS null;
+
+
+-- ----------------------------
+-- 新增统计表
+-- ----------------------------
+DROP TABLE IF EXISTS `sl_report`;
+CREATE TABLE `sl_report`  (
+  `id` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `code` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `content` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `create_time` datetime(0) NULL DEFAULT NULL,
+  `update_time` datetime(0) NULL DEFAULT NULL,
+  `create_by` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `update_by` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `row_sts` int(11) NULL DEFAULT NULL,
+  `sort` int(11) NULL DEFAULT NULL,
+  `company_id` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '企业ID',
+  `tableName` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '表名称',
+  `functionTypeId` int(11) NULL DEFAULT NULL COMMENT '函数类型',
+  `functionColumn` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '函数字段',
+  `aggColumn` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '聚合字段',
+  `condition` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '条件',
+  `orderColumn` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '排序列',
+  `pageType` int(11) NULL DEFAULT NULL COMMENT '归属页面',
+  `showType` int(11) NULL DEFAULT NULL COMMENT '展示方式',
+  `limitNum` int(11) NULL DEFAULT NULL COMMENT '展示行数'
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Compact;
+
+SET FOREIGN_KEY_CHECKS = 1;
