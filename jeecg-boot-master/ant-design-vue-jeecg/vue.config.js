@@ -2,7 +2,7 @@ const path = require('path')
 const CompressionWebpackPlugin = require('compression-webpack-plugin')
 const productionGzipExtensions = ['js', 'css']
 const webpack = require('webpack')
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+// const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
 function resolve(dir) {
   return path.join(__dirname, dir)
@@ -24,16 +24,16 @@ module.exports = {
     plugins: [
       // Ignore all locale files of moment.js
       new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
-      new UglifyJsPlugin({
-        uglifyOptions: {
-          compress: {
-            drop_debugger: true,
-            drop_console: true
-          }
-        },
-        sourceMap: false,
-        parallel: true
-      }),
+      // new UglifyJsPlugin({
+      //   uglifyOptions: {
+      //     compress: {
+      //       drop_debugger: true,
+      //       drop_console: true
+      //     }
+      //   },
+      //   sourceMap: false,
+      //   parallel: true
+      // }),
       // 配置compression-webpack-plugin压缩
       new CompressionWebpackPlugin({
         algorithm: 'gzip',

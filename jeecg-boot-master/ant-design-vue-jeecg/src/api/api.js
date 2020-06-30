@@ -256,6 +256,13 @@ const logisticsOrderDtlDelete = (params)=>deleteAction("/logisticsOrderDtl/delet
 const saveServiceInstitution = (params)=>postAction("/serviceInstitution/save", params)
 const getServiceInstitutionList =  (params)=>getAction("/serviceInstitution/getList",params)
 const searchInstitution = (params)=>getAction("/serviceInstitution/search",params)
+
+
+// 统计报表
+const getReportList = (params)=>getAction("/report/getList",params) //统计报表 列表
+const reportQueryById = (params)=>getAction("/report/queryById",params) // 查询单个统计报表信息
+const reportDelete = (params)=>deleteAction("/report/delete",params)  // 删除统计报表信息
+
 export {
   // imgView,
   // doMian,
@@ -431,7 +438,10 @@ export {
   saveServiceInstitution,
   getServiceInstitutionList,
   searchInstitution,
-  handleSaleOrderCost
+  handleSaleOrderCost,
+  getReportList,
+  reportQueryById,
+  reportDelete
 }
 
 
