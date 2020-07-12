@@ -5,20 +5,17 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.aspect.annotation.PermissionData;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.LoginUser;
-import org.jeecg.modules.basic.dto.CustomerEditDto;
+import org.jeecg.common.util.LoginUtils;
 import org.jeecg.modules.basic.entity.*;
 import org.jeecg.common.enums.BillType;
 import org.jeecg.common.enums.EnumConvertUtils;
@@ -45,8 +42,6 @@ public class CustomerController {
     @Autowired
     private CustomerService customerService;
     @Autowired
-    private CustomerDeliveryInfoService customerDeliveryInfoService;
-    @Autowired
     private CustomerSourceService customerSourceService;
     @Autowired
     private CustomerTypeService customerTypeService;
@@ -55,9 +50,7 @@ public class CustomerController {
     @Autowired
     private ISysDictService iSysDictService;
     @Autowired
-    private AreaService areaService;
-    @Autowired
-    private LogisticsCompanyService logisticsCompanyService;
+    private AddressService addressService;
 
     /**
      * 获取所有数据
@@ -114,48 +107,34 @@ public class CustomerController {
     /**
      * 添加
      *
-     * @param customerEditDto
+     * @param customer
      * @return
      */
     @PostMapping(value = "/save")
     @AutoLog(value = "添加客户")
     @ApiOperation(value = "添加客户", notes = "添加客户")
-    public Result<?> add(@RequestBody CustomerEditDto customerEditDto) throws Exception {
-        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-        if (StringUtils.isBlank(customerEditDto.getCompanyId())) {
-            customerEditDto.setCompanyId(sysUser.getCompanyId());
+    public Result<?> add(@RequestBody Customer customer) throws Exception {
+        LoginUser sysUser = LoginUtils.getLoginUser();
+        if (StringUtils.isBlank(customer.getCompanyId())) {
+            customer.setCompanyId(sysUser.getCompanyId());
         }
-        Customer customer = new Customer();
-        BeanUtils.copyProperties(customer, customerEditDto);
-        customer.setId(customerEditDto.getId());
+        if (null != customer.getRowSts()) {
+            customer.setRowSts(RowSts.EFFECTIVE.getId());
+        }
         Customer exists = null;
-        if (StringUtils.isEmpty(customerEditDto.getId())) {
+        if (StringUtils.isEmpty(customer.getId())) {
             customer.setCode(billCodeBuilderService.getBillCode(BillType.CUSTOMER.getId()));
                 LambdaQueryWrapper<Customer> lambdaQueryWrapper = new LambdaQueryWrapper<Customer>().eq(Customer::getCode, customer.getCode());
-            lambdaQueryWrapper.eq(Customer::getCompanyId, customerEditDto.getCompanyId());
+            lambdaQueryWrapper.eq(Customer::getCompanyId, customer.getCompanyId());
             exists = customerService.getOne(lambdaQueryWrapper);
         } else {
-            customer.setCode(customerEditDto.getCode());
+            customer.setCode(customer.getCode());
             LambdaQueryWrapper<Customer> lambdaQueryWrapper = new LambdaQueryWrapper<Customer>().eq(Customer::getCode, customer.getCode()).ne(Customer::getId, customer.getId());
-            lambdaQueryWrapper.eq(Customer::getCompanyId, customerEditDto.getCompanyId());
+            lambdaQueryWrapper.eq(Customer::getCompanyId, customer.getCompanyId());
             exists = customerService.getOne(lambdaQueryWrapper);
         }
         Assert.isNull(exists, "编号已存在！");
         customerService.saveOrUpdate(customer);
-        CustomerDeliveryInfo cdi = new CustomerDeliveryInfo();
-        BeanUtils.copyProperties(cdi,customerEditDto);
-        cdi.setCdiSourceId(customer.getId());
-        cdi.setId(customerEditDto.getCdiId());
-        cdi.setCreateBy(customerEditDto.getCdiCreateBy());
-        cdi.setCreateTime(customerEditDto.getCdiCreateTime());
-        cdi.setUpdateBy(customerEditDto.getCdiUpdateBy());
-        cdi.setUpdateTime(customerEditDto.getCdiUpdateTime());
-        cdi.setCode(customerEditDto.getCdiCode());
-        cdi.setName(customerEditDto.getCdiName());
-        cdi.setRowSts(customerEditDto.getCdiRowSts());
-        cdi.setSort(customerEditDto.getCdiSort());
-        cdi.setCode(customerEditDto.getCdiContent());
-        customerDeliveryInfoService.saveOrUpdate(cdi);
         return Result.ok("添加成功！");
     }
 
@@ -184,7 +163,7 @@ public class CustomerController {
     @ApiOperation(value = "通过ID删除客户", notes = "通过ID删除客户")
     public Result<?> delete(@RequestParam(name = "id", required = true) String id) {
         customerService.removeById(id);
-        customerDeliveryInfoService.remove(new QueryWrapper<CustomerDeliveryInfo>().lambda().eq(CustomerDeliveryInfo::getCdiSourceId, id));
+        addressService.remove(new QueryWrapper<Address>().lambda().eq(Address::getSourceId, id));
         return Result.ok("删除成功!");
     }
 
@@ -198,7 +177,7 @@ public class CustomerController {
     @ApiOperation(value = "批量删除客户", notes = "批量删除客户")
     public Result<?> deleteBatch(@RequestParam(name = "ids", required = true) String ids) {
         this.customerService.removeByIds(Arrays.asList(ids.split(",")));
-        customerDeliveryInfoService.remove(new LambdaQueryWrapper<CustomerDeliveryInfo>().in(CustomerDeliveryInfo::getCdiSourceId, Arrays.asList(ids.split(","))));
+        addressService.remove(new LambdaQueryWrapper<Address>().in(Address::getSourceId, Arrays.asList(ids.split(","))));
         return Result.ok("批量删除成功！");
     }
 
@@ -223,43 +202,9 @@ public class CustomerController {
         if (StringUtils.isNotBlank(customer.getDiscountTypeId())) {
             customer.setDiscountType(iSysDictService.queryDictTextByKey("discount_type", customer.getDiscountTypeId()));
         }
-        customer.setFullAddress(getFullAddress(customer.getProvince(), customer.getCity(), customer.getDistrict(), customer.getAddress()));
         return Result.ok(customer);
     }
 
-    @GetMapping(value = "/getDeliveryInfo")
-    @ApiModelProperty(value = "查询收货信息", notes = "查询收货信息")
-    public Result<?> getDeliveryInfo(CustomerDeliveryInfo info, HttpServletRequest req){
-        CustomerDeliveryInfo result = customerDeliveryInfoService.getOne(QueryGenerator.initQueryWrapper(info, req.getParameterMap()));
-        result.setCdiDefaultTypeName(iSysDictService.queryDictTextByKey("delivery_type", result.getCdiDefaultType()));
-        result.setCdiFullAddress(getFullAddress(result.getCdiProvince(), result.getCdiCity(), result.getCdiDistrict(), result.getCdiAddress()));
-        if (StringUtils.isNotBlank(result.getCdiLogisticsId())){
-            LogisticsCompany lc = logisticsCompanyService.getById(result.getCdiLogisticsId());
-            result.setCdiLogisticsName(lc.getName());
-        }
-        return Result.ok(result);
-    }
-
-    private String getFullAddress(String provinceId, String cityId, String districtId, String address) {
-
-        StringBuilder stringBuilder = new StringBuilder();
-        if (StringUtils.isNotBlank(provinceId)) {
-            Area province = areaService.getById(provinceId);
-            stringBuilder.append(null != province ? province.getName() : "");
-        }
-        if (StringUtils.isNotBlank(cityId)) {
-            Area city = areaService.getById(cityId);
-            stringBuilder.append(null != city ? city.getName() : "");
-        }
-        if (StringUtils.isNotBlank(districtId)) {
-            Area district = areaService.getById(districtId);
-            stringBuilder.append(null != district ? district.getName() : "");
-        }
-        if (StringUtils.isNotBlank(address)) {
-            stringBuilder.append(address);
-        }
-        return stringBuilder.toString();
-    }
     /**
      * 搜索客户
      *

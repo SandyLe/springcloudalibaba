@@ -50,10 +50,10 @@ public class Customer extends CBasicEntity {
     private String email;
     @ApiModelProperty("传真")
     private String fax;
+    @ApiModelProperty("开票抬头")
+    private String billTitle;
     @ApiModelProperty("银行账号")
     private String bankaccount;
-    @ApiModelProperty("银行账户")
-    private String bankacctName;
     @ApiModelProperty("银行名称")
     private String bankName;
     @ApiModelProperty("默认折扣")
@@ -62,20 +62,10 @@ public class Customer extends CBasicEntity {
     private String discountTypeId;
     @TableField(exist=false)
     private String discountType;
-    @ApiModelProperty("省")
-    private String province;
-    @ApiModelProperty("市")
-    private String city;
-    @ApiModelProperty("区")
-    private String district;
-    @ApiModelProperty("详细地址")
-    private String address;
-    @ApiModelProperty("开票信息")
-    private String billingInfo;
-    @TableField(exist=false)
-    private String fullAddress;
     @TableField(exist=false)
     private String info;
+    @ApiModelProperty("税号")
+    private String taxNo;
 
     public String getCustomerTypeId() {
         return customerTypeId;
@@ -221,14 +211,6 @@ public class Customer extends CBasicEntity {
         this.bankaccount = bankaccount;
     }
 
-    public String getBankacctName() {
-        return bankacctName;
-    }
-
-    public void setBankacctName(String bankacctName) {
-        this.bankacctName = bankacctName;
-    }
-
     public String getBankName() {
         return bankName;
     }
@@ -253,46 +235,6 @@ public class Customer extends CBasicEntity {
         this.discountTypeId = discountTypeId;
     }
 
-    public String getProvince() {
-        return province;
-    }
-
-    public void setProvince(String province) {
-        this.province = province;
-    }
-
-    public String getCity() {
-        return city;
-    }
-
-    public void setCity(String city) {
-        this.city = city;
-    }
-
-    public String getDistrict() {
-        return district;
-    }
-
-    public void setDistrict(String district) {
-        this.district = district;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public String getBillingInfo() {
-        return billingInfo;
-    }
-
-    public void setBillingInfo(String billingInfo) {
-        this.billingInfo = billingInfo;
-    }
-
     public String getGenderName() {
         return genderName;
     }
@@ -309,12 +251,20 @@ public class Customer extends CBasicEntity {
         this.discountType = discountType;
     }
 
-    public String getFullAddress() {
-        return fullAddress;
+    public String getTaxNo() {
+        return taxNo;
     }
 
-    public void setFullAddress(String fullAddress) {
-        this.fullAddress = fullAddress;
+    public void setTaxNo(String taxNo) {
+        this.taxNo = taxNo;
+    }
+
+    public String getBillTitle() {
+        return billTitle;
+    }
+
+    public void setBillTitle(String billTitle) {
+        this.billTitle = billTitle;
     }
 
     public String getInfo() {
