@@ -176,6 +176,7 @@ const viewInventoryLog = (params)=>getAction("/inventoryLog/getList",params)
 const getDiscountTypeList = (params)=>getAction("/basic/fc/enum/discountType/getList",params)
 const getBillTypeList = (params)=>getAction("/basic/fc/enum/billType/getList",params)
 const getDateFmtList = (params)=>getAction("/basic/fc/enum/dateFormat/getList",params)
+const getAddressTypeList = (params)=>getAction("/basic/fc/enum/addressType/getList",params)
 
 const loadShopData = (params)=>getAction("/sys/sysDepart/getSysDepartList",params)
 const getAllUser = (params)=>getAction("/sys/user/getAll",params)
@@ -256,6 +257,13 @@ const logisticsOrderDtlDelete = (params)=>deleteAction("/logisticsOrderDtl/delet
 const saveServiceInstitution = (params)=>postAction("/serviceInstitution/save", params)
 const getServiceInstitutionList =  (params)=>getAction("/serviceInstitution/getList",params)
 const searchInstitution = (params)=>getAction("/serviceInstitution/search",params)
+
+// 地址
+const addAddress = (params)=>postAction("/address/add", params)
+const getAddressOne = (params)=>getAction("/address/getOne",params)
+const editAddress = (params)=>postAction("/address/edit",params)
+const getAddressList = (params)=>getAction("/address/getList",params)
+
 export {
   // imgView,
   // doMian,
@@ -431,7 +439,12 @@ export {
   saveServiceInstitution,
   getServiceInstitutionList,
   searchInstitution,
-  handleSaleOrderCost
+  handleSaleOrderCost,
+  getAddressTypeList,
+  addAddress,
+  editAddress,
+  getAddressOne,
+  getAddressList
 }
 
 

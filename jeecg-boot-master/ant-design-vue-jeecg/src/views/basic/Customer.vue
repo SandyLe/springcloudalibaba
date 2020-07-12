@@ -206,7 +206,7 @@
     },
     methods: {
       goDetail(id) {
-        this.$router.push({ name: "customer-customerEdit", query: {"id": id}})
+        this.$router.push({ name: "customer-customerDetail", query: {"id": id}})
       }
     }
   }
