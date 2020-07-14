@@ -52,6 +52,32 @@ public class LoginController {
 
 	private static final String BASE_CHECK_CODES = "qwertyuiplkjhgfdsazxcvbnmQWERTYUPLKJHGFDSAZXCVBNM1234567890";
 
+	@ApiOperation("自动登录接口")
+	@RequestMapping(value = "/autoLogin", method = RequestMethod.POST)
+	public Result<JSONObject> autoLogin(HttpServletRequest request,HttpServletResponse response){
+		Result<JSONObject> result = new Result<JSONObject>();
+
+		String refreshToken = request.getHeader(DefContants.X_ACCESS_REFRESH_TOKEN);
+		if (oConvertUtils.isNotEmpty(refreshToken)){
+			String refreshUsername = JwtUtil.getClaimname(refreshToken,JwtUtil.REFRESH_CLAIM_NAME);
+
+			SysUser sysUser = sysUserService.getUserByName(refreshUsername);
+			if (sysUser != null){
+				userInfo(sysUser, result, false);
+				sysBaseAPI.addLog("用户名: " + refreshUsername + ",登录成功！", CommonConstant.LOG_TYPE_1, null);
+
+				return result;
+			}
+			else {
+				result.error500("X-Access-Refresh-Token信息有误");
+			}
+		}
+		else{
+			result.error500("X-Access-Refresh-Token不存在");
+		}
+		return result;
+	}
+
 	@ApiOperation("登录接口")
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
 	public Result<JSONObject> login(@RequestBody SysLoginModel sysLoginModel){
@@ -91,7 +117,7 @@ public class LoginController {
 		}
 
 		//用户登录信息
-		userInfo(sysUser, result);
+		userInfo(sysUser, result, sysLoginModel.getRememberMe());
 		sysBaseAPI.addLog("用户名: " + username + ",登录成功！", CommonConstant.LOG_TYPE_1, null);
 
 		return result;
@@ -106,7 +132,8 @@ public class LoginController {
 	@RequestMapping(value = "/logout")
 	public Result<Object> logout(HttpServletRequest request,HttpServletResponse response) {
 		//用户退出逻辑
-	    String token = request.getHeader(DefContants.X_ACCESS_TOKEN);
+		String token = request.getHeader(DefContants.X_ACCESS_TOKEN);
+
 	    if(oConvertUtils.isEmpty(token)) {
 	    	return Result.error("退出登录失败！");
 	    }
@@ -119,6 +146,13 @@ public class LoginController {
 	    	redisUtil.del(CommonConstant.PREFIX_USER_TOKEN + token);
 	    	//清空用户登录Shiro权限缓存
 	    	redisUtil.del(CommonConstant.PREFIX_USER_SHIRO_CACHE + sysUser.getId());
+
+	    	// 如果有 refreshToken，则删除缓存
+			String refreshToken = request.getHeader(DefContants.X_ACCESS_REFRESH_TOKEN);
+			if (oConvertUtils.isNotEmpty(refreshToken)){
+				redisUtil.del(CommonConstant.PREFIX_USER_REFRESH_TOKEN + refreshToken);
+			}
+
 	    	return Result.ok("退出登录成功！");
 	    }else {
 	    	return Result.error("Token无效!");
@@ -301,7 +335,7 @@ public class LoginController {
 			return result;
 		}
 		//用户信息
-		userInfo(sysUser, result);
+		userInfo(sysUser, result, false);
 		//添加日志
 		sysBaseAPI.addLog("用户名: " + sysUser.getUsername() + ",登录成功！", CommonConstant.LOG_TYPE_1, null);
 
@@ -316,7 +350,7 @@ public class LoginController {
 	 * @param result
 	 * @return
 	 */
-	private Result<JSONObject> userInfo(SysUser sysUser, Result<JSONObject> result) {
+	private Result<JSONObject> userInfo(SysUser sysUser, Result<JSONObject> result, boolean rememberMe) {
 		String syspassword = sysUser.getPassword();
 		String username = sysUser.getUsername();
 		// 生成token
@@ -344,6 +378,12 @@ public class LoginController {
 		loginUser.setCompany(sysDepart.getDepartName());
 		loginUser.setCompanyAvatar(sysDepart.getAvatar());
 		loginUser.setCompanyEn(sysDepart.getDepartNameEn());
+		if (rememberMe){
+			String refreshToken = JwtUtil.sign(username, syspassword, JwtUtil.MONTH_EXPIRE_TIME, JwtUtil.REFRESH_CLAIM_NAME);
+			redisUtil.set(CommonConstant.PREFIX_USER_REFRESH_TOKEN + refreshToken, refreshToken);
+			redisUtil.expire(CommonConstant.PREFIX_USER_REFRESH_TOKEN + refreshToken, JwtUtil.MONTH_EXPIRE_TIME);
+			obj.put("refreshtoken", refreshToken);
+		}
 		obj.put("token", token);
 		obj.put("userInfo", loginUser);
 		result.setResult(obj);

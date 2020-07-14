@@ -28,6 +28,12 @@ public class JwtUtil {
 
 	// Token过期时间30分钟（用户登录过期时间是此时间的两倍，以token在reids缓存时间为准）
 	public static final long EXPIRE_TIME = 30 * 60 * 1000;
+	// 一个月的过期时间
+	public static final long MONTH_EXPIRE_TIME = 30 * 24 * 60 * 60 * 1000;
+	// 默认claim名称
+	public static final String DEFAULT_CLAIM_NAME = "username";
+	// token自动登录
+	public static final String REFRESH_CLAIM_NAME = "refreshname";
 
 	/**
 	 * 校验token是否正确
@@ -37,10 +43,23 @@ public class JwtUtil {
 	 * @return 是否正确
 	 */
 	public static boolean verify(String token, String username, String secret) {
+		return verify(token, username, secret, DEFAULT_CLAIM_NAME);
+		/*try {
+			// 根据密码生成JWT效验器
+			Algorithm algorithm = Algorithm.HMAC256(secret);
+			JWTVerifier verifier = JWT.require(algorithm).withClaim(DEFAULT_CLAIM_NAME, username).build();
+			// 效验TOKEN
+			DecodedJWT jwt = verifier.verify(token);
+			return true;
+		} catch (Exception exception) {
+			return false;
+		}*/
+	}
+	public static boolean verify(String token, String username, String secret, String claimanme) {
 		try {
 			// 根据密码生成JWT效验器
 			Algorithm algorithm = Algorithm.HMAC256(secret);
-			JWTVerifier verifier = JWT.require(algorithm).withClaim("username", username).build();
+			JWTVerifier verifier = JWT.require(algorithm).withClaim(claimanme, username).build();
 			// 效验TOKEN
 			DecodedJWT jwt = verifier.verify(token);
 			return true;
@@ -55,9 +74,18 @@ public class JwtUtil {
 	 * @return token中包含的用户名
 	 */
 	public static String getUsername(String token) {
+		return getClaimname(token, DEFAULT_CLAIM_NAME);
+		/*try {
+			DecodedJWT jwt = JWT.decode(token);
+			return jwt.getClaim(DEFAULT_CLAIM_NAME).asString();
+		} catch (JWTDecodeException e) {
+			return null;
+		}*/
+	}
+	public static String getClaimname(String token, String claimname) {
 		try {
 			DecodedJWT jwt = JWT.decode(token);
-			return jwt.getClaim("username").asString();
+			return jwt.getClaim(claimname).asString();
 		} catch (JWTDecodeException e) {
 			return null;
 		}
@@ -71,11 +99,13 @@ public class JwtUtil {
 	 * @return 加密的token
 	 */
 	public static String sign(String username, String secret) {
-		Date date = new Date(System.currentTimeMillis() + EXPIRE_TIME);
+		return sign(username, secret, EXPIRE_TIME,DEFAULT_CLAIM_NAME);
+	}
+	public static String sign(String username, String secret,long expiretime, String claimname) {
+		Date date = new Date(System.currentTimeMillis() + expiretime);
 		Algorithm algorithm = Algorithm.HMAC256(secret);
 		// 附带username信息
-		return JWT.create().withClaim("username", username).withExpiresAt(date).sign(algorithm);
-
+		return JWT.create().withClaim(claimname, username).withExpiresAt(date).sign(algorithm);
 	}
 
 	/**

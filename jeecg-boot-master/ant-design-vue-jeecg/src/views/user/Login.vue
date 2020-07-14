@@ -47,6 +47,9 @@
             </a-col>
           </a-row>
 
+          <a-form-item>
+            <a-checkbox v-model="formLogin.rememberMe">自动登陆</a-checkbox>
+          </a-form-item>
 
         </a-tab-pane>
         <!--<a-tab-pane key="tab2" tab="手机号登陆">
@@ -85,7 +88,6 @@
       </a-tabs>
 
       <!--<a-form-item>
-        <a-checkbox v-model="formLogin.rememberMe">自动登陆</a-checkbox>
         <router-link :to="{ name: 'alteration'}" class="forge-password" style="float: right;">
           忘记密码
         </router-link>
@@ -172,13 +174,12 @@
   import { mapActions } from "vuex"
   import { timeFix } from "@/utils/util"
   import Vue from 'vue'
-  import { ACCESS_TOKEN ,ENCRYPTED_STRING} from "@/store/mutation-types"
+  import { ACCESS_TOKEN ,ENCRYPTED_STRING, USER_INFO, REFRESH_ACCESS_TOKEN } from "@/store/mutation-types"
   import JGraphicCode from '@/components/jeecg/JGraphicCode'
   import { putAction } from '@/api/manage'
   import { postAction } from '@/api/manage'
   import { encryption , getEncryptedString } from '@/utils/encryption/aesEncrypt'
   import store from '@/store/'
-  import { USER_INFO } from "@/store/mutation-types"
 
   export default {
     components: {
@@ -229,13 +230,14 @@
     },
     created () {
       Vue.ls.remove(ACCESS_TOKEN)
+      this.preAutoLogin();
       this.getRouterData();
       // update-begin- --- author:scott ------ date:20190805 ---- for:密码加密逻辑暂时注释掉，有点问题
       //this.getEncrypte();
       // update-end- --- author:scott ------ date:20190805 ---- for:密码加密逻辑暂时注释掉，有点问题
     },
     methods: {
-      ...mapActions([ "Login", "Logout","PhoneLogin" ]),
+      ...mapActions([ "Login", "Logout","PhoneLogin", "AutoLogin" ]),
       // handler
       handleUsernameOrEmail (rule, value, callback) {
         const regex = /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+((\.[a-zA-Z0-9_-]{2,3}){1,2})$/;
@@ -253,7 +255,7 @@
       handleSubmit () {
         let that = this
         let loginParams = {
-          remember_me: that.formLogin.rememberMe
+          rememberMe: that.formLogin.rememberMe
         };
         that.loginBtn = true;
         // 使用账户密码登陆
@@ -458,16 +460,26 @@
         this.validate_status='success'
         this.departSelected = value
       },
-    getRouterData(){
-      this.$nextTick(() => {
-        this.form.setFieldsValue({
-        'username': this.$route.params.username
-      });
-    })
+      preAutoLogin(){
+        let that = this
+        if(Vue.ls.get(REFRESH_ACCESS_TOKEN)){
+          that.AutoLogin().then((res)=>{
+            console.log(res);
+            that.departConfirm(res)
+          })
+        }
+        
+      },
+      getRouterData(){
+        this.$nextTick(() => {
+          this.form.setFieldsValue({
+          'username': this.$route.params.username
+        });
+      })
     },
     //获取密码加密规则
     getEncrypte(){
-      var encryptedString = Vue.ls.get(ENCRYPTED_STRING);
+      var encryptedString = Vue.ls.get(REFRESH_ACCESS_TOKEN);
       if(encryptedString == null){
         getEncryptedString().then((data) => {
           this.encryptedString = data

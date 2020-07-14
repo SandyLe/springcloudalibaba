@@ -68,6 +68,7 @@
   import DepartSelect from './DepartSelect'
   import { mapActions, mapGetters } from 'vuex'
   import { mixinDevice } from '@/utils/mixin.js'
+  import { REFRESH_ACCESS_TOKEN } from "@/store/mutation-types"
 
   export default {
     name: "UserMenu",
@@ -100,8 +101,12 @@
           content: '真的要注销登录吗 ?',
           onOk() {
             return that.Logout({}).then(() => {
+              console.log(REFRESH_ACCESS_TOKEN);
+              console.log(that.$ls);
+              that.$ls.remove(REFRESH_ACCESS_TOKEN);
+              console.log('222222222222222222222222222222222222222');
+              // Vue.ls.
                 window.location.href="/";
-              //window.location.reload()
             }).catch(err => {
               that.$message.error({
                 title: '错误',
