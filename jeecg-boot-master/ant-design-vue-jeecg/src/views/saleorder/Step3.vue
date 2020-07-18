@@ -1,527 +1,210 @@
 <template>
   <div>
-    <a-form style="max-width: 500px; margin: 40px auto 0;" :form="form">
-      <a-alert
-        :closable="true"
-        message="填写发货信息后，在出库管理中完成出库操作。"
-        style="margin-bottom: 24px;"
-      />
-      <a-form-item
-        label="出货仓库"
-        :labelCol="{span: 5}"
-        :wrapperCol="{span: 19}"
-        class="stepFormText"
-      >
-        <a-select v-decorator="['warehouseId', {}]" placeholder="请选择仓库" showSearch optionFilterProp="children"
-                  notFoundContent="没有匹配的仓库" :disabled="unEditable">
-          <a-select-option value="">请选择</a-select-option>
-          <a-select-option v-for="(item, key) in warehouseList" :key="key" :value="item.id">
-                    <span style="display: inline-block;width: 100%" :title=" item.name || item.code ">
-                      {{ item.name || item.code }}
-                    </span>
-          </a-select-option>
-        </a-select>
-      </a-form-item>
-      <a-form-item
-        label="发货时间"
-        :labelCol="{span: 5}"
-        :wrapperCol="{span: 19}"
-        class="stepFormText"
-      >
-        <a-date-picker showTime format='YYYY-MM-DD HH:mm:ss' v-decorator="[ 'deliveryTime', {}]" :disabled="unEditable"/>
-      </a-form-item>
-      <a-form-item
-        label="安装时间"
-        :labelCol="{span: 5}"
-        :wrapperCol="{span: 19}"
-        class="stepFormText"
-      >
-        <a-date-picker showTime format='YYYY-MM-DD HH:mm:ss' v-decorator="[ 'installTime', {}]" :disabled="unEditable"/>
-      </a-form-item>
+    <a-form style="margin: 40px auto 0;">
+      <result title="操作成功" :is-success="true" description="销售订单录入完成，请在库存管理中销售出库完成出库操作">
+        <div class="information" id="information">
+          <a-alert
+            :closable="false"
+            message="产品销售订单"
+            style="margin-bottom: 24px; text-align: center; font-weight: bolder"
+          />
+          <table class="saleordertableclass">
+            <a-row>
+              <a-col :sm="4" :xs="4">销售单号：</a-col>
+              <a-col :sm="8" :xs="8">{{saleOrder.code}}</a-col>
+              <a-col :sm="4" :xs="4">单据时间：</a-col>
+              <a-col :sm="8" :xs="8">{{this.saleOrder.billDate}}</a-col>
+            </a-row>
+            <a-row>
+              <a-col :sm="4" :xs="4">客户名称：</a-col>
+              <a-col :sm="8" :xs="8">{{saleOrder.customer}}</a-col>
+              <a-col :sm="4" :xs="4">渠道：</a-col>
+              <a-col :sm="8" :xs="8">{{this.saleOrder.channel}}</a-col>
+            </a-row>
+            <a-row>
+              <a-col :sm="4" :xs="4">出货仓库：</a-col>
+              <a-col :sm="8" :xs="8">{{saleOrder.warehouse}}</a-col>
+              <a-col :sm="4" :xs="4">发货时间：</a-col>
+              <a-col :sm="8" :xs="8">{{this.saleOrder.deliveryTime}}</a-col>
+            </a-row>
+            <a-row>
+              <a-col :sm="4" :xs="4">安装时间：</a-col>
+              <a-col :sm="8" :xs="8">{{this.saleOrder.installTime}}</a-col>
+              <a-col :sm="4" :xs="4">订单金额：</a-col>
+              <a-col :sm="8" :xs="8"><span class="money">{{saleOrder.totalamount}}</span> 元</a-col>
+            </a-row>
+          </table>
 
-      <a-card class="card" title="收货信息" :bordered="true">
-        <a-row>
-          <a-col :md="24" :sm="24">
-            <a-form-item
-              :labelCol="labelCol"
-              :wrapperCol="wrapperCol"
-              label="默认收货方式"
-              label-width="4">
-              <a-input style="display: none" v-decorator="[ 'cdiId', validatorRules.cdiId]" />
-              <a-input style="display: none" v-decorator="[ 'cdiCreateTime', validatorRules.cdiCreateTime]" />
-              <a-input style="display: none" v-decorator="[ 'cdiUpdateTime', validatorRules.cdiUpdateTime]" />
-              <a-input style="display: none" v-decorator="[ 'cdiCreateBy', validatorRules.cdiCreateBy]" />
-              <a-input style="display: none" v-decorator="[ 'cdiUpdateBy', validatorRules.cdiUpdateBy]" />
-              <j-dict-select-tag v-decorator="['cdiDefaultType', {}]" @change="deliveryChange" placeholder="请选择默认发货方式" :type="'select'" :triggerChange="true" dictCode="delivery_type" :disabled="unEditable"/>
-            </a-form-item>
-          </a-col>
-        </a-row>
-        <template v-if="cdiDefaultType === 'ZHIDINGDIAN'">
-          <a-row>
-            <a-col :md="8" :sm="8">
-              <a-form-item
-                :labelCol="labelCol"
-                :wrapperCol="wrapperCol"
-                label="说明"
-                label-width="4">
-                <a-input placeholder="请输入说明" v-decorator="[ 'cdiDescription', validatorRules.cdiDescription]" :disabled="unEditable" />
-              </a-form-item>
-            </a-col>
-            <a-col :md="8" :sm="8">
-              <a-form-item
-                :labelCol="labelCol"
-                :wrapperCol="wrapperCol"
-                label="联系人"
-                label-width="4">
-                <a-input placeholder="请输入联系人" v-decorator="[ 'cdiLinkman', validatorRules.cdiLinkman]" :disabled="unEditable" />
-              </a-form-item>
-            </a-col>
-            <a-col :md="8" :sm="8">
-              <a-form-item
-                :labelCol="labelCol"
-                :wrapperCol="wrapperCol"
-                label="联系电话"
-                label-width="4">
-                <a-input placeholder="请输入联系电话" v-decorator="[ 'cdiPhone', validatorRules.cdiPhone]" :disabled="unEditable" />
-              </a-form-item>
-            </a-col>
-          </a-row>
-        </template>
-        <template v-if="cdiDefaultType === 'SONGCHE'">
-          <a-row>
-            <a-col :md="8" :sm="8">
-              <a-form-item
-                :labelCol="labelCol"
-                :wrapperCol="wrapperCol"
-                label="车牌"
-                label-width="4">
-                <a-input placeholder="请输入车牌号" v-decorator="[ 'cdiCarLicense', validatorRules.cdiCarLicense]" :disabled="unEditable"/>
-              </a-form-item>
-            </a-col>
-            <a-col :md="8" :sm="8">
-              <a-form-item
-                :labelCol="labelCol"
-                :wrapperCol="wrapperCol"
-                label="司机姓名"
-                label-width="4">
-                <a-input placeholder="请输入司机姓名" v-decorator="[ 'cdiLinkman', validatorRules.cdiLinkman]" :disabled="unEditable" />
-              </a-form-item>
-            </a-col>
-            <a-col :md="8" :sm="8">
-              <a-form-item
-                :labelCol="labelCol"
-                :wrapperCol="wrapperCol"
-                label="司机电话"
-                label-width="4">
-                <a-input placeholder="请输入司机电话" v-decorator="[ 'cdiPhone', validatorRules.cdiPhone]" :disabled="unEditable" />
-              </a-form-item>
-            </a-col>
-          </a-row>
-          <a-row>
-            <a-col :md="8" :sm="8">
-              <a-form-item
-                :labelCol="labelCol"
-                :wrapperCol="wrapperCol"
-                label="发货地址"
-                label-width="4">
-                <a-input placeholder="请输入发货地址" v-decorator="[ 'cdiDeliveryAddress', validatorRules.cdiDeliveryAddress]" :disabled="unEditable" />
-              </a-form-item>
-            </a-col>
-            <a-col :md="8" :sm="8">
-              <a-form-item
-                :labelCol="labelCol"
-                :wrapperCol="wrapperCol"
-                label="收件人"
-                label-width="4">
-                <a-input placeholder="请输入收件人" v-decorator="[ 'cdiRecipients', validatorRules.cdiRecipients]" :disabled="unEditable" />
-              </a-form-item>
-            </a-col>
-            <a-col :md="8" :sm="8">
-              <a-form-item
-                :labelCol="labelCol"
-                :wrapperCol="wrapperCol"
-                label="联系电话"
-                label-width="4">
-                <a-input placeholder="请输入联系电话" v-decorator="[ 'cdiRecipientsPhone', validatorRules.cdiRecipientsPhone]" :disabled="unEditable" />
-              </a-form-item>
-            </a-col>
-          </a-row>
-          <a-row>
-            <a-col :md="24" :sm="24">
-              <a-form-item
-                :labelCol="hlabelCol"
-                :wrapperCol="hwrapperCol"
-                label="地址">
-                <a-select v-decorator="['cdiProvince', {}]" placeholder="省" @change="areaChangeCdi" :disabled="unEditable" >
-                  <a-select-option value="">请选择</a-select-option>
-                  <a-select-option v-for="(item, key) in provinceList" :key="key" :value="item.id">
-                    <span style="display: inline-block;width: 100%" :title=" item.name || item.code ">
-                      {{ item.name || item.code }}
-                    </span>
-                  </a-select-option>
-                </a-select>
-                <a-select v-decorator="['cdiCity', {}]" placeholder="市" @change="areaChangeCdi" :disabled="unEditable" >
-                  <a-select-option value="">请选择</a-select-option>
-                  <a-select-option v-for="(item, key) in cdiCityList" :key="key" :value="item.id">
-                    <span style="display: inline-block;width: 100%" :title=" item.name || item.code ">
-                      {{ item.name || item.code }}
-                    </span>
-                  </a-select-option>
-                </a-select>
-                <a-select v-decorator="['cdiDistrict', {}]" placeholder="区、县" :disabled="unEditable">
-                  <a-select-option value="">请选择</a-select-option>
-                  <a-select-option v-for="(item, key) in cdiDistrictList" :key="key" :value="item.id">
-                    <span style="display: inline-block;width: 100%" :title=" item.name || item.code ">
-                      {{ item.name || item.code }}
-                    </span>
-                  </a-select-option>
-                </a-select>
-                <a-input placeholder="请输入详细地址" v-decorator="[ 'cdiAddress', validatorRules.cdiAddress]" :disabled="unEditable"/>
-              </a-form-item>
-            </a-col>
-          </a-row>
-        </template>
-        <template v-if="cdiDefaultType === 'WULIU'">
-          <a-row>
-            <a-col :md="8" :sm="8">
-              <a-form-item
-                :labelCol="labelCol"
-                :wrapperCol="wrapperCol"
-                label="物流"
-                label-width="4">
-                <a-select v-decorator="['cdiLogisticsId', {}]" placeholder="物流" :disabled="unEditable">
-                  <a-select-option value="">请选择</a-select-option>
-                  <a-select-option v-for="(item, key) in logistics" :key="key" :value="item.id">
-                    <span style="display: inline-block;width: 100%" :title=" item.name || item.code ">
-                      {{ item.name || item.code }}
-                    </span>
-                  </a-select-option>
-                </a-select>
-              </a-form-item>
-            </a-col>
-            <a-col :md="8" :sm="8">
-              <a-form-item
-                :labelCol="labelCol"
-                :wrapperCol="wrapperCol"
-                label="网点"
-                label-width="4">
-                <a-input placeholder="请输入网点" v-decorator="[ 'cdiBranch', validatorRules.cdiBranch]" :disabled="unEditable" />
-              </a-form-item>
-            </a-col>
-            <a-col :md="8" :sm="8">
-              <a-form-item
-                :labelCol="labelCol"
-                :wrapperCol="wrapperCol"
-                label="电话"
-                label-width="4">
-                <a-input placeholder="请输入电话" v-decorator="[ 'cdiTel', validatorRules.cdiTel]" :disabled="unEditable" />
-              </a-form-item>
-            </a-col>
-          </a-row>
-          <a-row>
-            <a-col :md="8" :sm="8">
-              <a-form-item
-                :labelCol="labelCol"
-                :wrapperCol="wrapperCol"
-                label="收件人"
-                label-width="4">
-                <a-input placeholder="请输入收件人" v-decorator="[ 'cdiRecipients', validatorRules.cdiRecipients]" :disabled="unEditable" />
-              </a-form-item>
-            </a-col>
-            <a-col :md="8" :sm="8">
-              <a-form-item
-                :labelCol="labelCol"
-                :wrapperCol="wrapperCol"
-                label="联系电话"
-                label-width="4">
-                <a-input placeholder="请输入联系电话" v-decorator="[ 'cdiRecipientsPhone', validatorRules.cdiRecipientsPhone]" :disabled="unEditable" />
-              </a-form-item>
-            </a-col>
-          </a-row>
-          <a-row>
-            <a-col :md="24" :sm="24">
-              <a-form-item
-                :labelCol="hlabelCol"
-                :wrapperCol="hwrapperCol"
-                label="地址">
-                <a-select v-decorator="['cdiProvince', {}]" placeholder="省" @change="areaChangeCdi" :disabled="unEditable" >
-                  <a-select-option value="">请选择</a-select-option>
-                  <a-select-option v-for="(item, key) in provinceList" :key="key" :value="item.id">
-                    <span style="display: inline-block;width: 100%" :title=" item.name || item.code ">
-                      {{ item.name || item.code }}
-                    </span>
-                  </a-select-option>
-                </a-select>
-                <a-select v-decorator="['cdiCity', {}]" placeholder="市" @change="areaChangeCdi" :disabled="unEditable" >
-                  <a-select-option value="">请选择</a-select-option>
-                  <a-select-option v-for="(item, key) in cdiCityList" :key="key" :value="item.id">
-                    <span style="display: inline-block;width: 100%" :title=" item.name || item.code ">
-                      {{ item.name || item.code }}
-                    </span>
-                  </a-select-option>
-                </a-select>
-                <a-select v-decorator="['cdiDistrict', {}]" placeholder="区、县" :disabled="unEditable">
-                  <a-select-option value="">请选择</a-select-option>
-                  <a-select-option v-for="(item, key) in cdiDistrictList" :key="key" :value="item.id">
-                    <span style="display: inline-block;width: 100%" :title=" item.name || item.code ">
-                      {{ item.name || item.code }}
-                    </span>
-                  </a-select-option>
-                </a-select>
-                <a-input placeholder="请输入详细地址" v-decorator="[ 'cdiAddress', validatorRules.cdiAddress]" :disabled="unEditable" />
-              </a-form-item>
-            </a-col>
-          </a-row>
-        </template>
-      </a-card>
-      <a-form-item :wrapperCol="{span: 19, offset: 5}">
-        <!--<a-button :loading="loading" @click="nextStep">提交</a-button>-->
-        <a-button style="margin-left: 8px" @click="prevStep">上一步</a-button>
-        <a-button style="margin-left: 8px" type="primary" @click="nextStep">下一步</a-button>
-      </a-form-item>
+          <div style="margin-top: 15px">
+            <div>订单产品</div>
+            <table class="saleordertableclass">
+              <thead>
+              <th>编号</th>
+              <th>产品名称</th>
+              <th>产品编码</th>
+              <th>数量</th>
+              <th>单位</th>
+              <th>单价</th>
+              <th>折扣</th>
+              <th>折扣类型</th>
+              <th>金额</th>
+              </thead>
+              <tr v-for="(item, index) in mtlDatas" style="border: dotted 1px #888888; ">
+                <td>{{index +1 }}</td>
+                <td>{{item.mtl}}</td>
+                <td>{{item.mtlCode}}</td>
+                <td>{{item.quantity}}</td>
+                <td>{{item.unit}}</td>
+                <td>{{item.price}}</td>
+                <td>{{item.discount}}</td>
+                <td>{{item.discountTypeName}}</td>
+                <td>{{item.amount}}</td>
+              </tr>
+            </table>
+          </div>
+          <div style="margin-top: 15px">
+            <div>其他费用</div>
+            <table class="saleordertableclass">
+              <thead>
+              <th>编号</th>
+              <th>费用名称</th>
+              <th>费用金额</th>
+              </thead>
+              <tr v-for="(item, index) in expenseDatas" style="border: dotted 1px #888888; ">
+                <td>{{index +1 }}</td>
+                <td>{{item.expense}}</td>
+                <td>{{item.amount}}</td>
+              </tr>
+            </table>
+          </div>
+          <div style="margin-top: 15px">
+            <div>成本</div>
+            <table class="saleordertableclass">
+              <thead>
+              <th>编号</th>
+              <th>收款方</th>
+              <th>费用名称</th>
+              <th>费用金额</th>
+              </thead>
+              <tr v-for="(item, index) in costDatas" style="border: dotted 1px #888888; ">
+                <td>{{index +1 }}</td>
+                <td>{{item.payee}}</td>
+                <td>{{item.expense}}</td>
+                <td>{{item.amount}}</td>
+              </tr>
+            </table>
+          </div>
+          <div style="margin-top: 15px">
+            <div style="border-bottom: dotted 1px #888888; ">收货信息</div>
+            <div><label>默认发货方式：</label>{{deliveryInfo.cdiDefaultTypeName}}</div>
+            <div v-if="'ZHIDINGDIAN' === deliveryInfo.cdiDefaultType">
+              <label>说明：</label>{{deliveryInfo.cdiDescription}}<br/>
+              <label>联系人：</label>{{deliveryInfo.cdiLinkman}}<br/>
+              <label>联系电话：</label>{{deliveryInfo.cdiPhone}}<br/>
+            </div>
+            <div v-if="'SONGCHE' === deliveryInfo.cdiDefaultType">
+              <label>车牌：</label>{{deliveryInfo.cdiCarLicense}}<br/>
+              <label>司机姓名：</label>{{deliveryInfo.cdiLinkman}}<br/>
+              <label>司机电话：</label>{{deliveryInfo.cdiPhone}}<br/>
+              <label>发货地址：</label>{{deliveryInfo.cdiDeliveryAddress}}<br/>
+              <label>收件人：</label>{{deliveryInfo.cdiRecipients}}<br/>
+              <label>联系电话：</label>{{deliveryInfo.cdiRecipientsPhone}}<br/>>
+              <label>地址：</label>{{deliveryInfo.cdiProvince + deliveryInfo.cdiCity + deliveryInfo.cdiDistrict + deliveryInfo.cdiAddress}}<br/>
+            </div>
+            <div v-if="'WULIU' === deliveryInfo.cdiDefaultType">
+              <label>物流：</label>{{deliveryInfo.cdiLogisticsName}}<br/>
+              <label>网点：</label>{{deliveryInfo.cdiBranch}}<br/>
+              <label>电话：</label>{{deliveryInfo.cdiTel}}<br/>
+              <label>收件人：</label>{{deliveryInfo.cdiRecipients}}<br/>
+              <label>联系电话：</label>{{deliveryInfo.cdiRecipientsPhone}}<br/>
+              <label>地址：</label>{{deliveryInfo.cdiProvince + deliveryInfo.cdiCity + deliveryInfo.cdiDistrict + deliveryInfo.cdiAddress}}<br/>
+            </div>
+          </div>
+        </div>
+        <div slot="action">
+          <a-button type="primary" @click="finish">完成</a-button>
+          <a-button style="margin-left: 8px" @click="toOrderList">订单列表</a-button>
+          <a-button style="margin-left: 8px" v-print="'#information'" ghost type="primary">打印</a-button>
+        </div>
+      </result>
     </a-form>
   </div>
 </template>
 
 <script>
+  import Result from '../result/Result'
+  import {getSaleOrderOne, getlSaleMtlList, getSaleOrderExpenseList, getSaleOrderCostList, getDeliveryInfoBySourceId} from '@/api/api'
 
-  import pick from 'lodash.pick'
-  import moment from 'moment'
-  import JDictSelectTag from '@/components/dict/JDictSelectTag.vue'
-  import {getWarehouseList,editSaleOrder, getSaleOrderOne, getAreaList, delivery, getSaleOrderDeliveryInfo, duplicateCheck, getLogisticsCompanyList } from '@/api/api'
   export default {
     name: "Step3",
-    components: {JDictSelectTag},
+    components: {
+      Result
+    },
     data () {
       return {
-        model: {},
-        dateFormat:"YYYY-MM-DD HH:mm:ss",
-        warehouseList: [],
-        labelCol: {
-          xs: { span: 24 },
-          sm: { span: 8 },
-        },
-        wrapperCol: {
-          xs: { span: 24 },
-          sm: { span: 16 },
-        },
-        hlabelCol: {
-          xs: { span: 24 },
-          xs: { span: 24 },
-          sm: { span: 2 },
-        },
-        hwrapperCol: {
-          xs: { span: 24 },
-          sm: { span: 16 },
-        },
-        form: this.$form.createForm(this),
-        validatorRules: {
-          name: {
-            rules: [
-              { min: 0, max: 126, message: '长度不超过 126 个字符', trigger: 'blur' }
-            ]
-          }
-        },
-        cdiDefaultType: '',
-        provinceList: [],
-        cityList: [],
-        districtList:[],
-        cdiCityList: [],
-        cdiDistrictList:[],
-        logistics: [],
-        unEditable: true
+        saleOrder: {},
+        loading: false,
+        expenseDatas: [],
+        costDatas: [],
+        mtlDatas: [],
+        deliveryInfo: {}
       }
     },
     methods: {
-      moment,
-      handleOk () {
-        const that = this;
-        // 触发表单验证
-        this.form.validateFields((err, values) => {
-          if (!err) {
-            if(!values.installTime){
-              values.installTime = '';
-            }else{
-              values.installTime = values.installTime.format(this.dateFormat);
-            }
-            if(!values.deliveryTime){
-              values.deliveryTime = '';
-            }else{
-              values.deliveryTime = values.deliveryTime.format(this.dateFormat);
-            }
-            that.confirmLoading = true;
-            values.sourceId = this.$route.query.id;
-            let formData = Object.assign(this.model, values);
-            let obj;
-            if(this.model.id){
-              obj=delivery(formData);
-            }
-            obj.then((res)=>{
-              if(res.success){
-                that.saleOrder.totalamount = res.result;
-                that.$message.success(res.message);
-                that.$emit('ok');
-                that.$emit('nextStep')
-              }else{
-                that.$message.warning(res.message);
-              }
-            }).finally(() => {
-              that.confirmLoading = false;
-            })
-          }
-        })
+      finish () {
+        this.$emit('finish')
       },
-      deliveryChange(val) {
-        this.cdiDefaultType = val;
-        if (val === 'SONGCHE'){
-          getAreaList({parentId:'100000'}).then((res) => {
-            if (res.success) {
-              this.provinceList = res.result
-            }
-          })
-        }
-        if (val === 'WULIU'){
-          getLogisticsCompanyList({}).then((res) => {
-            if (res.success) {
-              this.logistics = res.result
-            }
-          })
-          getAreaList({parentId:'100000'}).then((res) => {
-            if (res.success) {
-              this.provinceList = res.result
-            }
-          })
-        }
-
-      },
-      areaChangeCdi(val) {
-
-        getAreaList({parentId:val}).then((res) => {
-          if (res.success) {
-            if(res.result && res.result.length>0){
-              if(res.result[0].levelType==2){
-                this.cdiCityList = res.result;
-                this.model.cdiCity = '';
-                this.model.cdiDistrict = '';
-                this.$nextTick(() => {
-                  this.form.setFieldsValue(pick(this.model,'cdiCity', 'cdiDistrict'))
-                });
-              }else if(res.result[0].levelType==3){
-                this.cdiDistrictList = res.result;
-                this.model.cdiDistrict = '';
-                this.$nextTick(() => {
-                  this.form.setFieldsValue(pick(this.model, 'cdiDistrict'))
-                });
-              }
-            }
-          }
-        })
-      },
-      setDeliveryInfo (billId) {
-        let that = this;
-        getSaleOrderDeliveryInfo({sourceId:billId}).then((res) => {
-          if (res.success) {
-            if (res.result) {
-              let obj = res.result[0];
-              that.model.sourceId = obj.sourceId;
-              that.model.cdiSourceId = obj.cdiSourceId;
-              that.model.cdiDefaultType = obj.cdiDefaultType;
-              that.model.cdiDescription = obj.cdiDescription;
-              that.model.cdiLinkman = obj.cdiLinkman;
-              that.model.cdiPhone = obj.cdiPhone;
-              that.model.cdiDeliveryAddress = obj.cdiDeliveryAddress;
-              that.model.cdiRecipients = obj.cdiRecipients;
-              that.model.cdiRecipientsPhone = obj.cdiRecipientsPhone;
-              that.model.cdiProvince = obj.cdiProvince;
-              that.model.cdiCity = obj.cdiCity;
-              that.model.cdiDistrict = obj.cdiDistrict;
-              that.model.cdiAddress = obj.cdiAddress;
-              that.model.cdiLogisticsId = obj.cdiLogisticsId;
-              that.model.cdiBranch = obj.cdiBranch;
-              that.model.cdiTel = obj.cdiTel;
-              that.model.cdiCarLicense = obj.cdiCarLicense;
-              that.model.cdiId = obj.id;
-              that.model.warehouseId = obj.warehouseId;
-              that.deliveryChange(that.model.cdiDefaultType)
-
-              if (that.model.cdiProvince){
-                getAreaList({parentId:that.model.cdiProvince}).then((res) => {
-                  if (res.success) {
-                    if(res.result && res.result.length>0){
-                      if(res.result[0].levelType==2){
-                        this.cdiCityList = res.result;
-                      }
-                    }
-                  }
-                })
-              }
-              if (that.model.cdiCity){
-                getAreaList({parentId:that.model.cdiCity}).then((res) => {
-                  if (res.success) {
-                    if(res.result && res.result.length>0){
-                      if(res.result[0].levelType==3){
-                        this.cdiDistrictList = res.result;
-                      }
-                    }
-                  }
-                })
-              }
-              this.$nextTick(() => {
-                this.form.setFieldsValue(pick(that.model,'cdiDefaultType','cdiDescription','cdiLinkman','cdiPhone','cdiDeliveryAddress','cdiCarLicense',
-                  'cdiRecipients','cdiRecipientsPhone','cdiProvince','cdiCity','cdiDistrict','cdiAddress','cdiLogisticsId','cdiBranch','cdiTel','cdiId'));
-              });
-            }
-          }
-        })
-      },
-      nextStep () {
-        if (!this.unEditable) {
-          this.handleOk();
-        } else {
-          this.$emit('nextStep')
-        }
-      },
-      prevStep () {
-        this.$emit('prevStep')
-      },
-      updateInfo(saleOrderId) {
-        getSaleOrderOne({id: saleOrderId}).then((res) => {
-          if (res.success) {
-            this.saleOrder = res.result;
-            this.model = Object.assign({}, this.saleOrder);
-            // this.model.payamount = this.model.totalamount; // 默认填充
-            this.$nextTick(() => {
-              this.form.setFieldsValue(pick(this.model,'warehouseId'))
-              this.form.setFieldsValue({installTime: this.model.installTime ? moment(this.model.installTime) : null})
-              this.form.setFieldsValue({deliveryTime: this.model.deliveryTime ? moment(this.model.deliveryTime) : null})
-            });
-          }
-        })
-        this.setDeliveryInfo(saleOrderId);
-        getWarehouseList('').then((res) => {
-          if (res.success) {
-            this.warehouseList = res.result;
-          }
-        });
+      toOrderList () {
+        this.$router.push('/saleorder/SaleOrder')
+        this.$parent.$parent.closeRouteViewTab(this.$route.fullPath)
       }
     },
     mounted() {
       if (this.$route.query.id) {
-        this.updateInfo(this.$route.query.id);
+        getSaleOrderOne({id:this.$route.query.id}).then((res) => {
+          if (res.success) {
+            this.saleOrder = res.result;
+          }
+        })
+        getlSaleMtlList({sourceId:this.$route.query.id}).then((res) => {
+          if (res.success) {
+            this.mtlDatas = res.result;
+          }
+        })
+        getSaleOrderExpenseList({sourceId:this.$route.query.id}).then((res) => {
+          if (res.success) {
+            this.expenseDatas = res.result;
+          }
+        })
+        getSaleOrderCostList({sourceId:this.$route.query.id}).then((res) => {
+          if (res.success) {
+            this.costDatas = res.result;
+          }
+        })
+        getDeliveryInfoBySourceId({sourceId:this.$route.query.id}).then((res) => {
+          if (res.success) {
+            this.deliveryInfo = res.result;
+          }
+        })
       }
-      this.unEditable = this.$route.query.unEditable;
     }
   }
 </script>
-
 <style lang="scss" scoped>
-  .stepFormText {
-    margin-bottom: 24px;
-
-  .ant-form-item-label,
-  .ant-form-item-control {
+  .information {
     line-height: 22px;
-  }
-  }
 
+    .ant-row:not(:last-child) {
+      margin-bottom: 24px;
+    }
+  }
+  .money {
+    font-family: "Helvetica Neue",sans-serif;
+    font-weight: 500;
+    font-size: 20px;
+    line-height: 14px;
+  }
+  .saleordertableclass{
+    width: 100%;
+  }
 </style>

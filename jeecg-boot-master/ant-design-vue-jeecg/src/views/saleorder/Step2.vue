@@ -124,30 +124,27 @@
       </div>
       <div>
         <a-card class="card" title="收款" :bordered="true">
-          <a-form-item
-            label="总金额"
-            :labelCol="{span: 5}"
-            :wrapperCol="{span: 19}"
-            class="stepFormText"
-          >
-            {{this.saleOrder.totalamount}}
-          </a-form-item>
-          <a-form-item
-            label="收款方式"
-            :labelCol="{span: 5}"
-            :wrapperCol="{span: 19}"
-            class="stepFormText"
-          >
-            <j-dict-select-tag v-decorator="['receiptType', {}]" placeholder="请选择收款方式" :type="'select'" :triggerChange="true" dictCode="receipt_type"/>
-          </a-form-item>
-
-          <a-form-item
-            label="实收金额"
-            :labelCol="{span: 5}"
-            :wrapperCol="{span: 19}"
-            class="stepFormText">
-            <a-input placeholder="请输入实收金额" v-decorator="[ 'payamount', {}]" :disabled="unEditable" />
-          </a-form-item>
+          <div class="table-operator" style="border-top: 5px" v-if = "!unEditable">
+            <a-button @click="handleAddReceiptDtl" type="primary" icon="plus">添加收款明细</a-button>
+          </div>
+          <a-table
+            ref="table4"
+            bordered
+            size="middle"
+            rowKey="id"
+            :columns="columns4"
+            :dataSource="dataSource4"
+            :pagination="ipagination4"
+            :loading="loading4"
+            @change="handleTableChange4">
+           <span slot="action" slot-scope="text, record" v-if = "!unEditable">
+              <a @click="handleEdit4(record)">编辑</a>
+              <a-divider type="vertical"/>
+              <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete4(record.id)">
+                <a>删除</a>
+              </a-popconfirm>
+            </span>
+          </a-table>
         </a-card>
       </div>
       <a-form-item :wrapperCol="{span: 19, offset: 5}">
@@ -159,6 +156,7 @@
 
     <sale-order-expense-modal ref="saleOrderExpenseModal" :saleOrder = "saleOrder" @ok="modalFormOk2" v-on:listenToTotalamont="showTotalMount"></sale-order-expense-modal>
     <sale-order-cost-modal ref="saleOrderCostModal" :saleOrder = "saleOrder" @ok="modalFormOk3"></sale-order-cost-modal>
+    <receipt-order-dtl-modal ref="receiptOrderDtlModal" :sourceBillOrder = "saleOrder" @ok="modalFormOk4"></receipt-order-dtl-modal>
   </div>
 </template>
 
@@ -166,6 +164,7 @@
   import pick from 'lodash.pick'
   import SaleOrderExpenseModal from './SaleOrderExpenseModal'
   import SaleOrderCostModal from './SaleOrderCostModal'
+  import ReceiptOrderDtlModal from '../receipt/ReceiptOrderDtlModal'
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import { deleteAction, postAction, getAction } from '@/api/manage'
   import {checkout, getSaleOrderOne, getSaleOrderMtlList } from '@/api/api'
@@ -176,6 +175,7 @@
     components: {
       SaleOrderExpenseModal,
       SaleOrderCostModal,
+      ReceiptOrderDtlModal,
       JDictSelectTag
     },
     data() {
@@ -184,13 +184,16 @@
         model1: {},
         model2: {},
         model3: {},
+        model4: {},
         currentRoleId: '',
         queryParam1: {},
         queryParam2: {},
         queryParam3: {},
+        queryParam4: {},
         dataSource1: [],
         dataSource2: [],
         dataSource3: [],
+        dataSource4: [],
         ipagination1: {
           current: 1,
           pageSize: 10,
@@ -224,6 +227,17 @@
           showSizeChanger: true,
           total: 0
         },
+        ipagination4: {
+          current: 1,
+          pageSize: 10,
+          pageSizeOptions: ['10', '20', '30'],
+          showTotal: (total, range) => {
+            return range[0] + '-' + range[1] + ' 共' + total + '条'
+          },
+          showQuickJumper: true,
+          showSizeChanger: true,
+          total: 0
+        },
         isorter1: {
           column: 'createTime',
           order: 'desc'
@@ -236,12 +250,18 @@
           column: 'createTime',
           order: 'desc'
         },
+        isorter4: {
+          column: 'createTime',
+          order: 'desc'
+        },
         filters1: {},
         filters2: {},
         filters3: {},
+        filters4: {},
         loading1: false,
         loading2: false,
         loading3: false,
+        loading4: false,
         columns:
           [
             {
@@ -340,6 +360,42 @@
             align: 'center',
             width: 120
           }],
+        columns4: [{
+            title: '销售单号',
+            align: 'center',
+            dataIndex: 'sourceBillCode',
+            width: 120
+          },{
+            title: '收款单号',
+            align: 'center',
+            dataIndex: 'sourceCode',
+            width: 120
+          },
+          {
+            title: '费用名称',
+            align: 'center',
+            dataIndex: 'expenseName',
+            width: 120
+          },
+          {
+            title: '金额',
+            align: 'center',
+            width: 100,
+            dataIndex: 'payAmount'
+          },
+          {
+            title: '付款方式',
+            align: 'center',
+            dataIndex: 'payTypeName',
+            width: 120
+          },
+          {
+            title: '操作',
+            dataIndex: 'action',
+            scopedSlots: { customRender: 'action' },
+            align: 'center',
+            width: 120
+          }],
         form: this.$form.createForm(this),
         url: {
           list: "/saleOrderMtl/getPage",
@@ -349,6 +405,9 @@
           list3: '/saleOrderCost/getPage',
           delete3: '/saleOrderCost/delete',
           deleteBatch3: '/saleOrderCost/deleteBatch',
+          list4: '/receiptOrderDtl/getPage',
+          delete4: '/receiptOrderDtl/delete',
+          deleteBatch4: '/receiptOrderDtl/deleteBatch',
         },
         unEditable: true
       }
@@ -389,6 +448,19 @@
         param3.pageSize = this.ipagination3.pageSize
         return param3;
       },
+      getQueryParams4() {
+        //获取查询条件
+        let param4 = {};
+        if(this.$route.query.id){
+          param4.sourceBillId = this.$route.query.id
+        }else{
+          param4.sourceBillId = -1;
+        }
+        param4.field = this.getQueryField4()
+        param4.pageNo = this.ipagination4.current
+        param4.pageSize = this.ipagination4.pageSize
+        return param4;
+      },
       getQueryField2() {
         var str = 'id,'
         this.columns2.forEach(function(value) {
@@ -403,6 +475,13 @@
         })
         return str
       },
+      getQueryField4() {
+        var str = 'id,'
+        this.columns4.forEach(function(value) {
+          str += ',' + value.dataIndex
+        })
+        return str
+      },
       handleEdit2: function(record) {
         this.$refs.saleOrderExpenseModal.title = '编辑'
         this.$refs.saleOrderExpenseModal.roleDisabled = true
@@ -413,13 +492,22 @@
         this.$refs.saleOrderCostModal.roleDisabled = true
         this.$refs.saleOrderCostModal.edit(record)
       },
+      handleEdit4: function(record) {
+        this.$refs.receiptOrderDtlModal.title = '编辑'
+        this.$refs.receiptOrderDtlModal.edit(record)
+      },
       modalFormOk2() {
         // 新增/修改 成功时，重载列表
         this.loadData2()
       },
       modalFormOk3() {
         // 新增/修改 成功时，重载列表
+        debugger
         this.loadData3()
+      },
+      modalFormOk4() {
+        // 新增/修改 成功时，重载列表
+        this.loadData4()
       },
       loadData2(arg) {
         if (!this.url.list2) {
@@ -465,6 +553,28 @@
         })
 
       },
+      loadData4(arg) {
+        if (!this.url.list4) {
+          this.$message.error('请设置url.list3属性!')
+          return
+        }
+        //加载数据 若传入参数1则加载第一页的内容
+        if (arg === 1) {
+          this.ipagination4.current = 1
+        }
+        let params = this.getQueryParams4()//查询条件
+        params.roleId = this.currentRoleId
+        this.loading4 = true
+        getAction(this.url.list4, params).then((res) => {
+          if (res.success) {
+            this.dataSource4 = res.result.records
+            this.ipagination4.total = res.result.total
+
+          }
+          this.loading4 = false
+        })
+
+      },
       handleDelete1: function(id) {
         this.handleDelete(id)
         this.dataSource2 = []
@@ -492,7 +602,7 @@
         })
       },
       handleDelete3: function(id) {
-        if (!this.url.delete2) {
+        if (!this.url.delete3) {
           this.$message.error('请设置url.delete3属性!')
           return
         }
@@ -501,6 +611,21 @@
           if (res.success) {
             that.$message.success(res.message)
             that.loadData3();
+          } else {
+            that.$message.warning(res.message)
+          }
+        })
+      },
+      handleDelete4: function(id) {
+        if (!this.url.delete4) {
+          this.$message.error('请设置url.delete4属性!')
+          return
+        }
+        var that = this
+        deleteAction(that.url.delete4, { id: id }).then((res) => {
+          if (res.success) {
+            that.$message.success(res.message)
+            that.loadData4();
           } else {
             that.$message.warning(res.message)
           }
@@ -578,6 +703,39 @@
           })
         }
       },
+      batchDel4: function() {
+
+        if (!this.url.deleteBatch4) {
+          this.$message.error('请设置url.deleteBatch4属性!')
+          return
+        }
+        if (this.selectedRowKeys4.length <= 0) {
+          this.$message.warning('请选择一条记录！')
+          return
+        } else {
+          var ids = ''
+          for (var a = 0; a < this.selectedRowKeys43.length; a++) {
+            ids += this.selectedRowKeys4[a] + ','
+          }
+          var that = this
+          console.log(this.currentDeptId)
+          this.$confirm({
+            title: '确认删除',
+            content: '是否删除选中数据?',
+            onOk: function() {
+              deleteAction(that.url.deleteBatch4, { id: ids }).then((res) => {
+                if (res.success) {
+                  that.$message.success(res.message)
+                  that.loadData4()
+                  that.onClearSelected();
+                } else {
+                  that.$message.warning(res.message)
+                }
+              })
+            }
+          })
+        }
+      },
       handleTableChange2(pagination, filters, sorter) {
         //分页、排序、筛选变化时触发
         if (Object.keys(sorter).length > 0) {
@@ -596,6 +754,15 @@
         this.ipagination3 = pagination
         this.loadData3()
       },
+      handleTableChange4(pagination, filters, sorter) {
+        //分页、排序、筛选变化时触发
+        if (Object.keys(sorter).length > 0) {
+          this.isorter4.column = sorter.field
+          this.isorter4.order = 'ascend' == sorter.order ? 'asc' : 'desc'
+        }
+        this.ipagination4 = pagination
+        this.loadData4()
+      },
       handleAddExpense(){
         this.$refs.saleOrderExpenseModal.add();
         this.$refs.saleOrderExpenseModal.title = "新增费用";
@@ -603,6 +770,10 @@
       handleAddCost(){
         this.$refs.saleOrderCostModal.add();
         this.$refs.saleOrderCostModal.title = "新增成本";
+      },
+      handleAddReceiptDtl(){
+        this.$refs.receiptOrderDtlModal.add();
+        this.$refs.receiptOrderDtlModal.title = "新增收款明细";
       },
       showTotalMount(data){
         this.saleOrder.totalamount = data;
@@ -665,6 +836,7 @@
       }
       this.loadData2();
       this.loadData3();
+      this.loadData4();
       this.unEditable = this.$route.query.unEditable;
     }
   }

@@ -2,23 +2,24 @@
   <div>
     <a-form :form="saleOrderForm">
       <a-row>
-        <a-col :md="6" :sm="6">
+        <a-col :md="8" :sm="8">
           <a-form-item
-            :labelCol="{span: 5}"
-            :wrapperCol="{span: 19}"
+            :labelCol="{span: 4}"
+            :wrapperCol="{span: 18}"
             label="客户">
             <a-select v-decorator="['customerId', validatorRules.customerId]" placeholder="请选择客户"  showSearch
                       optionFilterProp="children"
-                      notFoundContent="无法找到，输入名称、编号、手机号回车搜索" @keyup.enter.native="searchCustomer"
-                      :disabled="unEditable" >
+                      notFoundContent="无法找到，点右侧新增按钮增加客户" @keyup.enter.native="searchCustomer"
+                      :disabled="unEditable" style="width: 90%" >
               <a-select-option value="">请选择</a-select-option>
               <a-select-option v-for="(item, key) in customerList" :key="key" :value="item.id">
                 {{ item.info }}
               </a-select-option>
             </a-select>
+            <a href="javascript:;" style="width: 10%" @click="handleAddCustomer()">新增</a>
           </a-form-item>
         </a-col>
-        <a-col :md="6" :sm="6">
+        <a-col :md="8" :sm="8">
           <a-form-item
             :labelCol="{span: 5}"
             :wrapperCol="{span: 19}"
@@ -26,15 +27,61 @@
             <a-input placeholder="自动生成单号" :readOnly="true" v-decorator="[ 'code', {}]" :disabled="unEditable" />
           </a-form-item>
         </a-col>
-        <a-col :md="6" :sm="6">
+        <a-col :md="8" :sm="8">
           <a-form-item
-            :labelCol="{span: 5}"
-            :wrapperCol="{span: 19}"
-            label="渠道">
-            <j-dict-select-tag v-decorator="['channelId', {}]" placeholder="请选择销售渠道" :type="'select'" :triggerChange="true" dictCode="channel" :disabled="unEditable" :readOnly = "unEditable" />
+            label="销售员"
+            :labelCol="{span: 6}"
+            :wrapperCol="{span: 18}"
+            class="stepFormText">
+            <a-select v-decorator="['salemanId', {}]" placeholder="销售员">
+              <a-select-option v-for="(item, key) in userList" :key="key" :value="item.id">
+                {{ item.realname }}
+              </a-select-option>
+            </a-select>
           </a-form-item>
         </a-col>
-        <a-col :md="6" :sm="6">
+      </a-row>
+      <a-row>
+        <a-col :md="8" :sm="8">
+          <a-form-item
+            label="送货时间"
+            :labelCol="{span: 4}"
+            :wrapperCol="{span: 18}"
+            class="stepFormText">
+            <a-date-picker showTime format='YYYY-MM-DD HH:mm:ss' v-decorator="[ 'deliveryTime', {}]" :disabled="unEditable"/>
+          </a-form-item>
+        </a-col>
+        <a-col :md="8" :sm="8">
+          <a-form-item
+            label="测量时间"
+            :labelCol="{span: 5}"
+            :wrapperCol="{span: 19}"
+            class="stepFormText">
+            <a-date-picker showTime format='YYYY-MM-DD HH:mm:ss' v-decorator="[ 'measuringTime', {}]" :disabled="unEditable"/>
+          </a-form-item>
+        </a-col>
+        <a-col :md="8" :sm="8">
+          <a-form-item
+            label="安装时间"
+            :labelCol="{span: 6}"
+            :wrapperCol="{span: 18}"
+            class="stepFormText">
+            <a-date-picker showTime format='YYYY-MM-DD HH:mm:ss' v-decorator="[ 'installTime', {}]" :disabled="unEditable"/>
+          </a-form-item>
+        </a-col>
+      </a-row>
+      <a-row>
+        <a-col :md="16" :sm="16">
+          <a-form-item
+            :labelCol="{span: 2}"
+            :wrapperCol="{span: 22}"
+            label="渠道">
+            <j-dict-select-tag style="width: 30%" v-decorator="['channelId', {}]" placeholder="请选择销售渠道" :type="'select'" :triggerChange="true" dictCode="channel" :disabled="unEditable" :readOnly = "unEditable" />
+            <j-dict-select-tag style="width: 30%" v-decorator="['channelId', {}]" placeholder="请选择销售渠道" :type="'select'" :triggerChange="true" dictCode="channel" :disabled="unEditable" :readOnly = "unEditable" />
+            <j-dict-select-tag style="width: 30%" v-decorator="['channelId', {}]" placeholder="请选择销售渠道" :type="'select'" :triggerChange="true" dictCode="channel" :disabled="unEditable" :readOnly = "unEditable" />
+          </a-form-item>
+        </a-col>
+        <a-col :md="8" :sm="8">
           <a-form-item
             :labelCol="{span: 6}"
             :wrapperCol="{span: 18}"
@@ -47,8 +94,8 @@
         <a-col :md="24" :sm="24">
           <a-form-item
             label="备注"
-            :labelCol="{span: 2}"
-            :wrapperCol="{span: 22}"
+            :labelCol="{span: 1}"
+            :wrapperCol="{span: 21}"
           >
             <a-input placeholder="请输入备注" v-decorator="[ 'content', {}]" :readOnly = "unEditable" />
           </a-form-item>
@@ -130,6 +177,7 @@
           <!-- 表单区域 -->
 
           <sale-order-mtl-modal ref="saleOrderMtlModal" :saleOrder = "saleOrder" @ok="modalFormOk"></sale-order-mtl-modal>
+          <customer-modal ref="customerModal" @ok="modalCustomerOk"></customer-modal>
           <!-- 表单区域 -->
         </a-col>
       </a-row>
@@ -143,17 +191,21 @@
 
 <script>
   import SaleOrderMtlModal from './SaleOrderMtlModal'
+  import CustomerModal from '../basic/CustomerModal'
   import pick from 'lodash.pick'
   import moment from 'moment'
   import JDictSelectTag from '@/components/dict/JDictSelectTag.vue'
-  import {addSaleOrder, editSaleOrder, getCustomerList, getSaleOrderOne, getSaleOrderMtlList, searchCustomer } from '@/api/api'
+  import {addSaleOrder, editSaleOrder, getCustomerList, getSaleOrderOne, getSaleOrderMtlList, searchCustomer, getAllUser, createReceiptOrder } from '@/api/api'
   import {JeecgListMixin} from '@/mixins/JeecgListMixin'
+  import ARow from "ant-design-vue/es/grid/Row";
   export default {
     name: "Step1",
     mixins: [JeecgListMixin],
     components: {
+      ARow,
       SaleOrderMtlModal,
-      JDictSelectTag
+      JDictSelectTag,
+      CustomerModal
     },
     data () {
       return {
@@ -189,6 +241,7 @@
           }
         },
         customerList: [],
+        userList: [],
         columns:[
           {
             title: '#',
@@ -271,7 +324,7 @@
       },
       moment,
       add () {
-        this.edit({'gender':'1','cdiDefaultType':''});
+        this.edit({'gender':'1'});
       },
       edit (record) {
         this.saleOrderForm.resetFields();
@@ -284,10 +337,12 @@
           this.roleDisabled = false;
         }
         this.$nextTick(() => {
-          console.log(this.model)
-          this.saleOrderForm.setFieldsValue(pick(this.model,'name', 'code','content','customerId','channelId','billDate'))
+          this.saleOrderForm.setFieldsValue(pick(this.model,'name', 'code','content','customerId','channelId','billDate','measuringTime','deliveryTime','installTime','salemanId'))
           //时间格式化
           this.saleOrderForm.setFieldsValue({billDate: this.model.billDate ? moment(this.model.billDate) : null})
+          this.saleOrderForm.setFieldsValue({deliveryTime: this.model.deliveryTime ? moment(this.model.deliveryTime) : null})
+          this.saleOrderForm.setFieldsValue({measuringTime: this.model.measuringTime ? moment(this.model.measuringTime) : null})
+          this.saleOrderForm.setFieldsValue({installTime: this.model.installTime ? moment(this.model.installTime) : null})
         });
       },
       saveSaleOrder(id) {
@@ -301,6 +356,21 @@
               values.billDate = '';
             }else{
               values.billDate = values.billDate.format(this.dateFormat);
+            }
+            if(!values.deliveryTime){
+              values.deliveryTime = '';
+            }else{
+              values.deliveryTime = values.deliveryTime.format(this.dateFormat);
+            }
+            if(!values.measuringTime){
+              values.measuringTime = '';
+            }else{
+              values.measuringTime = values.measuringTime.format(this.dateFormat);
+            }
+            if(!values.installTime){
+              values.installTime = '';
+            }else{
+              values.installTime = values.installTime.format(this.dateFormat);
             }
             if(id){
               values.id = id;
@@ -364,13 +434,29 @@
       goDetail(id) {
         this.$router.push({ name: "material-materialEdit", query: {"id": id}})
       },
+      handleAddCustomer () {
+        this.$refs.customerModal.add();
+        this.$refs.customerModal.title = "新增客户";
+      },
+      modalCustomerOk() {
+        searchCustomer({}).then((res) => {
+          if (res.success) {
+            this.customerList = res.result;
+          }
+        })
+      },
       nextStep () {
         this.mainId = this.$route.query.id;
         var validFlag = true;
         if (!this.unEditable) {
           validFlag =  this.saveSaleOrder(this.mainId);
         }
-        if (validFlag) {
+        if (!this.unEditable && validFlag) {
+          createReceiptOrder({"sourceId":this.mainId, "sourceBillType":0}).then((res) => {
+            if (!res.success) {
+              this.$message.error(res.message)
+            }
+          })
           this.$emit('nextStep')
         }
       }
@@ -381,6 +467,11 @@
           this.customerList = res.result;
         }
       })
+      getAllUser().then((res) => {
+        if (res.success) {
+          this.userList = res.result;
+        }
+      })
       if (this.$route.query.id) {
         getSaleOrderOne({id:this.$route.query.id}).then((res) => {
           if (res.success) {
@@ -389,7 +480,7 @@
           }
         })
       }
-      this.unEditable = this.$route.query.unEditable;
+      this.unEditable = this.$route.query.unEditable == 'true';
     }
   }
 </script>

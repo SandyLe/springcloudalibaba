@@ -121,7 +121,6 @@
         this.edit({});
       },
       edit (record) {
-        console.log(this.$route.query.id)
         this.form.resetFields();
         record.sourceId = this.$route.query.id;
         record.sourceCode = this.saleOrder.code;
@@ -164,7 +163,7 @@
             }
             obj.then((res)=>{
               if(res.success){
-                that.saleOrder.totalamount = res.result;
+                // that.saleOrder.totalamount = res.result;
                 that.$message.success(res.message);
                 that.$emit('ok');
               }else{

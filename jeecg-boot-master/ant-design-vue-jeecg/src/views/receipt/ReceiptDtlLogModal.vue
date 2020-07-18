@@ -23,14 +23,13 @@
 
     <a-spin :spinning="confirmLoading">
       <a-form :form="form">
-        <a-input/>
         <a-table
           ref="table"
           size="middle"
           bordered
           rowKey="mtlId"
           :columns="columns"
-          :dataSource="putoutmtls"
+          :dataSource="receiptDtlLogs"
           :pagination="ipagination"
           :loading="loading"
           :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
@@ -38,7 +37,7 @@
 
           <span slot="nameAction" slot-scope="text, record, index">
                 <a-input type="hidden" :defaultValue="record.mtlId"/>
-                <a @click="goDetail(record.mtlId)">{{record.mtl}}</a>
+                <a @click="goDetail(record.mtlId)">{{record.material}}</a>
 
           </span>
           <span slot="amountAction" slot-scope="text, record, index">
@@ -56,13 +55,13 @@
   import pick from 'lodash.pick'
   import {JeecgListMixin} from '@/mixins/JeecgListMixin'
   import AFormItem from "ant-design-vue/es/form/FormItem";
-  import {deliveryStockOut, duplicateCheck } from '@/api/api'
+  import {duplicateCheck } from '@/api/api'
 
   export default {
-    name: "SalePutOutModal",
+    name: "InventoryLogModal",
     mixins: [JeecgListMixin],
     props: {
-      putoutmtls: {
+      receiptDtlLogs: {
         type: Array,
         default: () => []
       }
@@ -82,42 +81,52 @@
         },
         columns: [
           {
-            title: '#',
-            dataIndex: '',
-            key:'rowIndex',
-            width:60,
-            align:"center",
-            customRender:function (t,r,index) {
-              return parseInt(index)+1;
-            }
+            title: '销售单号',
+            align: 'center',
+            dataIndex: 'sourceBillCode',
+            width: 120
+          },{
+            title: '收款单号',
+            align: 'center',
+            dataIndex: 'sourceCode',
+            width: 120
           },
           {
-            title: 'Code',
-            align:"center",
-            dataIndex: 'mtlCode'
+            title: '费用名称',
+            align: 'center',
+            dataIndex: 'expenseName',
+            width: 120
           },
           {
-            title: '产品',
-            align:"center",
-            dataIndex: '',
-            scopedSlots: { customRender: 'nameAction' }
+            title: '金额',
+            align: 'center',
+            width: 100,
+            dataIndex: 'payAmount'
           },
           {
-            title: '规格',
-            align:"center",
-            dataIndex: 'specification'
+            title: '付款方式',
+            align: 'center',
+            dataIndex: 'payTypeName',
+            width: 120
           },
           {
-            title: '数量',
-            align:"center",
-            scopedSlots: { customRender: 'amountAction' }
-          },
-          {
-            title: '单位',
-            align:"center",
-            dataIndex: 'unit'
+            title: '收款时间',
+            align: 'center',
+            dataIndex: 'payDate',
+            width: 120
           }
         ],
+        ipagination: {
+          current: 1,
+          pageSize: 10,
+          pageSizeOptions: ['10', '20', '30'],
+          showTotal: (total, range) => {
+            return '收款合计 ¥：' + this.sumAmount + '  元 ；' + range[0] + '-' + range[1] + ' 共' + total + '条'
+          },
+          showQuickJumper: true,
+          showSizeChanger: true,
+          total: 0
+        },
         bodyStyle:{
           padding: "0",
           height:(window.innerHeight*0.8)+"px",
@@ -142,6 +151,13 @@
     components: {AFormItem},
     created () {
     },
+    computed: {
+      sumAmount(){
+        return this.receiptDtlLogs.map(
+          row=>row.payAmount).reduce(
+          (acc, cur) => (parseFloat(cur) + acc), 0)
+      }
+    },
     methods: {
       add () {
         this.edit({});
@@ -157,7 +173,9 @@
       },
       handleOk () {
         const that = this;
-        console.log(this.putoutmtls)
+        that.confirmLoading = false;
+        that.close();
+        /**
         let obj = deliveryStockOut(this.putoutmtls);
         obj.then((res)=>{
           if(res.success){
@@ -172,7 +190,6 @@
         })
 
 
-        /**
         // 触发表单验证
         this.form.validateFields((err, values) => {
           debugger

@@ -177,6 +177,7 @@ const getDiscountTypeList = (params)=>getAction("/basic/fc/enum/discountType/get
 const getBillTypeList = (params)=>getAction("/basic/fc/enum/billType/getList",params)
 const getDateFmtList = (params)=>getAction("/basic/fc/enum/dateFormat/getList",params)
 const getAddressTypeList = (params)=>getAction("/basic/fc/enum/addressType/getList",params)
+const getPayModeTypeList = (params)=>getAction("/basic/fc/enum/payMode/getList",params)
 
 const loadShopData = (params)=>getAction("/sys/sysDepart/getSysDepartList",params)
 const getAllUser = (params)=>getAction("/sys/user/getAll",params)
@@ -263,6 +264,12 @@ const addAddress = (params)=>postAction("/address/add", params)
 const getAddressOne = (params)=>getAction("/address/getOne",params)
 const editAddress = (params)=>postAction("/address/edit",params)
 const getAddressList = (params)=>getAction("/address/getList",params)
+
+// 收款单
+const createReceiptOrder = (params)=>postAction("/receiptOrder/create", params)
+const addReceiptOrderDtl = (params)=>postAction("/receiptOrderDtl/add", params)
+const editReceiptOrderDtl = (params)=>postAction("/receiptOrderDtl/edit", params)
+const getReceiptOrderDtlList = (params)=>getAction("/receiptOrderDtl/getList", params)
 
 export {
   // imgView,
@@ -444,7 +451,12 @@ export {
   addAddress,
   editAddress,
   getAddressOne,
-  getAddressList
+  getAddressList,
+  createReceiptOrder,
+  getPayModeTypeList,
+  addReceiptOrderDtl,
+  editReceiptOrderDtl,
+  getReceiptOrderDtlList
 }
 
 

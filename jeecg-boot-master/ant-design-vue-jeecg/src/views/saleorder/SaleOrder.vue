@@ -172,8 +172,8 @@
             align:"center"
           },
           {
-            title: '收款方式',
-            dataIndex: 'receiptTypeName',
+            title: '收款状态',
+            dataIndex: 'receiptStatusName',
             align:"center"
           },
           {
