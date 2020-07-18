@@ -18,27 +18,27 @@ public class SaleOrder extends CBasicEntity {
     @TableField(exist=false)
     @ApiModelProperty("客户")
     private String customer;
-    @ApiModelProperty("出货仓库ID")
-    private String warehouseId;
-    @ApiModelProperty("出货仓库")
-    @TableField(exist=false)
-    private String warehouse;
     @ApiModelProperty("渠道")
     private String channelId;
     @ApiModelProperty("渠道")
     @TableField(exist=false)
     private String channel;
-    @ApiModelProperty("发货时间")
+    @ApiModelProperty("送货时间")
     private Date deliveryTime;
     @ApiModelProperty("安装时间")
     private Date installTime;
-    @ApiModelProperty("收款方式")
-    private String receiptType;
-    @ApiModelProperty("收款方式")
+    @ApiModelProperty("测量时间")
+    private Date measuringTime;
+    @ApiModelProperty("收款状态")
+    private Integer receiptStatus;
+    @ApiModelProperty("收款状态名称")
     @TableField(exist=false)
-    private String receiptTypeName;
-    @ApiModelProperty("开票信息")
-    private String billingInfo;
+    private String receiptStatusName;
+    @ApiModelProperty("出库方式")
+    private Integer deliveryType;
+    @ApiModelProperty("出库方式名称")
+    @TableField(exist=false)
+    private String deliveryTypeName;
     @ApiModelProperty("订单时间")
     private Date billDate;
     @ApiModelProperty("订单状态")
@@ -54,6 +54,13 @@ public class SaleOrder extends CBasicEntity {
     private BigDecimal totalamount;
     @ApiModelProperty("已付金额")
     private BigDecimal payamount;
+    @ApiModelProperty("销售员ID")
+    private String salemanId;
+    @TableField(exist=false)
+    @ApiModelProperty("销售员")
+    private String salemanName;
+    @ApiModelProperty("单据类型")
+    private Integer billType;
 
     public String getCustomerId() {
         return customerId;
@@ -61,14 +68,6 @@ public class SaleOrder extends CBasicEntity {
 
     public void setCustomerId(String customerId) {
         this.customerId = customerId;
-    }
-
-    public String getWarehouseId() {
-        return warehouseId;
-    }
-
-    public void setWarehouseId(String warehouseId) {
-        this.warehouseId = warehouseId;
     }
 
     public String getChannel() {
@@ -93,22 +92,6 @@ public class SaleOrder extends CBasicEntity {
 
     public void setInstallTime(Date installTime) {
         this.installTime = installTime;
-    }
-
-    public String getReceiptType() {
-        return receiptType;
-    }
-
-    public void setReceiptType(String receiptType) {
-        this.receiptType = receiptType;
-    }
-
-    public String getBillingInfo() {
-        return billingInfo;
-    }
-
-    public void setBillingInfo(String billingInfo) {
-        this.billingInfo = billingInfo;
     }
 
     public Date getBillDate() {
@@ -151,14 +134,6 @@ public class SaleOrder extends CBasicEntity {
         this.customer = customer;
     }
 
-    public String getWarehouse() {
-        return warehouse;
-    }
-
-    public void setWarehouse(String warehouse) {
-        this.warehouse = warehouse;
-    }
-
     public String getChannelId() {
         return channelId;
     }
@@ -183,19 +158,75 @@ public class SaleOrder extends CBasicEntity {
         this.otheramount = otheramount;
     }
 
-    public String getReceiptTypeName() {
-        return receiptTypeName;
-    }
-
-    public void setReceiptTypeName(String receiptTypeName) {
-        this.receiptTypeName = receiptTypeName;
-    }
-
     public String getBillStatusName() {
         return billStatusName;
     }
 
     public void setBillStatusName(String billStatusName) {
         this.billStatusName = billStatusName;
+    }
+
+    public Date getMeasuringTime() {
+        return measuringTime;
+    }
+
+    public void setMeasuringTime(Date measuringTime) {
+        this.measuringTime = measuringTime;
+    }
+
+    public Integer getReceiptStatus() {
+        return receiptStatus;
+    }
+
+    public void setReceiptStatus(Integer receiptStatus) {
+        this.receiptStatus = receiptStatus;
+    }
+
+    public String getReceiptStatusName() {
+        return receiptStatusName;
+    }
+
+    public void setReceiptStatusName(String receiptStatusName) {
+        this.receiptStatusName = receiptStatusName;
+    }
+
+    public Integer getDeliveryType() {
+        return deliveryType;
+    }
+
+    public void setDeliveryType(Integer deliveryType) {
+        this.deliveryType = deliveryType;
+    }
+
+    public String getDeliveryTypeName() {
+        return deliveryTypeName;
+    }
+
+    public void setDeliveryTypeName(String deliveryTypeName) {
+        this.deliveryTypeName = deliveryTypeName;
+    }
+
+    public String getSalemanId() {
+        return salemanId;
+    }
+
+    public void setSalemanId(String salemanId) {
+        this.salemanId = salemanId;
+    }
+
+    public String getSalemanName() {
+        return salemanName;
+    }
+
+    public void setSalemanName(String salemanName) {
+        this.salemanName = salemanName;
+    }
+
+    public Integer getBillType() {
+        return billType;
+    }
+
+    public void setBillType(Integer billType) {
+        this.billType = billType;
     }
 }

@@ -83,10 +83,10 @@ public class OrderDeliveryNoticeJob implements Job {
                         destUser.add(u.get(0).getId());
                     }
                     // 仓管员ID
-                    List<Warehouse> warehouse = warehouseList.stream().filter(p-> Objects.equals(p.getId() , saleOrder.getWarehouseId())).collect(Collectors.toList());
+                    /*List<Warehouse> warehouse = warehouseList.stream().filter(p-> Objects.equals(p.getId() , saleOrder.getWarehouseId())).collect(Collectors.toList());
                     if (CollectionUtils.isNotEmpty(warehouse)){
                         destUser.add(warehouse.get(0).getPrincipalId());
-                    }
+                    }*/
 //                System.out.println(String.format("Hash列表= %s", destUser.toString()));
                     sysAnnouncement = new SysAnnouncement();
                     sysAnnouncement.setTitile(String.format("您有未发货订单", saleOrder.getId()));

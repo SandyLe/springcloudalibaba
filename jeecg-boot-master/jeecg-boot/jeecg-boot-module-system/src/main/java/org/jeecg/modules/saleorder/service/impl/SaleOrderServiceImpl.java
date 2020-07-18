@@ -33,7 +33,7 @@ public class SaleOrderServiceImpl extends ServiceImpl<SaleOrderMapper, SaleOrder
     @Transactional
     @Override
     public void delivery(DeliveryEditDto deliveryEditDto) throws Exception {
-        String billId = deliveryEditDto.getId();
+        /*String billId = deliveryEditDto.getId();
         SaleOrder saleOrder = getById(billId);
         saleOrder.setWarehouseId(deliveryEditDto.getWarehouseId());
         saleOrder.setDeliveryTime(deliveryEditDto.getDeliveryTime());
@@ -69,6 +69,6 @@ public class SaleOrderServiceImpl extends ServiceImpl<SaleOrderMapper, SaleOrder
         inventoryOutService.saveToInventoryOut(inventoryOut);
         // 更新销售订单信息
         updateById(saleOrder);
-        saleOrderDeliveryInfoService.saveSaleOrderDelivery(cdi);
+        saleOrderDeliveryInfoService.saveSaleOrderDelivery(cdi);*/
     }
 }
