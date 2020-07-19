@@ -260,6 +260,13 @@ const saveServiceInstitution = (params)=>postAction("/serviceInstitution/save", 
 const getServiceInstitutionList =  (params)=>getAction("/serviceInstitution/getList",params)
 const searchInstitution = (params)=>getAction("/serviceInstitution/search",params)
 
+
+// 统计报表
+const getReportList = (params)=>getAction("/report/getList",params) //统计报表 列表
+const reportQueryById = (params)=>getAction("/report/queryById",params) // 查询单个统计报表信息
+const reportDelete = (params)=>deleteAction("/report/delete",params)  // 删除统计报表信息
+
+
 // 地址
 const addAddress = (params)=>postAction("/address/add", params)
 const getAddressOne = (params)=>getAction("/address/getOne",params)
@@ -459,6 +466,10 @@ export {
   editReceiptOrderDtl,
   getReceiptOrderDtlList,
   getDeliveryTypeList
+  handleSaleOrderCost,
+  getReportList,
+  reportQueryById,
+  reportDelete
 }
 
 

@@ -170,3 +170,43 @@ UPDATE `sl_customer` SET company_id = '2d9c18e2454e4708a23e1a80f089332d' WHERE c
 UPDATE `sl_customer_type` SET company_id = '2d9c18e2454e4708a23e1a80f089332d' WHERE company_id IS null;
 UPDATE `sl_customer_source` SET company_id = '2d9c18e2454e4708a23e1a80f089332d' WHERE company_id IS null;
 UPDATE `sl_customer_delivery_info` SET company_id = '2d9c18e2454e4708a23e1a80f089332d' WHERE company_id IS null;
+
+
+-- ----------------------------
+-- 新增统计表
+-- ----------------------------
+DROP TABLE IF EXISTS `sl_report`;
+CREATE TABLE `sl_report`  (
+  `id` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `code` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `content` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `create_time` datetime(0) NULL DEFAULT NULL,
+  `update_time` datetime(0) NULL DEFAULT NULL,
+  `create_by` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `update_by` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `row_sts` int(11) NULL DEFAULT NULL,
+  `sort` int(11) NULL DEFAULT NULL,
+  `pageType` int(11) NULL DEFAULT NULL COMMENT '归属页面',
+  `showType` int(11) NULL DEFAULT NULL COMMENT '展示方式',
+  `querySql` varchar(2000) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '查询sql语句',
+  `resultBean` varchar(80) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '接收查询结果的模型'
+)
+-- ----------------------------
+-- 新增公司配置统计表
+-- ----------------------------
+DROP TABLE IF EXISTS `sl_report_for_company`;
+CREATE TABLE `sl_report_for_company`  (
+  `id` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `code` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `content` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `create_time` datetime(0) NULL DEFAULT NULL,
+  `update_time` datetime(0) NULL DEFAULT NULL,
+  `create_by` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `update_by` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `row_sts` int(11) NULL DEFAULT NULL,
+  `sort` int(11) NULL DEFAULT NULL,
+  `report_id` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '报表ID',
+  `company_id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '公司ID'
+)

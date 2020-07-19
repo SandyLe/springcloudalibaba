@@ -12,6 +12,13 @@ import { axios } from '@/utils/request'
  * @param parameter
  * @returns {*}
  */
+export function autoLogin() {
+  return axios({
+    url: '/sys/autoLogin',
+    method: 'post'
+  })
+}
+
 export function login(parameter) {
   return axios({
     url: '/sys/login',

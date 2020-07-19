@@ -7,7 +7,7 @@
       <img v-else :src="getAvatarView()" alt="logo">
       <!-- update-begin- author:sunjianlei --- date:20190814 --- for: logo颜色根据主题颜色变化 -->
 
-      <h1 v-if="showTitle">{{ title }}</h1>
+      <h1 v-if="showTitle">{{ titlecpu }}</h1>
     </router-link>
   </div>
 </template>
@@ -35,7 +35,7 @@
     },
     methods: {
       getAvatarView(){
-        debugger
+        // debugger
         return this.url.imgerver +"/"+ this.userInfo.companyAvatar;
       }
     },
@@ -43,7 +43,7 @@
       userInfo() {
         return this.$store.getters.userInfo
       },
-      title () {
+      titlecpu () {
         return this.userInfo.companyEn + " ERP";
       },
       url() {

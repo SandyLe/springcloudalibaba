@@ -19,6 +19,8 @@ public class SysLoginModel {
     private String captcha;
 	@ApiModelProperty(value = "验证码key")
     private String checkKey;
+    @ApiModelProperty(value = "记住我?")
+    private boolean rememberMe;
 
     public String getUsername() {
         return username;
@@ -51,5 +53,12 @@ public class SysLoginModel {
 	public void setCheckKey(String checkKey) {
 		this.checkKey = checkKey;
 	}
-    
+
+    public boolean getRememberMe() {
+        return rememberMe;
+    }
+
+    public void setRememberMe(boolean rememberMe) {
+        this.rememberMe = rememberMe;
+    }
 }

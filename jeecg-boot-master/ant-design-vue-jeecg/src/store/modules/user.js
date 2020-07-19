@@ -1,6 +1,6 @@
 import Vue from 'vue'
-import { login, logout, phoneLogin } from "@/api/login"
-import { ACCESS_TOKEN, USER_NAME,USER_INFO,USER_AUTH,SYS_BUTTON_AUTH } from "@/store/mutation-types"
+import { login, logout, phoneLogin, autoLogin } from "@/api/login"
+import { ACCESS_TOKEN, USER_NAME,USER_INFO,USER_AUTH,SYS_BUTTON_AUTH, REFRESH_ACCESS_TOKEN } from "@/store/mutation-types"
 import { welcome } from "@/utils/util"
 import { queryPermissionsByUser } from '@/api/api'
 import { getAction } from '@/api/manage'
@@ -71,6 +71,11 @@ const user = {
             Vue.ls.set(ACCESS_TOKEN, result.token, 7 * 24 * 60 * 60 * 1000)
             Vue.ls.set(USER_NAME, userInfo.username, 7 * 24 * 60 * 60 * 1000)
             Vue.ls.set(USER_INFO, userInfo, 7 * 24 * 60 * 60 * 1000)
+            
+            if(result.refreshtoken){
+              Vue.ls.set(REFRESH_ACCESS_TOKEN, result.refreshtoken, 30 * 24 * 60 * 60 * 1000)
+            }
+
             commit('SET_TOKEN', result.token)
             commit('SET_INFO', userInfo)
             commit('SET_NAME', { username: userInfo.username,realname: userInfo.realname, welcome: welcome() })
@@ -138,6 +143,7 @@ const user = {
         commit('SET_TOKEN', '')
         commit('SET_PERMISSIONLIST', [])
         Vue.ls.remove(ACCESS_TOKEN)
+        Vue.ls.remove(REFRESH_ACCESS_TOKEN);
         //console.log('logoutToken: '+ logoutToken)
         logout(logoutToken).then(() => {
           //var sevice = "http://"+window.location.host+"/";
@@ -148,6 +154,47 @@ const user = {
           resolve()
         })
       })
+    },
+
+    // 自动登录
+    AutoLogin({ commit, state }) {
+      return new Promise((resolve, reject) => {
+        autoLogin().then(response => {
+          if(response.code =='200'){
+            const result = response.result
+            const userInfo = result.userInfo
+            Vue.ls.set(ACCESS_TOKEN, result.token, 7 * 24 * 60 * 60 * 1000)
+            Vue.ls.set(USER_NAME, userInfo.username, 7 * 24 * 60 * 60 * 1000)
+            Vue.ls.set(USER_INFO, userInfo, 7 * 24 * 60 * 60 * 1000)
+            
+            if(result.refreshtoken){
+              Vue.ls.set(REFRESH_ACCESS_TOKEN, result.refreshtoken, 30 * 24 * 60 * 60 * 1000)
+            }
+
+            commit('SET_TOKEN', result.token)
+            commit('SET_INFO', userInfo)
+            commit('SET_NAME', { username: userInfo.username,realname: userInfo.realname, welcome: welcome() })
+            commit('SET_AVATAR', userInfo.avatar)
+            resolve(response)
+          }else{
+            reject(response)
+          }
+        }).catch(error => {
+          reject(error)
+        })
+      })
+      // return new Promise((resolve) => {
+      //   // Vue.ls.remove(ACCESS_TOKEN)
+      //   autoLogin().then(response => {
+      //     if(response.code =='200'){
+      //       resolve(response)
+      //     }else{
+      //       reject(response)
+      //     }
+      //   }).catch(error => {
+      //     reject(error)
+      //   })
+      // })
     },
 
   }
