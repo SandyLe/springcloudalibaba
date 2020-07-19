@@ -162,7 +162,7 @@
           })
         }
         this.$refs.salePutOutModal.edit(record);
-        this.$refs.salePutOutModal.title = "待出库列表";
+        this.$refs.salePutOutModal.title = "产品出库";
       },
       viewInventoryLog (record) {
         this.inventoryLogs = [];

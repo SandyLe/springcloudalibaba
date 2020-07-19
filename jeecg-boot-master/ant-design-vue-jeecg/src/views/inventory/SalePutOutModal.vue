@@ -23,7 +23,38 @@
 
     <a-spin :spinning="confirmLoading">
       <a-form :form="form">
-        <a-input/>
+        <a-row>
+          <a-col :md="12" :sm="12">
+            <a-form-item label="出货方式" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-select v-decorator="['deliveryTypeId', {}]" placeholder="请选择出货方式" showSearch optionFilterProp="children"
+                        notFoundContent="没有匹配的出货方式" @change="deliveryTypeChange" >
+                <a-select-option value="">请选择</a-select-option>
+                <a-select-option v-for="(item, key) in deliveryTypeList" :key="key" :value="item.id">
+                    <span style="display: inline-block;width: 100%" :title=" item.name || item.code ">
+                      {{ item.name || item.code }}
+                    </span>
+                </a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
+          <a-col :span="12">
+            <a-form-item v-if="deliveryType != 0" label="物流单号" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input placeholder="请输入物流单号" v-decorator="[ 'logisticsNo', {}]" />
+            </a-form-item>
+          </a-col>
+        </a-row>
+        <a-row>
+          <a-col :span="12">
+            <a-form-item label="发货时间" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-date-picker showTime format='YYYY-MM-DD HH:mm:ss' v-decorator="[ 'deliveryDate', {}]"/>
+            </a-form-item>
+          </a-col>
+          <a-col :span="12">
+            <!--<a-form-item label="完工时间" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-date-picker showTime format='YYYY-MM-DD HH:mm:ss' v-decorator="[ 'finishedDate', {}]"/>
+            </a-form-item>-->
+          </a-col>
+        </a-row>
         <a-table
           ref="table"
           size="middle"
@@ -56,7 +87,7 @@
   import pick from 'lodash.pick'
   import {JeecgListMixin} from '@/mixins/JeecgListMixin'
   import AFormItem from "ant-design-vue/es/form/FormItem";
-  import {deliveryStockOut, duplicateCheck } from '@/api/api'
+  import {deliveryStockOut, duplicateCheck, getDeliveryTypeList } from '@/api/api'
 
   export default {
     name: "SalePutOutModal",
@@ -72,6 +103,7 @@
         title: "操作",
         visible: false,
         confirmLoading: false,
+        deliveryType: 0,
         labelCol: {
           xs: { span: 24 },
           sm: { span: 5 },
@@ -136,7 +168,8 @@
               { min: 0, max: 126, message: '长度不超过 126 个字符', trigger: 'blur' }
             ]
           }
-        }
+        },
+        deliveryTypeList: []
       }
     },
     components: {AFormItem},
@@ -147,6 +180,11 @@
         this.edit({});
       },
       edit (record) {
+        getDeliveryTypeList().then((res) => {
+          if (res.success) {
+            this.deliveryTypeList = res.result;
+          }
+        })
         this.form.resetFields();
         this.model = Object.assign({}, record);
         this.visible = true;
@@ -157,7 +195,33 @@
       },
       handleOk () {
         const that = this;
-        console.log(this.putoutmtls)
+        this.form.validateFields((err, values) => {
+          if (!err) {
+            let formData = Object.assign(this.model, values);
+            debugger
+            let formDataDto = {
+              deliveryTypeId: formData.deliveryTypeId,
+              deliveryDate: formData.deliveryDate,
+              logisticsNo: formData.logisticsNo,
+              mtls: this.putoutmtls
+            }
+            let obj=deliveryStockOut(formDataDto);
+            obj.then((res)=>{
+              if(res.success){
+                that.$message.success(res.message);
+                that.$emit('ok');
+              }else{
+                that.$message.warning(res.message);
+              }
+            }).finally(() => {
+              that.confirmLoading = false;
+              that.close();
+            })
+          }
+        })
+
+
+        /**
         let obj = deliveryStockOut(this.putoutmtls);
         obj.then((res)=>{
           if(res.success){
@@ -171,8 +235,6 @@
           that.close();
         })
 
-
-        /**
         // 触发表单验证
         this.form.validateFields((err, values) => {
           debugger
@@ -201,6 +263,9 @@
       },
       handleChange (val, key, index, col) {
         this.putoutmtls[index].quantity = val;
+      },
+      deliveryTypeChange (val) {
+        this.deliveryType = val;
       }
     }
   }

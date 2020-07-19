@@ -178,6 +178,7 @@ const getBillTypeList = (params)=>getAction("/basic/fc/enum/billType/getList",pa
 const getDateFmtList = (params)=>getAction("/basic/fc/enum/dateFormat/getList",params)
 const getAddressTypeList = (params)=>getAction("/basic/fc/enum/addressType/getList",params)
 const getPayModeTypeList = (params)=>getAction("/basic/fc/enum/payMode/getList",params)
+const getDeliveryTypeList = (params)=>getAction("/basic/fc/enum/deliveryType/getList",params)
 
 const loadShopData = (params)=>getAction("/sys/sysDepart/getSysDepartList",params)
 const getAllUser = (params)=>getAction("/sys/user/getAll",params)
@@ -456,7 +457,8 @@ export {
   getPayModeTypeList,
   addReceiptOrderDtl,
   editReceiptOrderDtl,
-  getReceiptOrderDtlList
+  getReceiptOrderDtlList,
+  getDeliveryTypeList
 }
 
 
