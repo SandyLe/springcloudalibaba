@@ -1,6 +1,7 @@
 package org.jeecg.modules.inventory.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.jeecg.modules.inventory.dto.PreInventoryDto;
 import org.jeecg.modules.inventory.entity.InventoryOut;
 import org.jeecg.modules.inventory.dto.PreInventoryOutMtl;
 
@@ -20,10 +21,10 @@ public interface InventoryOutService extends IService<InventoryOut> {
     /**
      * 销售出库
      *
-     * @param mtls
+     * @param preInventoryDto
      * @return
      */
-    public Boolean stockOut(List<PreInventoryOutMtl> mtls);
+    public Boolean stockOut(PreInventoryDto preInventoryDto);
 
     public InventoryOut queryBySourceId(String sourceId);
     /**

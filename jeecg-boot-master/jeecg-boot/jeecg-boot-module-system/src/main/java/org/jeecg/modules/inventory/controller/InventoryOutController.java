@@ -25,6 +25,7 @@ import org.jeecg.modules.basic.service.MaterialService;
 import org.jeecg.modules.basic.service.MaterialUnitService;
 import org.jeecg.modules.basic.service.WarehouseService;
 //import org.jeecg.modules.inventory.entity.InventoryOut;
+import org.jeecg.modules.inventory.dto.PreInventoryDto;
 import org.jeecg.modules.inventory.entity.InventoryOut;
 import org.jeecg.modules.inventory.service.InventoryOutService;
 import org.jeecg.modules.inventory.dto.PreInventoryOutMtl;
@@ -225,9 +226,9 @@ public class InventoryOutController {
     @PostMapping(value = "/mtls/stockout")
     @AutoLog(value = "修改销售订单发货信息")
     @ApiOperation(value = "修改销售订单发货信息", notes = "修改销售订单发货信息")
-    public Result<?> stockout(@RequestBody List<PreInventoryOutMtl> mtls){
-        if (CollectionUtils.isNotEmpty(mtls)) {
-            inventoryOutService.stockOut(mtls);
+    public Result<?> stockout(@RequestBody PreInventoryDto preInventoryDto){
+        if (null != preInventoryDto && CollectionUtils.isNotEmpty(preInventoryDto.getMtls())) {
+            inventoryOutService.stockOut(preInventoryDto);
         }
         return Result.ok();
     }

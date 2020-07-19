@@ -24,6 +24,7 @@ import org.jeecg.modules.combind.service.AssembleDtlService;
 import org.jeecg.modules.combind.service.AssembleService;
 import org.jeecg.modules.combind.service.TeardownDtlService;
 import org.jeecg.modules.combind.service.TeardownService;
+import org.jeecg.modules.inventory.dto.PreInventoryDto;
 import org.jeecg.modules.inventory.entity.*;
 
 import org.jeecg.modules.inventory.mapper.InventoryOutMapper;
@@ -95,8 +96,9 @@ public class InventoryOutServiceImpl extends ServiceImpl<InventoryOutMapper, Inv
 
     @Override
     @Transactional
-    public Boolean stockOut(List<PreInventoryOutMtl> mtls) {
+    public Boolean stockOut(PreInventoryDto preInventoryDto) {
 
+        List<PreInventoryOutMtl> mtls = preInventoryDto.getMtls();
         InventoryOut info = getById(mtls.get(0).getBillId());
         if (null != info) {
             for (PreInventoryOutMtl mtl : mtls) {
