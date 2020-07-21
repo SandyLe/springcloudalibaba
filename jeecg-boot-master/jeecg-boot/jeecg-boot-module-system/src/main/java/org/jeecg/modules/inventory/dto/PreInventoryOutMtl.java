@@ -34,6 +34,8 @@ public class PreInventoryOutMtl {
     private BigDecimal quantity;
     @ApiModelProperty("操作类型")
     private Integer operationId;
+    @ApiModelProperty("仓库")
+    private String warehouseId;
 
     public String getBillId() {
         return billId;
@@ -125,6 +127,14 @@ public class PreInventoryOutMtl {
 
     public Integer getOperationId() {
         return operationId;
+    }
+
+    public String getWarehouseId() {
+        return warehouseId;
+    }
+
+    public void setWarehouseId(String warehouseId) {
+        this.warehouseId = warehouseId;
     }
 
     public void setOperationId(Integer operationId) {

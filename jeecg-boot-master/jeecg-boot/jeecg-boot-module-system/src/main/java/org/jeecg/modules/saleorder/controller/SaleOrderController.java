@@ -180,25 +180,6 @@ public class SaleOrderController {
     }
 
     /**
-     * 收款
-     *
-     * @param saleOrder
-     * @return
-     */
-    @PostMapping(value = "/checkout")
-    @AutoLog(value = "修改销售订单")
-    @ApiOperation(value = "修改销售订单", notes = "修改销售订单")
-    public Result<?> checkout(@RequestBody SaleOrder saleOrder){
-        if (null != saleOrder.getTotalamount() && null != saleOrder.getPayamount() && saleOrder.getPayamount().compareTo(BigDecimal.ZERO) > 0) {
-            saleOrder.setBillStatus(saleOrder.getTotalamount().compareTo(saleOrder.getPayamount()) <= 0 ? BillStatus.PAID.getId() : BillStatus.PARTICIALPAYMENT.getId());
-        }
-        saleOrderService.updateById(saleOrder);
-        Result<Object> result = Result.ok();
-        result.setResult(saleOrder);
-        return result;
-    }
-
-    /**
      * 通过id删除
      *
      * @param id
