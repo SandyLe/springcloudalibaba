@@ -167,7 +167,7 @@
   import ReceiptOrderDtlModal from '../receipt/ReceiptOrderDtlModal'
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import { deleteAction, postAction, getAction } from '@/api/manage'
-  import {checkout, getSaleOrderOne, getSaleOrderMtlList } from '@/api/api'
+  import { getSaleOrderOne, getSaleOrderMtlList } from '@/api/api'
   import JDictSelectTag from '@/components/dict/JDictSelectTag.vue'
   export default {
     name: "Step2",
@@ -783,38 +783,7 @@
           this.form.setFieldsValue(pick(this.model,'payamount', 'totalamount'))
         });
       },
-      handleOk () {
-        const that = this;
-        // 触发表单验证
-        this.form.validateFields((err, values) => {
-          if (!err) {
-            that.confirmLoading = true;
-            values.sourceId = this.$route.query.id;
-            let formData = Object.assign(this.model, values);
-            let obj;
-            if(this.model.id){
-              obj=checkout(formData);
-            }
-            obj.then((res)=>{
-              if(res.success){
-                that.saleOrder.totalamount = res.result;
-                console.log(that.saleOrder.totalamount)
-                that.$message.success(res.message);
-                that.$emit('ok');
-              }else{
-                that.$message.warning(res.message);
-              }
-            }).finally(() => {
-              that.confirmLoading = false;
-              that.close();
-            })
-          }
-        })
-      },
       nextStep () {
-        if (!this.unEditable) {
-          this.handleOk();
-        }
         this.$emit('nextStep')
       },
       prevStep () {

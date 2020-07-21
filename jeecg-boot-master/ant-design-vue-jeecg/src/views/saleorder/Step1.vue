@@ -447,7 +447,7 @@
       },
       nextStep () {
         this.mainId = this.$route.query.id;
-        var validFlag = true;
+        let validFlag = true;
         if (!this.unEditable) {
           validFlag =  this.saveSaleOrder(this.mainId);
         }
@@ -457,8 +457,8 @@
               this.$message.error(res.message)
             }
           })
-          this.$emit('nextStep')
         }
+        this.$emit('nextStep')
       }
     },
     mounted() {

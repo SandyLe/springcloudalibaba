@@ -99,7 +99,6 @@ const loadCategoryData = (params)=>getAction("/sys/category/loadAllData",params)
 // 销售订单
 const addSaleOrder = (params)=>postAction("/saleOrder/add",params)
 const editSaleOrder = (params)=>postAction("/saleOrder/edit",params)
-const checkout = (params)=>postAction("/saleOrder/checkout",params)
 const getSaleOrderOne = (params)=>getAction("/saleOrder/getOne",params)
 const getSaleOrderByCode = (params)=>getAction("/saleOrder/getOneByCode",params)
 const delivery = (params)=>postAction("/saleOrder/delivery",params)
@@ -395,7 +394,6 @@ export {
   addStocking,
   editStocking,
   handleStocking,
-  checkout,
   getBillTypeList,
   getDateFmtList,
   addBillCodeBuilder,
@@ -465,8 +463,7 @@ export {
   addReceiptOrderDtl,
   editReceiptOrderDtl,
   getReceiptOrderDtlList,
-  getDeliveryTypeList
-  handleSaleOrderCost,
+  getDeliveryTypeList,
   getReportList,
   reportQueryById,
   reportDelete

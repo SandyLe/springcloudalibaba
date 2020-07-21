@@ -76,6 +76,13 @@
             <a-input placeholder="请输入出库数量" :defaultValue="record.quantity" name="quantity"
                      @change="e => handleChange(e.target.value, record.mtlId, index, 'quantity')"/>
           </span>
+          <span slot="warehouseAction" slot-scope="text, record, index">
+            <a-select v-decorator="['warehouseId', validatorRules.warehouseId]" @change="((val)=>{handleChange(val, record.mtlId, index, 'warehouseId')})" placeholder="请选择仓库">
+              <a-select-option v-for="(item, key) in warehouseList" :key="key" :value="item.id">
+                {{ item.name }}
+              </a-select-option>
+            </a-select>
+          </span>
         </a-table>
       </a-form>
     </a-spin>
@@ -87,7 +94,7 @@
   import pick from 'lodash.pick'
   import {JeecgListMixin} from '@/mixins/JeecgListMixin'
   import AFormItem from "ant-design-vue/es/form/FormItem";
-  import {deliveryStockOut, duplicateCheck, getDeliveryTypeList } from '@/api/api'
+  import {deliveryStockOut, duplicateCheck, getDeliveryTypeList, getWarehouseList } from '@/api/api'
 
   export default {
     name: "SalePutOutModal",
@@ -140,6 +147,11 @@
             dataIndex: 'specification'
           },
           {
+            title: '出货仓库',
+            align:"center",
+            scopedSlots: { customRender: 'warehouseAction' }
+          },
+          {
             title: '数量',
             align:"center",
             scopedSlots: { customRender: 'amountAction' }
@@ -169,7 +181,8 @@
             ]
           }
         },
-        deliveryTypeList: []
+        deliveryTypeList: [],
+        warehouseList:[]
       }
     },
     components: {AFormItem},
@@ -185,6 +198,14 @@
             this.deliveryTypeList = res.result;
           }
         })
+        //仓库
+        getWarehouseList('').then((res) => {
+          if (res.success) {
+            if (res.result && res.result.length > 0) {
+              this.warehouseList = res.result;
+            }
+          }
+        });
         this.form.resetFields();
         this.model = Object.assign({}, record);
         this.visible = true;
@@ -262,7 +283,11 @@
         this.modelStyle.fullScreen = mode
       },
       handleChange (val, key, index, col) {
-        this.putoutmtls[index].quantity = val;
+        if ('quantity' == col) {
+          this.putoutmtls[index].quantity = val;
+        } else if ('warehouseId' == col) {
+          this.putoutmtls[index].warehouseId = val;
+        }
       },
       deliveryTypeChange (val) {
         this.deliveryType = val;
