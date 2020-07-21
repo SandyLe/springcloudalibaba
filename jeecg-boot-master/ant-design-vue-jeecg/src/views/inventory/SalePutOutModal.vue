@@ -38,15 +38,15 @@
             </a-form-item>
           </a-col>
           <a-col :span="12">
-            <a-form-item v-if="deliveryType != 0" label="物流单号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input placeholder="请输入物流单号" v-decorator="[ 'logisticsNo', {}]" />
+            <a-form-item label="发货时间" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-date-picker showTime format='YYYY-MM-DD HH:mm:ss' v-decorator="[ 'deliveryDate', {}]"/>
             </a-form-item>
           </a-col>
         </a-row>
-        <a-row>
+        <a-row v-if="deliveryType != 0" >
           <a-col :span="12">
-            <a-form-item label="发货时间" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-date-picker showTime format='YYYY-MM-DD HH:mm:ss' v-decorator="[ 'deliveryDate', {}]"/>
+            <a-form-item label="物流单号" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input placeholder="请输入物流单号" v-decorator="[ 'logisticsNo', {}]" />
             </a-form-item>
           </a-col>
           <a-col :span="12">
