@@ -122,7 +122,8 @@
           </div>
         </div>
         <div slot="action">
-          <a-button type="primary" @click="finish">完成</a-button>
+          <a-button type="primary" @click="finish">完成并关闭</a-button>
+          <a-button type="primary" style="margin-left: 8px" @click="finishStockOut">完成并通知出库</a-button>
           <a-button style="margin-left: 8px" @click="toOrderList">订单列表</a-button>
           <a-button style="margin-left: 8px" v-print="'#information'" ghost type="primary">打印</a-button>
         </div>
@@ -152,6 +153,10 @@
     },
     methods: {
       finish () {
+        this.$emit('finish')
+      },
+      finishStockOut () {
+
         this.$emit('finish')
       },
       toOrderList () {
