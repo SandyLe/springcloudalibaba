@@ -5,7 +5,8 @@ package org.jeecg.common.enums;
  */
 public enum DeliveryType implements AbstractEnum {
 
-    Delivery(0, "TakeTheir", "自提"),
+    Delivery(-1, "StockMixes", "库存调配"),
+    TakeTheir(0, "TakeTheir", "自提"),
     Express(1, "Express", "快递"),
     ExpressSheet(2, "ExpressSheet", "电子面单"),
     Logistics(3, "Logistics", "物流")
