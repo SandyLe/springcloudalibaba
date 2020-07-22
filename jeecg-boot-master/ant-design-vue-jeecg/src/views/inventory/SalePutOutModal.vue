@@ -38,12 +38,12 @@
             </a-form-item>
           </a-col>
           <a-col :span="12">
-            <a-form-item label="发货时间" :labelCol="labelCol" :wrapperCol="wrapperCol">
+            <a-form-item label="出库时间" :labelCol="labelCol" :wrapperCol="wrapperCol">
               <a-date-picker showTime format='YYYY-MM-DD HH:mm:ss' v-decorator="[ 'deliveryDate', {}]"/>
             </a-form-item>
           </a-col>
         </a-row>
-        <a-row v-if="deliveryType != 0" >
+        <a-row v-if="deliveryType < 1" >
           <a-col :span="12">
             <a-form-item label="物流单号" :labelCol="labelCol" :wrapperCol="wrapperCol">
               <a-input placeholder="请输入物流单号" v-decorator="[ 'logisticsNo', {}]" />
@@ -107,6 +107,7 @@
     },
     data() {
       return {
+        dateFormat:"YYYY-MM-DD HH:mm:ss",
         title: "操作",
         visible: false,
         confirmLoading: false,
@@ -218,6 +219,11 @@
         const that = this;
         this.form.validateFields((err, values) => {
           if (!err) {
+            if(!values.deliveryDate){
+              values.deliveryDate = '';
+            }else{
+              values.deliveryDate = values.deliveryDate.format(this.dateFormat);
+            }
             let formData = Object.assign(this.model, values);
             debugger
             let formDataDto = {
