@@ -90,11 +90,6 @@
                     </a-card>
                 </a-col>
             </a-row>
-            <a-row>
-              <a-col :span="24">
-                    <inventory-modal ref="inventorymodalForm" ></inventory-modal>
-              </a-col>
-            </a-row>
         </a-form>
 
 
@@ -119,7 +114,6 @@ import moment from 'moment'
 import JDate from '@/components/jeecg/JDate'
 import JDictSelectTag from '@/components/dict/JDictSelectTag'
 import FooterToolBar from '@/components/tools/FooterToolBar'
-import InventoryModal from '../inventory/InventoryInModal'
 import {
     getWarehouseList,
     searchMaterial,
@@ -133,8 +127,7 @@ export default {
     components: {
         JDate,
         FooterToolBar,
-        JDictSelectTag,
-        InventoryModal
+        JDictSelectTag
     },
     data() {
         return {

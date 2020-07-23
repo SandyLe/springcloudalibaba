@@ -191,7 +191,7 @@ const getPurchaseMtlOne = (params)=>getAction("/purchaseMtl/getPurchaseMtlOne",p
 
 
 const inventoryInedit = (params)=>postAction("/inventoryIn/edit",params)  //入库单编辑
-const inventoryOutadd = (params)=>postAction("/inventoryOut/add",params)  //新增出库单
+const inventoryOutSave = (params)=>postAction("/inventoryOut/save",params)  // 新增出库单
 
 const purchaseReturnQueryById = (params)=>getAction("/purchasereturn/queryById",params)
 const purchasereturnadd = (params)=>postAction("/purchasereturn/add",params)  //新增采购退货
@@ -404,7 +404,7 @@ export {
   purchasequeryById,
   purchasedetailDelete,
   inventoryInedit,
-  inventoryOutadd,
+  inventoryOutSave,
   purchasereturnadd,
   purchasereturnedit,
   getPurchaseByCode,

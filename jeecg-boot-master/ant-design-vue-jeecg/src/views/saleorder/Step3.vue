@@ -134,7 +134,7 @@
 
 <script>
   import Result from '../result/Result'
-  import {getSaleOrderOne, getlSaleMtlList, getSaleOrderExpenseList, getSaleOrderCostList, getDeliveryInfoBySourceId} from '@/api/api'
+  import {getSaleOrderOne, getlSaleMtlList, getSaleOrderExpenseList, getSaleOrderCostList, getDeliveryInfoBySourceId, inventoryOutSave} from '@/api/api'
 
   export default {
     name: "Step3",
@@ -156,7 +156,19 @@
         this.$emit('finish')
       },
       finishStockOut () {
-
+        let formData = {
+          "sourceId": this.saleOrder.id,
+          "sourceCode": this.saleOrder.code,
+          "sourceBillType": this.saleOrder.billType
+        };
+        inventoryOutSave(formData).then((res)=>{
+          if(res.success){
+            this.$message.success(res.message);
+          }else{
+            this.$message.warning(res.message);
+          }
+        }).finally(() => {
+        })
         this.$emit('finish')
       },
       toOrderList () {

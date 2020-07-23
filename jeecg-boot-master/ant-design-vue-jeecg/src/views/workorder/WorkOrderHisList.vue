@@ -127,16 +127,12 @@
 
         </a-table>
     </div>
-    <inventory-modal ref="inventorymodalForm" ></inventory-modal>
-    <inventory-out-modal ref="inventoryOutmodalForm" ></inventory-out-modal>
 </a-card>
 </template>
 
 <script>
 import { JeecgListMixin } from '@/mixins/JeecgListMixin'
-import InventoryModal from '../inventory/InventoryInModal'
 import JInput from '@/components/jeecg/JInput'
-import InventoryOutModal from '../inventory/InventoryOutModal'
 import JDictSelectTag from '@/components/dict/JDictSelectTag.vue'
 import { filterMultiDictText } from '@/components/dict/JDictSelectUtil'
 import JDate from '@/components/jeecg/JDate.vue'
@@ -148,9 +144,7 @@ export default {
     components: {
         JInput,
         JDictSelectTag,
-        JDate,
-        InventoryModal,
-        InventoryOutModal
+        JDate
     },
     data() {
         return {

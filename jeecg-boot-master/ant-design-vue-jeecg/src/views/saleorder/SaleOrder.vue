@@ -82,6 +82,9 @@
               <a-menu-item  v-if="record.billStatus != -1">
                 <a @click="addWorkOrder(record)">安排工单</a>
               </a-menu-item>
+              <a-menu-item  v-if="record.billStatus != -1">
+                <a @click="addStockOut(record)">通知出库</a>
+              </a-menu-item>
               <a-menu-item  v-if="record.billStatus < 4 && record.billStatus != -1">
                 <a-popconfirm title="确定作废吗?" @confirm="() => handleInvalid(record)">
                   <a>作废</a>
@@ -106,7 +109,7 @@
   import SaleOrderDetail from './SaleOrderDetail'
   import JInput from '@/components/jeecg/JInput'
   import {JeecgListMixin} from '@/mixins/JeecgListMixin'
-  import {disableSaleOrder, searchCustomer} from '@/api/api'
+  import {disableSaleOrder, searchCustomer, inventoryOutSave} from '@/api/api'
   export default {
     name: "",
     mixins: [JeecgListMixin],
@@ -235,6 +238,21 @@
       addWorkOrder (record) {
 
         this.$router.replace({ path:'/workorder/workOrderDetail/',  query: {"sourceBillType": 0, "sourceId": record.id, "sourceCode": record.code} });
+      },
+      addStockOut (record) {
+        let formData = {
+          "sourceId": record.id,
+          "sourceCode": record.code,
+          "sourceBillType": record.billType
+        };
+        inventoryOutSave(formData).then((res)=>{
+          if(res.success){
+            this.$message.success(res.message);
+          }else{
+            this.$message.warning(res.message);
+          }
+        }).finally(() => {
+        })
       }
     },
     mounted() {
