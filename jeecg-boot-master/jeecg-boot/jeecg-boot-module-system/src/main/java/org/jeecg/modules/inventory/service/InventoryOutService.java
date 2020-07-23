@@ -26,10 +26,17 @@ public interface InventoryOutService extends IService<InventoryOut> {
      */
     public Boolean stockOut(PreInventoryDto preInventoryDto);
 
-    public InventoryOut queryBySourceId(String sourceId);
+    /**
+     * 查询原单出库单
+     * @param sourceBillType
+     * @param sourceId
+     * @return
+     */
+    public InventoryOut queryBySourceId(Integer sourceBillType, String sourceId);
+
     /**
      * 根据原单ID删除数据
      * @param sourceId
      */
-    public void deleteBySourceId(String sourceId);
+    public void deleteBySourceId(Integer sourceBillType, String sourceId);
 }

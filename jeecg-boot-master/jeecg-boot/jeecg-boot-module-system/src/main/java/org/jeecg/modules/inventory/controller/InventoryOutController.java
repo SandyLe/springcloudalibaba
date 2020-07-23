@@ -13,6 +13,7 @@ import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.system.query.QueryGenerator;
+import org.jeecg.common.util.LoginUtils;
 import org.jeecg.modules.basic.entity.Material;
 import org.jeecg.modules.basic.entity.MaterialUnit;
 import org.jeecg.modules.basic.entity.Warehouse;
@@ -58,25 +59,34 @@ public class InventoryOutController {
     private MaterialService materialService;
 
     /**
-     * 添加
+     * 出库
      *
      * @param inventoryOut
      * @return
      */
-    @PostMapping(value = "/add")
+    @PostMapping(value = "/save")
     @AutoLog(value = "添加出库单")
     @ApiOperation(value = "添加出库单", notes = "添加出库单")
     public Result<?> add(@RequestBody InventoryOut inventoryOut, HttpServletRequest req) {
-        if (StringUtils.isEmpty(inventoryOut.getId())) {
-            inventoryOut.setCode(billCodeBuilderService.getBillCode(BillType.INVENTORYOUT.getId()));
+
+        InventoryOut dbInventoryOut = inventoryOutService.queryBySourceId (inventoryOut.getSourceBillType(), inventoryOut.getSourceId());
+        if (null != dbInventoryOut ) {
+            inventoryOutService.deleteBySourceId(dbInventoryOut.getSourceBillType(), inventoryOut.getSourceId());
         }
-        InventoryOut existCode = inventoryOutService.getOne(new LambdaQueryWrapper<InventoryOut>().eq(InventoryOut::getCode, inventoryOut.getCode()).ne(InventoryOut::getId, inventoryOut.getId()));
-        Assert.isNull(existCode, "单号已存在！");
-        inventoryOutService.save(inventoryOut);
-//        if (StringUtils.isNotBlank(inventoryOut.getSourceId()) && StringUtils.isNotEmpty(inventoryOut.getSourceId())){
-//            QueryWrapper<InventoryOut> queryWrapper = QueryGenerator.initQueryWrapper(inventoryOut, req.getParameterMap());
-//            List<InventoryOut> list = inventoryOutService.list(queryWrapper);
-//        }
+
+        if (StringUtils.isBlank(inventoryOut.getCompanyId())) {
+            inventoryOut.setCompanyId(LoginUtils.getLoginUser().getCompanyId());
+        }
+        if (null == inventoryOut.getBillType()) {
+            inventoryOut.setBillType(BillType.INVENTORYOUT.getId());
+        }
+        if (null == inventoryOut.getBillStatus()) {
+            inventoryOut.setBillStatus(BillStatus.TOSEND.getId());
+        }
+        if (null == inventoryOut.getRowSts()) {
+            inventoryOut.setRowSts(RowSts.EFFECTIVE.getId());
+        }
+        inventoryOutService.saveToInventoryOut(inventoryOut);
         Result<Object> result = Result.ok();
         result.setResult(inventoryOut);
         return result;
@@ -113,11 +123,7 @@ public class InventoryOutController {
         queryWrapper.eq("row_sts", RowSts.EFFECTIVE.getId());
         IPage<InventoryOut> pageList = inventoryOutService.page(page, queryWrapper);
         List<InventoryOut> inventoryOutList = pageList.getRecords();
-        List<String> warehouseIds = inventoryOutList.stream().map(InventoryOut::getWarehouseId).collect(Collectors.toList());
-        Collection<Warehouse> warehouses = warehouseService.listByIds(warehouseIds);
-        Map<String, String> warehouseMap = warehouses.stream().collect(Collectors.toMap(Warehouse:: getId, Warehouse:: getName));
         inventoryOutList.stream().forEach(o->{
-            o.setWarehouse(warehouseMap.get(o.getWarehouseId()));
             o.setBillTypeName(EnumConvertUtils.getName(BillType.class, o.getBillType()));
             o.setSourceBillTypeName(EnumConvertUtils.getName(BillType.class, o.getSourceBillType()));
             o.setBillStatusName(EnumConvertUtils.getName(BillStatus.class, o.getBillStatus()));

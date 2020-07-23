@@ -150,9 +150,6 @@ public class PurchaseReturnController extends JeecgController<PurchaseReturn, Pu
             inventoryOut.setSourceBillType(BillType.PURCHASERETURNORDER.getId());
             inventoryOut.setWarehouseId(purchase.getWarehouseId());
             inventoryOut.setRowSts(RowSts.EFFECTIVE.getId());
-            if (StringUtils.isNotBlank(dto.getPutOutTime())){
-                inventoryOut.setPutOutTime(dto.getPutOutTime());
-            }
             inventoryOut.setBillStatus(BillStatus.TOSEND.getId());
             inventoryOutService.saveToInventoryOut(inventoryOut);
         }
@@ -184,7 +181,7 @@ public class PurchaseReturnController extends JeecgController<PurchaseReturn, Pu
         }
 
         // 出库单主表
-        inventoryOutService.deleteBySourceId(purchasedtldto.getId());
+        inventoryOutService.deleteBySourceId(purchasedtldto.getBillType(), purchasedtldto.getId());
 
         if (StringUtils.isNotBlank(purchasedtldto.getWarehouseId())) {
 
@@ -193,7 +190,6 @@ public class PurchaseReturnController extends JeecgController<PurchaseReturn, Pu
             inventoryOut.setCompanyId(purchasedtldto.getCompanyId());
             inventoryOut.setBillStatus(BillStatus.TOSEND.getId());
             inventoryOut.setWarehouseId(purchasedtldto.getWarehouseId());
-            inventoryOut.setPutOutTime(purchasedtldto.getPutOutTime());
             inventoryOut.setSourceCode(purchasedtldto.getCode());
             inventoryOut.setSourceId(purchasedtldto.getId());
             inventoryOut.setBillType(BillType.INVENTORYOUT.getId());
@@ -246,9 +242,6 @@ public class PurchaseReturnController extends JeecgController<PurchaseReturn, Pu
         purchasedtldto.setCreateTime(purchasereturn.getCreateTime());
         purchasedtldto.setCompanyId(purchasereturn.getCompanyId());
         purchasedtldto.setDetaillist(purchaseReturnMtlService.queryBySourceId(purchasereturn.getId()));
-
-        InventoryOut inventoryOut = inventoryOutService.queryBySourceId(purchasereturn.getId());
-        purchasedtldto.setPutOutTime(null != inventoryOut ? inventoryOut.getPutOutTime() : null);
 
         return Result.ok(purchasedtldto);
     }

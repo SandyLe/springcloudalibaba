@@ -39,6 +39,11 @@ public class Allot extends CBasicEntity {
     @ApiModelProperty("订单状态")
     @TableField(exist=false)
     private String billStatusName;
+    @ApiModelProperty("单据类型")
+    private Integer billType;
+    @ApiModelProperty("单据类型名称")
+    @TableField(exist=false)
+    private String billTypeName;
 
     public Date getBilldate() {
         return billdate;
@@ -97,5 +102,21 @@ public class Allot extends CBasicEntity {
             return EnumConvertUtils.getName(BillStatus.class, billStatus);
         }
         return billStatusName;
+    }
+
+    public Integer getBillType() {
+        return billType;
+    }
+
+    public void setBillType(Integer billType) {
+        this.billType = billType;
+    }
+
+    public String getBillTypeName() {
+        return billTypeName;
+    }
+
+    public void setBillTypeName(String billTypeName) {
+        this.billTypeName = billTypeName;
     }
 }

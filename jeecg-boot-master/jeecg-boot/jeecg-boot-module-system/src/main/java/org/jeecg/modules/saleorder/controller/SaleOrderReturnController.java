@@ -168,7 +168,6 @@ public class SaleOrderReturnController {
             inventoryIn.setCompanyId(saleOrderReturn.getCompanyId());
             inventoryIn.setBillStatus(BillStatus.TOSTOCKIN.getId());
             inventoryIn.setWarehouseId(saleOrderReturn.getWarehouseId());
-            inventoryIn.setPutInTime(new Date());
             inventoryIn.setSourceCode(saleOrderReturn.getCode());
             inventoryIn.setSourceId(saleOrderReturn.getId());
             inventoryIn.setBillType(BillType.INVENTORYIN.getId());

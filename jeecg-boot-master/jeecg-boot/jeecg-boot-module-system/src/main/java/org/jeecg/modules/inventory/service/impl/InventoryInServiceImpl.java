@@ -287,7 +287,6 @@ public class InventoryInServiceImpl extends ServiceImpl<InventoryInMapper, Inven
                 changeOrderService.updateById(changeOrder);
             }
             info.setBillStatus(billStatus);
-            info.setPutInTime(new Date());
             updateById(info);
         }
         return true;

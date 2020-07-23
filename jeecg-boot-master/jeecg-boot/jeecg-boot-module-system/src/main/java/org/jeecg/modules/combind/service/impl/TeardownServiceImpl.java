@@ -82,7 +82,6 @@ public class TeardownServiceImpl extends ServiceImpl<TeardownMapper, Teardown> i
             inventoryIn.setCompanyId(teardownDto.getCompanyId());
             inventoryIn.setBillStatus(BillStatus.TOSTOCKIN.getId());
             inventoryIn.setWarehouseId(teardownDto.getWarehouseId());
-            inventoryIn.setPutInTime(new Date());
             inventoryIn.setSourceCode(code);
             inventoryIn.setSourceId(teardownDto.getId());
             inventoryIn.setBillType(BillType.INVENTORYIN.getId());
@@ -93,7 +92,7 @@ public class TeardownServiceImpl extends ServiceImpl<TeardownMapper, Teardown> i
         }
         if (StringUtils.isNotBlank(teardownDto.getWarehouseId())) {
             // 拆卸出库
-            InventoryOut inventoryOut = new InventoryOut(teardownDto.getId(), teardownDto.getCode(), BillType.INVENTORYOUT.getId(), BillType.TEARDOWN.getId(), teardownDto.getWarehouseId(), new Date(), BillStatus.TOSTOCKOUT.getId());
+            InventoryOut inventoryOut = new InventoryOut(teardownDto.getId(), teardownDto.getCode(), BillType.INVENTORYOUT.getId(), BillType.TEARDOWN.getId(), BillStatus.TOSTOCKOUT.getId());
             inventoryOut.setRowSts(RowSts.EFFECTIVE.getId());
             inventoryOut.setCompanyId(teardownDto.getCompanyId());
             inventoryOutService.saveToInventoryOut(inventoryOut);
@@ -129,7 +128,6 @@ public class TeardownServiceImpl extends ServiceImpl<TeardownMapper, Teardown> i
             inventoryIn.setCompanyId(teardowndto.getCompanyId());
             inventoryIn.setBillStatus(BillStatus.TOSTOCKIN.getId());
             inventoryIn.setWarehouseId(teardowndto.getWarehouseId());
-            inventoryIn.setPutInTime(new Date());
             inventoryIn.setSourceCode(teardowndto.getCode());
             inventoryIn.setSourceId(teardowndto.getId());
             inventoryIn.setBillType(BillType.INVENTORYIN.getId());
@@ -139,10 +137,10 @@ public class TeardownServiceImpl extends ServiceImpl<TeardownMapper, Teardown> i
             inventoryInService.saveToInventoryIn(inventoryIn);
         }
 
-        inventoryOutService.deleteBySourceId(teardowndto.getId());
+        inventoryOutService.deleteBySourceId(teardowndto.getBillType(), teardowndto.getId());
         if (StringUtils.isNotBlank(teardowndto.getWarehouseId())) {
             // 拆卸出库
-            InventoryOut inventoryOut = new InventoryOut(teardowndto.getId(), teardowndto.getCode(), BillType.INVENTORYOUT.getId(), BillType.TEARDOWN.getId(), teardowndto.getWarehouseId(), new Date(), BillStatus.TOSTOCKOUT.getId());
+            InventoryOut inventoryOut = new InventoryOut(teardowndto.getId(), teardowndto.getCode(), BillType.INVENTORYOUT.getId(), BillType.TEARDOWN.getId(), BillStatus.TOSTOCKOUT.getId());
             inventoryOut.setRowSts(RowSts.EFFECTIVE.getId());
             inventoryOut.setCompanyId(teardowndto.getCompanyId());
             inventoryOutService.saveToInventoryOut(inventoryOut);

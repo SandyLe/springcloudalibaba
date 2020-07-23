@@ -35,13 +35,6 @@ public class InventoryIn extends CBasicEntity {
     @ApiModelProperty("仓库")
     @TableField(exist=false)
     private String warehouse;
-
-    @ApiModelProperty("入库时间")
-    @Excel(name = "入库时间", width = 20, format = "yyyy-MM-dd HH:mm:ss")
-    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date putInTime;
-
     @ApiModelProperty("订单状态")
     private Integer billStatus;
     @TableField(exist=false)
@@ -77,14 +70,6 @@ public class InventoryIn extends CBasicEntity {
 
     public void setWarehouse(String warehouse) {
         this.warehouse = warehouse;
-    }
-
-    public Date getPutInTime() {
-        return putInTime;
-    }
-
-    public void setPutInTime(Date putInTime) {
-        this.putInTime = putInTime;
     }
 
     public Integer getBillStatus() {

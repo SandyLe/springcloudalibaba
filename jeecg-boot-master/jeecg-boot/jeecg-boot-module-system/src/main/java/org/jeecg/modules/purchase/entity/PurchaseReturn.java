@@ -57,6 +57,11 @@ public class PurchaseReturn extends CBasicEntity {
     @ApiModelProperty("订单状态")
     @TableField(exist=false)
     private String billStatusName;
+    @ApiModelProperty("单据类型")
+    private Integer billType;
+    @TableField(exist=false)
+    @ApiModelProperty("单据类型名称")
+    private String billTypeName;
 
     public String getWarehouseId() {
         return warehouseId;
@@ -144,5 +149,21 @@ public class PurchaseReturn extends CBasicEntity {
 
     public void setSourceCode(String sourceCode) {
         this.sourceCode = sourceCode;
+    }
+
+    public Integer getBillType() {
+        return billType;
+    }
+
+    public void setBillType(Integer billType) {
+        this.billType = billType;
+    }
+
+    public String getBillTypeName() {
+        return billTypeName;
+    }
+
+    public void setBillTypeName(String billTypeName) {
+        this.billTypeName = billTypeName;
     }
 }

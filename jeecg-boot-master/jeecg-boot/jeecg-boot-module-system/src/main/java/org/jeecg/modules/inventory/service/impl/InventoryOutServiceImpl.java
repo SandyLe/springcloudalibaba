@@ -45,6 +45,7 @@ import org.jeecg.modules.workorder.service.WorkOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -187,6 +188,8 @@ public class InventoryOutServiceImpl extends ServiceImpl<InventoryOutMapper, Inv
         if (StringUtils.isEmpty(inventoryOut.getId())) {
             inventoryOut.setCode(billCodeBuilderService.getBillCode(BillType.INVENTORYOUT.getId()));
         }
+        InventoryOut existCode = getOne(new LambdaQueryWrapper<InventoryOut>().eq(InventoryOut::getCode, inventoryOut.getCode()).ne(InventoryOut::getId, inventoryOut.getId()));
+        Assert.isNull(existCode, "单号已存在！");
         // 保存主表
         save(inventoryOut);
 
@@ -282,15 +285,20 @@ public class InventoryOutServiceImpl extends ServiceImpl<InventoryOutMapper, Inv
     }
 
     @Override
-    public InventoryOut queryBySourceId(String sourceId) {
+    public InventoryOut queryBySourceId(Integer sourceBillType, String sourceId) {
 
-        return this.baseMapper.queryBySourceId(sourceId);
+        LambdaQueryWrapper<InventoryOut> lambdaQueryWrapper = new LambdaQueryWrapper<InventoryOut>();
+        lambdaQueryWrapper.eq(InventoryOut::getSourceBillType, sourceBillType);
+        lambdaQueryWrapper.eq(InventoryOut::getSourceId, sourceId);
+        lambdaQueryWrapper.eq(InventoryOut::getRowSts, RowSts.EFFECTIVE.getId());
+
+        return super.getOne(lambdaQueryWrapper);
     }
 
     @Override
-    public void deleteBySourceId(String sourceId) {
+    public void deleteBySourceId(Integer sourceBillType, String sourceId) {
 
-        InventoryOut exist = getOne(new LambdaQueryWrapper<InventoryOut>().eq(InventoryOut::getSourceId, sourceId).eq(InventoryOut::getRowSts, RowSts.EFFECTIVE.getId()));
+        InventoryOut exist = queryBySourceId(sourceBillType, sourceId);
         if (null != exist) {
             exist.setRowSts(RowSts.DELETED.getId());
             updateById(exist);

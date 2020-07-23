@@ -28,30 +28,24 @@ public class InventoryOut extends CBasicEntity {
     private Integer billType;
     @TableField(exist=false)
     private String billTypeName;
+    @ApiModelProperty("订单状态")
+    private Integer billStatus;
+    @TableField(exist=false)
+    private String billStatusName;
     @ApiModelProperty("仓库ID")
     private String warehouseId;
     @ApiModelProperty("仓库")
     @TableField(exist=false)
     private String warehouse;
-    @ApiModelProperty("出货时间")
-    private String putOutTime;
-    @ApiModelProperty("订单状态")
-    private Integer billStatus;
-    @TableField(exist=false)
-    private String billStatusName;
 
     public InventoryOut() {
     }
 
-    public InventoryOut(String sourceId, String sourceCode, Integer billType, Integer sourceBillType, String warehouseId, Date putOutTime, Integer billStatus) {
+    public InventoryOut(String sourceId, String sourceCode, Integer billType, Integer sourceBillType, Integer billStatus) {
         this.sourceId = sourceId;
         this.billType = billType;
         this.sourceCode = sourceCode;
         this.sourceBillType = sourceBillType;
-        this.warehouseId = warehouseId;
-        if (null != putOutTime) {
-            this.putOutTime = DateUtils.formatTime(putOutTime);
-        }
         this.billStatus = billStatus;
     }
 
@@ -69,30 +63,6 @@ public class InventoryOut extends CBasicEntity {
 
     public void setBillType(Integer billType) {
         this.billType = billType;
-    }
-
-    public String getWarehouseId() {
-        return warehouseId;
-    }
-
-    public void setWarehouseId(String warehouseId) {
-        this.warehouseId = warehouseId;
-    }
-
-    public String getWarehouse() {
-        return warehouse;
-    }
-
-    public void setWarehouse(String warehouse) {
-        this.warehouse = warehouse;
-    }
-
-    public String getPutOutTime() {
-        return putOutTime;
-    }
-
-    public void setPutOutTime(String putOutTime) {
-        this.putOutTime = putOutTime;
     }
 
     public Integer getBillStatus() {
@@ -133,5 +103,29 @@ public class InventoryOut extends CBasicEntity {
 
     public void setBillStatusName(String billStatusName) {
         this.billStatusName = billStatusName;
+    }
+
+    public String getSourceCode() {
+        return sourceCode;
+    }
+
+    public void setSourceCode(String sourceCode) {
+        this.sourceCode = sourceCode;
+    }
+
+    public String getWarehouseId() {
+        return warehouseId;
+    }
+
+    public void setWarehouseId(String warehouseId) {
+        this.warehouseId = warehouseId;
+    }
+
+    public String getWarehouse() {
+        return warehouse;
+    }
+
+    public void setWarehouse(String warehouse) {
+        this.warehouse = warehouse;
     }
 }

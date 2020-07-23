@@ -36,8 +36,6 @@ import java.util.stream.Collectors;
 public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder> implements WorkOrderService {
 
     @Autowired
-    private WorkOrderMapper workOrderMapper;
-    @Autowired
     private WorkOrderDtlService workOrderDtlService;
     @Lazy
     @Autowired
@@ -74,7 +72,7 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
         if (StringUtils.isNotBlank(workOrderdto.getWarehouseId())) {
             // 配件出库
-            InventoryOut inventoryOut = new InventoryOut(workOrderdto.getId(), workOrderdto.getCode(), BillType.INVENTORYOUT.getId(), BillType.WORKORDER.getId(), workOrderdto.getWarehouseId(), new Date(), BillStatus.TOSTOCKOUT.getId());
+            InventoryOut inventoryOut = new InventoryOut(workOrderdto.getId(), workOrderdto.getCode(), BillType.INVENTORYOUT.getId(), BillType.WORKORDER.getId(), BillStatus.TOSTOCKOUT.getId());
             inventoryOut.setRowSts(RowSts.EFFECTIVE.getId());
             inventoryOut.setCompanyId(workOrderdto.getCompanyId());
             inventoryOutService.saveToInventoryOut(inventoryOut);
@@ -108,9 +106,9 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         }
 
         if (StringUtils.isNotBlank(workOrderdto.getWarehouseId())) {
-            inventoryOutService.deleteBySourceId(workOrderdto.getId());
+            inventoryOutService.deleteBySourceId(workOrderdto.getBillType(), workOrderdto.getId());
             // 配件出库
-            InventoryOut inventoryOut = new InventoryOut(workOrderdto.getId(), workOrderdto.getCode(), BillType.INVENTORYOUT.getId(), BillType.WORKORDER.getId(), workOrderdto.getWarehouseId(), new Date(), BillStatus.TOSTOCKOUT.getId());
+            InventoryOut inventoryOut = new InventoryOut(workOrderdto.getId(), workOrderdto.getCode(), BillType.INVENTORYOUT.getId(), BillType.WORKORDER.getId(), BillStatus.TOSTOCKOUT.getId());
             inventoryOut.setRowSts(RowSts.EFFECTIVE.getId());
             inventoryOut.setCompanyId(workOrderdto.getCompanyId());
             inventoryOutService.saveToInventoryOut(inventoryOut);

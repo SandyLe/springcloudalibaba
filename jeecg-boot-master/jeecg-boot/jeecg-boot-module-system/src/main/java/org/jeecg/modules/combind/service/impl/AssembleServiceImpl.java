@@ -79,7 +79,6 @@ public class AssembleServiceImpl extends ServiceImpl<AssembleMapper, Assemble> i
             inventoryIn.setCompanyId(assembledto.getCompanyId());
             inventoryIn.setBillStatus(BillStatus.TOSTOCKIN.getId());
             inventoryIn.setWarehouseId(assembledto.getWarehouseId());
-            inventoryIn.setPutInTime(new Date());
             inventoryIn.setSourceCode(code);
             inventoryIn.setSourceId(assembledto.getId());
             inventoryIn.setBillType(BillType.INVENTORYIN.getId());
@@ -91,7 +90,7 @@ public class AssembleServiceImpl extends ServiceImpl<AssembleMapper, Assemble> i
 
         if (StringUtils.isNotBlank(assembledto.getWarehouseId())) {
             // 出库
-            InventoryOut inventoryOut = new InventoryOut(assembledto.getId(), assembledto.getCode(), BillType.INVENTORYOUT.getId(), BillType.ASSEMBLE.getId(), assembledto.getWarehouseId(), new Date(), BillStatus.TOSTOCKOUT.getId());
+            InventoryOut inventoryOut = new InventoryOut(assembledto.getId(), assembledto.getCode(), BillType.INVENTORYOUT.getId(), BillType.ASSEMBLE.getId(), BillStatus.TOSTOCKOUT.getId());
             inventoryOut.setRowSts(RowSts.EFFECTIVE.getId());
             inventoryOut.setCompanyId(assembledto.getCompanyId());
             inventoryOutService.saveToInventoryOut(inventoryOut);
@@ -128,7 +127,6 @@ public class AssembleServiceImpl extends ServiceImpl<AssembleMapper, Assemble> i
             inventoryIn.setCompanyId(assembledto.getCompanyId());
             inventoryIn.setBillStatus(BillStatus.TOSTOCKIN.getId());
             inventoryIn.setWarehouseId(assembledto.getWarehouseId());
-            inventoryIn.setPutInTime(new Date());
             inventoryIn.setSourceCode(assembledto.getCode());
             inventoryIn.setSourceId(assembledto.getId());
             inventoryIn.setBillType(BillType.INVENTORYIN.getId());
@@ -138,10 +136,10 @@ public class AssembleServiceImpl extends ServiceImpl<AssembleMapper, Assemble> i
             inventoryInService.saveToInventoryIn(inventoryIn);
         }
 
-        inventoryOutService.deleteBySourceId(assembledto.getId());
+        inventoryOutService.deleteBySourceId(assembledto.getBillType(), assembledto.getId());
         if (StringUtils.isNotBlank(assembledto.getWarehouseId())) {
             // 配件出库
-            InventoryOut inventoryOut = new InventoryOut(assembledto.getId(), assembledto.getCode(), BillType.INVENTORYOUT.getId(), BillType.ASSEMBLE.getId(), assembledto.getWarehouseId(), new Date(), BillStatus.TOSTOCKOUT.getId());
+            InventoryOut inventoryOut = new InventoryOut(assembledto.getId(), assembledto.getCode(), BillType.INVENTORYOUT.getId(), BillType.ASSEMBLE.getId(), BillStatus.TOSTOCKOUT.getId());
             inventoryOut.setRowSts(RowSts.EFFECTIVE.getId());
             inventoryOut.setCompanyId(assembledto.getCompanyId());
             inventoryOutService.saveToInventoryOut(inventoryOut);
