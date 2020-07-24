@@ -115,6 +115,7 @@ public class InventoryInServiceImpl extends ServiceImpl<InventoryInMapper, Inven
                 preInventoryOutMtl.setQuantity(tempAmout);
                 preInventoryOutMtl.setUnitId(o.getUnitId());
                 preInventoryOutMtl.setOperationId(operationId);
+                preInventoryOutMtl.setWarehouseId(inventoryIn.getWarehouseId());
                 preInventoryOutMtls.add(preInventoryOutMtl);
             }
         });

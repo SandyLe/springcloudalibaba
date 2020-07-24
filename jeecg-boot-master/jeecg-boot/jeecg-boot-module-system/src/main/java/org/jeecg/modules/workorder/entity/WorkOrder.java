@@ -50,6 +50,8 @@ public class WorkOrder extends CBasicEntity {
     @ApiModelProperty("配件出货仓库")
     @TableField(exist=false)
     private String warehouse;
+    @ApiModelProperty("工单类型")
+    private Integer workType;
 
     public String getSourceId() {
         return sourceId;
@@ -175,5 +177,13 @@ public class WorkOrder extends CBasicEntity {
 
     public void setWarehouse(String warehouse) {
         this.warehouse = warehouse;
+    }
+
+    public Integer getWorkType() {
+        return workType;
+    }
+
+    public void setWorkType(Integer workType) {
+        this.workType = workType;
     }
 }
