@@ -178,6 +178,7 @@ const getDateFmtList = (params)=>getAction("/basic/fc/enum/dateFormat/getList",p
 const getAddressTypeList = (params)=>getAction("/basic/fc/enum/addressType/getList",params)
 const getPayModeTypeList = (params)=>getAction("/basic/fc/enum/payMode/getList",params)
 const getDeliveryTypeList = (params)=>getAction("/basic/fc/enum/deliveryType/getList",params)
+const getWorkTypeList = (params)=>getAction("/basic/fc/enum/workType/getList",params)
 
 const loadShopData = (params)=>getAction("/sys/sysDepart/getSysDepartList",params)
 const getAllUser = (params)=>getAction("/sys/user/getAll",params)
@@ -466,7 +467,8 @@ export {
   getDeliveryTypeList,
   getReportList,
   reportQueryById,
-  reportDelete
+  reportDelete,
+  getWorkTypeList
 }
 
 

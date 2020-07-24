@@ -21,8 +21,12 @@
             </a-row>
             <a-row>
                 <a-col :span="12">
-                  <a-form-item label="单据时间" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                    <a-date-picker showTime format='YYYY-MM-DD HH:mm:ss' v-decorator="[ 'billDate', {}]"/>
+                  <a-form-item label="工单类型" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                    <a-select v-decorator="['workTypeId', {}]" placeholder="工单类型">
+                      <a-select-option v-for="(item, key) in workTypeList" :key="key" :value="item.id">
+                        {{ item.name }}
+                      </a-select-option>
+                    </a-select>
                   </a-form-item>
                 </a-col>
                 <a-col :span="12">
@@ -33,13 +37,13 @@
             </a-row>
             <a-row>
                 <a-col :span="12">
-                    <a-form-item label="施工人员" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                        <a-select v-decorator="['operateUserId', {}]" placeholder="施工人员">
-                          <a-select-option v-for="(item, key) in userList" :key="key" :value="item.id">
-                            {{ item.realname }}
-                          </a-select-option>
-                        </a-select>
-                    </a-form-item>
+                  <a-form-item label="施工人员" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                    <a-select v-decorator="['operateUserId', {}]" placeholder="施工人员">
+                      <a-select-option v-for="(item, key) in userList" :key="key" :value="item.id">
+                        {{ item.realname }}
+                      </a-select-option>
+                    </a-select>
+                  </a-form-item>
                 </a-col>
                 <a-col :span="12">
                   <a-form-item label="施工时间" :labelCol="labelCol" :wrapperCol="wrapperCol">
@@ -49,12 +53,8 @@
             </a-row>
             <a-row>
               <a-col :span="12">
-                <a-form-item label="配件出货仓库" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <a-select v-decorator="['warehouseId', {}]" placeholder="请选择仓库">
-                    <a-select-option v-for="(item, key) in dictOptions.warehouse" :key="key" :value="item.id">
-                      {{ item.name }}
-                    </a-select-option>
-                  </a-select>
+                <a-form-item label="单据时间" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                  <a-date-picker showTime format='YYYY-MM-DD HH:mm:ss' v-decorator="[ 'billDate', {}]"/>
                 </a-form-item>
               </a-col>
               <a-col :span="12">
@@ -147,12 +147,12 @@ import JDictSelectTag from '@/components/dict/JDictSelectTag'
 import FooterToolBar from '@/components/tools/FooterToolBar'
 import {
     getAllUser,
-    getWarehouseList,
     searchMaterial,
     getMaterialUnitList,
     getWorkOrderOne,
     workOrderDtlDelete,
-    getBillTypeList
+    getBillTypeList,
+    getWorkTypeList
 } from '@/api/api'
 export default {
     name: 'WorkOrderModal',
@@ -165,6 +165,7 @@ export default {
         return {
             userList:[],
             billTypeList:[],
+            workTypeList:[],
             hasaddmain: false,
             dateFormat:"YYYY-MM-DD HH:mm:ss",
             form: this.$form.createForm(this),
@@ -213,7 +214,6 @@ export default {
                 add: '/workOrder/add',
                 edit: '/workOrder/edit'
             },
-            warehouseOptions: [],
             dictOptions: {
                 warehouse: [],
                 materiallist: [],
@@ -304,17 +304,10 @@ export default {
                 this.billTypeList = res.result;
               }
             });
-            //仓库
-            getWarehouseList('').then((res) => {
-                if (res.success) {
-                    if (res.result && res.result.length > 0) {
-                        res.result.forEach(function (option) {
-                            option.value = option.id;
-                            option.text = option.name;
-                        })
-                    }
-                    this.$set(this.dictOptions, 'warehouse', res.result)
-                }
+            getWorkTypeList().then((res) => {
+              if (res.success) {
+                this.workTypeList = res.result;
+              }
             });
             //产品
             searchMaterial('').then((res) => {
@@ -374,7 +367,7 @@ export default {
             this.visible = true
             this.$nextTick(() => {
                 this.form.setFieldsValue(
-                    pick(this.model, 'id', 'code', 'sourceId', 'sourceBillType', 'sourceCode', 'content', 'warehouseId', 'operateUserId')
+                    pick(this.model, 'id', 'code', 'sourceId', 'sourceBillType', 'workTypeId', 'sourceCode', 'content', 'warehouseId', 'operateUserId')
                 )
                 this.form.setFieldsValue({billDate: this.model.billDate ? moment(this.model.billDate) : null})
                 this.form.setFieldsValue({operateDate: this.model.operateDate ? moment(this.model.operateDate) : null})
@@ -458,7 +451,7 @@ export default {
         },
         popupCallback(row) {
             this.form.setFieldsValue(
-                pick(row, 'id', 'code', 'sourceId', 'sourceBillType', 'sourceCode', 'content', 'warehouseId', 'operateUserId')
+                pick(row, 'id', 'code', 'sourceId', 'sourceBillType', 'workTypeId', 'sourceCode', 'content', 'warehouseId', 'operateUserId')
             )
         },
         newMember() {
@@ -543,7 +536,7 @@ export default {
         this.unEditable = this.$route.query.unEditable;
       }
       if (this.$route.query.sourceId) {
-        this.form.setFieldsValue({sourceId:this.$route.query.sourceId, sourceBillType:this.$route.query.sourceBillType, sourceCode: this.$route.query.sourceCode})
+        this.form.setFieldsValue({sourceId:this.$route.query.sourceId, sourceBillType:this.$route.query.sourceBillType, sourceCode: this.$route.query.sourceCode, workTypeId: this.$route.query.workTypeId})
       }
     }
 }

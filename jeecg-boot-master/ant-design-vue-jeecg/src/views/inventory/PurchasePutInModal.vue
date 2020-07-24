@@ -44,6 +44,15 @@
             <a-input placeholder="请输入入库数量" :defaultValue="record.quantity" name="quantity"
                      @change="e => handleChange(e.target.value, record.mtlId, index, 'quantity')"/>
           </span>
+          <span slot="warehouseAction" slot-scope="text, record, index">
+            <a-select v-decorator="['warehouseId', validatorRules.warehouseId]"
+                      :defaultValue="record.warehouseId"
+                      @change="((val)=>{handleChange(val, record.mtlId, index, 'warehouseId')})" placeholder="请选择仓库">
+              <a-select-option v-for="(item, key) in warehouseList" :key="key" :value="item.id">
+                {{ item.name }}
+              </a-select-option>
+            </a-select>
+          </span>
         </a-table>
       </a-form>
     </a-spin>
@@ -55,7 +64,7 @@
   import pick from 'lodash.pick'
   import {JeecgListMixin} from '@/mixins/JeecgListMixin'
   import AFormItem from "ant-design-vue/es/form/FormItem";
-  import {putStockIn, duplicateCheck } from '@/api/api'
+  import {putStockIn, duplicateCheck, getWarehouseList } from '@/api/api'
 
   export default {
     name: "PurchasePutInModal",
@@ -91,7 +100,7 @@
             }
           },
           {
-            title: 'Code',
+            title: '编码',
             align:"center",
             dataIndex: 'mtlCode'
           },
@@ -105,6 +114,11 @@
             title: '规格',
             align:"center",
             dataIndex: 'specification'
+          },
+          {
+            title: '出货仓库',
+            align:"center",
+            scopedSlots: { customRender: 'warehouseAction' }
           },
           {
             title: '数量',
@@ -135,7 +149,8 @@
               { min: 0, max: 126, message: '长度不超过 126 个字符', trigger: 'blur' }
             ]
           }
-        }
+        },
+        warehouseList:[]
       }
     },
     components: {AFormItem},
@@ -146,6 +161,14 @@
         this.edit({});
       },
       edit (record) {
+        //仓库
+        getWarehouseList('').then((res) => {
+          if (res.success) {
+            if (res.result && res.result.length > 0) {
+              this.warehouseList = res.result;
+            }
+          }
+        });
         this.form.resetFields();
         this.model = Object.assign({}, record);
         this.visible = true;

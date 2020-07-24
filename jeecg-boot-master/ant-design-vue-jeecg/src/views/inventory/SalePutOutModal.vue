@@ -77,7 +77,9 @@
                      @change="e => handleChange(e.target.value, record.mtlId, index, 'quantity')"/>
           </span>
           <span slot="warehouseAction" slot-scope="text, record, index">
-            <a-select v-decorator="['warehouseId', validatorRules.warehouseId]" @change="((val)=>{handleChange(val, record.mtlId, index, 'warehouseId')})" placeholder="请选择仓库">
+            <a-select v-decorator="['warehouseId', validatorRules.warehouseId]"
+                      :defaultValue="record.warehouseId"
+                      @change="((val)=>{handleChange(val, record.mtlId, index, 'warehouseId')})" placeholder="请选择仓库">
               <a-select-option v-for="(item, key) in warehouseList" :key="key" :value="item.id">
                 {{ item.name }}
               </a-select-option>
@@ -132,7 +134,7 @@
             }
           },
           {
-            title: 'Code',
+            title: '编码',
             align:"center",
             dataIndex: 'mtlCode'
           },
