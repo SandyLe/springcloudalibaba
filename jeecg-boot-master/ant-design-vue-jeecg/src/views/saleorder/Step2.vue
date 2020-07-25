@@ -39,6 +39,12 @@
         {{this.saleOrder.totalamount}}
       </a-form-item>
       <div style="margin-top: 15px">
+        <a-card class="card" title="收货信息" :bordered="true">
+        收货地址：<span style="font-weight: bold">{{saleOrderAddress.recipients}} &nbsp;</span> <a>{{saleOrderAddress.tel}}</a> {{saleOrderAddress.fullAddress}}
+          <a v-if = "!unEditable" @click="editAddressItem(saleOrder)"><a-icon type="setting"/> 请选择收获地址</a>
+        </a-card>
+      </div>
+      <div style="margin-top: 15px">
         <a-table
           ref="table"
           size="middle"
@@ -157,6 +163,7 @@
     <sale-order-expense-modal ref="saleOrderExpenseModal" :saleOrder = "saleOrder" @ok="modalFormOk2" v-on:listenToTotalamont="showTotalMount"></sale-order-expense-modal>
     <sale-order-cost-modal ref="saleOrderCostModal" :saleOrder = "saleOrder" @ok="modalFormOk3"></sale-order-cost-modal>
     <receipt-order-dtl-modal ref="receiptOrderDtlModal" :sourceBillOrder = "saleOrder" @ok="modalFormOk4"></receipt-order-dtl-modal>
+    <sale-address-list ref="saleAddressList" v-on:addressFlag="modalFormOk5"></sale-address-list>
   </div>
 </template>
 
@@ -165,9 +172,10 @@
   import SaleOrderExpenseModal from './SaleOrderExpenseModal'
   import SaleOrderCostModal from './SaleOrderCostModal'
   import ReceiptOrderDtlModal from '../receipt/ReceiptOrderDtlModal'
+  import SaleAddressList from './SaleAddressList'
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import { deleteAction, postAction, getAction } from '@/api/manage'
-  import { getSaleOrderOne, getSaleOrderMtlList } from '@/api/api'
+  import { getSaleOrderOne, getSaleOrderMtlList, getOrderAddress } from '@/api/api'
   import JDictSelectTag from '@/components/dict/JDictSelectTag.vue'
   export default {
     name: "Step2",
@@ -176,7 +184,8 @@
       SaleOrderExpenseModal,
       SaleOrderCostModal,
       ReceiptOrderDtlModal,
-      JDictSelectTag
+      JDictSelectTag,
+      SaleAddressList
     },
     data() {
       return {
@@ -409,10 +418,15 @@
           delete4: '/receiptOrderDtl/delete',
           deleteBatch4: '/receiptOrderDtl/deleteBatch',
         },
-        unEditable: true
+        unEditable: true,
+        saleOrderAddress: {}
       }
     },
     methods: {
+      editAddressItem (record) {
+        record.sourceAddId = this.saleOrderAddress.sourceAddId;
+        this.$refs.saleAddressList.edit(record);
+      },
       getQueryParams(){
         let param = {};
         if(this.$route.query.id){
@@ -788,6 +802,13 @@
       },
       prevStep () {
         this.$emit('prevStep')
+      },
+      modalFormOk5() {
+        getOrderAddress({sourceId:this.$route.query.id}).then((res) => {
+          if (res.success) {
+            this.saleOrderAddress = res.result;
+          }
+        })
       }
     },
     mounted() {
@@ -802,11 +823,20 @@
             });
           }
         })
+        getOrderAddress({sourceId:this.$route.query.id}).then((res) => {
+          if (res.success) {
+            this.saleOrderAddress = res.result;
+          }
+        })
       }
       this.loadData2();
       this.loadData3();
       this.loadData4();
       this.unEditable = this.$route.query.unEditable;
+    },
+    watch: {
+      '$route' (to, from) {
+      }
     }
   }
 </script>

@@ -279,6 +279,10 @@ const addReceiptOrderDtl = (params)=>postAction("/receiptOrderDtl/add", params)
 const editReceiptOrderDtl = (params)=>postAction("/receiptOrderDtl/edit", params)
 const getReceiptOrderDtlList = (params)=>getAction("/receiptOrderDtl/getList", params)
 
+// 销售订单地址
+const saveOrderAddress = (params)=>postAction("/saleOrderAddress/save", params)
+const getOrderAddress = (params)=>getAction("/saleOrderAddress/getOneBySourceId", params)
+
 export {
   // imgView,
   // doMian,
@@ -468,7 +472,9 @@ export {
   getReportList,
   reportQueryById,
   reportDelete,
-  getWorkTypeList
+  getWorkTypeList,
+  saveOrderAddress,
+  getOrderAddress
 }
 
 

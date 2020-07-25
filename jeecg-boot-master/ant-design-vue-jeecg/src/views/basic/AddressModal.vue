@@ -30,7 +30,7 @@
               :wrapperCol="wrapperCol"
               label="功能类型">
               <a-select v-decorator="['typeId', {}]" placeholder="请选择收功能类型" showSearch optionFilterProp="children"
-                        notFoundContent="没有匹配的收款方"  >
+                        notFoundContent="没有匹配的类型"  >
                 <a-select-option value="">请选择</a-select-option>
                 <a-select-option v-for="(item, key) in typeList" :key="key" :value="item.id">
                     <span style="display: inline-block;width: 100%" :title=" item.name || item.code ">
@@ -165,9 +165,8 @@
         this.edit({});
       },
       edit (record) {
-        console.log(this.$route.query.id)
         this.form.resetFields();
-        record.sourceId = this.$route.query.id;
+        record.sourceId = this.entity.id;
         this.model = Object.assign({}, record);
         this.visible = true;
         let that = this;
@@ -218,7 +217,6 @@
         this.form.validateFields((err, values) => {
           if (!err) {
             that.confirmLoading = true;
-            values.sourceId = this.$route.query.id;
             let formData = Object.assign(this.model, values);
             let obj;
             console.log(formData)

@@ -175,6 +175,11 @@ export default {
                   scopedSlots: { customRender: 'nameAction' }
                 },
                 {
+                  title: '工单类型',
+                  align: "center",
+                  dataIndex: 'workTypeName'
+                },
+                {
                   title: '原单类型',
                   align: "center",
                   dataIndex: 'sourceBillTypeName'
@@ -194,18 +199,6 @@ export default {
                     title: '施工人员',
                     align: "center",
                     dataIndex: 'operateUserName'
-                },
-                {
-                    title: '仓库',
-                    align: "center",
-                    dataIndex: 'warehouseId',
-                    customRender: (text) => {
-                        if (!text) {
-                            return ''
-                        } else {
-                            return filterMultiDictText(this.dictOptions['warehouse'], text + "")
-                        }
-                    }
                 },
                 {
                     title: '订单日期',

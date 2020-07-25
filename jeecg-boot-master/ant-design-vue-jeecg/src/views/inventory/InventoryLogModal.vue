@@ -124,7 +124,7 @@
           {
             title: '出库时间',
             align:"center",
-            dataIndex: 'createTime'
+            dataIndex: 'operateTime'
           }
         ],
         bodyStyle:{

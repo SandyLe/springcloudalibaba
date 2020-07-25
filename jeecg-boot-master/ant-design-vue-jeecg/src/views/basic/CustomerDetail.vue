@@ -66,8 +66,7 @@
           :columns="columns"
           :dataSource="dataSource"
           :pagination="ipagination"
-          :loading="loading"
-          @change="handleTableChange">
+          :loading="loading">
            <span slot="action" slot-scope="text, record">
             <a @click="handleEdit(record)">编辑</a>
             <a-divider type="vertical"/>
@@ -111,7 +110,7 @@
         </a-row>
       </detail-list>
       <a-divider style="margin-bottom: 32px"/>
-      <address-modal ref="addressModal" :entity = "entity" @ok="modalFormOk"></address-modal>
+      <address-modal ref="addressModal" :entity = "customer" @ok="modalFormOk"></address-modal>
     </a-card>
   </page-layout>
 </template>
@@ -121,7 +120,6 @@
   import DetailList from '@/components/tools/DetailList'
   import AddressModal from './AddressModal'
   import { deleteAction, postAction, getAction } from '@/api/manage'
-  import { getFullAddress } from '@/utils/commonUtil'
   import {getCustomerOne, getAreaOne} from '@/api/api'
   import ARow from "ant-design-vue/es/grid/Row";
   const DetailListItem = DetailList.Item
@@ -136,7 +134,6 @@
     },
     data () {
       return {
-        entity: {},
         labelCol: {
           xs: { span: 24 },
           sm: { span: 8 },
@@ -288,10 +285,10 @@
           getCustomerOne({id:this.$route.query.id}).then((res) => {
             if (res.success) {
               this.customer = res.result;
-              this.customer.address = this.getFullAddress(this.customer.province,this.customer.city,this.customer.district,this.customer.address);
             }
           })
         }
+        this.loadData();
       }
     },
     create: {
@@ -314,7 +311,6 @@
             this.customer = res.result;
           }
         });
-
         this.loadData();
       }
     }
