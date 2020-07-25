@@ -223,6 +223,7 @@ public class InventoryInServiceImpl extends ServiceImpl<InventoryInMapper, Inven
                 // 入库更新库存
                 InventoryLog inventoryLog = new InventoryLog(info.getId(), mtl.getSourceId(), info.getSourceBillType(), mtl.getMtlId(),
                         info.getWarehouseId(), null, mtl.getQuantity(), null, mtl.getUnitId(), mtl.getOperationId(), batchNo, companyId);
+                inventoryLog.setOperateTime(new Date());
                 inventoryService.updateInventory(inventoryLog);
 
                 // 更新采购产品批次平均价格

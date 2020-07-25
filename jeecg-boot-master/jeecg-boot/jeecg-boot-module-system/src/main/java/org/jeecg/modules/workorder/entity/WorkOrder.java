@@ -45,13 +45,10 @@ public class WorkOrder extends CBasicEntity {
     private Date finishedDate;
     @ApiModelProperty("施工备注")
     private String operateLog;
-    @ApiModelProperty("配件出货仓库ID")
-    private String warehouseId;
-    @ApiModelProperty("配件出货仓库")
-    @TableField(exist=false)
-    private String warehouse;
     @ApiModelProperty("工单类型")
-    private Integer workType;
+    private Integer workTypeId;
+    @TableField(exist=false)
+    private String workTypeName;
 
     public String getSourceId() {
         return sourceId;
@@ -163,27 +160,19 @@ public class WorkOrder extends CBasicEntity {
         return billStatusName;
     }
 
-    public String getWarehouseId() {
-        return warehouseId;
+    public Integer getWorkTypeId() {
+        return workTypeId;
     }
 
-    public void setWarehouseId(String warehouseId) {
-        this.warehouseId = warehouseId;
+    public void setWorkTypeId(Integer workTypeId) {
+        this.workTypeId = workTypeId;
     }
 
-    public String getWarehouse() {
-        return warehouse;
+    public String getWorkTypeName() {
+        return workTypeName;
     }
 
-    public void setWarehouse(String warehouse) {
-        this.warehouse = warehouse;
-    }
-
-    public Integer getWorkType() {
-        return workType;
-    }
-
-    public void setWorkType(Integer workType) {
-        this.workType = workType;
+    public void setWorkTypeName(String workTypeName) {
+        this.workTypeName = workTypeName;
     }
 }

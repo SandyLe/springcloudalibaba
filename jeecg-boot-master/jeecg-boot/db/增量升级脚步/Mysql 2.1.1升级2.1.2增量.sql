@@ -98,3 +98,39 @@ CREATE TABLE `sl_receipt_order_dtl` (
 
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+DROP TABLE IF EXISTS `sl_sale_order_address`;
+CREATE TABLE `sl_sale_order_address` (
+  `id` varchar(30) NOT NULL,
+  `name` varchar(50) DEFAULT NULL,
+  `code` varchar(30) DEFAULT NULL,
+  `content` varchar(1000) DEFAULT NULL,
+  `create_time` datetime DEFAULT NULL,
+  `update_time` datetime DEFAULT NULL,
+  `create_by` varchar(30) DEFAULT NULL,
+  `update_by` varchar(30) DEFAULT NULL,
+  `row_sts` int(11) DEFAULT NULL,
+  `sort` int(11) DEFAULT NULL,
+	`company_id` varchar(50) DEFAULT NULL,
+	`source_id` varchar(50) DEFAULT NULL,
+	`source_add_id` varchar(50) DEFAULT NULL,
+  `type_id` int(2) DEFAULT NULL,
+	`province` varchar(50) DEFAULT NULL,
+	`city` varchar(50) DEFAULT NULL,
+	`district` varchar(50) DEFAULT NULL,
+	`tel` varchar(50) DEFAULT NULL,
+	`recipients` varchar(50) DEFAULT NULL,
+
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+ALTER TABLE `sl_inventory_log`
+  ADD CoLUMN `operate_time` datetime DEFAULT NULL;
+
+ALTER TABLE `sl_work_order`
+	DROP COLUMN `warehouse_id`,
+  ADD CoLUMN `work_type_id` int(2) DEFAULT NULL;
+
+

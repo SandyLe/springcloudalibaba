@@ -226,7 +226,7 @@ public class InventoryOutController {
     /**
      * 修改
      *
-     * @param mtls
+     * @param preInventoryDto
      * @return
      */
     @PostMapping(value = "/mtls/stockout")

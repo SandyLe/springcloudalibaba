@@ -2,11 +2,15 @@ package org.jeecg.modules.inventory.entity;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.jeecg.modules.basic.entity.CBasicEntity;
+import org.jeecgframework.poi.excel.annotation.Excel;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 @Data
 @TableName("sl_inventory_log")
@@ -46,6 +50,12 @@ public class InventoryLog extends CBasicEntity {
     private String operation;
     @ApiModelProperty("批次号")
     private String batchNo;
+    /** 更新时间 */
+    @ApiModelProperty(value = "更新时间")
+    @Excel(name = "更新时间", width = 20, format = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private java.util.Date operateTime;
 
     public InventoryLog() {
     }
@@ -175,5 +185,21 @@ public class InventoryLog extends CBasicEntity {
 
     public void setBatchNo(String batchNo) {
         this.batchNo = batchNo;
+    }
+
+    public String getSourceBillId() {
+        return sourceBillId;
+    }
+
+    public void setSourceBillId(String sourceBillId) {
+        this.sourceBillId = sourceBillId;
+    }
+
+    public Date getOperateTime() {
+        return operateTime;
+    }
+
+    public void setOperateTime(Date operateTime) {
+        this.operateTime = operateTime;
     }
 }

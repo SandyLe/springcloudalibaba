@@ -6,10 +6,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Lists;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
-import org.jeecg.common.enums.BillStatus;
-import org.jeecg.common.enums.BillType;
-import org.jeecg.common.enums.InventoryOperation;
-import org.jeecg.common.enums.RowSts;
+import org.jeecg.common.enums.*;
 import org.jeecg.common.util.Constants;
 import org.jeecg.modules.basic.service.BillCodeBuilderService;
 import org.jeecg.modules.changeorder.entity.ChangeOrder;
@@ -29,25 +26,32 @@ import org.jeecg.modules.inventory.entity.*;
 
 import org.jeecg.modules.inventory.mapper.InventoryOutMapper;
 import org.jeecg.modules.inventory.service.*;
+import org.jeecg.modules.logistics.dto.LogisticsOrderDto;
+import org.jeecg.modules.logistics.entity.LogisticsOrderDtl;
+import org.jeecg.modules.logistics.service.LogisticsOrderService;
 import org.jeecg.modules.purchase.entity.PurchaseReturn;
 import org.jeecg.modules.purchase.entity.PurchaseReturnMtl;
 import org.jeecg.modules.purchase.service.PurchaseReturnMtlService;
 import org.jeecg.modules.inventory.dto.PreInventoryOutMtl;
 import org.jeecg.modules.purchase.service.PurchaseReturnService;
 import org.jeecg.modules.saleorder.entity.SaleOrder;
+import org.jeecg.modules.saleorder.entity.SaleOrderAddress;
 import org.jeecg.modules.saleorder.entity.SaleOrderMtl;
+import org.jeecg.modules.saleorder.service.SaleOrderAddressService;
 import org.jeecg.modules.saleorder.service.SaleOrderMtlService;
 import org.jeecg.modules.saleorder.service.SaleOrderService;
 import org.jeecg.modules.workorder.entity.WorkOrder;
 import org.jeecg.modules.workorder.entity.WorkOrderDtl;
 import org.jeecg.modules.workorder.service.WorkOrderDtlService;
 import org.jeecg.modules.workorder.service.WorkOrderService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -94,6 +98,10 @@ public class InventoryOutServiceImpl extends ServiceImpl<InventoryOutMapper, Inv
     private WorkOrderDtlService workOrderDtlService;
     @Autowired
     private BillCodeBuilderService billCodeBuilderService;
+    @Autowired
+    private SaleOrderAddressService saleOrderAddressService;
+    @Autowired
+    private LogisticsOrderService logisticsOrderService;
 
     @Override
     @Transactional
@@ -102,11 +110,45 @@ public class InventoryOutServiceImpl extends ServiceImpl<InventoryOutMapper, Inv
         List<PreInventoryOutMtl> mtls = preInventoryDto.getMtls();
         InventoryOut info = getById(mtls.get(0).getBillId());
         if (null != info) {
+
+            // 物流单信息
+            LogisticsOrderDto orderDto = new LogisticsOrderDto();
+            orderDto.setBillType(BillType.LOGISTICSORDER.getId());
+            orderDto.setCompanyId(info.getCompanyId());
+            orderDto.setBillDate(new Date());
+            orderDto.setBillStatus(BillStatus.NEW.getId());
+            orderDto.setSourceBillType(info.getSourceBillType());
+            orderDto.setSourceId(info.getSourceId());
+            orderDto.setSourceCode(info.getSourceCode());
+            orderDto.setDeliveryTypeId(preInventoryDto.getDeliveryTypeId());
+            orderDto.setLogisticsNo(preInventoryDto.getLogisticsNo());
+            BigDecimal totalQty = BigDecimal.ZERO;
+            List<LogisticsOrderDtl> dtls = Lists.newArrayList();
+
             for (PreInventoryOutMtl mtl : mtls) {
                 InventoryLog inventoryLog = new InventoryLog(info.getId(), mtl.getSourceId(), info.getSourceBillType(), mtl.getMtlId(),
                         mtl.getWarehouseId(), null, mtl.getQuantity(), null, mtl.getUnitId(), mtl.getOperationId(), null, info.getCompanyId());
+                if (null != preInventoryDto.getDeliveryDate()) {
+                    inventoryLog.setOperateTime(preInventoryDto.getDeliveryDate());
+                } else {
+                    inventoryLog.setOperateTime(new Date());
+                }
                 inventoryService.updateInventory(inventoryLog);
+
+                if (preInventoryDto.getDeliveryTypeId() > DeliveryType.TakeTheir.getId()) {
+                    LogisticsOrderDtl dtl = new LogisticsOrderDtl();
+                    BeanUtils.copyProperties(mtl, dtl, "sourceId");
+                    dtl.setSourceId(mtl.getSourceId());
+                    dtls.add(dtl);
+                    totalQty = totalQty.add(mtl.getQuantity());
+                }
             }
+
+            if (preInventoryDto.getDeliveryTypeId() > DeliveryType.TakeTheir.getId()) {
+                orderDto.setDetaillist(dtls);
+                orderDto.setNumber(totalQty);
+            }
+
             List<PreInventoryOutMtl> deliveryMtls = getDeliveryMtlList(info.getId(), info.getSourceId());
             if (mtls.get(0).getSourceBillType() == BillType.SALEORDER.getId()) {
                 SaleOrder saleOrder = saleOrderService.getById(info.getSourceId());
@@ -117,7 +159,13 @@ public class InventoryOutServiceImpl extends ServiceImpl<InventoryOutMapper, Inv
                     saleOrder.setBillStatus(BillStatus.STOCKED.getId());
                     info.setBillStatus(BillStatus.STOCKED.getId());
                 }
+                saleOrder.setDeliveryType(preInventoryDto.getDeliveryTypeId());
                 saleOrderService.updateById(saleOrder);
+
+                SaleOrderAddress saleOrderAddress = saleOrderAddressService.findBySouorceId(saleOrder.getId());
+                if (null != saleOrderAddress) {
+                    BeanUtils.copyProperties(saleOrderAddress, orderDto);
+                }
             } else if (mtls.get(0).getSourceBillType() == BillType.PURCHASERETURNORDER.getId()) {
                 PurchaseReturn purchaseReturn = purchaseReturnService.getById(info.getSourceId());
                 if (CollectionUtils.isNotEmpty(deliveryMtls)) {
@@ -179,7 +227,11 @@ public class InventoryOutServiceImpl extends ServiceImpl<InventoryOutMapper, Inv
                 }
                 workOrderService.updateById(workOrder);
             }
+            // 更新发货信息
             updateById(info);
+            if (preInventoryDto.getDeliveryTypeId() > DeliveryType.TakeTheir.getId()) {
+                logisticsOrderService.save(orderDto);
+            }
         }
         return true;
     }

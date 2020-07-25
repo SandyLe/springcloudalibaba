@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 @Service
 public class StockingServiceImpl extends ServiceImpl<StockingMapper, Stocking>  implements StockingService {
@@ -28,6 +29,7 @@ public class StockingServiceImpl extends ServiceImpl<StockingMapper, Stocking>  
     public String handleStocking(String id) {
         Stocking stocking = getById(id);
         InventoryLog inventoryLog = new InventoryLog(id, id, BillType.STOCKING.getId(), stocking.getMtlId(), stocking.getWarehouseId(), stocking.getStockAmount(), BigDecimal.ZERO, stocking.getBeforeAmount(), stocking.getUnitId(), InventoryOperation.STOCKING.getId(),null, stocking.getCompanyId());
+        inventoryLog.setOperateTime(new Date());
         inventoryService.updateInventory(inventoryLog);
         stocking.setRowSts(EnumRowStatus.destroy);
         updateById(stocking);

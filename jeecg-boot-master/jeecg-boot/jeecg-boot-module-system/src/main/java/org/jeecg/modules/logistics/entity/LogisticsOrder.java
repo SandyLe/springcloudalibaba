@@ -36,31 +36,31 @@ public class LogisticsOrder extends CBasicEntity {
     @ApiModelProperty("单据时间")
     private Date billDate;
     @ApiModelProperty("发货方式")
-    private String cdiDefaultType;
+    private Integer deliveryTypeId;
     @ApiModelProperty("发货方式")
     @TableField(exist=false)
-    private String cdiDefaultTypeName;
+    private String deliveryTypeName;
     @ApiModelProperty("发货地址")
-    private String cdiDeliveryAddress;
+    private String deliveryAddress;
     @ApiModelProperty("物流公司")
-    private String cdiLogisticsId;
+    private String logisticsId;
     @ApiModelProperty("物流公司")
     @TableField(exist=false)
-    private String cdiLogistics;
+    private String logisticsName;
     @ApiModelProperty("物流单号")
-    private String cdiLogisticsNo;
+    private String logisticsNo;
     @ApiModelProperty("收件人联系电话")
-    private String cdiRecipientsPhone;
+    private String recipientsPhone;
     @ApiModelProperty("收件人")
-    private String cdiRecipients;
+    private String recipients;
     @ApiModelProperty("省")
-    private String cdiProvince;
+    private String province;
     @ApiModelProperty("市")
-    private String cdiCity;
+    private String city;
     @ApiModelProperty("区、县")
-    private String cdiDistrict;
+    private String district;
     @ApiModelProperty("详细地址")
-    private String cdiAddress;
+    private String address;
     @ApiModelProperty("邮政编码")
     private String postCode;
     @ApiModelProperty("件数")
@@ -142,86 +142,6 @@ public class LogisticsOrder extends CBasicEntity {
         return billStatusName;
     }
 
-    public String getCdiDeliveryAddress() {
-        return cdiDeliveryAddress;
-    }
-
-    public void setCdiDeliveryAddress(String cdiDeliveryAddress) {
-        this.cdiDeliveryAddress = cdiDeliveryAddress;
-    }
-
-    public String getCdiLogisticsId() {
-        return cdiLogisticsId;
-    }
-
-    public void setCdiLogisticsId(String cdiLogisticsId) {
-        this.cdiLogisticsId = cdiLogisticsId;
-    }
-
-    public String getCdiLogistics() {
-        return cdiLogistics;
-    }
-
-    public void setCdiLogistics(String cdiLogistics) {
-        this.cdiLogistics = cdiLogistics;
-    }
-
-    public String getCdiLogisticsNo() {
-        return cdiLogisticsNo;
-    }
-
-    public void setCdiLogisticsNo(String cdiLogisticsNo) {
-        this.cdiLogisticsNo = cdiLogisticsNo;
-    }
-
-    public String getCdiRecipientsPhone() {
-        return cdiRecipientsPhone;
-    }
-
-    public void setCdiRecipientsPhone(String cdiRecipientsPhone) {
-        this.cdiRecipientsPhone = cdiRecipientsPhone;
-    }
-
-    public String getCdiRecipients() {
-        return cdiRecipients;
-    }
-
-    public void setCdiRecipients(String cdiRecipients) {
-        this.cdiRecipients = cdiRecipients;
-    }
-
-    public String getCdiProvince() {
-        return cdiProvince;
-    }
-
-    public void setCdiProvince(String cdiProvince) {
-        this.cdiProvince = cdiProvince;
-    }
-
-    public String getCdiCity() {
-        return cdiCity;
-    }
-
-    public void setCdiCity(String cdiCity) {
-        this.cdiCity = cdiCity;
-    }
-
-    public String getCdiDistrict() {
-        return cdiDistrict;
-    }
-
-    public void setCdiDistrict(String cdiDistrict) {
-        this.cdiDistrict = cdiDistrict;
-    }
-
-    public String getCdiAddress() {
-        return cdiAddress;
-    }
-
-    public void setCdiAddress(String cdiAddress) {
-        this.cdiAddress = cdiAddress;
-    }
-
     public String getPostCode() {
         return postCode;
     }
@@ -262,19 +182,99 @@ public class LogisticsOrder extends CBasicEntity {
         this.totalCharge = totalCharge;
     }
 
-    public String getCdiDefaultType() {
-        return cdiDefaultType;
+    public Integer getDeliveryTypeId() {
+        return deliveryTypeId;
     }
 
-    public void setCdiDefaultType(String cdiDefaultType) {
-        this.cdiDefaultType = cdiDefaultType;
+    public void setDeliveryTypeId(Integer deliveryTypeId) {
+        this.deliveryTypeId = deliveryTypeId;
     }
 
-    public String getCdiDefaultTypeName() {
-        return cdiDefaultTypeName;
+    public String getDeliveryTypeName() {
+        return deliveryTypeName;
     }
 
-    public void setCdiDefaultTypeName(String cdiDefaultTypeName) {
-        this.cdiDefaultTypeName = cdiDefaultTypeName;
+    public void setDeliveryTypeName(String deliveryTypeName) {
+        this.deliveryTypeName = deliveryTypeName;
+    }
+
+    public String getDeliveryAddress() {
+        return deliveryAddress;
+    }
+
+    public void setDeliveryAddress(String deliveryAddress) {
+        this.deliveryAddress = deliveryAddress;
+    }
+
+    public String getLogisticsId() {
+        return logisticsId;
+    }
+
+    public void setLogisticsId(String logisticsId) {
+        this.logisticsId = logisticsId;
+    }
+
+    public String getLogisticsName() {
+        return logisticsName;
+    }
+
+    public void setLogisticsName(String logisticsName) {
+        this.logisticsName = logisticsName;
+    }
+
+    public String getLogisticsNo() {
+        return logisticsNo;
+    }
+
+    public void setLogisticsNo(String logisticsNo) {
+        this.logisticsNo = logisticsNo;
+    }
+
+    public String getRecipientsPhone() {
+        return recipientsPhone;
+    }
+
+    public void setRecipientsPhone(String recipientsPhone) {
+        this.recipientsPhone = recipientsPhone;
+    }
+
+    public String getRecipients() {
+        return recipients;
+    }
+
+    public void setRecipients(String recipients) {
+        this.recipients = recipients;
+    }
+
+    public String getProvince() {
+        return province;
+    }
+
+    public void setProvince(String province) {
+        this.province = province;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getDistrict() {
+        return district;
+    }
+
+    public void setDistrict(String district) {
+        this.district = district;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 }

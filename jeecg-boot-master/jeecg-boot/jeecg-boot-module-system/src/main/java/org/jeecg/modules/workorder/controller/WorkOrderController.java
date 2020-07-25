@@ -11,6 +11,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.enums.BillStatus;
+import org.jeecg.common.enums.WorkType;
 import org.jeecg.common.system.base.controller.JeecgController;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.LoginUser;
@@ -71,6 +72,7 @@ public class WorkOrderController extends JeecgController<WorkOrder, WorkOrderSer
             }
             datas.stream().forEach(o -> {
                 o.setOperateUserName(userMap.get(o.getOperateUserId()));
+                o.setWorkTypeName(WorkType.getName(o.getWorkTypeId()));
             });
         }
         pageList.setRecords(datas);
