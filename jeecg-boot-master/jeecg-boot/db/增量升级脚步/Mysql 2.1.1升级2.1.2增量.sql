@@ -134,3 +134,17 @@ ALTER TABLE `sl_work_order`
   ADD CoLUMN `work_type_id` int(2) DEFAULT NULL;
 
 
+
+UPDATE sl_logistics_order SET cdi_default_type = 3 WHERE cdi_default_type = 'WULIU';
+ALTER TABLE  sl_logistics_order
+CHANGE COLUMN `cdi_default_type` `delivery_type_id` int(2) NULL COMMENT '发货方式' AFTER `bill_date`,
+CHANGE COLUMN `cdi_delivery_address` `delivery_address` VARCHAR(30) NULL,
+CHANGE COLUMN `cdi_logistics_id` `logistics_id` VARCHAR(50) NULL,
+CHANGE COLUMN `cdi_logistics_no` `logistics_no` VARCHAR(30) NULL,
+CHANGE COLUMN `cdi_recipients_phone` `recipients_phone` VARCHAR(30) NULL,
+CHANGE COLUMN `cdi_recipients` `recipients` VARCHAR(30) NULL,
+CHANGE COLUMN `cdi_province` `province` VARCHAR(30) NULL,
+CHANGE COLUMN `cdi_city` `city` VARCHAR(30) NULL,
+CHANGE COLUMN `cdi_district` `district` VARCHAR(30) NULL,
+CHANGE COLUMN `cdi_address` `address` VARCHAR(50) NULL,
+CHANGE COLUMN `delivery_type` `delivery_type_id` int(2) NULL

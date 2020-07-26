@@ -37,7 +37,8 @@ public enum BillType implements AbstractEnum {
     ANNOUNTCEMENT(31, "annountCement", "通告"),
     SERVICEINSTITUTION(32, "serviceInstitution", "服务机构"),
     RECEIPTORDER(33, "ReceiptOrder", "收款单"),
-    PAYMENTORDER(34, "PaymentOrder", "付款单")
+    PAYMENTORDER(34, "PaymentOrder", "付款单"),
+    INVOICE(35, "invoice", "发票")
     ;
 
     private Integer id;

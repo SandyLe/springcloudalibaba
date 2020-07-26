@@ -12,6 +12,9 @@ public class PreInventoryDto {
     @ApiModelProperty("出入库方式")
     private Integer deliveryTypeId;
 
+    @ApiModelProperty("物流公司")
+    private String logisticsId;
+
     @ApiModelProperty("物流单号")
     private String logisticsNo;
 
@@ -51,5 +54,13 @@ public class PreInventoryDto {
 
     public void setMtls(List<PreInventoryOutMtl> mtls) {
         this.mtls = mtls;
+    }
+
+    public String getLogisticsId() {
+        return logisticsId;
+    }
+
+    public void setLogisticsId(String logisticsId) {
+        this.logisticsId = logisticsId;
     }
 }

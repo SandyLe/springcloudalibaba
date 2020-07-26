@@ -62,11 +62,11 @@ public class LogisticsOrderController extends JeecgController<LogisticsOrder, Lo
         Page<LogisticsOrder> page = new Page<>(pageNo, pageSize);
         IPage<LogisticsOrder> pageList = logisticsOrderService.page(page, queryWrapper);
         List<LogisticsOrder> datas = pageList.getRecords();
-        List<String> logisticsIds = datas.stream().map(LogisticsOrder::getCdiLogisticsId).collect(Collectors.toList());
+        List<String> logisticsIds = datas.stream().map(LogisticsOrder::getLogisticsId).collect(Collectors.toList());
         if (CollectionUtils.isNotEmpty(logisticsIds)) {
             Collection<LogisticsCompany> companies = logisticsCompanyService.listByIds(logisticsIds);
             Map<String, String> idNameMap = companies.stream().collect(Collectors.toMap(LogisticsCompany::getId, LogisticsCompany::getName));
-            datas.stream().forEach(o->{o.setCdiLogistics(idNameMap.get(o.getCdiLogisticsId()));});
+            datas.stream().forEach(o->{o.setLogisticsName(idNameMap.get(o.getLogisticsId()));});
         }
         pageList.setRecords(datas);
         return Result.ok(pageList);

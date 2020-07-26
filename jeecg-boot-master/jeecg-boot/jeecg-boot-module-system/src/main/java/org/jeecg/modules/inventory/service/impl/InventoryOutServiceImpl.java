@@ -122,6 +122,7 @@ public class InventoryOutServiceImpl extends ServiceImpl<InventoryOutMapper, Inv
             orderDto.setSourceCode(info.getSourceCode());
             orderDto.setDeliveryTypeId(preInventoryDto.getDeliveryTypeId());
             orderDto.setLogisticsNo(preInventoryDto.getLogisticsNo());
+            orderDto.setLogisticsId(preInventoryDto.getLogisticsId());
             BigDecimal totalQty = BigDecimal.ZERO;
             List<LogisticsOrderDtl> dtls = Lists.newArrayList();
 
@@ -164,7 +165,9 @@ public class InventoryOutServiceImpl extends ServiceImpl<InventoryOutMapper, Inv
 
                 SaleOrderAddress saleOrderAddress = saleOrderAddressService.findBySouorceId(saleOrder.getId());
                 if (null != saleOrderAddress) {
-                    BeanUtils.copyProperties(saleOrderAddress, orderDto);
+                    BeanUtils.copyProperties(saleOrderAddress, orderDto, "name", "tel", "createTime", "updateTime", "companyId", "id", "createBy", "updateBy");
+                    orderDto.setAddress(saleOrderAddress.getName());
+                    orderDto.setRecipientsPhone(saleOrderAddress.getTel());
                 }
             } else if (mtls.get(0).getSourceBillType() == BillType.PURCHASERETURNORDER.getId()) {
                 PurchaseReturn purchaseReturn = purchaseReturnService.getById(info.getSourceId());
@@ -230,7 +233,7 @@ public class InventoryOutServiceImpl extends ServiceImpl<InventoryOutMapper, Inv
             // 更新发货信息
             updateById(info);
             if (preInventoryDto.getDeliveryTypeId() > DeliveryType.TakeTheir.getId()) {
-                logisticsOrderService.save(orderDto);
+                logisticsOrderService.saveOrder(orderDto);
             }
         }
         return true;
