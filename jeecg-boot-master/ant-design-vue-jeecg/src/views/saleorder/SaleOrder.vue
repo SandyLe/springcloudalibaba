@@ -85,6 +85,9 @@
               <a-menu-item  v-if="record.billStatus != -1">
                 <a @click="addStockOut(record)">通知出库</a>
               </a-menu-item>
+              <a-menu-item>
+                <a @click="addInvoice(record)">发票开具</a>
+              </a-menu-item>
               <a-menu-item  v-if="record.billStatus < 4 && record.billStatus != -1">
                 <a-popconfirm title="确定作废吗?" @confirm="() => handleInvalid(record)">
                   <a>作废</a>
@@ -145,11 +148,6 @@
             dataIndex: 'customer'
           },
           {
-            title: '出货仓库  ',
-            align:"center",
-            dataIndex: 'warehouse'
-          },
-          {
             title: '渠道',
             align:"center",
             dataIndex: 'channel'
@@ -170,16 +168,6 @@
             align:"center"
           },
           {
-            title: '订单状态',
-            dataIndex: 'billStatusName',
-            align:"center"
-          },
-          {
-            title: '收款状态',
-            dataIndex: 'receiptStatusName',
-            align:"center"
-          },
-          {
             title: '总金额',
             dataIndex: 'totalamount',
             align:"center"
@@ -188,6 +176,21 @@
             title: '已付金额',
             align:"center",
             dataIndex: 'payamount'
+          },
+          {
+            title: '发货方式  ',
+            align:"center",
+            dataIndex: 'deliveryTypeName'
+          },
+          {
+            title: '收款状态',
+            dataIndex: 'receiptStatusName',
+            align:"center"
+          },
+          {
+            title: '订单状态',
+            dataIndex: 'billStatusName',
+            align:"center"
           },
           {
             title: '操作',
@@ -253,6 +256,9 @@
           }
         }).finally(() => {
         })
+      },
+      addInvoice (record) {
+        this.$router.replace({ path:'/invoice/invoiceModal/',  query: {"sourceBillType": 0, "sourceId": record.id, "sourceCode": record.code} });
       }
     },
     mounted() {

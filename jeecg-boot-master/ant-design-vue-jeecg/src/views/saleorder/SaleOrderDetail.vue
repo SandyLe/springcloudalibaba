@@ -121,7 +121,7 @@
   import {checkout, getSaleOrderOne, getlSaleMtlList, getSaleOrderExpenseList, getDeliveryInfoBySourceId } from '@/api/api'
   import JDictSelectTag from '@/components/dict/JDictSelectTag.vue'
   export default {
-    name: "Step2",
+    name: "SaleOrderDetail",
     components: {
       JDictSelectTag,
     },
@@ -132,6 +132,7 @@
         deliveryInfo: {},
         title: "订单详情",
         visible: false,
+        form: this.$form.createForm(this),
         labelCol: {
           xs: { span: 24 },
           sm: { span: 5 },

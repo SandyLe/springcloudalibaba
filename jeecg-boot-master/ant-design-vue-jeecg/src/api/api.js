@@ -1,4 +1,4 @@
-import { getAction,deleteAction,putAction,postAction} from '@/api/manage'
+import { getAction,deleteAction,putAction,postAction,asynPostAction} from '@/api/manage'
 
 ////根路径
 // const doMian = "/jeecg-boot/";
@@ -179,6 +179,8 @@ const getAddressTypeList = (params)=>getAction("/basic/fc/enum/addressType/getLi
 const getPayModeTypeList = (params)=>getAction("/basic/fc/enum/payMode/getList",params)
 const getDeliveryTypeList = (params)=>getAction("/basic/fc/enum/deliveryType/getList",params)
 const getWorkTypeList = (params)=>getAction("/basic/fc/enum/workType/getList",params)
+const getInvoiceTypeList = (params)=>getAction("/basic/fc/enum/invoiceType/getList",params)
+const getInvoiceTextureList = (params)=>getAction("/basic/fc/enum/invoiceTexture/getList",params)
 
 const loadShopData = (params)=>getAction("/sys/sysDepart/getSysDepartList",params)
 const getAllUser = (params)=>getAction("/sys/user/getAll",params)
@@ -282,6 +284,12 @@ const getReceiptOrderDtlList = (params)=>getAction("/receiptOrderDtl/getList", p
 // 销售订单地址
 const saveOrderAddress = (params)=>postAction("/saleOrderAddress/save", params)
 const getOrderAddress = (params)=>getAction("/saleOrderAddress/getOneBySourceId", params)
+
+// 发票
+const getInvoiceById = (params)=>getAction("/invoice/getOne", params)
+const addInvoice = (params)=>asynPostAction("/invoice/add", params)
+const getInvoiceAddress = (params)=>getAction("/invoiceAddress/getOneBySourceId", params)
+const saveInvoiceAddress = (params)=>postAction("/invoiceAddress/save", params)
 
 export {
   // imgView,
@@ -474,7 +482,13 @@ export {
   reportDelete,
   getWorkTypeList,
   saveOrderAddress,
-  getOrderAddress
+  getOrderAddress,
+  getInvoiceTypeList,
+  getInvoiceTextureList,
+  getInvoiceById,
+  getInvoiceAddress,
+  addInvoice,
+  saveInvoiceAddress
 }
 
 

@@ -88,7 +88,7 @@
   import {filterObj} from '@/utils/util';
   import AddressModal from '../basic/AddressModal'
   import {JeecgListMixin} from '@/mixins/JeecgListMixin'
-  import {getAddressTypeList, saveOrderAddress} from '@/api/api'
+  import {getAddressTypeList, saveOrderAddress, saveInvoiceAddress} from '@/api/api'
 
   export default {
     name: "SaleAddressList",
@@ -161,7 +161,7 @@
         },
         typeList: [],
         customer: {},
-        saleOrder: {}
+        entityOrder: {}
       }
     },
     created() {
@@ -183,7 +183,7 @@
       edit(record) {
         this.visible = true;
         this.customer.id = record.customerId;
-        this.saleOrder = record;
+        this.entityOrder = record;
         this.selectedRowKeys1[0] = record.sourceAddId;
 
         this.queryParam = {}
@@ -227,14 +227,22 @@
             return ;
           }
         })
-        data.sourceId = this.saleOrder.id;
+        data.sourceId = this.entityOrder.id;
         data.sourceAddId = data.id;
         data.id = null;
-        saveOrderAddress(data).then((res) => {
-          if (res.success) {
-            this.$emit("addressFlag", new Date().getTime());
-          }
-        });
+        if (this.entityOrder.billType == 0) {
+          saveOrderAddress(data).then((res) => {
+            if (res.success) {
+              this.$emit("addressFlag", new Date().getTime());
+            }
+          });
+        } else if (this.entityOrder.billType == 35) {
+          saveInvoiceAddress(data).then((res) => {
+            if (res.success) {
+              this.$emit("addressFlag", new Date().getTime());
+            }
+          });
+        }
         this.onClose();
       },
       onClose() {

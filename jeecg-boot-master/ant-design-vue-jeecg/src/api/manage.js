@@ -19,6 +19,15 @@ export function postAction(url,parameter) {
   })
 }
 
+export function asynPostAction(url,parameter) {
+  return axios({
+    url: url,
+    method:'post' ,
+    data: parameter,
+    async: false
+  })
+}
+
 //post method= {post | put}
 export function httpAction(url,parameter,method) {
   return axios({

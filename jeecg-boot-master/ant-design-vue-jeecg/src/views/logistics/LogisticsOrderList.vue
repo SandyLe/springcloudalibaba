@@ -18,7 +18,7 @@
                 <template v-if="toggleSearchStatus">
                   <a-col :md="8" :sm="8">
                     <a-form-item label="物流单号">
-                      <j-input placeholder="输入物流单号模糊查询" v-model="queryParam.cdiLogisticsNo"></j-input>
+                      <j-input placeholder="输入物流单号模糊查询" v-model="queryParam.logisticsNo"></j-input>
                     </a-form-item>
                   </a-col>
                 </template>
@@ -142,22 +142,22 @@ export default {
                 {
                   title: '物流公司',
                   align: "center",
-                  dataIndex: 'cdiLogistics'
+                  dataIndex: 'logisticsName'
                 },
                 {
                   title: '物流单号',
                   align: "center",
-                  dataIndex: 'cdiLogisticsNo'
+                  dataIndex: 'logisticsNo'
                 },
                 {
                   title: '收件人',
                   align: "center",
-                  dataIndex: 'cdiRecipients'
+                  dataIndex: 'recipients'
                 },
                 {
                     title: '收件人电话',
                     align: "center",
-                    dataIndex: 'cdiRecipientsPhone'
+                    dataIndex: 'recipientsPhone'
                 },
                 {
                     title: '订单日期',

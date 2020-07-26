@@ -45,14 +45,25 @@
         </a-row>
         <a-row v-if="deliveryType > 0" >
           <a-col :span="12">
-            <a-form-item label="物流单号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input placeholder="请输入物流单号" v-decorator="[ 'logisticsNo', {}]" />
+            <a-form-item
+              :labelCol="labelCol"
+              :wrapperCol="wrapperCol"
+              label="物流公司"
+              label-width="4">
+              <a-select v-decorator="['logisticsId', {}]" placeholder="请选择物流公司">
+                <a-select-option value="">请选择</a-select-option>
+                <a-select-option v-for="(item, key) in logisticsCompanyList" :key="key" :value="item.id">
+                    <span style="display: inline-block;width: 100%" :title=" item.name || item.code ">
+                      {{ item.name || item.code }}
+                    </span>
+                </a-select-option>
+              </a-select>
             </a-form-item>
           </a-col>
           <a-col :span="12">
-            <!--<a-form-item label="完工时间" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-date-picker showTime format='YYYY-MM-DD HH:mm:ss' v-decorator="[ 'finishedDate', {}]"/>
-            </a-form-item>-->
+            <a-form-item label="物流单号" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input placeholder="请输入物流单号" v-decorator="[ 'logisticsNo', {}]" />
+            </a-form-item>
           </a-col>
         </a-row>
         <a-table
@@ -96,7 +107,7 @@
   import pick from 'lodash.pick'
   import {JeecgListMixin} from '@/mixins/JeecgListMixin'
   import AFormItem from "ant-design-vue/es/form/FormItem";
-  import {deliveryStockOut, duplicateCheck, getDeliveryTypeList, getWarehouseList } from '@/api/api'
+  import {deliveryStockOut, duplicateCheck, getDeliveryTypeList, getLogisticsCompanyList, getWarehouseList } from '@/api/api'
 
   export default {
     name: "SalePutOutModal",
@@ -185,7 +196,8 @@
           }
         },
         deliveryTypeList: [],
-        warehouseList:[]
+        warehouseList:[],
+        logisticsCompanyList: []
       }
     },
     components: {AFormItem},
@@ -209,6 +221,14 @@
             }
           }
         });
+        // 物流公司
+        getLogisticsCompanyList({}).then((res) => {
+          if (res.success) {
+            if(res.result && res.result.length>0){
+              this.logisticsCompanyList = res.result;
+            }
+          }
+        })
         this.form.resetFields();
         this.model = Object.assign({}, record);
         this.visible = true;
@@ -227,8 +247,8 @@
               values.deliveryDate = values.deliveryDate.format(this.dateFormat);
             }
             let formData = Object.assign(this.model, values);
-            debugger
             let formDataDto = {
+              logisticsId: formData.logisticsId,
               deliveryTypeId: formData.deliveryTypeId,
               deliveryDate: formData.deliveryDate,
               logisticsNo: formData.logisticsNo,
