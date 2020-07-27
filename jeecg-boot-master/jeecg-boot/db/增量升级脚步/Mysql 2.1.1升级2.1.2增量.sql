@@ -148,3 +148,65 @@ CHANGE COLUMN `cdi_city` `city` VARCHAR(30) NULL,
 CHANGE COLUMN `cdi_district` `district` VARCHAR(30) NULL,
 CHANGE COLUMN `cdi_address` `address` VARCHAR(50) NULL,
 CHANGE COLUMN `delivery_type` `delivery_type_id` int(2) NULL
+
+DROP TABLE IF EXISTS `sl_invoice_address`;
+CREATE TABLE `sl_invoice_address` (
+  `id` varchar(30) NOT NULL,
+  `name` varchar(50) DEFAULT NULL,
+  `code` varchar(30) DEFAULT NULL,
+  `content` varchar(1000) DEFAULT NULL,
+  `create_time` datetime DEFAULT NULL,
+  `update_time` datetime DEFAULT NULL,
+  `create_by` varchar(30) DEFAULT NULL,
+  `update_by` varchar(30) DEFAULT NULL,
+  `row_sts` int(11) DEFAULT NULL,
+  `sort` int(11) DEFAULT NULL,
+	`company_id` varchar(50) DEFAULT NULL,
+	`source_id` varchar(50) DEFAULT NULL,
+	`source_add_id` varchar(50) DEFAULT NULL,
+  `type_id` int(2) DEFAULT NULL,
+	`province` varchar(50) DEFAULT NULL,
+	`city` varchar(50) DEFAULT NULL,
+	`district` varchar(50) DEFAULT NULL,
+	`tel` varchar(50) DEFAULT NULL,
+	`recipients` varchar(50) DEFAULT NULL,
+
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+DROP TABLE IF EXISTS `sl_invoice`;
+CREATE TABLE `sl_invoice` (
+  `id` varchar(30) NOT NULL,
+  `name` varchar(50) DEFAULT NULL,
+  `code` varchar(30) DEFAULT NULL,
+  `content` varchar(1000) DEFAULT NULL,
+  `create_time` datetime DEFAULT NULL,
+  `update_time` datetime DEFAULT NULL,
+  `create_by` varchar(30) DEFAULT NULL,
+  `update_by` varchar(30) DEFAULT NULL,
+  `row_sts` int(11) DEFAULT NULL,
+  `sort` int(11) DEFAULT NULL,
+	`company_id` varchar(50) DEFAULT NULL,
+	`source_id` varchar(50) DEFAULT NULL,
+	`source_code` varchar(50) DEFAULT NULL,
+  `bill_type` int(2) DEFAULT NULL,
+  `source_bill_type` int(2) DEFAULT NULL,
+  `invoice_type_id` int(2) DEFAULT NULL,
+  `invoice_texture_id` int(2) DEFAULT NULL,
+  `bill_status_id` int(2) DEFAULT NULL,
+  `amount` decimal(10,4) DEFAULT NULL,
+
+	`bill_title` varchar(50) DEFAULT NULL,
+	`tax_no` varchar(50) DEFAULT NULL,
+	`email` varchar(50) DEFAULT NULL,
+	`address` varchar(50) DEFAULT NULL,
+	`tel` varchar(50) DEFAULT NULL,
+	`openning_bank` varchar(50) DEFAULT NULL,
+	`bank_no` varchar(50) DEFAULT NULL,
+	`saleman_id` varchar(50) DEFAULT NULL,
+	`invoice_no` varchar(50) DEFAULT NULL,
+  `bill_date` datetime DEFAULT NULL,
+
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

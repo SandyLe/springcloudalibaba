@@ -14,6 +14,7 @@ import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.enums.*;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.util.LoginUtils;
+import org.jeecg.modules.basic.service.BillCodeBuilderService;
 import org.jeecg.modules.invoice.entity.Invoice;
 import org.jeecg.modules.invoice.service.InvoiceService;
 import org.springframework.beans.BeanUtils;
@@ -33,6 +34,9 @@ public class InvoiceController {
 
     @Autowired
     private InvoiceService invoiceService;
+
+    @Autowired
+    private BillCodeBuilderService billCodeBuilderService;
 
     /**
      * 分页列表查询
@@ -102,8 +106,19 @@ public class InvoiceController {
         if (StringUtils.isBlank(invoice.getSalemanId())){
             invoice.setSalemanId(LoginUtils.getLoginUser().getId());
         }
+        if (null == invoice.getBillType()) {
+            invoice.setBillType(BillType.INVOICE.getId());
+        }
+        if (null == invoice.getBillStatusId()) {
+            invoice.setBillStatusId(InvoiceOrderStatus.ToCreate.getId());
+        }
+        if (StringUtils.isBlank(invoice.getCode())){
+            invoice.setCode(billCodeBuilderService.getBillCode(BillType.INVOICE.getId()));
+        }
         invoiceService.save(invoice);
-        return Result.ok("保存成功！");
+        Result result = Result.ok("保存成功！");
+        result.setResult(invoice);
+        return result;
     }
 
     /**

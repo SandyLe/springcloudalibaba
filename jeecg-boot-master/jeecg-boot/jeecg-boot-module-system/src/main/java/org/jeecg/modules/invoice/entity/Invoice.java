@@ -40,7 +40,7 @@ public class Invoice extends CBasicEntity {
     @ApiModelProperty("抬头")
     private String billTitle;
     @ApiModelProperty("税号")
-    private String taxNumber;
+    private String taxNo;
     @ApiModelProperty("电子邮件")
     private String email;
     @ApiModelProperty("地址")
@@ -151,12 +151,12 @@ public class Invoice extends CBasicEntity {
         this.billTitle = billTitle;
     }
 
-    public String getTaxNumber() {
-        return taxNumber;
+    public String getTaxNo() {
+        return taxNo;
     }
 
-    public void setTaxNumber(String taxNumber) {
-        this.taxNumber = taxNumber;
+    public void setTaxNo(String taxNo) {
+        this.taxNo = taxNo;
     }
 
     public String getEmail() {
