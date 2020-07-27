@@ -79,9 +79,9 @@
         <span slot="sourceAction" slot-scope="text, record">
               <a-tooltip placement="topLeft">
                 <template slot="title">
-                  <span>{{record.sourceBillCode}}</span>
+                  <span>{{record.sourceCode}}</span>
                 </template>
-                <a @click="goSourceDetail(record.sourceBillType, record.sourceId)">{{record.sourceBillCode}}</a>
+                <a @click="goSourceDetail(record.sourceBillType, record.sourceId)">{{record.sourceCode}}</a>
               </a-tooltip>
         </span>
         <span slot="action" slot-scope="text, record">
@@ -180,6 +180,10 @@
           list: "/invoice/getPage",
           delete: "/invoice/delete",
           deleteBatch: "/invoice/deleteBatch"
+        },
+        isorter: {
+          column: 'createTime',
+          order: 'desc'
         },
         selectedOrder: null,
         invoiceDtlLogs: []

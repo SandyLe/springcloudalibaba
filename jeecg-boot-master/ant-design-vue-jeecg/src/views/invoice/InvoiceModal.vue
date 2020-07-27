@@ -61,20 +61,21 @@
           </a-col>
         </a-row>
         <a-row>
-          <a-col :md="24" :sm="24">
-            <a-form-item
-              :labelCol="hlabelCol"
-              :wrapperCol="hwrapperCol"
-              label="抬头"
-              label-width="4">
-              <a-input placeholder="请输入抬头" v-decorator="[ 'billTitle', validatorRules.billTitle]" />
+          <a-col :md="12" :sm="12">
+            <a-form-item label="抬头" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input v-decorator="[ 'billTitle', validatorRules.billTitle]" placeholder="请输入抬头" />
+            </a-form-item>
+          </a-col>
+          <a-col :md="12" :sm="12">
+            <a-form-item label="金额" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input v-decorator="[ 'amount', validatorRules.amount]" placeholder="请输入金额" />
             </a-form-item>
           </a-col>
         </a-row>
         <a-row>
           <a-col :span="12">
             <a-form-item label="税号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'taxNumber', validatorRules.taxNumber]" placeholder="请输入税号" />
+              <a-input v-decorator="[ 'taxNo', validatorRules.taxNo]" placeholder="请输入税号" />
             </a-form-item>
           </a-col>
           <a-col :span="12">
@@ -153,6 +154,7 @@ export default {
   },
   data() {
     return {
+      dateFormat:"YYYY-MM-DD HH:mm:ss",
       invoiceAddress: {},
       invoice: {},
       billTypeList: [],
@@ -208,7 +210,7 @@ export default {
           states: {}
       },
       url: {
-          save: '/invoice/add',
+          add: '/invoice/add',
           edit: '/invoice/edit'
       },
       unEditable: true
@@ -227,6 +229,41 @@ export default {
           this.invoiceAddress = res.result;
         }
       });
+
+      const that = this
+      this.form.validateFields((err, values) => {
+        if (!err) {
+          let httpurl = ''
+          let method = 'post'
+          debugger
+          if (!this.model.id) {
+            httpurl += this.url.add
+          } else {
+            httpurl += this.url.edit
+          }
+          let formData = Object.assign(this.model, values)
+          formData.billDate = values.billDate.format(this.dateFormat)
+          console.log('表单提交数据', formData)
+          httpAction(httpurl, formData, method)
+            .then(res => {
+              console.log(res);
+              if (res.success) {
+                that.$message.success(res.message)
+                that.$emit('ok')
+                that.model = res.result;
+              } else {
+                that.$message.warning(res.message)
+              }
+            })
+            .finally(() => {/*
+              that.confirmLoading = false
+              that.close()
+              that.$parent.closeRouteViewTab(this.$route.path)
+              that.$router.push({ path:'/invoice/invoiceList' });*/
+            })
+        }
+      })
+
     },
     editAddressItem (record) {
       record.customerId = this.addressSourceId;
@@ -256,17 +293,14 @@ export default {
       this.form.validateFields((err, values) => {
           if (!err) {
               let httpurl = ''
-              let method = ''
+              let method = 'post'
               if (!this.model.id) {
                   httpurl += this.url.add
-                  method = 'post'
               } else {
                   httpurl += this.url.edit
-                  method = 'put'
               }
               let formData = Object.assign(this.model, values)
-              formData.detaillist = that.tabledata;
-              console.log('表单提交数据', formData)
+              formData.billDate = values.billDate.format(this.dateFormat)
               httpAction(httpurl, formData, method)
                   .then(res => {
                       console.log(res);
@@ -283,7 +317,7 @@ export default {
                       that.confirmLoading = false
                       that.close()
                       that.$parent.closeRouteViewTab(this.$route.path)
-                      that.$router.push({ path:'/invoice/InvoiceList' });
+                      that.$router.push({ path:'/invoice/list' });
                   })
           }
       })
