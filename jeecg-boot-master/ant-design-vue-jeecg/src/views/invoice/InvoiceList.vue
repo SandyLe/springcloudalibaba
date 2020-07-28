@@ -194,47 +194,6 @@
         this.$refs.invoiceDtlModal.title = '开票'
         this.$refs.invoiceDtlModal.edit(record)
       },
-      getQueryParams() {
-        //获取查询条件
-        let param = {};
-        /*if(this.$route.query.id){
-          param.sourceBillId = this.$route.query.id
-        }else{
-          param.sourceBillId = -1;
-        }*/
-        param.field = this.getQueryField()
-        param.pageNo = this.ipagination.current
-        param.pageSize = this.ipagination.pageSize
-        return param;
-      },
-      getQueryField() {
-        var str = 'id,'
-        this.columns.forEach(function(value) {
-          str += ',' + value.dataIndex
-        })
-        return str
-      },
-      loadData(arg) {
-        if (!this.url.list) {
-          this.$message.error('请设置url.list属性!')
-          return
-        }
-        //加载数据 若传入参数1则加载第一页的内容
-        if (arg === 1) {
-          this.ipagination.current = 1
-        }
-        let params = this.getQueryParams()//查询条件
-        params.roleId = this.currentRoleId
-        this.loading = true
-
-        getAction(this.url.list, params).then((res) => {
-          if (res.success) {debugger
-            this.dataSource = res.result.records
-            this.ipagination.total = res.result.total
-          }
-          this.loading = false
-        })
-      },
       handleEdit(e){
         if(e.target.dataset.id)
           this.$router.replace({ path:'/invoice/InvoiceModal/' + e.target.dataset.id });

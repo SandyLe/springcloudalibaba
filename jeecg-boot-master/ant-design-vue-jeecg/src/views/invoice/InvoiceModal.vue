@@ -25,7 +25,7 @@
           <a-col :md="12" :sm="12">
             <a-form-item label="发票类型" :labelCol="labelCol" :wrapperCol="wrapperCol">
               <a-select v-decorator="['invoiceTypeId', {}]" placeholder="请选择发票类型" showSearch optionFilterProp="children"
-                        notFoundContent="没有匹配的发票类型"  >
+                        notFoundContent="没有匹配的发票类型" @change="invoiceTypeChange" >
                 <a-select-option value="">请选择</a-select-option>
                 <a-select-option v-for="(item, key) in invoiceTypeList" :key="key" :value="item.id">
                   {{ item.name || item.code }}
@@ -84,7 +84,7 @@
             </a-form-item>
           </a-col>
         </a-row>
-        <a-row>
+        <a-row v-if="invoiceTypeId==1">
           <a-col :span="12">
             <a-form-item label="地址" :labelCol="labelCol" :wrapperCol="wrapperCol">
               <a-input v-decorator="[ 'address', validatorRules.address]" placeholder="请输入地址" />
@@ -96,7 +96,7 @@
             </a-form-item>
           </a-col>
         </a-row>
-        <a-row>
+        <a-row v-if="invoiceTypeId==1">
           <a-col :span="12">
             <a-form-item label="开户行" :labelCol="labelCol" :wrapperCol="wrapperCol">
               <a-input v-decorator="[ 'openningBank', validatorRules.openningBank]" placeholder="请输入开户行" />
@@ -160,6 +160,7 @@ export default {
       billTypeList: [],
       invoiceTextureList: [],
       invoiceTypeList: [],
+      invoiceTypeId: 0,
       sourceId: null,
       sourceCode: null,
       sourceBillType: null,
@@ -335,6 +336,9 @@ export default {
         this.$route.matched.splice(this.$route.matched.length-1 ,1);
         this.$parent.closeRouteViewTab(this.$route.fullPath)
         this.$router.replace({ path:'/purchase/PurchaseList' });
+    },
+    invoiceTypeChange (val) {
+      this.invoiceTypeId = val;
     }
   },
   mounted() {
