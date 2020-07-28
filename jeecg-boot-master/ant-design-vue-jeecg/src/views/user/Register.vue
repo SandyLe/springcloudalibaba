@@ -173,9 +173,11 @@
       handlePasswordLevel(rule, value, callback) {
 
         let level = 0
-        let reg = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[~!@#$%^&*()_+`\-={}:";'<>?,./]).{8,}$/;
+        // let reg = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[~!@#$%^&*()_+`\-={}:";'<>?,./]).{8,}$/;
+        let reg = /^(?=.*[a-zA-Z])(?=.*\d).{6,}$/;
         if (!reg.test(value)) {
-          callback(new Error('密码由8位数字、大小写字母和特殊符号组成!'))
+          // callback(new Error('密码由8位数字、大小写字母和特殊符号组成!'))
+          callback(new Error('密码由6位以上数字、字母组成!'))
         }
         // 判断这个字符串中有没有数字
         if (/[0-9]/.test(value)) {
