@@ -14,14 +14,14 @@ import org.jeecg.modules.basic.entity.CBasicEntity;
 @TableName("sl_sale_order_channel")
 @ApiModel(value = "SaleOrderChannel", description = "销售渠道")
 public class SaleOrderChannel extends CBasicEntity {
-    public int getParentId() {
+    public String getParentId() {
         return parentId;
     }
 
-    public void setParentId(int parentId) {
+    public void setParentId(String parentId) {
         this.parentId = parentId;
     }
     @ApiModelProperty("父渠道ID")
-    private int parentId;
+    private String parentId;
 
 }

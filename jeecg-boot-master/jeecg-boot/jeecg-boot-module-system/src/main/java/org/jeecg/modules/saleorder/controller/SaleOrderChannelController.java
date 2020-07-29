@@ -1,5 +1,6 @@
 package org.jeecg.modules.saleorder.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -13,14 +14,20 @@ import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.common.util.DateUtils;
+import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.saleorder.entity.SaleOrderChannel;
 import org.jeecg.modules.saleorder.service.SaleOrderChannelService;
+import org.jeecg.modules.system.entity.SysPermission;
+import org.jeecg.modules.system.model.SysPermissionTree;
+import org.jeecg.modules.system.model.TreeModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Slf4j
 @Api(tags = "销售渠道")
@@ -144,4 +151,136 @@ public class SaleOrderChannelController {
         SaleOrderChannel saleOrderChannel = saleOrderChannelService.getById(id);
         return Result.ok(saleOrderChannel);
     }
+
+
+
+    /* 先查询一级渠道，当用户点击展开渠道时加载子渠道 */
+    /**
+     * 系统渠道列表(一级渠道)
+     *
+     * @return
+     */
+    @RequestMapping(value = "/getRootChannel", method = RequestMethod.GET)
+    public Result<List<SysPermissionTree>> getRootChannelList() {
+        long start = System.currentTimeMillis();
+        Result<List<SysPermissionTree>> result = new Result<>();
+        try {
+            LambdaQueryWrapper<SaleOrderChannel> query = new LambdaQueryWrapper<SaleOrderChannel>();
+            query.orderByAsc(SaleOrderChannel::getCreateTime);
+            List<SaleOrderChannel> list = saleOrderChannelService.list(query);
+
+            List<SysPermissionTree> sysPermissionList = list.stream().filter(p->StringUtils.isEmpty(p.getParentId())).map(p->{
+                SysPermissionTree model = new SysPermissionTree();
+                model.setId(p.getId());
+                model.setKey(p.getId());
+                model.setName(p.getName());
+                model.setLeaf(!list.stream().anyMatch(m-> StringUtils.equals(m.getParentId(), p.getId())));
+                if(!model.getIsLeaf()){
+                    model.setChildren(new ArrayList<>());
+                }
+
+                return model;
+            }).collect(Collectors.toList());
+            result.setResult(sysPermissionList);
+
+            result.setSuccess(true);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+        log.info("======获取一级渠道数据=====耗时:" + (System.currentTimeMillis() - start) + "毫秒");
+        return result;
+    }
+
+
+    /**
+     * 查询子渠道
+     * @param parentId
+     * @return
+     */
+    @RequestMapping(value = "/getSubChannel", method = RequestMethod.GET)
+    public Result<List<SysPermissionTree>> getSubChannel(@RequestParam("parentId") String parentId){
+        Result<List<SysPermissionTree>> result = new Result<>();
+        try{
+            LambdaQueryWrapper<SaleOrderChannel> query = new LambdaQueryWrapper<SaleOrderChannel>();
+            query.orderByDesc(SaleOrderChannel::getCreateTime);
+            List<SaleOrderChannel> list = saleOrderChannelService.list(query);
+
+            List<SysPermissionTree> sysPermissionList = list.stream().filter(p->StringUtils.equals(p.getParentId(), parentId)).map(p->{
+                SysPermissionTree model = new SysPermissionTree();
+                model.setId(p.getId());
+                model.setKey(p.getId());
+                model.setName(p.getName());
+                model.setLeaf(!list.stream().anyMatch(m-> StringUtils.equals(m.getParentId(), p.getId())));
+                if(!model.getIsLeaf()){
+                    model.setChildren(new ArrayList<>());
+                }
+
+                return model;
+            }).collect(Collectors.toList());
+            result.setResult(sysPermissionList);
+
+            result.setSuccess(true);
+        }catch (Exception e){
+            log.error(e.getMessage(), e);
+        }
+        return result;
+    }
+
+    /**
+     * 获取全部的权限树
+     *
+     * @return
+     */
+    @RequestMapping(value = "/queryChannelTreeList", method = RequestMethod.GET)
+    public Result<Map<String, Object>> queryChannelTreeList() {
+        Result<Map<String, Object>> result = new Result<>();
+        // 全部权限ids
+        List<String> ids = new ArrayList<>();
+        try {
+            LambdaQueryWrapper<SaleOrderChannel> query = new LambdaQueryWrapper<SaleOrderChannel>();
+            query.orderByAsc(SaleOrderChannel::getCreateTime);
+
+            List<SaleOrderChannel> list = saleOrderChannelService.list(query);
+            for (SaleOrderChannel sysPer : list) {
+                ids.add(sysPer.getId());
+            }
+            List<TreeModel> treeList = new ArrayList<>();
+            getTreeModelList(treeList, list, null);
+
+            Map<String, Object> resMap = new HashMap<String, Object>();
+            resMap.put("treeList", treeList); // 全部树节点数据
+            resMap.put("ids", ids);// 全部树ids
+            result.setResult(resMap);
+            result.setSuccess(true);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+        return result;
+    }
+
+    private void getTreeModelList(List<TreeModel> treeList, List<SaleOrderChannel> metaList, TreeModel temp) {
+        for (SaleOrderChannel permission : metaList) {
+            String tempPid = permission.getParentId();
+            SysPermission model = new SysPermission();
+            model.setId(permission.getId());
+            model.setName(permission.getName());
+            model.setLeaf(!metaList.stream().anyMatch(p-> StringUtils.equals(p.getParentId(), permission.getId())));
+
+            TreeModel tree = new TreeModel(model);
+            if (temp == null && oConvertUtils.isEmpty(tempPid)) {
+                treeList.add(tree);
+                if (!tree.getIsLeaf()) {
+                    getTreeModelList(treeList, metaList, tree);
+                }
+            } else if (temp != null && tempPid != null && tempPid.equals(temp.getKey())) {
+                temp.getChildren().add(tree);
+                if (!tree.getIsLeaf()) {
+                    getTreeModelList(treeList, metaList, tree);
+                }
+            }
+        }
+    }
+
+
+
 }

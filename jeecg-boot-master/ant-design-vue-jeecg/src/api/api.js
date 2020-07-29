@@ -263,6 +263,16 @@ const getReportList = (params)=>getAction("/report/getList",params) //统计报�
 const reportQueryById = (params)=>getAction("/report/queryById",params) // 查询单个统计报表信息
 const reportDelete = (params)=>deleteAction("/report/delete",params)  // 删除统计报表信息
 
+// 销售渠道
+const getRootChannel = (params)=>getAction("/saleOrderChannel/getRootChannel",params);
+const getSubChannel = (params)=>getAction("/saleOrderChannel/getSubChannel",params);
+const queryChannelTreeList = (params)=>getAction("/saleOrderChannel/queryChannelTreeList",params);
+
+const addSaleOrderChannel= (params)=>postAction("/saleOrderChannel/add",params);
+const editSaleOrderChannel= (params)=>putAction("/saleOrderChannel/edit",params);
+const getSaleOrderChannel = (params)=>getAction("/saleOrderChannel/list",params);
+
+
 export {
   // imgView,
   // doMian,
@@ -441,7 +451,13 @@ export {
   handleSaleOrderCost,
   getReportList,
   reportQueryById,
-  reportDelete
+  reportDelete,
+  getRootChannel,
+  getSubChannel,
+  queryChannelTreeList,
+  addSaleOrderChannel,
+  editSaleOrderChannel,
+  getSaleOrderChannel
 }
 
 
