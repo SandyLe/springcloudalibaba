@@ -196,9 +196,9 @@
       },
       handleEdit(e){
         if(e.target.dataset.id)
-          this.$router.replace({ path:'/invoice/InvoiceModal/' + e.target.dataset.id });
+          this.$router.replace({ path:'/invoice/invoiceModal/' + e.target.dataset.id });
         else
-          this.$router.replace({ path:'/invoice/InvoiceModal/' });
+          this.$router.replace({ path:'/invoice/invoiceModal/' });
       },
     },
     mounted() {

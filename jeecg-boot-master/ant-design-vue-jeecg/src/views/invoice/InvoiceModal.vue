@@ -5,13 +5,14 @@
         <a-row>
           <a-col :md="12" :sm="12">
             <a-form-item label="原单类型" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-select v-decorator="['sourceBillType', {}]" placeholder="请选择单据类型" showSearch optionFilterProp="children"
+              <a-select v-if = "editType == 1" v-decorator="['sourceBillType', {}]" placeholder="请选择单据类型" showSearch optionFilterProp="children"
                         notFoundContent="没有匹配的单据类型"  >
                 <a-select-option value="">请选择</a-select-option>
                 <a-select-option v-for="(item, key) in billTypeList" :key="key" :value="item.id">
                   {{ item.name || item.code }}
                 </a-select-option>
               </a-select>
+              <span v-if="editType == 0">{{invoice.sourceBillTypeName}}</span>
             </a-form-item>
           </a-col>
           <a-col :md="12" :sm="12">
@@ -154,6 +155,7 @@ export default {
   },
   data() {
     return {
+      editType: 0,
       dateFormat:"YYYY-MM-DD HH:mm:ss",
       invoiceAddress: {},
       invoice: {},
@@ -342,6 +344,7 @@ export default {
     }
   },
   mounted() {
+    this.editType = this.$route.query.editType;
     if (this.$route.query.unEditable === false) {
       this.unEditable = this.$route.query.unEditable;
     }
@@ -378,6 +381,7 @@ export default {
     })
 
     const that = this;
+    debugger
     getInvoiceById({"id":this.$route.params.id}).then((res)=>{
       if (res.result) {
         // 收获地址
