@@ -1,17 +1,12 @@
 package org.jeecg.modules.quartz.job;
 
 import com.alibaba.fastjson.JSONObject;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.puppycrawl.tools.checkstyle.utils.CommonUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.catalina.User;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.CommonSendStatus;
-import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.util.DateUtils;
-import org.jeecg.common.util.jsonschema.CommonProperty;
 import org.jeecg.modules.basic.entity.Warehouse;
 import org.jeecg.modules.basic.service.WarehouseService;
 import org.jeecg.modules.message.websocket.WebSocket;
@@ -22,17 +17,13 @@ import org.jeecg.modules.system.entity.SysAnnouncementSend;
 import org.jeecg.modules.system.entity.SysUser;
 import org.jeecg.modules.system.service.ISysAnnouncementSendService;
 import org.jeecg.modules.system.service.ISysAnnouncementService;
-import org.jeecg.modules.system.service.ISysLogService;
 import org.jeecg.modules.system.service.ISysUserService;
-import org.joda.time.DateTime;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.Resource;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 

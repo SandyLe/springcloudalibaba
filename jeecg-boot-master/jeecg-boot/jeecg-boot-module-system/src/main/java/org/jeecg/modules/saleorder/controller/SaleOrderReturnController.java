@@ -4,16 +4,19 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.google.common.collect.Lists;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.aspect.annotation.PermissionData;
+import org.jeecg.common.enums.RefundOrderStatus;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.DictModel;
 import org.jeecg.common.system.vo.LoginUser;
@@ -25,11 +28,21 @@ import org.jeecg.common.enums.RowSts;
 import org.jeecg.modules.basic.service.BillCodeBuilderService;
 import org.jeecg.modules.basic.service.CustomerService;
 import org.jeecg.modules.basic.service.WarehouseService;
+import org.jeecg.modules.financial.entity.RefundOrder;
+import org.jeecg.modules.financial.service.RefundOrderService;
 import org.jeecg.modules.inventory.entity.InventoryIn;
 import org.jeecg.modules.inventory.service.InventoryInService;
+import org.jeecg.modules.saleorder.dto.SaleOrderReturnDto;
+import org.jeecg.modules.saleorder.entity.SaleOrder;
+import org.jeecg.modules.saleorder.entity.SaleOrderMtl;
 import org.jeecg.modules.saleorder.entity.SaleOrderReturn;
+import org.jeecg.modules.saleorder.entity.SaleOrderReturnMtl;
+import org.jeecg.modules.saleorder.service.SaleOrderMtlService;
+import org.jeecg.modules.saleorder.service.SaleOrderReturnMtlService;
 import org.jeecg.modules.saleorder.service.SaleOrderReturnService;
+import org.jeecg.modules.saleorder.service.SaleOrderService;
 import org.jeecg.modules.system.service.ISysDictService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
@@ -57,6 +70,16 @@ public class SaleOrderReturnController {
     private BillCodeBuilderService billCodeBuilderService;
     @Autowired
     private InventoryInService inventoryInService;
+    @Autowired
+    private SaleOrderReturnMtlService saleOrderReturnMtlService;
+    @Autowired
+    private SaleOrderService saleOrderService;
+    @Autowired
+    private SaleOrderMtlService saleOrderMtlService;
+    @Autowired
+    private RefundOrderService refundOrderService;
+
+
     /**
      * 添加
      *
@@ -81,6 +104,76 @@ public class SaleOrderReturnController {
         result.setResult(saleOrderReturn);
         return result;
     }
+
+    /**
+     * 保存
+     *
+     * @param saleOrderReturnDto
+     * @return
+     */
+    @PostMapping(value = "/save")
+    @AutoLog(value = "保存销售退货")
+    @ApiOperation(value = "保存销售退货", notes = "保存销售退货")
+    public Result<?> save(@RequestBody SaleOrderReturnDto saleOrderReturnDto){
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        if (StringUtils.isBlank(saleOrderReturnDto.getCompanyId())) {
+            saleOrderReturnDto.setCompanyId(sysUser.getCompanyId());
+        }
+        if (StringUtils.isBlank(saleOrderReturnDto.getSalemanId())) {
+            saleOrderReturnDto.setSalemanId(sysUser.getId());
+        }
+        Boolean isNew = false;
+        BigDecimal totalAmount = BigDecimal.ZERO;
+        if (StringUtils.isEmpty(saleOrderReturnDto.getId())) {
+            isNew = true;
+            saleOrderReturnDto.setBillStatus(BillStatus.NEW.getId());
+            saleOrderReturnDto.setCode(billCodeBuilderService.getBillCode(BillType.SALERETURNORDER.getId()));
+            saleOrderReturnDto.setRefundStatusId(RefundOrderStatus.ToRefund.getId());
+            saleOrderReturnDto.setBillType(BillType.SALERETURNORDER.getId());
+        }
+        final Boolean newFlag = BooleanUtils.isTrue(isNew);
+
+        // 保存退货单主表信息
+        saleOrderReturnService.saveOrUpdate(saleOrderReturnDto);
+
+        // 退货单子表信息
+        if (CollectionUtils.isNotEmpty(saleOrderReturnDto.getDetaillist())) {
+            for(SaleOrderReturnMtl o : saleOrderReturnDto.getDetaillist()){
+                if (BooleanUtils.isTrue(newFlag)) {
+                    o.setId(null);
+                    o.setCreateBy(null);
+                    o.setCreateTime(null);
+                    o.setUpdateBy(null);
+                    o.setUpdateTime(null);
+                }
+                o.setSourceId(saleOrderReturnDto.getId());
+                saleOrderReturnMtlService.saveOrUpdate(o);
+                totalAmount = totalAmount.add(o.getAmount());
+            };
+        }
+
+        // 退款单
+        RefundOrder refundOrder = refundOrderService.findBySourceBillId(saleOrderReturnDto.getId(), saleOrderReturnDto.getBillType(), saleOrderReturnDto.getCompanyId());
+        if (null == refundOrder) {
+            refundOrder = new RefundOrder();
+            refundOrder.setBillStatusId(BillStatus.NEW.getId());
+            refundOrder.setAmount(saleOrderReturnDto.getTotalamount());
+            refundOrder.setBillDate(new Date());
+            refundOrder.setPayerId(saleOrderReturnDto.getCustomerId());
+            refundOrder.setSalemanId(saleOrderReturnDto.getSalemanId());
+            refundOrder.setSourceBillCode(saleOrderReturnDto.getCode());
+            refundOrder.setSourceId(saleOrderReturnDto.getId());
+            refundOrder.setSalemanId(saleOrderReturnDto.getSalemanId());
+            refundOrder.setSourceBillType(BillType.SALERETURNORDER.getId());
+            refundOrder.setCompanyId(saleOrderReturnDto.getCompanyId());
+        }
+        refundOrderService.saveOrUpdate(refundOrder);
+
+        Result<Object> result = Result.ok();
+        result.setResult(saleOrderReturnDto);
+        return result;
+    }
+
     /**
      * 获取所有数据
      *
@@ -130,6 +223,7 @@ public class SaleOrderReturnController {
                 o.setCustomer(customerMap.get(o.getCustomerId()));
                 o.setPayTypeName(dictModelMap.get(o.getPayType()));
                 o.setBillStatusName(BillStatus.getName(o.getBillStatus()));
+                o.setRefundStatusName(RefundOrderStatus.getName(o.getRefundStatusId()));
             });
         }
 
@@ -242,6 +336,49 @@ public class SaleOrderReturnController {
         Customer customer = customerService.getById(saleOrderReturn.getCustomerId());
         saleOrderReturn.setCustomer(null != customer ? customer.getName() : null);
         return Result.ok(saleOrderReturn);
+    }
+
+    /**
+     * 通过id查询DTO
+     *
+     * @param id
+     * @return
+     */
+    @GetMapping(value = "/queryDto")
+    @ApiOperation(value = "通过ID查询销售退货DTO", notes = "通过ID查询销售退货DTO")
+    public Result<?> queryDto(@ApiParam(name = "id", value = "示例id", required = false) @RequestParam(name = "id", required = false) String id,
+                              @ApiParam(name = "sourceId", value = "原单id", required = false) @RequestParam(name = "sourceId", required = false) String sourceId) throws Exception {
+
+        SaleOrderReturnDto dto = new SaleOrderReturnDto();
+
+        if (StringUtils.isNotBlank(id)) {
+
+            SaleOrderReturn saleOrderReturn = saleOrderReturnService.getById(id);
+            Customer customer = customerService.getById(saleOrderReturn.getCustomerId());
+            saleOrderReturn.setCustomer(null != customer ? customer.getName() : null);
+            BeanUtils.copyProperties(saleOrderReturn, dto);
+
+            List<SaleOrderReturnMtl> mtls = saleOrderReturnMtlService.getList(id);
+            dto.setDetaillist(mtls);
+        } else if (StringUtils.isNotBlank(sourceId)) {
+
+            SaleOrder saleOrder = saleOrderService.getById(sourceId);
+            dto.setCustomerId(saleOrder.getCustomerId());
+            dto.setChannelId(saleOrder.getChannelId());
+            dto.setSourceCode(saleOrder.getCode());
+            dto.setSourceId(saleOrder.getId());
+
+            List<SaleOrderReturnMtl> returnMtls = Lists.newArrayList();
+            List<SaleOrderMtl> saleOrderMtls = saleOrderMtlService.findList(sourceId);
+            saleOrderMtls.forEach(mtl -> {
+                SaleOrderReturnMtl returnMtl = new SaleOrderReturnMtl();
+                BeanUtils.copyProperties(mtl, returnMtl,  "createTime", "updateTime", "createBy", "updateBy");
+                returnMtls.add(returnMtl);
+            });
+            dto.setDetaillist(returnMtls);
+
+        }
+        return Result.ok(dto);
     }
 
 }

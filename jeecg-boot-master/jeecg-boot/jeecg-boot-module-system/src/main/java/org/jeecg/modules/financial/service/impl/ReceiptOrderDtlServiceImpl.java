@@ -22,9 +22,6 @@ import java.util.List;
 public class ReceiptOrderDtlServiceImpl extends ServiceImpl<ReceiptOrderDtlMapper, ReceiptOrderDtl> implements ReceiptOrderDtlService {
 
     @Autowired
-    private ReceiptOrderDtlMapper receiptOrderDtlMapper;
-
-    @Autowired
     private SaleOrderService saleOrderService;
 
     @Autowired

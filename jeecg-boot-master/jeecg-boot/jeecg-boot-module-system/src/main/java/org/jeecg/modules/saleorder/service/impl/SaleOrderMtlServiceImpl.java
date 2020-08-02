@@ -1,5 +1,6 @@
 package org.jeecg.modules.saleorder.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.enums.DiscountType;
@@ -16,13 +17,11 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
 public class SaleOrderMtlServiceImpl extends ServiceImpl<SaleOrderMtlMapper, SaleOrderMtl>  implements SaleOrderMtlService {
-
-    @Autowired
-    private SaleOrderMtlMapper saleOrderMtlMapper;
 
     @Autowired
     private SaleOrderService saleOrderService;
@@ -63,5 +62,13 @@ public class SaleOrderMtlServiceImpl extends ServiceImpl<SaleOrderMtlMapper, Sal
         Boolean result = saleOrderService.saveOrUpdate(saleOrder);
         System.out.println(saleOrder.getId() + "," + result + "," + saleOrder.getTotalamount());
         return tempTotalAmount;
+    }
+
+    @Override
+    public List<SaleOrderMtl> findList(String sourceId) {
+
+        LambdaQueryWrapper<SaleOrderMtl> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(SaleOrderMtl::getSourceId, sourceId);
+        return super.list(queryWrapper);
     }
 }

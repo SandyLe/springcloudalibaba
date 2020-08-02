@@ -177,7 +177,7 @@ CREATE TABLE `sl_invoice_address` (
 
 DROP TABLE IF EXISTS `sl_invoice`;
 CREATE TABLE `sl_invoice` (
-  `id` varchar(30) NOT NULL,
+  `id` varchar(50) NOT NULL,
   `name` varchar(50) DEFAULT NULL,
   `code` varchar(30) DEFAULT NULL,
   `content` varchar(1000) DEFAULT NULL,
@@ -207,6 +207,72 @@ CREATE TABLE `sl_invoice` (
 	`saleman_id` varchar(50) DEFAULT NULL,
 	`invoice_no` varchar(50) DEFAULT NULL,
   `bill_date` datetime DEFAULT NULL,
+
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+ALTER TABLE `sl_sale_order_return_mtl`
+  ADD CoLUMN `return_type_id` int(2) DEFAULT NULL;
+
+
+ALTER TABLE `sl_sale_order_return`
+	ADD CoLUMN `saleman_id` varchar(50) DEFAULT NULL,
+	ADD CoLUMN `refund_status_id` int(2) DEFAULT NULL,
+  ADD CoLUMN `bill_type` int(2) DEFAULT NULL;
+
+
+
+DROP TABLE IF EXISTS `sl_refund_order`;
+CREATE TABLE `sl_refund_order` (
+  `id` varchar(30) NOT NULL,
+  `name` varchar(50) DEFAULT NULL,
+  `code` varchar(30) DEFAULT NULL,
+  `content` varchar(1000) DEFAULT NULL,
+  `create_time` datetime DEFAULT NULL,
+  `update_time` datetime DEFAULT NULL,
+  `create_by` varchar(30) DEFAULT NULL,
+  `update_by` varchar(30) DEFAULT NULL,
+  `row_sts` int(11) DEFAULT NULL,
+  `sort` int(11) DEFAULT NULL,
+	`company_id` varchar(50) DEFAULT NULL,
+	`source_id` varchar(50) DEFAULT NULL,
+
+  `source_bill_type` int(2) DEFAULT NULL,
+	`source_bill_code` varchar(50) DEFAULT NULL,
+	`payer_id` varchar(50) DEFAULT NULL,
+	`amount` decimal(10,4) DEFAULT NULL,
+	`bill_status_id` int(2) DEFAULT NULL,
+	`saleman_id` varchar(50) DEFAULT NULL,
+  `bill_date` datetime DEFAULT NULL,
+
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+DROP TABLE IF EXISTS `sl_refund_order_dtl`;
+CREATE TABLE `sl_refund_order_dtl` (
+  `id` varchar(30) NOT NULL,
+  `name` varchar(50) DEFAULT NULL,
+  `code` varchar(30) DEFAULT NULL,
+  `content` varchar(1000) DEFAULT NULL,
+  `create_time` datetime DEFAULT NULL,
+  `update_time` datetime DEFAULT NULL,
+  `create_by` varchar(30) DEFAULT NULL,
+  `update_by` varchar(30) DEFAULT NULL,
+  `row_sts` int(11) DEFAULT NULL,
+  `sort` int(11) DEFAULT NULL,
+	`company_id` varchar(50) DEFAULT NULL,
+	`source_id` varchar(50) DEFAULT NULL,
+
+	`source_bill_id` varchar(50) DEFAULT NULL,
+  `source_bill_type` int(2) DEFAULT NULL,
+	`source_bill_code` varchar(50) DEFAULT NULL,
+	`pay_amount` decimal(10,4) DEFAULT NULL,
+	`pay_type` int(2) DEFAULT NULL,
+	`expense_id` varchar(50) DEFAULT NULL,
+  `pay_date` datetime DEFAULT NULL,
+	`receiver_id` varchar(50) DEFAULT NULL,
+	`source_code` varchar(50) DEFAULT NULL,
 
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

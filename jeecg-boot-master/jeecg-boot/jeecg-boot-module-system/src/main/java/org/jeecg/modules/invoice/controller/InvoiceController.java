@@ -122,6 +122,55 @@ public class InvoiceController {
     }
 
     /**
+     * 保存
+     *
+     * @param invoice
+     * @return
+     */
+    @PostMapping(value = "/save")
+    @AutoLog(value = "保存")
+    @ApiOperation(value = "保存", notes = "保存")
+    public Result<?> save(@RequestBody Invoice invoice) {
+
+        if (StringUtils.isBlank(invoice.getCompanyId())) {
+            invoice.setCompanyId(LoginUtils.getLoginUser().getCompanyId());
+        }
+        if (StringUtils.isBlank(invoice.getSalemanId())){
+            invoice.setSalemanId(LoginUtils.getLoginUser().getId());
+        }
+        if (null == invoice.getBillType()) {
+            invoice.setBillType(BillType.INVOICE.getId());
+        }
+        if (null == invoice.getBillStatusId()) {
+            invoice.setBillStatusId(InvoiceOrderStatus.ToCreate.getId());
+        }
+        if (StringUtils.isBlank(invoice.getCode())){
+            invoice.setCode(billCodeBuilderService.getBillCode(BillType.INVOICE.getId()));
+        }
+        invoiceService.saveOrUpdate(invoice);
+        Result result = Result.ok("保存成功！");
+        result.setResult(invoice);
+        return result;
+    }
+    /**
+     * 修改
+     *
+     * @param invoice
+     * @return
+     */
+    @PostMapping(value = "/createInvoice")
+    @AutoLog(value = "开票")
+    @ApiOperation(value = "开票", notes = "开票")
+    public Result<?> createInvoice(@RequestBody Invoice invoice){
+
+        Invoice invoiceDb = invoiceService.getById(invoice.getId());
+        invoiceDb.setInvoiceNo(invoice.getInvoiceNo());
+        invoiceDb.setBillStatusId(InvoiceOrderStatus.Finished.getId());
+        invoiceService.updateById(invoiceDb);
+        return Result.ok("修改成功！");
+    }
+
+    /**
      * 修改
      *
      * @param invoice

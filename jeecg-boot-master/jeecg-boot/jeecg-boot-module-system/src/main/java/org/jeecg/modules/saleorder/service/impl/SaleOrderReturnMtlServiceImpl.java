@@ -1,5 +1,6 @@
 package org.jeecg.modules.saleorder.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.enums.DiscountType;
@@ -16,6 +17,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -63,5 +65,13 @@ public class SaleOrderReturnMtlServiceImpl extends ServiceImpl<SaleOrderReturnMt
         Boolean result = saleOrderReturnService.saveOrUpdate(saleOrderReturn);
         System.out.println(saleOrderReturn.getId() + "," + result + "," + saleOrderReturn.getTotalamount());
         return tempTotalAmount;
+    }
+
+    @Override
+    public List<SaleOrderReturnMtl> getList(String souceId) {
+
+        LambdaQueryWrapper<SaleOrderReturnMtl> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(SaleOrderReturnMtl::getSourceId, souceId);
+        return super.list(lambdaQueryWrapper);
     }
 }

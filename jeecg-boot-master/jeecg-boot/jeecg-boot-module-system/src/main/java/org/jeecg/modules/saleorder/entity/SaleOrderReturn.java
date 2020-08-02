@@ -50,6 +50,17 @@ public class SaleOrderReturn extends CBasicEntity {
     private BigDecimal totalamount;
     @ApiModelProperty("已退金额")
     private BigDecimal payamount;
+    @ApiModelProperty("单据类型")
+    private Integer billType;
+    @ApiModelProperty("收款状态")
+    private Integer refundStatusId;
+    @ApiModelProperty("收款状态名称")
+    @TableField(exist=false)
+    private String refundStatusName;
+    @ApiModelProperty("业务员ID")
+    private String salemanId;
+    @TableField(exist=false)
+    private String salemanName;
 
     public String getCustomerId() {
         return customerId;
@@ -177,5 +188,45 @@ public class SaleOrderReturn extends CBasicEntity {
 
     public void setChannelId(String channelId) {
         this.channelId = channelId;
+    }
+
+    public Integer getBillType() {
+        return billType;
+    }
+
+    public void setBillType(Integer billType) {
+        this.billType = billType;
+    }
+
+    public Integer getRefundStatusId() {
+        return refundStatusId;
+    }
+
+    public void setRefundStatusId(Integer refundStatusId) {
+        this.refundStatusId = refundStatusId;
+    }
+
+    public String getRefundStatusName() {
+        return refundStatusName;
+    }
+
+    public void setRefundStatusName(String refundStatusName) {
+        this.refundStatusName = refundStatusName;
+    }
+
+    public String getSalemanId() {
+        return salemanId;
+    }
+
+    public void setSalemanId(String salemanId) {
+        this.salemanId = salemanId;
+    }
+
+    public String getSalemanName() {
+        return salemanName;
+    }
+
+    public void setSalemanName(String salemanName) {
+        this.salemanName = salemanName;
     }
 }

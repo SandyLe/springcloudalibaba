@@ -16,7 +16,6 @@ import org.jeecg.modules.changeorder.service.ChangeOrderService;
 import org.jeecg.modules.combind.entity.Assemble;
 import org.jeecg.modules.combind.entity.AssembleDtl;
 import org.jeecg.modules.combind.entity.Teardown;
-import org.jeecg.modules.combind.entity.TeardownDtl;
 import org.jeecg.modules.combind.service.AssembleDtlService;
 import org.jeecg.modules.combind.service.AssembleService;
 import org.jeecg.modules.combind.service.TeardownDtlService;

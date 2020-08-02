@@ -43,6 +43,11 @@ public class SaleOrderReturnMtl extends CBasicEntity {
     private String discountTypeName;
     @ApiModelProperty("金额")
     private BigDecimal amount;
+    @ApiModelProperty("退货方式")
+    private Integer returnTypeId;
+    @ApiModelProperty("退货方式")
+    @TableField(exist=false)
+    private Integer returnTypeName;
 
     public String getMtlId() {
         return mtlId;
@@ -146,5 +151,21 @@ public class SaleOrderReturnMtl extends CBasicEntity {
 
     public void setMtlCode(String mtlCode) {
         this.mtlCode = mtlCode;
+    }
+
+    public Integer getReturnTypeId() {
+        return returnTypeId;
+    }
+
+    public void setReturnTypeId(Integer returnTypeId) {
+        this.returnTypeId = returnTypeId;
+    }
+
+    public Integer getReturnTypeName() {
+        return returnTypeName;
+    }
+
+    public void setReturnTypeName(Integer returnTypeName) {
+        this.returnTypeName = returnTypeName;
     }
 }
