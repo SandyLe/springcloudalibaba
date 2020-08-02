@@ -96,11 +96,6 @@
             }
           },
           {
-            title: '仓库',
-            align:"center",
-            dataIndex: 'warehouse'
-          },
-          {
             title: '入库单号',
             align:"center",
             dataIndex: 'code'
@@ -114,11 +109,6 @@
             title: '原单编号',
             align:"center",
             dataIndex: 'sourceCode'
-          },
-          {
-            title: '入库时间',
-            align:"center",
-            dataIndex: 'putInTime'
           },
           {
             title: '状态',

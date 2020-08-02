@@ -182,6 +182,7 @@ const getWorkTypeList = (params)=>getAction("/basic/fc/enum/workType/getList",pa
 const getInvoiceTypeList = (params)=>getAction("/basic/fc/enum/invoiceType/getList",params)
 const getInvoiceTextureList = (params)=>getAction("/basic/fc/enum/invoiceTexture/getList",params)
 const getReturnTypeList = (params)=>getAction("/basic/fc/enum/returnType/getList",params)
+const getPriceSpaceModeList = (params)=>getAction("/basic/fc/enum/priceSpaceMode/getList",params)
 
 const loadShopData = (params)=>getAction("/sys/sysDepart/getSysDepartList",params)
 const getAllUser = (params)=>getAction("/sys/user/getAll",params)
@@ -196,6 +197,7 @@ const getPurchaseMtlOne = (params)=>getAction("/purchaseMtl/getPurchaseMtlOne",p
 
 const inventoryInedit = (params)=>postAction("/inventoryIn/edit",params)  //入库单编辑
 const inventoryOutSave = (params)=>postAction("/inventoryOut/save",params)  // 新增出库单
+const inventoryInSave = (params)=>postAction("/inventoryIn/save",params)  // 新增入库单
 
 const purchaseReturnQueryById = (params)=>getAction("/purchasereturn/queryById",params)
 const purchasereturnadd = (params)=>postAction("/purchasereturn/add",params)  //新增采购退货
@@ -502,7 +504,9 @@ export {
   getReturnTypeList,
   addRefundOrderDtl,
   editRefundOrderDtl,
-  getRefundOrderDtlList
+  getRefundOrderDtlList,
+  getPriceSpaceModeList,
+  inventoryInSave
 }
 
 

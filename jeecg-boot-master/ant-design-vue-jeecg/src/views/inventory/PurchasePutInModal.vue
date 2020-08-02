@@ -116,7 +116,7 @@
             dataIndex: 'specification'
           },
           {
-            title: '出货仓库',
+            title: '入货仓库',
             align:"center",
             scopedSlots: { customRender: 'warehouseAction' }
           },
@@ -179,6 +179,7 @@
       },
       handleOk () {
         const that = this;
+        debugger
         console.log(this.putInMtls)
         let obj = putStockIn(this.putInMtls);
         obj.then((res)=>{
@@ -221,7 +222,11 @@
         this.modelStyle.fullScreen = mode
       },
       handleChange (val, key, index, col) {
-        this.putInMtls[index].quantity = val;
+        if ('quantity' == col) {
+          this.putInMtls[index].quantity = val;
+        } else if ('warehouseId' == col) {
+          this.putInMtls[index].warehouseId = val;
+        }
       }
     }
   }

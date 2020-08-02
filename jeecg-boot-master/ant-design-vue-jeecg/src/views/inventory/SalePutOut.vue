@@ -100,11 +100,6 @@
             dataIndex: 'code'
           },
           {
-            title: '仓库',
-            align:"center",
-            dataIndex: 'warehouse'
-          },
-          {
             title: '原单类型',
             align:"center",
             dataIndex: 'sourceBillTypeName'
@@ -119,11 +114,6 @@
             title: '单据类型',
             align:"center",
             dataIndex: 'billTypeName'
-          },
-          {
-            title: '出库时间',
-            align:"center",
-            dataIndex: 'putOutTime'
           },
           {
             title: '状态',

@@ -45,8 +45,8 @@
                     <a-card>
                         <form :autoFormCreate="(form) => this.form = form">
                             <a-table :columns="columns" :dataSource="tabledata" :pagination="false" rowKey="id" ref="mtltable">
-                                <template v-for="(col, i) in ['mtlId', 'quantity', 'unitId','newMtlId', 'newQuantity', 'newUnitId','content', 'action']" :slot="col" clearable slot-scope="text, record, index">
-                                    <a-select :style="['mtlId', 'newMtlId'].indexOf(columns[i].dataIndex) > -1 ? 'width: 250px;' : ''" v-if="['mtlId',, 'newMtlId', 'unitId', 'newUnitId'].indexOf(columns[i].dataIndex) > -1" v-decorator="[record[columns[i].dataIndex], {}]" showSearch
+                                <template v-for="(col, i) in ['mtlId', 'quantity', 'unitId','newMtlId', 'newQuantity', 'newUnitId','priceSpaceModeId','priceSpace', 'action']" :slot="col" clearable slot-scope="text, record, index">
+                                    <a-select :style="['mtlId', 'newMtlId'].indexOf(columns[i].dataIndex) > -1 ? 'width: 250px;' : ''" v-if="['mtlId',, 'newMtlId', 'unitId', 'newUnitId','priceSpaceModeId'].indexOf(columns[i].dataIndex) > -1" v-decorator="[record[columns[i].dataIndex], {}]" showSearch
                                               optionFilterProp="children" notFoundContent="无法找到，输入关键词回车[Enter]搜索试试" @keyup.enter.native="e => searchData(e, col, record.key)"
                                               @change="e => handleChange(e, record.key, col)" :placeholder="'请选择'+columns[i].title" :value="record[columns[i].dataIndex]" ref="sel">
                                         <a-select-option value="">请选择</a-select-option>
@@ -127,7 +127,8 @@ import {
     searchMaterial,
     getMaterialUnitList,
     getChangeOrderOne,
-    changeOrderDtlDelete
+    changeOrderDtlDelete,
+    getPriceSpaceModeList
 } from '@/api/api'
 export default {
     name: 'ChangeOrderModal',
@@ -248,13 +249,22 @@ export default {
                     }
                 },
                 {
-                    title: '备注',
-                    dataIndex: 'content',
-                    key: 'content',
-                    width: '20%',
+                    title: '模式',
+                    dataIndex: 'priceSpaceModeId',
+                    key: 'priceSpaceModeId',
+                    width: '10%',
                     scopedSlots: {
-                        customRender: 'content'
+                        customRender: 'priceSpaceModeId'
                     }
+                },
+                {
+                  title: '差价',
+                  dataIndex: 'priceSpace',
+                  key: 'priceSpace',
+                  width: '10%',
+                  scopedSlots: {
+                    customRender: 'priceSpace'
+                  }
                 },
                 {
                     title: '操作',
@@ -512,6 +522,20 @@ export default {
           this.columns[5].list = res.result;
           this.$set(this.dictOptions, 2, this.columns[2])
           this.$set(this.dictOptions, 5, this.columns[5])
+          // this.$set(this.dictOptions, 'materialunitlist', res.result)
+        }
+      });
+      //差价模式
+      getPriceSpaceModeList('').then((res) => {
+        if (res.success) {
+          if (res.result && res.result.length > 0) {
+            res.result.forEach(function (option) {
+              option.value = option.id;
+              option.text = option.name;
+            })
+          }
+          this.columns[6].list = res.result;
+          this.$set(this.dictOptions, 6, this.columns[6])
           // this.$set(this.dictOptions, 'materialunitlist', res.result)
         }
       });

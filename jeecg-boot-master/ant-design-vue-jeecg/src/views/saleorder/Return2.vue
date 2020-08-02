@@ -132,6 +132,7 @@
         <!--<a-button :loading="loading" @click="finish">提交</a-button>-->
         <a-button style="margin-left: 8px" @click="prevStep">上一步</a-button>
         <a-button style="margin-left: 8px" type="primary" @click="finish">完成</a-button>
+        <a-button v-if="returnTypeSum > 0" style="margin-left: 8px" type="primary" @click="finishStockIn">完成并通知入库</a-button>
       </a-form-item>
     </a-form>
 
@@ -144,7 +145,7 @@
   import RefundOrderDtlModal from '../refund/RefundOrderDtlModal'
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import { deleteAction, postAction, getAction } from '@/api/manage'
-  import {editSaleOrderReturn, getSaleOrderReturnOne, getSaleOrderReturnMtlList } from '@/api/api'
+  import {editSaleOrderReturn, getSaleOrderReturnOne, getSaleOrderReturnMtlList, inventoryInSave } from '@/api/api'
   import JDictSelectTag from '@/components/dict/JDictSelectTag.vue'
   export default {
     name: "Return2",
@@ -212,7 +213,7 @@
               customRender:function (t,r,index) {
                 return parseInt(index)+1;
               }
-            },,
+            },
             {
               title: '产品名称',
               align:"center",
@@ -245,9 +246,9 @@
               dataIndex: 'discount'
             },
             {
-              title: '折扣类型',
-              dataIndex: 'discountTypeName',
-              align:"center"
+              title: '退货方式',
+              dataIndex: 'returnTypeName',
+              key: 'returnTypeName'
             },
             {
               title: '金额',
@@ -298,7 +299,8 @@
           delete2: '/refundOrderDtl/delete',
           deleteBatch2: '/refundOrderDtl/deleteBatch',
         },
-        unEditable: true
+        unEditable: true,
+        returnTypeSum: 0
       }
     },
     methods: {
@@ -379,7 +381,6 @@
           if (res.success) {
             this.dataSource2 = res.result.records
             this.ipagination2.total = res.result.total
-
           }
           this.loading2 = false
         })
@@ -492,11 +493,26 @@
       },
       prevStep () {
         this.$emit('prevStep')
-      }
+      },
+      finishStockIn () {
+        let formData = {
+          "sourceId": this.saleOrderReturn.id,
+          "sourceCode": this.saleOrderReturn.code,
+          "sourceBillType": this.saleOrderReturn.billType
+        };
+        inventoryInSave(formData).then((res)=>{
+          if(res.success){
+            this.$message.success(res.message);
+          }else{
+            this.$message.warning(res.message);
+          }
+        }).finally(() => {
+        })
+        this.$emit('finish')
+      },
     },
     mounted() {
       if (this.$route.query.id) {
-        console.log(this.form)
         getSaleOrderReturnOne({id:this.$route.query.id}).then((res) => {
           if (res.success) {
             this.saleOrderReturn = res.result;
@@ -510,6 +526,19 @@
       }
       this.loadData2();
       this.unEditable = this.$route.query.unEditable;
+    },
+    watch: {
+      // 如果 `data` 发生改变，这个函数就会运行
+      dataSource: function () {
+        debugger
+        let typesum = 0;
+        this.dataSource.forEach(function(target){
+          if (target.returnTypeId) {
+            typesum += parseFloat(target.returnTypeId);
+          }
+        });
+        this.returnTypeSum = typesum;
+      }
     }
   }
 </script>

@@ -153,11 +153,6 @@ export default {
                   dataIndex: 'customer'
                 },
                 {
-                    title: '出入仓库',
-                    align: "center",
-                    dataIndex: 'warehouse'
-                },
-                {
                     title: '订单日期',
                     align: "center",
                     dataIndex: 'billDate'
