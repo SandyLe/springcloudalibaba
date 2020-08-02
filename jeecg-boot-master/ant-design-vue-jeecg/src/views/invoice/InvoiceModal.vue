@@ -17,21 +17,23 @@
           </a-col>
           <a-col :md="12" :sm="12">
             <a-form-item label="原单编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'sourceCode', validatorRules.sourceCode]" placeholder="请输入原单编号" />
+              <a-input v-if = "editType == 1" v-decorator="[ 'sourceCode', validatorRules.sourceCode]" placeholder="请输入原单编号" />
               <a-input v-decorator="[ 'sourceId', {}]" placeholder="原销售单ID" type="hidden" />
+              <span v-if="editType == 0">{{invoice.sourceCode}}</span>
             </a-form-item>
           </a-col>
         </a-row>
         <a-row>
           <a-col :md="12" :sm="12">
             <a-form-item label="发票类型" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-select v-decorator="['invoiceTypeId', {}]" placeholder="请选择发票类型" showSearch optionFilterProp="children"
+              <a-select v-if = "editType == 1" v-decorator="['invoiceTypeId', {}]" placeholder="请选择发票类型" showSearch optionFilterProp="children"
                         notFoundContent="没有匹配的发票类型" @change="invoiceTypeChange" >
                 <a-select-option value="">请选择</a-select-option>
                 <a-select-option v-for="(item, key) in invoiceTypeList" :key="key" :value="item.id">
                   {{ item.name || item.code }}
                 </a-select-option>
               </a-select>
+              <span v-if="editType == 0">{{invoice.invoiceTypeName}}</span>
             </a-form-item>
           </a-col>
           <a-col :md="12" :sm="12">
@@ -39,81 +41,100 @@
               :labelCol="labelCol"
               :wrapperCol="wrapperCol"
               label="代码">
-              <a-input placeholder="后台自动生成单号" :readOnly="true" v-decorator="[ 'code', validatorRules.code]" />
+              <a-input v-if = "editType == 1" placeholder="后台自动生成单号" :readOnly="true" v-decorator="[ 'code', validatorRules.code]" />
+              <span v-if="editType == 0">{{invoice.code}}</span>
             </a-form-item>
           </a-col>
         </a-row>
         <a-row>
           <a-col :md="12" :sm="12">
             <a-form-item label="材质" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-select v-decorator="['invoiceTextureId', {}]" placeholder="请选择发票类型" showSearch optionFilterProp="children"
+              <a-select v-if = "editType == 1" v-decorator="['invoiceTextureId', {}]" placeholder="请选择发票类型" showSearch optionFilterProp="children"
                         notFoundContent="没有匹配的发票类型"  >
                 <a-select-option value="">请选择</a-select-option>
                 <a-select-option v-for="(item, key) in invoiceTextureList" :key="key" :value="item.id">
                   {{ item.name || item.code }}
                 </a-select-option>
               </a-select>
+              <span v-if="editType == 0">{{invoice.invoiceTextureName}}</span>
             </a-form-item>
           </a-col>
           <a-col :span="12">
             <a-form-item label="单据时间" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-date-picker showTime format='YYYY-MM-DD HH:mm:ss' v-decorator="[ 'billDate', {}]"/>
+              <a-date-picker v-if = "editType == 1" showTime format='YYYY-MM-DD HH:mm:ss' v-decorator="[ 'billDate', {}]"/>
+              <span v-if="editType == 0">{{invoice.billDate}}</span>
             </a-form-item>
           </a-col>
         </a-row>
         <a-row>
           <a-col :md="12" :sm="12">
             <a-form-item label="抬头" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'billTitle', validatorRules.billTitle]" placeholder="请输入抬头" />
+              <a-input v-if = "editType == 1" v-decorator="[ 'billTitle', validatorRules.billTitle]" placeholder="请输入抬头" />
+              <span v-if="editType == 0">{{invoice.billTitle}}</span>
             </a-form-item>
           </a-col>
           <a-col :md="12" :sm="12">
             <a-form-item label="金额" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'amount', validatorRules.amount]" placeholder="请输入金额" />
+              <a-input v-if = "editType == 1" v-decorator="[ 'amount', validatorRules.amount]" placeholder="请输入金额" />
+              <span v-if="editType == 0">{{invoice.amount}}</span>
             </a-form-item>
           </a-col>
         </a-row>
         <a-row>
           <a-col :span="12">
             <a-form-item label="税号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'taxNo', validatorRules.taxNo]" placeholder="请输入税号" />
+              <a-input v-if = "editType == 1" v-decorator="[ 'taxNo', validatorRules.taxNo]" placeholder="请输入税号" />
+              <span v-if="editType == 0">{{invoice.taxNo}}</span>
             </a-form-item>
           </a-col>
           <a-col :span="12">
             <a-form-item label="邮箱" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'email', validatorRules.email]" placeholder="请输入邮箱" />
+              <a-input v-if = "editType == 1" v-decorator="[ 'email', validatorRules.email]" placeholder="请输入邮箱" />
+              <span v-if="editType == 0">{{invoice.email}}</span>
             </a-form-item>
           </a-col>
         </a-row>
         <a-row v-if="invoiceTypeId==1">
           <a-col :span="12">
             <a-form-item label="地址" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'address', validatorRules.address]" placeholder="请输入地址" />
+              <a-input v-if = "editType == 1" v-decorator="[ 'address', validatorRules.address]" placeholder="请输入地址" />
+              <span v-if="editType == 0">{{invoice.address}}</span>
             </a-form-item>
           </a-col>
           <a-col :span="12">
             <a-form-item label="电话" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'tel', validatorRules.tel]" placeholder="请输入电话" />
+              <a-input v-if = "editType == 1" v-decorator="[ 'tel', validatorRules.tel]" placeholder="请输入电话" />
+              <span v-if="editType == 0">{{invoice.tel}}</span>
             </a-form-item>
           </a-col>
         </a-row>
         <a-row v-if="invoiceTypeId==1">
           <a-col :span="12">
             <a-form-item label="开户行" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'openningBank', validatorRules.openningBank]" placeholder="请输入开户行" />
+              <a-input v-if = "editType == 1" v-decorator="[ 'openningBank', validatorRules.openningBank]" placeholder="请输入开户行" />
+              <span v-if="editType == 0">{{invoice.openningBank}}</span>
             </a-form-item>
           </a-col>
           <a-col :span="12">
             <a-form-item label="账号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'bankNo', validatorRules.bankNo]" placeholder="请输入账号" />
+              <a-input v-if = "editType == 1" v-decorator="[ 'bankNo', validatorRules.bankNo]" placeholder="请输入账号" />
+              <span v-if="editType == 0">{{invoice.bankNo}}</span>
+            </a-form-item>
+          </a-col>
+        </a-row>
+        <a-row>
+          <a-col :span="12">
+            <a-form-item label="发票号" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input v-if = "makeInvoice == 1" v-decorator="[ 'invoiceNo', validatorRules.invoiceNo]" placeholder="请输入发票号" />
+              <span v-if="editType == 0">{{invoice.invoiceNo}}</span>
             </a-form-item>
           </a-col>
         </a-row>
         <a-row>
           <a-col :span="24">
-            <a-card class="card" title="收货信息" :bordered="true">
-              收货地址：<span style="font-weight: bold">{{invoiceAddress.recipients}} &nbsp;</span> <a>{{invoiceAddress.tel}}</a> {{invoiceAddress.fullAddress}}
-              <a @click="editAddressItem(invoice)"><a-icon type="setting"/> 请选择收获地址</a>
+            <a-card class="card" title="寄送地址" :bordered="true">
+              寄送地址：<span style="font-weight: bold">{{invoiceAddress.recipients}} &nbsp;</span> <a>{{invoiceAddress.tel}}</a> {{invoiceAddress.fullAddress}}
+              <a v-if = "editType == 1" @click="editAddressItem(invoice)"><a-icon type="setting"/> 请选择收获地址</a>
             </a-card>
           </a-col>
         </a-row>
@@ -121,7 +142,8 @@
       <sale-address-list ref="saleAddressList" v-on:addressFlag="addressOK"></sale-address-list>
     </a-card>
     <footer-tool-bar>
-        <a-button v-if="unEditable" type="primary" @click="handleOk">保存</a-button>
+        <a-button v-if = "makeInvoice == 1" type="primary" @click="createInvoice">登记开票</a-button>
+        <a-button v-if = "editType == 1" type="primary" @click="handleOk">保存</a-button>
         <router-view :key="this.$route.path"></router-view>
         <a-button :style="{marginLeft:'20px'}" @click="backToList">返回</a-button>
     </footer-tool-bar>
@@ -143,7 +165,8 @@ import {
   getInvoiceById,
   getInvoiceAddress,
   getSaleOrderOne,
-  addInvoice
+  addInvoice,
+  createInvoice
 } from '@/api/api'
 export default {
   name: 'InvoiceModal',
@@ -155,6 +178,7 @@ export default {
   },
   data() {
     return {
+      makeInvoice: 0,
       editType: 0,
       dateFormat:"YYYY-MM-DD HH:mm:ss",
       invoiceAddress: {},
@@ -203,18 +227,25 @@ export default {
           }]
         },
         batchNo: {
-              rules: [{
-                  required: true,
-                  message: '请选择批次编号!'
-              }]
-          },
-          amount: {},
-          description: {},
-          states: {}
+          rules: [{
+            required: true,
+            message: '请选择批次编号!'
+          }]
+        },
+        invoiceNo: {
+          rules: [{
+            required: true,
+            message: '请输入发票号!'
+          }]
+        },
+        amount: {},
+        description: {},
+        states: {}
       },
       url: {
-          add: '/invoice/add',
-          edit: '/invoice/edit'
+        add: '/invoice/add',
+        edit: '/invoice/edit',
+        save: '/invoice/save'
       },
       unEditable: true
     }
@@ -236,17 +267,10 @@ export default {
       const that = this
       this.form.validateFields((err, values) => {
         if (!err) {
-          let httpurl = ''
+          let httpurl = this.url.save
           let method = 'post'
-          debugger
-          if (!this.model.id) {
-            httpurl += this.url.add
-          } else {
-            httpurl += this.url.edit
-          }
           let formData = Object.assign(this.model, values)
           formData.billDate = values.billDate.format(this.dateFormat)
-          console.log('表单提交数据', formData)
           httpAction(httpurl, formData, method)
             .then(res => {
               console.log(res);
@@ -269,6 +293,7 @@ export default {
 
     },
     editAddressItem (record) {
+      debugger
       record.customerId = this.addressSourceId;
       record.sourceAddId = this.invoiceAddress.sourceAddId;
       this.$refs.saleAddressList.edit(record);
@@ -290,39 +315,61 @@ export default {
         this.visible = false
     },
     handleOk() {
+      delete this.validatorRules.invoiceNo;
       const that = this
       // 触发表单验证
 
       this.form.validateFields((err, values) => {
           if (!err) {
-              let httpurl = ''
-              let method = 'post'
-              if (!this.model.id) {
-                  httpurl += this.url.add
-              } else {
-                  httpurl += this.url.edit
-              }
-              let formData = Object.assign(this.model, values)
-              formData.billDate = values.billDate.format(this.dateFormat)
-              httpAction(httpurl, formData, method)
-                  .then(res => {
-                      console.log(res);
-                      if (res.success) {
-                          that.$message.success(res.message)
-                          that.$emit('ok')
-                          that.hasaddmain = true;
-                          that.$emit('close')
-                      } else {
-                          that.$message.warning(res.message)
-                      }
-                  })
-                  .finally(() => {
-                      that.confirmLoading = false
-                      that.close()
-                      that.$parent.closeRouteViewTab(this.$route.path)
-                      that.$router.push({ path:'/invoice/list' });
-                  })
+            let httpurl = this.url.save
+            let method = 'post'
+            let formData = Object.assign(this.model, values)
+            formData.billDate = values.billDate.format(this.dateFormat)
+            httpAction(httpurl, formData, method)
+                .then(res => {
+                    console.log(res);
+                    if (res.success) {
+                        that.$message.success(res.message)
+                        that.$emit('ok')
+                        that.hasaddmain = true;
+                        that.$emit('close')
+                    } else {
+                        that.$message.warning(res.message)
+                    }
+                })
+                .finally(() => {
+                    that.confirmLoading = false
+                    that.close()
+                    that.$parent.closeRouteViewTab(this.$route.path)
+                    that.$router.push({ path:'/saleorder/SaleOrder' });
+                })
           }
+      })
+    },
+    createInvoice() {
+      const that = this
+      this.form.validateFields((err, values) => {
+        if (!err) {
+          let formData = Object.assign(this.model, values)
+          createInvoice(formData)
+            .then(res => {
+              console.log(res);
+              if (res.success) {
+                that.$message.success(res.message)
+                that.$emit('ok')
+                that.hasaddmain = true;
+                that.$emit('close')
+              } else {
+                that.$message.warning(res.message)
+              }
+            })
+            .finally(() => {
+              that.confirmLoading = false
+              that.close()
+              that.$parent.closeRouteViewTab(this.$route.path)
+              that.$router.push({ path:'/invoice/list' });
+            })
+        }
       })
     },
     handleCancel() {
@@ -337,7 +384,7 @@ export default {
         // console.log(this.$route.matched);
         this.$route.matched.splice(this.$route.matched.length-1 ,1);
         this.$parent.closeRouteViewTab(this.$route.fullPath)
-        this.$router.replace({ path:'/purchase/PurchaseList' });
+        this.$router.replace({ path:'/saleorder/SaleOrder' });
     },
     invoiceTypeChange (val) {
       this.invoiceTypeId = val;
@@ -345,19 +392,22 @@ export default {
   },
   mounted() {
     this.editType = this.$route.query.editType;
+    this.makeInvoice = this.$route.query.makeInvoice;
     if (this.$route.query.unEditable === false) {
       this.unEditable = this.$route.query.unEditable;
     }
     if (this.$route.query.sourceId) {
+      debugger
       this.invoice.sourceId = this.$route.query.sourceId;
       this.invoice.sourceBillType = this.$route.query.sourceBillType;
       this.invoice.sourceCode = this.$route.query.sourceCode;
-      this.form.setFieldsValue({sourceId:this.$route.query.sourceId, sourceBillType:this.$route.query.sourceBillType, sourceCode: this.$route.query.sourceCode, workTypeId: this.$route.query.workTypeId})
+
       if (this.$route.query.sourceBillType == 0) {
         const that = this;
         getSaleOrderOne({id:this.$route.query.sourceId}).then((res) => {
           if (res.success) {
             that.addressSourceId = res.result.customerId;
+            that.form.setFieldsValue({sourceId:that.$route.query.sourceId, sourceBillType:that.$route.query.sourceBillType, sourceCode: that.$route.query.sourceCode})
           }
         })
       }
@@ -381,7 +431,6 @@ export default {
     })
 
     const that = this;
-    debugger
     getInvoiceById({"id":this.$route.params.id}).then((res)=>{
       if (res.result) {
         // 收获地址
@@ -393,6 +442,8 @@ export default {
           });
         }
         this.invoice = res.result;
+        this.model.id = this.invoice.id;
+        this.invoiceTypeId = this.invoice.invoiceTypeId;
       }
     });
   }

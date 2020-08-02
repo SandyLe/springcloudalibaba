@@ -181,6 +181,7 @@ const getDeliveryTypeList = (params)=>getAction("/basic/fc/enum/deliveryType/get
 const getWorkTypeList = (params)=>getAction("/basic/fc/enum/workType/getList",params)
 const getInvoiceTypeList = (params)=>getAction("/basic/fc/enum/invoiceType/getList",params)
 const getInvoiceTextureList = (params)=>getAction("/basic/fc/enum/invoiceTexture/getList",params)
+const getReturnTypeList = (params)=>getAction("/basic/fc/enum/returnType/getList",params)
 
 const loadShopData = (params)=>getAction("/sys/sysDepart/getSysDepartList",params)
 const getAllUser = (params)=>getAction("/sys/user/getAll",params)
@@ -214,6 +215,7 @@ const editSaleMtlOrderReturn = (params)=>postAction("/saleOrderReturnMtl/edit",p
 const getSaleOrderReturnMtlList = (params)=>getAction("/saleOrderReturnMtl/getList",params)
 const addSaleOrderReturnExpense = (params)=>postAction("/saleOrderReturnExpense/add",params)
 const editSaleOrderReturnExpense = (params)=>postAction("/saleOrderReturnExpense/edit",params)
+const findSaleOrderReturnQueryDto = (params)=>getAction("/saleOrderReturn/queryDto",params)
 
 
 // 采购批次
@@ -281,6 +283,11 @@ const addReceiptOrderDtl = (params)=>postAction("/receiptOrderDtl/add", params)
 const editReceiptOrderDtl = (params)=>postAction("/receiptOrderDtl/edit", params)
 const getReceiptOrderDtlList = (params)=>getAction("/receiptOrderDtl/getList", params)
 
+// 退款单
+const addRefundOrderDtl = (params)=>postAction("/refundOrderDtl/add", params)
+const editRefundOrderDtl = (params)=>postAction("/refundOrderDtl/edit", params)
+const getRefundOrderDtlList = (params)=>getAction("/refundOrderDtl/getList", params)
+
 // 销售订单地址
 const saveOrderAddress = (params)=>postAction("/saleOrderAddress/save", params)
 const getOrderAddress = (params)=>getAction("/saleOrderAddress/getOneBySourceId", params)
@@ -290,6 +297,7 @@ const getInvoiceById = (params)=>getAction("/invoice/getOne", params)
 const addInvoice = (params)=>asynPostAction("/invoice/add", params)
 const getInvoiceAddress = (params)=>getAction("/invoiceAddress/getOneBySourceId", params)
 const saveInvoiceAddress = (params)=>postAction("/invoiceAddress/save", params)
+const createInvoice = (params)=>postAction("/invoice/createInvoice", params)
 
 export {
   // imgView,
@@ -488,7 +496,13 @@ export {
   getInvoiceById,
   getInvoiceAddress,
   addInvoice,
-  saveInvoiceAddress
+  saveInvoiceAddress,
+  createInvoice,
+  findSaleOrderReturnQueryDto,
+  getReturnTypeList,
+  addRefundOrderDtl,
+  editRefundOrderDtl,
+  getRefundOrderDtlList
 }
 
 

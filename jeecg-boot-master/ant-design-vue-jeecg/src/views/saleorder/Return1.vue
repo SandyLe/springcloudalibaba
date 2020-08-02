@@ -1,6 +1,7 @@
 <template>
   <div>
-    <a-form :form="saleOrderReturnForm">
+  <a-card :bordered="false">
+    <a-form :form="form">
       <a-row :gutter="24">
         <a-col :md="6" :sm="6">
           <a-form-item
@@ -27,7 +28,7 @@
             label="客户">
             <a-select v-decorator="['customerId', validatorRules.customerId]" placeholder="请选择客户"  showSearch
                       optionFilterProp="children"
-                      notFoundContent="无法找到" :disabled="unEditable" >
+                      notFoundContent="无法找到">
               <a-select-option value="">请选择</a-select-option>
               <a-select-option v-for="(item, key) in customerList" :key="key" :value="item.id">
                 {{ item.name || item.code }}
@@ -40,7 +41,7 @@
             :labelCol="{span: 5}"
             :wrapperCol="{span: 19}"
             label="单号">
-            <a-input placeholder="自动生成单号" :readOnly="true" v-decorator="[ 'code', {}]" :disabled="unEditable" />
+            <a-input placeholder="自动生成单号" :readOnly="true" v-decorator="[ 'code', {}]" :disabled="false" />
           </a-form-item>
         </a-col>
         <a-col :md="4" :sm="6">
@@ -58,331 +59,488 @@
             :labelCol="{span: 5}"
             :wrapperCol="{span: 19}"
             label="订单日期">
-            <a-date-picker showTime format='YYYY-MM-DD HH:mm:ss' v-decorator="[ 'billDate', {}]" :readOnly = "unEditable" :disabled="unEditable" />
+            <a-date-picker showTime format='YYYY-MM-DD HH:mm:ss' v-decorator="[ 'billDate', {}]" />
           </a-form-item>
         </a-col>
         <a-col :md="18" :sm="18">
           <a-form-item
             label="备注"
             :labelCol="{span: 2}"
-            :wrapperCol="{span: 22}"
-          >
-            <a-input placeholder="请输入备注" v-decorator="[ 'content', {}]" :readOnly = "unEditable" />
+            :wrapperCol="{span: 22}">
+            <a-input placeholder="请输入备注" v-decorator="[ 'content', {}]" />
           </a-form-item>
+        </a-col>
+      </a-row>
+      <a-row>
+        <a-col :span="24">
+          <a-card>
+            <form :autoFormCreate="(form) => this.form = form">
+              <a-table :columns="columns" :dataSource="tabledata" :pagination="false" rowKey="id" ref="mtltable">
+                <template v-for="(col, i) in ['mtlId', 'unitId','quantity', 'price', 'discount', 'amount', 'returnTypeId', 'action']" :slot="col" clearable slot-scope="text, record, index">
+                  <a-select :style="['mtlId'].indexOf(columns[i].dataIndex) > -1 ? 'width: 250px;' : ''" v-if="['mtlId','unitId','returnTypeId'].indexOf(columns[i].dataIndex) > -1" v-decorator="[record[columns[i].dataIndex], {}]" showSearch
+                            optionFilterProp="children" notFoundContent="无法找到，输入关键词回车[Enter]搜索试试" @keyup.enter.native="e => searchData(e, col, record.key)"
+                            @change="e => handleChange(e, record.key, col)" :placeholder="'请选择'+columns[i].title" :value="record[columns[i].dataIndex]" ref="sel">
+                    <a-select-option value="">请选择</a-select-option>
+                    <a-select-option v-for="(item, key) in columns[i].list" :key="key" :value="item.id" :title="item.info">
+                      {{ item.info || item.name }}
+                    </a-select-option>
+                  </a-select>
+                  <a-input :key="col" v-else style="margin: -5px 0" :value="text" :placeholder="columns[i].title" @change="e => handleChange(e.target.value, record.key, col)" />
+                  <!-- <template v-else>{{ text }}</template> -->
+                </template>
+
+                <template slot="operation" slot-scope="text, record, index">
+                  <template v-if="record.editable">
+                    <span v-if="record.isNew">
+                        <!-- <a @click="saveRow(record.key)">添加</a>
+                        <a-divider type="vertical" /> -->
+                        <a-popconfirm title="是否要删除此行？" @confirm="remove(record.key,'')">
+                            <a>删除</a>
+                        </a-popconfirm>
+                    </span>
+                    <span v-else>
+                        <a @click="saveRow(record.key)">保存</a>
+                        <a-divider type="vertical" />
+                        <a @click="cancel(record.key)">取消</a>
+                    </span>
+                  </template>
+                  <span v-else>
+                      <!-- <a @click="toggle(record.key)">编辑</a>
+                      <a-divider type="vertical" /> -->
+                      <a-popconfirm title="是否要删除此行？" :data-id="record.id" @confirm="remove(record.key,record.id)">
+                          <a>删除</a>
+                      </a-popconfirm>
+                      <div style="display:none;">
+                          <a-input v-decorator="[ 'id', {}]" placeholder="实体主键" type="hidden"/>
+                          <a-input v-decorator="[ 'code', {}]" placeholder="代码" type="hidden"/>
+                      </div>
+                  </span>
+                </template>
+              </a-table>
+              <a-button style="width: 100%; margin-top: 16px; margin-bottom: 8px" type="dashed" icon="plus" @click="newMember">新增产品</a-button>
+            </form>
+          </a-card>
         </a-col>
       </a-row>
     </a-form>
 
-      <a-row>
-        <a-col>
-          <!-- 操作按钮区域 -->
-          <div class="table-operator" style="border-top: 5px" v-if = "!unEditable">
-            <a-button @click="handleAddMtl" type="primary" icon="plus">添加产品</a-button>
-            <a-dropdown v-if="selectedRowKeys.length > 0">
-              <a-menu slot="overlay">
-                <a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>
-              </a-menu>
-              <a-button style="margin-left: 8px">
-                批量操作 <a-icon type="down" />
-              </a-button>
-            </a-dropdown>
-          </div>
 
-          <!-- table区域-begin -->
-          <div>
-            <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;">
-              <i class="anticon anticon-info-circle ant-alert-icon"></i>已选择&nbsp;<a style="font-weight: 600">{{ selectedRowKeys.length }}</a>项&nbsp;&nbsp;
-              <a style="margin-left: 24px" @click="onClearSelected">清空</a>
-            </div>
+  </a-card>
+  <footer-tool-bar>
+    <a-button v-if="editType == 1" type="primary" @click="handleOk">保存下一步</a-button>
+    <router-view :key="this.$route.path"></router-view>
+    <a-button :style="{marginLeft:'20px'}" @click="backToList">返回</a-button>
+  </footer-tool-bar>
 
-            <a-table
-              ref="table"
-              bordered
-              size="middle"
-              rowKey="id"
-              :columns="columns"
-              :dataSource="dataSource"
-              :pagination="ipagination"
-              :loading="loading"
-              :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
-              @change="handleTableChange">
-
-              <template slot="avatarslot" slot-scope="text, record, index">
-                <div class="anty-img-wrap">
-                  <a-avatar shape="square" :src="getAvatarView(record.avatar)" icon="user"/>
-                </div>
-              </template>
-
-              <span slot="nameAction" slot-scope="text, record">
-                <a @click="goDetail(record.mtlId)">{{record.mtl}}</a>
-              </span>
-              <span slot="action" slot-scope="text, record" v-if = "!unEditable">
-                <a @click="handleEditMtl(record)">编辑</a>
-                <a-divider type="vertical"/>
-
-                <a-dropdown>
-                  <a class="ant-dropdown-link">
-                    更多 <a-icon type="down"/>
-                  </a>
-                  <a-menu slot="overlay">
-                    <a-menu-item>
-                      <!--
-                      <a href="javascript:;" @click="openAuditTab(1, '3')">详情</a>
-                      -->
-                      <a href="javascript:;" @click="handleEditMtl(record)">详情</a>
-                    </a-menu-item>
-
-                    <a-menu-item>
-                      <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
-                        <a>删除</a>
-                      </a-popconfirm>
-                    </a-menu-item>
-                  </a-menu>
-                </a-dropdown>
-              </span>
-            </a-table>
-          </div>
-          <!-- table区域-end -->
-
-          <!-- 表单区域 -->
-
-          <sale-order-return-mtl-modal ref="saleOrderReturnMtlModal" :saleOrder = "saleOrder" @ok="modalFormOk"></sale-order-return-mtl-modal>
-          <!-- 表单区域 -->
-        </a-col>
-      </a-row>
-      <a-row>
-        <a-col :md="24" :sm="24" style="text-align: center ">
-          <a-button type="primary" @click="nextStep">下一步</a-button>
-        </a-col>
-      </a-row>
   </div>
 </template>
 
 <script>
-  import JInput from '@/components/jeecg/JInput'
-  import SaleOrderReturnMtlModal from './SaleOrderReturnMtlModal'
+
+  import {
+    httpAction
+  } from '@/api/manage'
   import pick from 'lodash.pick'
   import moment from 'moment'
-  import JDictSelectTag from '@/components/dict/JDictSelectTag.vue'
-  import {addSaleOrderReturn, editSaleOrderReturn, getCustomerList, getSaleOrderReturnOne, getSaleOrderReturnMtlList, getSaleOrderByCode} from '@/api/api'
-  import {JeecgListMixin} from '@/mixins/JeecgListMixin'
+  import JDate from '@/components/jeecg/JDate'
+  import JDictSelectTag from '@/components/dict/JDictSelectTag'
+  import FooterToolBar from '@/components/tools/FooterToolBar'
+  import {
+    ajaxGetDictItems,
+    searchMaterial,
+    getMaterialUnitList,
+    findSaleOrderReturnQueryDto,
+    purchasedetailDelete,
+
+    searchCustomer,
+    getReturnTypeList,
+    getSaleOrderByCode,
+    getMaterialListByIds
+  } from '@/api/api'
   export default {
-    name: "Return1",
-    mixins: [JeecgListMixin],
+    name: 'PurchasesModal',
     components: {
-      SaleOrderReturnMtlModal,
-      JDictSelectTag,
-      JInput
+      JDate,
+      FooterToolBar,
+      JDictSelectTag
     },
-    data () {
+    data() {
       return {
-        saleOrder: {},
+        editType: 0,
         dateFormat:"YYYY-MM-DD HH:mm:ss",
-        saleOrderReturnForm: this.$form.createForm(this),
-        mainId: 0,
+        form: this.$form.createForm(this),
+        title: '操作',
+        width: '80%',
+        visible: false,
+        model: {},
         labelCol: {
-          xs: { span: 24 },
-          sm: { span: 8 },
+          xs: {
+            span: 24
+          },
+          sm: {
+            span: 5
+          }
         },
         wrapperCol: {
+          xs: {
+            span: 24
+          },
+          sm: {
+            span: 16
+          }
+        },
+        hlabelCol: {
+          xs: { span: 24 },
+          sm: { span: 2 },
+        },
+        hwrapperCol: {
           xs: { span: 24 },
           sm: { span: 16 },
         },
-        model: {},
-        // form: this.$form.createForm(this),
+        confirmLoading: false,
         validatorRules: {
-          sourceCode: {
-            rules: [
-              {required: true, message: '请输入原单编号!'}
-            ]
+          vendorId: {
+            rules: [{
+              required: true,
+              message: '请选择供应商!'
+            }]
           },
-          customerId: {
-            rules: [
-              {required: true, message: '请先查询原单编号带出原单信息!'}
-            ]
+          batchNo: {
+            rules: [{
+              required: true,
+              message: '请选择批次编号!'
+            }]
           },
-          code: {
-            rules: [
-              { min: 0, max: 126, message: '长度不超过 126 个字符', trigger: 'blur' }
-            ]
-          }
+          amount: {},
+          description: {},
+          states: {}
+        },
+        url: {
+          add: '/saleOrderReturn/add',
+          edit: '/saleOrderReturn/edit',
+          save: '/saleOrderReturn/save'
         },
         customerList: [],
-        columns:[
+        dictOptions: {
+        },
+        columns: [{
+          title: '产品', //顺序不要调整，getMaterialList中有用
+          dataIndex: 'mtlId',
+          key: 'mtlId',
+          width: '20%',
+          scopedSlots: {
+            customRender: 'mtlId'
+          }
+        },
           {
-            title: '#',
-            dataIndex: '',
-            key:'rowIndex',
-            width:60,
-            align:"center",
-            customRender:function (t,r,index) {
-              return parseInt(index)+1;
+            title: '单位', //顺序不要调整，getMaterialUnitList中有用
+            dataIndex: 'unitId',
+            key: 'unitId',
+            width: '10%',
+            scopedSlots: {
+              customRender: 'unitId'
             }
-          },
-          {
-            title: '产品名称',
-            align:"center",
-            dataIndex: '',
-            scopedSlots: { customRender: 'nameAction' }
-          },
-          {
-            title: '产品编码',
-            align:"center",
-            dataIndex: 'mtlCode'
           },
           {
             title: '数量',
-            align:"center",
-            dataIndex: 'quantity'
-          },
-          {
-            title: '单位',
-            align:"center",
-            dataIndex: 'unit'
+            dataIndex: 'quantity',
+            key: 'quantity',
+            width: '10%',
+            scopedSlots: {
+              customRender: 'quantity'
+            }
           },
           {
             title: '单价',
-            align:"center",
-            dataIndex: 'price'
+            dataIndex: 'price',
+            key: 'price',
+            width: '10%',
+            scopedSlots: {
+              customRender: 'price'
+            }
           },
           {
             title: '折扣',
-            align:"center",
-            dataIndex: 'discount'
-          },
-          {
-            title: '折扣类型',
-            dataIndex: 'discountTypeName',
-            align:"center"
+            dataIndex: 'discount',
+            key: 'discount',
+            width: '10%',
+            scopedSlots: {
+              customRender: 'discount'
+            }
           },
           {
             title: '金额',
-            align:"center",
-            dataIndex: 'amount'
+            dataIndex: 'amount',
+            key: 'amount',
+            width: '10%',
+            scopedSlots: {
+              customRender: 'amount'
+            }
+          },
+          {
+            title: '退货方式', //
+            dataIndex: 'returnTypeId',
+            key: 'returnTypeId',
+            width: '15%',
+            scopedSlots: {
+              customRender: 'returnTypeId'
+            }
           },
           {
             title: '操作',
-            dataIndex: 'action',
-            align:"center",
-            scopedSlots: { customRender: 'action' },
+            key: 'action',
+            width: '10%',
+            scopedSlots: {
+              customRender: 'operation'
+            }
           }
         ],
-        selfUnitPage:[],
-        selectedRowKeys: [],
-        selectedRows: [],
-        url: {
-          list: "/saleOrderReturnMtl/getPage",
-          delete: "/saleOrderReturnMtl/delete",
-          deleteBatch: "/saleOrderReturnMtl/deleteBatch"
-        },
+        tabledata: [],
+        mtlIds: [],
         unEditable: true
       }
     },
+    created() {
+      this.initDictConfig();
+      this.newMember();
+      this.add();
+
+    },
+    watch: {
+      // 如果 `data` 发生改变，这个函数就会运行
+      tabledata: function () {
+        // console.log(newdata);
+        let datatotalamount = 0;
+        this.tabledata.forEach(function(target){
+          if (target.quantity && target.price) {
+            if (target.discount)
+              datatotalamount += parseFloat(target.quantity).toFixed(2) * parseFloat(target.price).toFixed(2) - parseFloat(target.discount).toFixed(2);
+            else
+              datatotalamount += parseFloat(target.quantity) * parseFloat(target.price).toFixed(2);
+          }
+        });
+        datatotalamount = Math.round(datatotalamount*100)/100;
+        this.model.totalamount = datatotalamount;
+        this.form.setFieldsValue({ 'totalamount' :datatotalamount })
+      }
+    },
     methods: {
-      getQueryParams(){
-        let param = {};
-        if(this.$route.query.id){
-          param.sourceId = this.$route.query.id
-        }else{
-          param.sourceId = -1;
-        }
-        return param;
-      },
-      moment,
-      add () {
-        this.edit({});
-      },
-      edit (record) {
-        console.log(record)
-        this.saleOrderReturnForm.resetFields();
-        this.model = Object.assign({}, record);
-        this.visible = true;
-        //编辑页面禁止修改角色编码
-        if(this.model.id){
-          this.roleDisabled = true;
-        }else{
-          this.roleDisabled = false;
-        }
-        this.$nextTick(() => {
-          this.saleOrderReturnForm.setFieldsValue(pick(this.model,'name', 'code','content','customerId','channelId','billDate','sourceId','sourceCode'))
-          //时间格式化
-          this.saleOrderReturnForm.setFieldsValue({billDate: this.model.billDate ? moment(this.model.billDate) : null})
+      initDictConfig() {
+        //客户
+        searchCustomer('').then((res) => {
+          if (res.success) {
+            if (res.result && res.result.length > 0) {
+              res.result.forEach(function (option) {
+                option.value = option.id;
+                option.text = option.name;
+              })
+            }
+            this.customerList = res.result;
+          }
+        });
+        //仓库
+        getReturnTypeList('').then((res) => {
+          if (res.success) {
+            if (res.result && res.result.length > 0) {
+              res.result.forEach(function (option) {
+                option.value = option.id;
+                option.text = option.name;
+              })
+            }
+            this.columns[6].list = res.result;
+            this.$set(this.dictOptions, 6, this.columns[6])
+          }
+        });
+        //单位
+        getMaterialUnitList('').then((res) => {
+          if (res.success) {
+            if (res.result && res.result.length > 0) {
+              res.result.forEach(function (option) {
+                option.value = option.id;
+                option.text = option.name;
+              })
+            }
+            this.columns[1].list = res.result;
+            this.$set(this.dictOptions, 1, this.columns[1])
+            // this.$set(this.dictOptions, 'materialunitlist', res.result)
+          }
         });
       },
-      saveSaleOrderReturn(id) {
-        const that = this;
+      add() {
+        if(this.$route.query.id || this.$route.query.sourceId){
+          findSaleOrderReturnQueryDto({"id":this.$route.query.id,"sourceId":this.$route.query.sourceId}).then((res)=>{
+            if (res.result) {
+              if (!res.result.id) {
+                delete res.result.billDate;
+              }
+
+              searchCustomer({'id': res.result.customerId}).then((res) => {
+                if (res.success) {
+                  if (res.result && res.result.length > 0) {
+                    res.result.forEach(function (option) {
+                      option.value = option.id;
+                      option.text = option.name;
+                    })
+                  }
+                  this.customerList = res.result;
+                }
+              });
+
+              if(res.result.detaillist){
+                this.tabledata = res.result.detaillist;
+                for(let i=0;i < this.tabledata.length ; i++){
+                  this.tabledata[i].key = i;
+                  this.mtlIds[i] = this.tabledata[i].mtlId;
+                }
+                //产品
+                getMaterialListByIds({"ids": this.mtlIds.join(",")}).then((res) => {
+                  if (res.success) {
+                    if (res.result && res.result.length > 0) {
+                      res.result.forEach(function (option) {
+                        option.value = option.id;
+                        option.text = option.name;
+                      })
+                    }
+                    this.columns[0].list = res.result;
+                    this.$set(this.dictOptions, 0, this.columns[0])
+
+                    const newData = [...this.tabledata]
+                    this.tabledata = newData;
+                    // this.$set(this.dictOptions, 'materiallist', res.result)
+                  }
+                });
+              }
+              this.edit(res.result);
+            }
+          });
+        }
+        else
+          this.edit({})
+      },
+      edit(record) {
+
+        if (!record.billDate) {
+          record.billDate = new Date();
+        }
+        this.form.resetFields()
+        this.model = Object.assign({}, record)
+        this.visible = true
+        this.$nextTick(() => {
+          this.form.setFieldsValue(
+            pick(this.model, 'id', 'code', 'customerId', 'content', 'sourceId', 'sourceCode', 'channelId')
+          )
+        })
+        this.form.setFieldsValue({billDate: this.model.billDate ? moment(this.model.billDate) : null})
+      },
+      close() {
+        this.$emit('close')
+        this.visible = false
+      },
+      handleOk() {
+        const that = this
         // 触发表单验证
-        this.saleOrderReturnForm.validateFields((err, values) => {
-          console.log(values)
+
+        this.form.validateFields((err, values) => {
           if (!err) {
-            that.confirmLoading = true;
-            if(!values.billDate){
-              values.billDate = '';
-            }else{
-              values.billDate = values.billDate.format(this.dateFormat);
-            }
-            if(id){
-              values.id = id;
-            }
-            let formData = Object.assign(this.model, values);
-            let obj;
-            if(this.model){
-              if (values.id) {
-                obj=editSaleOrderReturn(formData);
-              }else{
-                obj=addSaleOrderReturn(formData);
-              }
-            }
-            obj.then((res)=>{
-              if(res.success){
-                this.$route.query.id = res.result.id;
-                that.saleOrder = res.result;
-                // that.$message.success(res.message);
-                // that.$emit('ok');
-              }else{
-                that.$message.warning(res.message);
-              }
-            }).finally(() => {
-              that.confirmLoading = false;
-              // that.close();
-            })
+            that.confirmLoading = true
+            let httpurl = this.url.save
+            let method = 'post'
+            let formData = Object.assign(this.model, values)
+            formData.billDate = values.billDate.format(this.dateFormat);
+            formData.detaillist = that.tabledata;
+            console.log('表单提交数据', formData)
+            httpAction(httpurl, formData, method)
+              .then(res => {
+                if (res.success) {
+                  this.$emit('nextStep')
+                } else {
+                  that.$message.warning(res.message)
+                }
+              })
+              .finally(() => {
+                this.$emit('nextStep')
+              })
           }
         })
       },
-      handleAddMtl () {
-        this.mainId = this.$route.query.id;
-        var idExists = true;
-        if (!this.mainId) {
-          this.saleOrderReturnForm.validateFields((err, values) => {
-            if (!err) {
-              this.saveSaleOrderReturn(this.mainId);
-            } else {
-              idExists = false;
+      handleCancel() {
+        this.close()
+      },
+      newMember() {
+        this.tabledata.push({
+          key: this.tabledata.length,
+          name: '',
+          workId: '',
+          department: '',
+          editable: true,
+          isNew: true
+        })
+      },
+      handleChange(value, key, column) {
+        const newData = [...this.tabledata]
+        const target = newData.filter(item => key === item.key)[0]
+        if (target) {
+          target[column] = value;
+          if (target.quantity && target.price) {
+            if (target.discount)
+              target['amount'] = Math.round((parseFloat(target.quantity) * parseFloat(target.price) - parseFloat(target.discount)) * 100)/100;
+            else
+              target['amount'] = Math.round( (parseFloat(target.quantity) * parseFloat(target.price)) * 100)/100;
+          }
+          this.tabledata = newData
+        }
+      },
+      toggle(key) {
+        let target = this.tabledata.filter(item => item.key === key)[0]
+        target.editable = !target.editable
+      },
+      cancel(key) {
+        let target = this.tabledata.filter(item => item.key === key)[0]
+        target.editable = false
+      },
+      remove(key,id) {
+        const newData = this.tabledata.filter(item => item.key !== key)
+        this.tabledata = newData;
+        if(id){
+          purchasedetailDelete({"id" : id}).then((res) => {
+            if (res.success) {
             }
-          })
-          // this.saveSaleOrderReturn(this.mainId);
-        }
-        if (idExists) {
-          let saleOrderId = this.$refs.saleOrderId.value;
-          this.$refs.saleOrderReturnMtlModal.add({sourceBillId: saleOrderId});
-          this.$refs.saleOrderReturnMtlModal.title = "新增";
+          });
         }
       },
-      handleEditMtl (record) {
-        let saleOrderId = this.$refs.saleOrderId.value;
-        record.sourceBillId = saleOrderId;
-        this.$refs.saleOrderReturnMtlModal.edit(record);
-        this.$refs.saleOrderReturnMtlModal.title = "编辑";
+      saveRow(key) {
+        let target = this.tabledata.filter(item => item.key === key)[0]
+        target.editable = false
+        target.isNew = false
       },
-      goDetail(id) {
-        this.$router.push({ name: "material-materialEdit", query: {"id": id}})
+      backToList() {
+        // console.log(this.$route.matched);
+        this.$route.matched.splice(this.$route.matched.length-1 ,1);
+        this.$parent.closeRouteViewTab(this.$route.fullPath)
+        this.$router.replace({ path:'/purchase/PurchaseList' });
       },
-      nextStep () {
-        this.mainId = this.$route.query.id;
-        if (!this.unEditable) {
-          this.saveSaleOrderReturn(this.mainId);
+      searchData(e, col, key) {
+        if (col === 'mtlId') {
+          const that = this;
+          searchMaterial({"keyword":e.target.valueOf().value}).then((res) => {
+            if (res.success) {
+              if (res.result && res.result.length > 0) {
+                res.result.forEach(function (option) {
+                  option.value = option.id;
+                  option.text = option.name;
+                })
+              }
+              that.columns[0].list = res.result;
+              that.$set(that.dictOptions, 0, that.columns[0])
+
+              const newData = [...this.tabledata]
+              const target = newData.filter(item => key === item.key)[0]
+              target.editable = true
+              that.tabledata = newData;
+              // this.$set(this.dictOptions, 'materiallist', res.result)
+            }
+          });
         }
-        this.$emit('nextStep')
       },
       searchSaleOrder () {
 
@@ -395,6 +553,25 @@
               saleOrder.sourceId = saleOrder.id;
               saleOrder.code = null;
               saleOrder.id = null;
+              delete saleOrder.billDate;
+              delete saleOrder.createBy;
+              delete saleOrder.createTime;
+              delete saleOrder.updateBy;
+              delete saleOrder.updateTime;
+              delete saleOrder.billStatus;
+
+              searchCustomer({'id': saleOrder.customerId}).then((res) => {
+                if (res.success) {
+                  if (res.result && res.result.length > 0) {
+                    res.result.forEach(function (option) {
+                      option.value = option.id;
+                      option.text = option.name;
+                    })
+                  }
+                  this.customerList = res.result;
+                }
+              });
+
               this.edit(saleOrder)
             }
           })
@@ -404,20 +581,9 @@
       }
     },
     mounted() {
-      getCustomerList().then((res) => {
-        if (res.success) {
-          this.customerList = res.result;
-        }
-      })
-      if (this.$route.query.id) {
-        getSaleOrderReturnOne({id:this.$route.query.id}).then((res) => {
-          if (res.success) {
-            this.saleOrder = res.result;
-            this.edit(res.result);
-          }
-        })
-      }
-      this.unEditable = this.$route.query.unEditable;
+      this.editType = this.$route.query.editType;
+      this.form.setFieldsValue({sourceId:this.$route.query.sourceId, sourceCode: this.$route.query.sourceCode});
+
     }
   }
 </script>

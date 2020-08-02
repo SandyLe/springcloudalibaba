@@ -88,6 +88,9 @@
               <a-menu-item>
                 <a @click="addInvoice(record)">发票开具</a>
               </a-menu-item>
+              <a-menu-item>
+                <a @click="addSaleReturn(record)">退货</a>
+              </a-menu-item>
               <a-menu-item  v-if="record.billStatus < 4 && record.billStatus != -1">
                 <a-popconfirm title="确定作废吗?" @confirm="() => handleInvalid(record)">
                   <a>作废</a>
@@ -258,7 +261,11 @@
         })
       },
       addInvoice (record) {
-        this.$router.replace({ path:'/invoice/invoiceModal/',  query: {"sourceBillType": 0, "sourceId": record.id, "sourceCode": record.code} });
+        this.$router.replace({ path:'/invoice/invoiceModal/',  query: {"sourceBillType": 0, "sourceId": record.id, "sourceCode": record.code, "editType":1} });
+      },
+      addSaleReturn (record) {
+        this.$router.replace({ path: "/saleorder/saleOrderReturnEdit",  query: {"sourceBillType": 0, "sourceId": record.id, "sourceCode": record.code, "editType":1,
+        'customerId': record.customerId, 'channelId': record.channelId} });
       }
     },
     mounted() {

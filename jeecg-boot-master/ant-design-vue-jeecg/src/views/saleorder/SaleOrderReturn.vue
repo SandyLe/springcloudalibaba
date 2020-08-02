@@ -5,10 +5,14 @@
     <div class="table-page-search-wrapper">
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
-          <a-col :md="6" :sm="12">
-            <a-form-item label="账号">
-              <!--<a-input placeholder="请输入账号查询" v-model="queryParam.username"></a-input>-->
-              <j-input placeholder="输入账号模糊查询" v-model="queryParam.username"></j-input>
+          <a-col :md="6" :sm="8">
+            <a-form-item label="单号">
+              <j-input placeholder="输入单号模糊查询" v-model="queryParam.code"></j-input>
+            </a-form-item>
+          </a-col>
+          <a-col :md="6" :sm="8">
+            <a-form-item label="销售单号">
+              <j-input placeholder="输入账号模糊查询" v-model="queryParam.sourceCode"></j-input>
             </a-form-item>
           </a-col>
 
@@ -55,7 +59,7 @@
           </a-tooltip>
         </span>
         <span slot="action" slot-scope="text, record">
-          <span v-if="record.billStatus < 1 && record.billStatus != -1">
+          <span v-if="record.billStatus < 1 && record.billStatus != -1 && record.refundStatusId == 0">
             <a @click="handleEditSaleOrder(record.id)">编辑</a>
             <a-divider type="vertical" />
           </span>
@@ -120,24 +124,9 @@
             dataIndex: 'customer'
           },
           {
-            title: '出货仓库  ',
+            title: '原单编号',
             align:"center",
-            dataIndex: 'warehouse'
-          },
-          {
-            title: '渠道',
-            align:"center",
-            dataIndex: 'channel'
-          },
-          {
-            title: '发货时间',
-            align:"center",
-            dataIndex: 'deliveryTime'
-          },
-          {
-            title: '安装时间',
-            dataIndex: 'installTime',
-            align:"center"
+            dataIndex: 'sourceCode'
           },
           {
             title: '订单时间',
@@ -150,9 +139,9 @@
             align:"center"
           },
           {
-            title: '收款方式',
-            dataIndex: 'receiptTypeName',
-            align:"center"
+            title: '退款状态',
+            align:"center",
+            dataIndex: 'refundStatusName'
           },
           {
             title: '总金额',
@@ -181,17 +170,11 @@
       }
     },
     methods: {
-      searchQuery () {
-
-      },
-      searchReset () {
-
-      },
       goDetail (id) {
-        this.$router.push({ name: "saleorder-saleOrderReturnEdit", query: {"id": id, "unEditable": true}})
+        this.$router.push({ name: "saleorder-saleOrderReturnEdit", query: {"id": id, "editType":1}})
       },
       handleEditSaleOrder (id) {
-        this.$router.push({ name: "saleorder-saleOrderReturnEdit", query: {"id": id, "unEditable": false}})
+        this.$router.push({ name: "saleorder-saleOrderReturnEdit", query: {"id": id, "editType":1}})
       },
       handleInvalid (record) {
         disableSaleOrder(record).then((res)=>{

@@ -28,29 +28,15 @@
                 </a-form-item>
               </a-col>
               <a-col :span="12">
-                <a-form-item label="仓库" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <a-select v-decorator="['warehouseId', {}]" placeholder="请选择仓库">
-                    <a-select-option v-for="(item, key) in dictOptions.warehouse" :key="key" :value="item.id">
-                      {{ item.name }}
-                    </a-select-option>
-                  </a-select>
+                <a-form-item label="单据时间" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                  <a-date-picker showTime format='YYYY-MM-DD HH:mm:ss' v-decorator="[ 'billDate', {}]"/>
                 </a-form-item>
               </a-col>
-
-            </a-row>
-            <a-row>
-                <a-col :span="12">
-                  <a-form-item label="单据时间" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                    <a-date-picker showTime format='YYYY-MM-DD HH:mm:ss' v-decorator="[ 'billDate', {}]"/>
-                  </a-form-item>
-                </a-col>
-                <a-col :span="12">
-                </a-col>
             </a-row>
           <a-row>
             <a-col :span="24">
-              <a-form-item label="备注" :labelCol="hlabelCol" :wrapperCol="hwrapperCol">
-                <a-input v-decorator="[ 'content', {}]" placeholder="请输入备注"></a-input>
+              <a-form-item label="退货原因" :labelCol="hlabelCol" :wrapperCol="hwrapperCol">
+                <a-input v-decorator="[ 'content', {}]" placeholder="请输入退货原因"></a-input>
               </a-form-item>
             </a-col>
           </a-row>

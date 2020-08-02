@@ -14,7 +14,7 @@
 
           <a-col :md="6" :sm="12">
             <a-form-item label="编号">
-              <j-input placeholder="输入单号模糊查询" v-model="queryParam.invoiceNo"></j-input>
+              <j-input placeholder="输入单号模糊查询" v-model="queryParam.code"></j-input>
             </a-form-item>
           </a-col>
 
@@ -31,7 +31,7 @@
 
     <!-- 操作按钮区域 -->
     <div class="table-operator" style="border-top: 5px">
-      <a-button @click="handleEdit" type="primary" icon="plus">添加发票</a-button>
+      <a-button @click="handleAdd" type="primary" icon="plus">添加退款单</a-button>
 
       <a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
@@ -79,31 +79,43 @@
         <span slot="sourceAction" slot-scope="text, record">
               <a-tooltip placement="topLeft">
                 <template slot="title">
-                  <span>{{record.sourceCode}}</span>
+                  <span>{{record.sourceBillCode}}</span>
                 </template>
-                <a @click="goSourceDetail(record.sourceBillType, record.sourceId)">{{record.sourceCode}}</a>
+                <a @click="goSourceDetail(record.sourceBillType, record.sourceId)">{{record.sourceBillCode}}</a>
               </a-tooltip>
         </span>
         <span slot="action" slot-scope="text, record">
-          <span v-if="record.billStatusId != 1"><a @click="createInvoice(record)">登记开票</a></span>
+          <span v-if="record.billStatusId != 2"><a @click="gathering(record)">退款</a></span>
+          <a-divider type="vertical"/>
+          <a href="javascript:;" @click="handleDetail(record)">退款明细</a>
         </span>
       </a-table>
     </div>
     <!-- table区域-end -->
 
+    <!-- 表单区域 -->
+    <refund-modal ref="modalForm" @ok="modalFormOk"></refund-modal>
+    <refund-order-dtl-modal ref="refundOrderDtlModal" :sourceOrder = "selectedOrder" @ok="modalFormOk4"></refund-order-dtl-modal>
+    <refund-dtl-log-modal ref="refundDtlLogModal" :refundDtlLogs="refundDtlLogs" @ok="modalFormOk"></refund-dtl-log-modal>
   </a-card>
 </template>
 
 <script>
+  import RefundModal from './RefundOrderModal'
+  import RefundOrderDtlModal from './RefundOrderDtlModal'
+  import RefundDtlLogModal from './RefundDtlLogModal'
   import JInput from '@/components/jeecg/JInput'
   import {JeecgListMixin} from '@/mixins/JeecgListMixin'
   import {getAction } from '@/api/manage'
-  import {getinvoiceDtlList} from '@/api/api'
+  import {getRefundOrderDtlList} from '@/api/api'
   export default {
-    name: "InvoiceList",
+    name: "RefundList",
     mixins: [JeecgListMixin],
     components: {
-      JInput
+      JInput,
+      RefundModal,
+      RefundOrderDtlModal,
+      RefundDtlLogModal
     },
     data() {
       return {
@@ -121,7 +133,7 @@
             }
           },
           {
-            title: '发票单编号',
+            title: '退款单编号',
             align: "center",
             dataIndex: '',
             scopedSlots: { customRender: 'nameAction' }
@@ -138,20 +150,9 @@
             scopedSlots: { customRender: 'sourceAction' }
           },
           {
-            title: '抬头',
+            title: '收款方',
             align:"center",
-            dataIndex: 'billTitle'
-          },
-          {
-            title: '发票号',
-            align:"center",
-            dataIndex: 'invoiceNo'
-          },
-          {
-            title: '发票类型',
-            dataIndex: 'invoiceTypeName',
-            align:"center",
-            sorter: true
+            dataIndex: 'payerName'
           },
           {
             title: '金额',
@@ -161,6 +162,12 @@
           {
             title: '单据时间',
             dataIndex: 'billDate',
+            align:"center",
+            sorter: true
+          },
+          {
+            title: '业务员',
+            dataIndex: 'salemanName',
             align:"center",
             sorter: true
           },
@@ -177,30 +184,46 @@
           }
         ],
         url: {
-          list: "/invoice/getPage",
-          delete: "/invoice/delete",
-          deleteBatch: "/invoice/deleteBatch"
+          list: "/refundOrder/getPage",
+          delete: "/refundOrder/delete",
+          deleteBatch: "/refundOrder/deleteBatch"
         },
         isorter: {
           column: 'createTime',
           order: 'desc'
         },
         selectedOrder: null,
-        invoiceDtlLogs: []
+        refundDtlLogs: []
       }
     },
     methods: {
-      createInvoice (record) {
-        this.$router.replace({ path:'/invoice/invoiceModal/' + record.id, query: {"editType":0, "makeInvoice":1} });
+      gathering (record) {
+        this.selectedOrder = record;
+        this.$refs.refundOrderDtlModal.title = '新增退款明细'
+        const dtl = {
+          payDate : new Date(),
+          sourceCode : record.code,
+          sourceBillCode : record.sourceBillCode,
+          sourceBillId : record.sourceId,
+          sourceBillType : record.sourceBillType,
+          sourceId : record.id
+        }
+        this.$refs.refundOrderDtlModal.edit(dtl)
       },
-      handleEdit(e){
-        if(e.target.dataset.id)
-          this.$router.replace({ path:'/invoice/invoiceModal/' + e.target.dataset.id });
-        else
-          this.$router.replace({ path:'/invoice/invoiceModal/' });
+      handleDetail (record) {
+        this.refundDtlLogs = [];
+        if (record.id && record.sourceId) {
+          getRefundOrderDtlList({sourceId: record.id}).then((res) => {
+            if (res.success) {
+              this.refundDtlLogs = res.result;
+            }
+          })
+        }
+        this.$refs.refundDtlLogModal.edit(record);
+        this.$refs.refundDtlLogModal.title = "退款记录";
       },
-      goDetail(id){
-        this.$router.replace({ path:'/invoice/invoiceModal/' + id, query: {"editType":0} });
+      modalFormOk4 () {
+        this.loadData()
       }
     },
     mounted() {

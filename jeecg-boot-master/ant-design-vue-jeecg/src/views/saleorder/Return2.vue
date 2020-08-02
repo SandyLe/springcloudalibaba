@@ -1,18 +1,26 @@
 <template>
   <div>
-    <a-form style="max-width: 500px; margin: 40px auto 0;" :form="form">
+    <a-form style="max-width: 700px; margin: 40px auto 0;" :form="form">
       <a-alert
         :closable="true"
         message="请确认订单信息及费用信息。"
         style="margin-bottom: 24px;"
       />
       <a-form-item
-        label="销售单号"
+        label="退货单号"
         :labelCol="{span: 5}"
         :wrapperCol="{span: 19}"
         class="stepFormText"
       >
         {{this.saleOrderReturn.code}}
+      </a-form-item>
+      <a-form-item
+        label="销售单号"
+        :labelCol="{span: 5}"
+        :wrapperCol="{span: 19}"
+        class="stepFormText"
+      >
+        {{this.saleOrderReturn.sourceCode}}
       </a-form-item>
       <a-form-item
         label="客户"
@@ -72,10 +80,10 @@
         </a-table>
       </div>
       <div>
-        <a-card class="card" title="其他费用" :bordered="true">
+        <a-card class="card" title="收款" :bordered="true">
           <!-- 操作按钮区域 -->
           <div class="table-operator" style="border-top: 5px" v-if = "!unEditable">
-            <a-button @click="handleAddExpense" type="primary" icon="plus">添加费用</a-button>
+            <a-button @click="handleAddRefundDtl" type="primary" icon="plus">添加退款明细</a-button>
             <a-dropdown v-if="selectedRowKeys.length > 0">
               <a-menu slot="overlay">
                 <a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>
@@ -120,34 +128,6 @@
           </a-table>
         </a-card>
       </div>
-      <div>
-        <a-card class="card" title="收款" :bordered="true">
-          <a-form-item
-            label="总金额"
-            :labelCol="{span: 5}"
-            :wrapperCol="{span: 19}"
-            class="stepFormText"
-          >
-            {{this.saleOrderReturn.totalamount}}
-          </a-form-item>
-          <a-form-item
-            label="退款方式"
-            :labelCol="{span: 5}"
-            :wrapperCol="{span: 19}"
-            class="stepFormText"
-          >
-            <j-dict-select-tag v-decorator="['receiptType', {}]" placeholder="请选择退款方式" :type="'select'" :triggerChange="true" dictCode="receipt_type"/>
-          </a-form-item>
-
-          <a-form-item
-            label="实退金额"
-            :labelCol="{span: 5}"
-            :wrapperCol="{span: 19}"
-            class="stepFormText">
-            <a-input placeholder="请输入实收金额" v-decorator="[ 'payamount', {}]" :disabled="unEditable" />
-          </a-form-item>
-        </a-card>
-      </div>
       <a-form-item :wrapperCol="{span: 19, offset: 5}">
         <!--<a-button :loading="loading" @click="finish">提交</a-button>-->
         <a-button style="margin-left: 8px" @click="prevStep">上一步</a-button>
@@ -155,13 +135,13 @@
       </a-form-item>
     </a-form>
 
-    <sale-order-return-expense-modal ref="saleOrderReturnExpenseModal" :saleOrderReturn = "saleOrderReturn" @ok="modalFormOk2" v-on:listenToTotalamont="showTotalMount"></sale-order-return-expense-modal>
+    <refund-order-dtl-modal ref="refundOrderDtlModal" :sourceBillOrder = "saleOrderReturn" @ok="modalFormOk2" v-on:listenToTotalamont="showTotalMount"></refund-order-dtl-modal>
   </div>
 </template>
 
 <script>
   import pick from 'lodash.pick'
-  import SaleOrderReturnExpenseModal from './SaleOrderReturnExpenseModal'
+  import RefundOrderDtlModal from '../refund/RefundOrderDtlModal'
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import { deleteAction, postAction, getAction } from '@/api/manage'
   import {editSaleOrderReturn, getSaleOrderReturnOne, getSaleOrderReturnMtlList } from '@/api/api'
@@ -170,7 +150,7 @@
     name: "Return2",
     mixins: [JeecgListMixin],
     components: {
-      SaleOrderReturnExpenseModal,
+      RefundOrderDtlModal,
       JDictSelectTag
     },
     data() {
@@ -276,16 +256,33 @@
             }
           ],
         columns2: [{
-          title: '费用名称',
+          title: '退款单号',
           align: 'center',
-          dataIndex: 'expense',
+          dataIndex: 'sourceBillCode',
+          width: 120
+        },{
+          title: '收款单号',
+          align: 'center',
+          dataIndex: 'sourceCode',
           width: 120
         },
           {
-            title: '费用',
+            title: '费用名称',
+            align: 'center',
+            dataIndex: 'expenseName',
+            width: 120
+          },
+          {
+            title: '金额',
             align: 'center',
             width: 100,
-            dataIndex: 'amount'
+            dataIndex: 'payAmount'
+          },
+          {
+            title: '付款方式',
+            align: 'center',
+            dataIndex: 'payTypeName',
+            width: 120
           },
           {
             title: '操作',
@@ -297,9 +294,9 @@
         form: this.$form.createForm(this),
         url: {
           list: "/saleOrderReturnMtl/getPage",
-          list2: '/saleOrderReturnExpense/getPage',
-          delete2: '/saleOrderReturnExpense/delete',
-          deleteBatch2: '/saleOrderReturnExpense/deleteBatch',
+          list2: '/refundOrderDtl/getPage',
+          delete2: '/refundOrderDtl/delete',
+          deleteBatch2: '/refundOrderDtl/deleteBatch',
         },
         unEditable: true
       }
@@ -341,9 +338,9 @@
         //获取查询条件
         let param2 = {};
         if(this.$route.query.id){
-          param2.sourceId = this.$route.query.id
+          param2.sourceBillId = this.$route.query.id
         }else{
-          param2.sourceId = -1;
+          param2.sourceBillId = -1;
         }
         param2.field = this.getQueryField2()
         param2.pageNo = this.ipagination2.current
@@ -358,9 +355,9 @@
         return str
       },
       handleEdit2: function(record) {
-        this.$refs.saleOrderReturnExpenseModal.title = '编辑'
-        this.$refs.saleOrderReturnExpenseModal.roleDisabled = true
-        this.$refs.saleOrderReturnExpenseModal.edit(record)
+        this.$refs.refundOrderDtlModal.title = '编辑'
+        this.$refs.refundOrderDtlModal.roleDisabled = true
+        this.$refs.refundOrderDtlModal.edit(record)
       },
       modalFormOk2() {
         // 新增/修改 成功时，重载列表
@@ -450,9 +447,9 @@
         this.ipagination2 = pagination
         this.loadData2()
       },
-      handleAddExpense(){
-        this.$refs.saleOrderReturnExpenseModal.add();
-        this.$refs.saleOrderReturnExpenseModal.title = "新增";
+      handleAddRefundDtl(){
+        this.$refs.refundOrderDtlModal.add();
+        this.$refs.refundOrderDtlModal.title = "新增";
       },
       showTotalMount(data){
         this.saleOrderReturn.totalamount = data;
