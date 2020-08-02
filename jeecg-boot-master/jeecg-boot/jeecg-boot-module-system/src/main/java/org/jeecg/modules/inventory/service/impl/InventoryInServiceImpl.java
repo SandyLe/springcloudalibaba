@@ -6,10 +6,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Lists;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
-import org.jeecg.common.enums.BillStatus;
-import org.jeecg.common.enums.BillType;
-import org.jeecg.common.enums.InventoryOperation;
-import org.jeecg.common.enums.RowSts;
+import org.jeecg.common.enums.*;
 import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.util.Constants;
 import org.jeecg.modules.basic.service.BillCodeBuilderService;
@@ -143,6 +140,7 @@ public class InventoryInServiceImpl extends ServiceImpl<InventoryInMapper, Inven
             }
         } else if (inventoryIn.getSourceBillType() == BillType.SALERETURNORDER.getId()) {
             LambdaQueryWrapper<SaleOrderReturnMtl> queryWrapper = new LambdaQueryWrapper<SaleOrderReturnMtl>().eq(SaleOrderReturnMtl::getSourceId, inventoryIn.getSourceId());
+            queryWrapper.eq(SaleOrderReturnMtl::getReturnTypeId, ReturnType.MtlMoney.getId());
             List<SaleOrderReturnMtl> saleOrderReturnMtls = saleOrderReturnMtlService.list(queryWrapper);
             if (CollectionUtils.isNotEmpty(saleOrderReturnMtls)) {
                 saleOrderReturnMtls.forEach(o -> {
@@ -222,7 +220,7 @@ public class InventoryInServiceImpl extends ServiceImpl<InventoryInMapper, Inven
             for (PreInventoryOutMtl mtl : mtls) {
                 // 入库更新库存
                 InventoryLog inventoryLog = new InventoryLog(info.getId(), mtl.getSourceId(), info.getSourceBillType(), mtl.getMtlId(),
-                        info.getWarehouseId(), null, mtl.getQuantity(), null, mtl.getUnitId(), mtl.getOperationId(), batchNo, companyId);
+                        mtl.getWarehouseId(), null, mtl.getQuantity(), null, mtl.getUnitId(), mtl.getOperationId(), batchNo, companyId);
                 inventoryLog.setOperateTime(new Date());
                 inventoryService.updateInventory(inventoryLog);
 
@@ -295,16 +293,27 @@ public class InventoryInServiceImpl extends ServiceImpl<InventoryInMapper, Inven
     }
 
     @Override
-    public void deleteBySourceId(String sourceId) {
+    public InventoryIn queryBySourceId(Integer sourceBillType, String sourceId) {
 
-        InventoryIn exist = getOne(new LambdaQueryWrapper<InventoryIn>().eq(InventoryIn::getSourceId, sourceId).eq(InventoryIn::getRowSts, RowSts.EFFECTIVE.getId()));
+        LambdaQueryWrapper<InventoryIn> lambdaQueryWrapper = new LambdaQueryWrapper<InventoryIn>();
+        lambdaQueryWrapper.eq(InventoryIn::getSourceBillType, sourceBillType);
+        lambdaQueryWrapper.eq(InventoryIn::getSourceId, sourceId);
+        lambdaQueryWrapper.eq(InventoryIn::getRowSts, RowSts.EFFECTIVE.getId());
+
+        return super.getOne(lambdaQueryWrapper);
+    }
+
+    @Override
+    public void deleteBySourceId(Integer sourceBillType, String sourceId) {
+
+        InventoryIn exist = queryBySourceId(sourceBillType, sourceId);
         if (null != exist) {
             exist.setRowSts(RowSts.DELETED.getId());
             updateById(exist);
 
             List<InventoryInMtl> inventoryInMtls = inventoryInMtlService.list(new LambdaQueryWrapper<InventoryInMtl>().eq(InventoryInMtl::getSourceId, exist.getId()));
             if (CollectionUtils.isNotEmpty(inventoryInMtls)) {
-                inventoryInMtls.stream().forEach(o -> {
+                inventoryInMtls.stream().forEach(o->{
                     o.setRowSts(RowSts.DELETED.getId());
                 });
                 inventoryInMtlService.updateBatchById(inventoryInMtls);

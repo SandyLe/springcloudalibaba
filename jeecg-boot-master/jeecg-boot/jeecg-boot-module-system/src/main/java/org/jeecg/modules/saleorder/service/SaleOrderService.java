@@ -11,4 +11,12 @@ public interface SaleOrderService extends IService<SaleOrder> {
      * @param deliveryEditDto
      */
     public void delivery (DeliveryEditDto deliveryEditDto) throws Exception;
+
+    /**
+     * 根据编号获取
+     * @param code
+     * @param companyId
+     * @return
+     */
+    public SaleOrder getOneByCode (String code, String companyId);
 }

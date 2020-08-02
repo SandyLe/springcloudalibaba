@@ -139,7 +139,7 @@ public class PurchaseController extends JeecgController<Purchase, PurchaseServic
         }
 
         // 入库单主表
-        inventoryInService.deleteBySourceId(purchasedtldto.getId());
+        inventoryInService.deleteBySourceId(BillType.PURCHASEORDER.getId(), purchasedtldto.getId());
 
         if (StringUtils.isNotBlank(purchasedtldto.getWarehouseId())) {
 

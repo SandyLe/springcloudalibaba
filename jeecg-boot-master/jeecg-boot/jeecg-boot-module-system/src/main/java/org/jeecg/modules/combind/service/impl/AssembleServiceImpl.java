@@ -118,7 +118,7 @@ public class AssembleServiceImpl extends ServiceImpl<AssembleMapper, Assemble> i
         }
 
         // 入库单主表
-        inventoryInService.deleteBySourceId(assembledto.getId());
+        inventoryInService.deleteBySourceId(assembledto.getBillType(), assembledto.getId());
 
         if (StringUtils.isNotBlank(assembledto.getWarehouseId())) {
 

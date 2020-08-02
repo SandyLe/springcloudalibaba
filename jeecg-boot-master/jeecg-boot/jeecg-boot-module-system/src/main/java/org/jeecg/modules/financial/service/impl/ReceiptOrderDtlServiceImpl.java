@@ -31,14 +31,16 @@ public class ReceiptOrderDtlServiceImpl extends ServiceImpl<ReceiptOrderDtlMappe
     public boolean saveOrUpdate(ReceiptOrderDtl entity) {
 
         Boolean flag = super.saveOrUpdate(entity);
+        updateBillStatus(entity);
+        return flag;
+    }
 
-        BigDecimal paied = BigDecimal.ZERO;
+    @Override
+    public void updateBillStatus(ReceiptOrderDtl entity) {
+
         ReceiptOrder receiptOrder = receiptOrderService.getById(entity.getSourceId());
-        List<ReceiptOrderDtl> dtlList = super.list(new LambdaQueryWrapper<ReceiptOrderDtl>().eq(ReceiptOrderDtl::getSourceId, entity.getSourceId()));
-        for (ReceiptOrderDtl receiptOrderDtl : dtlList) {
-            paied = paied.add(receiptOrderDtl.getPayAmount());
-        }
-
+        List<ReceiptOrderDtl> dtlList = findBySourceId(receiptOrder.getId());
+        BigDecimal paied = dtlList.stream().map(ReceiptOrderDtl::getPayAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
         if (paied.compareTo(receiptOrder.getAmount()) >= 0) {
             receiptOrder.setBillStatusId(ReceiptOrderStatus.Finished.getId());
         } else {
@@ -47,18 +49,22 @@ public class ReceiptOrderDtlServiceImpl extends ServiceImpl<ReceiptOrderDtlMappe
         receiptOrderService.saveOrUpdate(receiptOrder);
 
         if (entity.getSourceBillType() == BillType.SALEORDER.getId()) {
-
-            SaleOrder saleOrder = saleOrderService.getById(entity.getSourceBillId());
+            SaleOrder aReturn = saleOrderService.getById(entity.getSourceBillId());
+            aReturn.setPayamount(paied);
             if (receiptOrder.getBillStatusId() == ReceiptOrderStatus.Finished.getId()) {
-                saleOrder.setReceiptStatus(ReceiptStatus.Finished.getId());
+                aReturn.setReceiptStatus(ReceiptStatus.Finished.getId());
             } else if (receiptOrder.getBillStatusId() == ReceiptOrderStatus.PartialCollection.getId()) {
-                saleOrder.setReceiptStatus(ReceiptStatus.PartialPayment.getId());
+                aReturn.setReceiptStatus(ReceiptStatus.PartialPayment.getId());
             }
-            saleOrderService.saveOrUpdate(saleOrder);
+            saleOrderService.saveOrUpdate(aReturn);
         }
-
-        return flag;
     }
 
+    private List<ReceiptOrderDtl> findBySourceId(String sourceId) {
+
+        LambdaQueryWrapper<ReceiptOrderDtl> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(ReceiptOrderDtl::getSourceId, sourceId);
+        return super.list(lambdaQueryWrapper);
+    }
 
 }

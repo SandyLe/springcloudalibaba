@@ -116,6 +116,7 @@ public class PurchaseReturnController extends JeecgController<PurchaseReturn, Pu
             rtn.setVendorId(purchase.getVendorId());
             rtn.setBillStatus(BillStatus.NEW.getId());
             rtn.setAccount(purchase.getAccount());
+            rtn.setBillType(BillType.PURCHASERETURNORDER.getId());
             LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
             if (StringUtils.isBlank(rtn.getCompanyId())) {
                 rtn.setCompanyId(sysUser.getCompanyId());
@@ -162,6 +163,9 @@ public class PurchaseReturnController extends JeecgController<PurchaseReturn, Pu
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         if (StringUtils.isBlank(purchasedtldto.getCompanyId())) {
             purchasedtldto.setCompanyId(sysUser.getCompanyId());
+        }
+        if (null == purchasedtldto.getBillType()) {
+            purchasedtldto.setBillType(BillType.PURCHASERETURNORDER.getId());
         }
         dto.setMsg("编辑失败");
 

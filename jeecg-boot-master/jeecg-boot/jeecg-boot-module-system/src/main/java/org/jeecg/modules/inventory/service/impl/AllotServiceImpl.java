@@ -109,7 +109,7 @@ public class AllotServiceImpl extends ServiceImpl<AllotMapper, Allot>  implement
         }
 
         // 入库单主表
-        inventoryInService.deleteBySourceId(allotdto.getId());
+        inventoryInService.deleteBySourceId(allotdto.getBillType(), allotdto.getId());
         if (StringUtils.isNotBlank(allotdto.getFromWarehouseId())) {
             InventoryIn inventoryIn = new InventoryIn();
             inventoryIn.setCompanyId(allotdto.getCompanyId());

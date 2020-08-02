@@ -276,3 +276,19 @@ CREATE TABLE `sl_refund_order_dtl` (
 
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+ALTER TABLE `sl_change_order_dtl`
+	ADD CoLUMN `price_space` decimal(10,4) DEFAULT NULL,
+	ADD CoLUMN `price_space_mode_id` int(2) DEFAULT NULL;
+
+ALTER TABLE `sl_allot`
+  ADD CoLUMN `bill_type` int(2) DEFAULT NULL;
+
+ALTER TABLE `sl_teardown`
+  ADD CoLUMN `bill_type` int(2) DEFAULT NULL;
+
+ALTER TABLE `sl_assemble`
+  ADD CoLUMN `bill_type` int(2) DEFAULT NULL;
+
+ALTER TABLE `sl_purchase_return`
+  ADD CoLUMN `bill_type` int(2) DEFAULT NULL;

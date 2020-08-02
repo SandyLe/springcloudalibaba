@@ -7,4 +7,10 @@ public interface ReceiptOrderDtlService extends IService<ReceiptOrderDtl> {
 
     @Override
     boolean saveOrUpdate(ReceiptOrderDtl entity);
+
+    /**
+     * 更新状态
+     * @param entity
+     */
+    public void updateBillStatus(ReceiptOrderDtl entity);
 }

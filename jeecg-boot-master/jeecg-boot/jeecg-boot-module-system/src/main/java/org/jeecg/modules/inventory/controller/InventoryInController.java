@@ -13,8 +13,10 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
+import org.jeecg.common.enums.BillStatus;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.common.util.LoginUtils;
 import org.jeecg.modules.basic.entity.Material;
 import org.jeecg.modules.basic.entity.MaterialUnit;
 import org.jeecg.modules.basic.entity.Warehouse;
@@ -60,6 +62,41 @@ public class InventoryInController {
     private MaterialService materialService;
     @Autowired
     private MaterialUnitService materialUnitService;
+
+
+    /**
+     * 出库
+     *
+     * @param inventoryIn
+     * @return
+     */
+    @PostMapping(value = "/save")
+    @AutoLog(value = "添加出库单")
+    @ApiOperation(value = "添加出库单", notes = "添加出库单")
+    public Result<?> add(@RequestBody InventoryIn inventoryIn, HttpServletRequest req) {
+
+        InventoryIn dbInventoryIn = inventoryInService.queryBySourceId (inventoryIn.getSourceBillType(), inventoryIn.getSourceId());
+        if (null != dbInventoryIn ) {
+            inventoryInService.deleteBySourceId(dbInventoryIn.getSourceBillType(), inventoryIn.getSourceId());
+        }
+
+        if (StringUtils.isBlank(inventoryIn.getCompanyId())) {
+            inventoryIn.setCompanyId(LoginUtils.getLoginUser().getCompanyId());
+        }
+        if (null == inventoryIn.getBillType()) {
+            inventoryIn.setBillType(BillType.INVENTORYOUT.getId());
+        }
+        if (null == inventoryIn.getBillStatus()) {
+            inventoryIn.setBillStatus(BillStatus.TOSTOCKIN.getId());
+        }
+        if (null == inventoryIn.getRowSts()) {
+            inventoryIn.setRowSts(RowSts.EFFECTIVE.getId());
+        }
+        inventoryInService.saveToInventoryIn(inventoryIn);
+        Result<Object> result = Result.ok();
+        result.setResult(inventoryIn);
+        return result;
+    }
     /**
      * 添加
      *

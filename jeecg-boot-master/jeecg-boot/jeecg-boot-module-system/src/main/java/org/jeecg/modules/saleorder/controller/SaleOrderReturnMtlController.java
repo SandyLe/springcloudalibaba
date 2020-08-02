@@ -12,6 +12,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
+import org.jeecg.common.enums.ReturnType;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.modules.basic.entity.Material;
@@ -112,6 +113,7 @@ public class SaleOrderReturnMtlController {
                 o.setMtl(mtlMap.get(o.getMtlId()));
                 o.setMtlCode(mtlCodeMap.get(o.getMtlId()));
                 o.setSpecification(mtlSpecMap.get(o.getMtlId()));
+                o.setReturnTypeName(ReturnType.getName(o.getReturnTypeId()));
                 o.setDiscountTypeName(EnumConvertUtils.getName(DiscountType.class, o.getDiscountType()));
             });
         }

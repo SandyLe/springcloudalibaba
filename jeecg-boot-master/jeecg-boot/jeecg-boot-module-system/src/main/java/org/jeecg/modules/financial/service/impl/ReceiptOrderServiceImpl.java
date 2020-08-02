@@ -2,6 +2,7 @@ package org.jeecg.modules.financial.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.enums.BillType;
 import org.jeecg.common.enums.ReceiptOrderStatus;
 import org.jeecg.modules.basic.service.BillCodeBuilderService;
@@ -20,13 +21,18 @@ import java.util.Date;
 public class ReceiptOrderServiceImpl extends ServiceImpl<ReceiptOrderMapper, ReceiptOrder> implements ReceiptOrderService {
 
     @Autowired
-    private ReceiptOrderMapper receiptOrderMapper;
-
-    @Autowired
     private SaleOrderService saleOrderService;
 
     @Autowired
     private BillCodeBuilderService billCodeBuilderService;
+
+    @Override
+    public boolean saveOrUpdate (ReceiptOrder receipt) {
+        if (StringUtils.isBlank(receipt.getId())) {
+            receipt.setCode(billCodeBuilderService.getBillCode(BillType.RECEIPTORDER.getId()));
+        }
+        return super.saveOrUpdate(receipt);
+    }
 
     @Override
     public String createReceipt(String sourceId, Integer sourceBillType, String ccId) {
@@ -55,7 +61,6 @@ public class ReceiptOrderServiceImpl extends ServiceImpl<ReceiptOrderMapper, Rec
         if (null == receipt) {
             receipt = new ReceiptOrder();
             receipt.setBillStatusId(ReceiptOrderStatus.AgencyCollection.getId());
-            receipt.setCode(billCodeBuilderService.getBillCode(BillType.RECEIPTORDER.getId()));
         }
         receipt.setCompanyId(ccId);
         receipt.setAmount(totalAmount);
@@ -66,7 +71,7 @@ public class ReceiptOrderServiceImpl extends ServiceImpl<ReceiptOrderMapper, Rec
         receipt.setSourceId(sourceId);
         receipt.setSourceBillCode(sourceCode);
 
-        super.saveOrUpdate(receipt);
+        saveOrUpdate(receipt);
         return receipt.getId();
     }
 

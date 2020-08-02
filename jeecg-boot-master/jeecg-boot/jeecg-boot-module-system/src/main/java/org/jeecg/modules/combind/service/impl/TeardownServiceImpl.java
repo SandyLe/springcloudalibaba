@@ -119,7 +119,7 @@ public class TeardownServiceImpl extends ServiceImpl<TeardownMapper, Teardown> i
         }
 
         // 入库单主表
-        inventoryInService.deleteBySourceId(teardowndto.getId());
+        inventoryInService.deleteBySourceId(teardowndto.getBillType(), teardowndto.getId());
 
         if (StringUtils.isNotBlank(teardowndto.getWarehouseId())) {
 

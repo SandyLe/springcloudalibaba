@@ -22,4 +22,7 @@ public interface ReceiptOrderService extends IService<ReceiptOrder> {
      * @return
      */
     public ReceiptOrder findBySourceBillId(String sourceBillId,Integer sourceBillType, String companyId);
+
+    @Override
+    boolean saveOrUpdate(ReceiptOrder entity);
 }

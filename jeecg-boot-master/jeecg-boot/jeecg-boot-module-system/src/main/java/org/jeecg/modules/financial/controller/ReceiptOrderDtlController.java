@@ -124,7 +124,9 @@ public class ReceiptOrderDtlController {
     @DeleteMapping(value = "/delete")
     @ApiOperation(value = "通过ID删除收款单明细", notes = "通过ID删除收款单明细")
     public Result<?> delete(@RequestParam(name = "id", required = true) String id) {
+        ReceiptOrderDtl dtl = receiptOrderDtlService.getById(id);
         receiptOrderDtlService.removeById(id);
+        receiptOrderDtlService.updateBillStatus(dtl);
         return Result.ok("删除成功!");
     }
 

@@ -40,6 +40,13 @@ public class ChangeOrderDtl extends CBasicEntity {
     private String newUnit;
     @ApiModelProperty("数量")
     private BigDecimal newQuantity;
+    @ApiModelProperty("差价模式")
+    private Integer priceSpaceModeId;
+    @TableField(exist=false)
+    @ApiModelProperty("差价模式")
+    private String priceSpaceModeName;
+    @ApiModelProperty("差价")
+    private BigDecimal priceSpace;
 
     public String getMtlId() {
         return mtlId;
@@ -127,5 +134,29 @@ public class ChangeOrderDtl extends CBasicEntity {
 
     public void setNewQuantity(BigDecimal newQuantity) {
         this.newQuantity = newQuantity;
+    }
+
+    public Integer getPriceSpaceModeId() {
+        return priceSpaceModeId;
+    }
+
+    public void setPriceSpaceModeId(Integer priceSpaceModeId) {
+        this.priceSpaceModeId = priceSpaceModeId;
+    }
+
+    public String getPriceSpaceModeName() {
+        return priceSpaceModeName;
+    }
+
+    public void setPriceSpaceModeName(String priceSpaceModeName) {
+        this.priceSpaceModeName = priceSpaceModeName;
+    }
+
+    public BigDecimal getPriceSpace() {
+        return priceSpace;
+    }
+
+    public void setPriceSpace(BigDecimal priceSpace) {
+        this.priceSpace = priceSpace;
     }
 }

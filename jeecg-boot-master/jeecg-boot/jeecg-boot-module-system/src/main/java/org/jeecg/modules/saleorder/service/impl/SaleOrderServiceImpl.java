@@ -1,5 +1,6 @@
 package org.jeecg.modules.saleorder.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.jeecg.modules.basic.dto.DeliveryEditDto;
 import org.jeecg.modules.inventory.service.InventoryOutService;
@@ -63,5 +64,14 @@ public class SaleOrderServiceImpl extends ServiceImpl<SaleOrderMapper, SaleOrder
         // 更新销售订单信息
         updateById(saleOrder);
         saleOrderDeliveryInfoService.saveSaleOrderDelivery(cdi);*/
+    }
+
+    @Override
+    public SaleOrder getOneByCode(String code, String companyId) {
+
+        LambdaQueryWrapper<SaleOrder> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(SaleOrder::getCode, code);
+        lambdaQueryWrapper.eq(SaleOrder::getCompanyId, companyId);
+        return super.getOne(lambdaQueryWrapper);
     }
 }
