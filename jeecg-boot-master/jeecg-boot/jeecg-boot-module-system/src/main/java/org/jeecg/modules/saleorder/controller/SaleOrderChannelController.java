@@ -161,12 +161,12 @@ public class SaleOrderChannelController {
      * @return
      */
     @RequestMapping(value = "/getRootChannel", method = RequestMethod.GET)
-    public Result<List<SysPermissionTree>> getRootChannelList() {
+    public Result<List<SysPermissionTree>> getRootChannelList(SaleOrderChannel saleOrderChannel, HttpServletRequest req) {
         long start = System.currentTimeMillis();
         Result<List<SysPermissionTree>> result = new Result<>();
         try {
-            LambdaQueryWrapper<SaleOrderChannel> query = new LambdaQueryWrapper<SaleOrderChannel>();
-            query.orderByAsc(SaleOrderChannel::getCreateTime);
+            QueryWrapper<SaleOrderChannel> query = QueryGenerator.initQueryWrapper(saleOrderChannel, req.getParameterMap());
+            query.orderByAsc("create_time");
             List<SaleOrderChannel> list = saleOrderChannelService.list(query);
 
             List<SysPermissionTree> sysPermissionList = list.stream().filter(p->StringUtils.isEmpty(p.getParentId())).map(p->{
@@ -210,6 +210,7 @@ public class SaleOrderChannelController {
                 model.setId(p.getId());
                 model.setKey(p.getId());
                 model.setName(p.getName());
+                model.setParentId(p.getParentId());
                 model.setLeaf(!list.stream().anyMatch(m-> StringUtils.equals(m.getParentId(), p.getId())));
                 if(!model.getIsLeaf()){
                     model.setChildren(new ArrayList<>());
@@ -232,13 +233,13 @@ public class SaleOrderChannelController {
      * @return
      */
     @RequestMapping(value = "/queryChannelTreeList", method = RequestMethod.GET)
-    public Result<Map<String, Object>> queryChannelTreeList() {
+    public Result<Map<String, Object>> queryChannelTreeList(SaleOrderChannel saleOrderChannel, HttpServletRequest req) {
         Result<Map<String, Object>> result = new Result<>();
         // 全部权限ids
         List<String> ids = new ArrayList<>();
         try {
-            LambdaQueryWrapper<SaleOrderChannel> query = new LambdaQueryWrapper<SaleOrderChannel>();
-            query.orderByAsc(SaleOrderChannel::getCreateTime);
+            QueryWrapper<SaleOrderChannel> query = QueryGenerator.initQueryWrapper(saleOrderChannel, req.getParameterMap());
+            query.orderByAsc("create_time");
 
             List<SaleOrderChannel> list = saleOrderChannelService.list(query);
             for (SaleOrderChannel sysPer : list) {

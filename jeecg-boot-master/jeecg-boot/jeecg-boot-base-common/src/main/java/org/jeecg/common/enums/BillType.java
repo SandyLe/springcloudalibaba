@@ -39,7 +39,8 @@ public enum BillType implements AbstractEnum {
     RECEIPTORDER(33, "ReceiptOrder", "收款单"),
     PAYMENTORDER(34, "PaymentOrder", "付款单"),
     INVOICE(35, "invoice", "发票"),
-    REFUND(36, "refund", "退款单")
+    REFUND(36, "refund", "退款单"),
+    SALEORDERCHANNEL(37, "saleOrderChannel", "销售渠道")
     ;
 
     private Integer id;
