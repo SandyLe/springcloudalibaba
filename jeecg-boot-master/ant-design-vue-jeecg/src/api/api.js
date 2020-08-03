@@ -499,7 +499,6 @@ export {
   getDeliveryTypeList,
   getReportList,
   reportQueryById,
-  reportDelete,
   getWorkTypeList,
   saveOrderAddress,
   getOrderAddress,
@@ -516,7 +515,7 @@ export {
   editRefundOrderDtl,
   getRefundOrderDtlList,
   getPriceSpaceModeList,
-  inventoryInSave
+  inventoryInSave,
   reportDelete,
   getRootChannel,
   getSubChannel,

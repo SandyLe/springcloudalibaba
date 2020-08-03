@@ -71,13 +71,13 @@
         localMenuType:0,
         alwaysShow:false,//表单元素-聚合路由
         menuHidden:false,//表单元素-隐藏路由
-        routeSwitch:true, //是否路由菜单
+        routeSwitch:true, //是否路由渠道
         /*update_begin author:wuxianquan date:20190908 for:定义变量，初始值代表内部打开*/
-        internalOrExternal:false,//菜单打开方式
+        internalOrExternal:false,//渠道打开方式
         /*update_end author:wuxianquan date:20190908 for:定义变量，初始值代表内部打开*/
         isKeepalive:true, //是否缓存路由
-        show:true,//根据菜单类型，动态显示隐藏表单元素
-        menuLabel:'菜单名称',
+        show:true,//根据渠道类型，动态显示隐藏表单元素
+        menuLabel:'渠道名称',
         isRequrie:true,  // 是否需要验证
         labelCol: {
           xs: { span: 24 },
@@ -99,9 +99,9 @@
     computed:{
       validatorRules:function() {
         return {
-          name:{rules: [{ required: true, message: '请输入菜单标题!' }]},
+          name:{rules: [{ required: true, message: '请输入渠道标题!' }]},
           component:{rules: [{ required: this.show, message: '请输入前端组件!' }]},
-          url:{rules: [{ required: this.show, message: '请输入菜单路径!' }]},
+          url:{rules: [{ required: this.show, message: '请输入渠道路径!' }]},
           permsType:{rules: [{ required: true, message: '请输入授权策略!' }]},
           sortNo:{initialValue:1.0},
         }
@@ -137,7 +137,7 @@
         this.model = Object.assign({}, record);
 
         //--------------------------------------------------------------------------------------------------
-        //根据菜单类型，动态展示页面字段
+        //根据渠道类型，动态展示页面字段
         console.log(record)
         this.alwaysShow = !record.alwaysShow?false:true;
         this.menuHidden = !record.hidden?false:true;
@@ -163,7 +163,7 @@
 
         //console.log('record.menuType', record.menuType);
         this.show = record.menuType==2?false:true;
-        this.menuLabel = record.menuType==2?'按钮/权限':'菜单名称';
+        this.menuLabel = record.menuType==2?'按钮/权限':'渠道名称';
 
         if(this.model.parentId){
           this.localMenuType = 1;
@@ -240,7 +240,7 @@
         }
       },
       initDictConfig() {
-        
+
       },
       handleParentIdChange(value){
         if(!value){
