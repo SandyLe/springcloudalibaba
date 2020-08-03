@@ -193,8 +193,10 @@
           password:{
             rules: [{
               required: true,
-              pattern:/^(?=.*[a-zA-Z])(?=.*\d)(?=.*[~!@#$%^&*()_+`\-={}:";'<>?,./]).{8,}$/,
-              message: '密码由8位数字、大小写字母和特殊符号组成!'
+              // pattern:/^(?=.*[a-zA-Z])(?=.*\d)(?=.*[~!@#$%^&*()_+`\-={}:";'<>?,./]).{8,}$/,
+              pattern:/^(?=.*[a-zA-Z])(?=.*\d).{6,}$/,
+              // message: '密码由8位数字、大小写字母和特殊符号组成!'
+              message: '密码由6位以上数字、字母组成!'
             }, {
               validator: this.validateToNextPassword,
             }],

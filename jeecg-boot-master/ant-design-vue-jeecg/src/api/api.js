@@ -301,6 +301,16 @@ const getInvoiceAddress = (params)=>getAction("/invoiceAddress/getOneBySourceId"
 const saveInvoiceAddress = (params)=>postAction("/invoiceAddress/save", params)
 const createInvoice = (params)=>postAction("/invoice/createInvoice", params)
 
+// 销售渠道
+const getRootChannel = (params)=>getAction("/saleOrderChannel/getRootChannel",params);
+const getSubChannel = (params)=>getAction("/saleOrderChannel/getSubChannel",params);
+const queryChannelTreeList = (params)=>getAction("/saleOrderChannel/queryChannelTreeList",params);
+
+const addSaleOrderChannel= (params)=>postAction("/saleOrderChannel/add",params);
+const editSaleOrderChannel= (params)=>putAction("/saleOrderChannel/edit",params);
+const getSaleOrderChannel = (params)=>getAction("/saleOrderChannel/list",params);
+
+
 export {
   // imgView,
   // doMian,
@@ -507,6 +517,13 @@ export {
   getRefundOrderDtlList,
   getPriceSpaceModeList,
   inventoryInSave
+  reportDelete,
+  getRootChannel,
+  getSubChannel,
+  queryChannelTreeList,
+  addSaleOrderChannel,
+  editSaleOrderChannel,
+  getSaleOrderChannel
 }
 
 
