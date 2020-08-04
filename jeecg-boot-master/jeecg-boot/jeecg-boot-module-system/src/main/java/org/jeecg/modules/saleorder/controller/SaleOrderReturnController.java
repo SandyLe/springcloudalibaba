@@ -33,14 +33,8 @@ import org.jeecg.modules.financial.service.RefundOrderService;
 import org.jeecg.modules.inventory.entity.InventoryIn;
 import org.jeecg.modules.inventory.service.InventoryInService;
 import org.jeecg.modules.saleorder.dto.SaleOrderReturnDto;
-import org.jeecg.modules.saleorder.entity.SaleOrder;
-import org.jeecg.modules.saleorder.entity.SaleOrderMtl;
-import org.jeecg.modules.saleorder.entity.SaleOrderReturn;
-import org.jeecg.modules.saleorder.entity.SaleOrderReturnMtl;
-import org.jeecg.modules.saleorder.service.SaleOrderMtlService;
-import org.jeecg.modules.saleorder.service.SaleOrderReturnMtlService;
-import org.jeecg.modules.saleorder.service.SaleOrderReturnService;
-import org.jeecg.modules.saleorder.service.SaleOrderService;
+import org.jeecg.modules.saleorder.entity.*;
+import org.jeecg.modules.saleorder.service.*;
 import org.jeecg.modules.system.service.ISysDictService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,6 +72,8 @@ public class SaleOrderReturnController {
     private SaleOrderMtlService saleOrderMtlService;
     @Autowired
     private RefundOrderService refundOrderService;
+    @Autowired
+    private SaleOrderChannelService saleOrderChannelService;
 
 
     /**
@@ -213,17 +209,20 @@ public class SaleOrderReturnController {
             Collection<Customer> customers = customerService.listByIds(customerIds);
             Collection<Warehouse> warehouses = warehouseService.listByIds(warehouseIds);
             Collection<DictModel> sysDict = iSysDictService.queryDictItemsByCode("receipt_type");
-            Collection<DictModel> channelDicts = iSysDictService.queryDictItemsByCode("channel");
+            List<SaleOrderChannel> channellist = saleOrderChannelService.list();
             Map<String, String> customerMap = customers.stream().collect(Collectors.toMap(Customer::getId, Customer::getName));
             Map<String, String> warehouseMap = warehouses.stream().collect(Collectors.toMap(Warehouse:: getId, Warehouse:: getName));
             Map<String, String> dictModelMap = sysDict.stream().collect(Collectors.toMap(DictModel::getValue, DictModel::getText));
-            Map<String, String> channelMap = channelDicts.stream().collect(Collectors.toMap(DictModel::getValue, DictModel::getText));
             saleOrderReturnList.stream().forEach(o->{
                 o.setWarehouse(warehouseMap.get(o.getWarehouseId()));
                 o.setCustomer(customerMap.get(o.getCustomerId()));
                 o.setPayTypeName(dictModelMap.get(o.getPayType()));
                 o.setBillStatusName(BillStatus.getName(o.getBillStatus()));
                 o.setRefundStatusName(RefundOrderStatus.getName(o.getRefundStatusId()));
+                Optional<SaleOrderChannel> channel = channellist.stream().filter(p-> StringUtils.equals(p.getId(), o.getChannelId())).findFirst();
+                if (channel.isPresent()){
+                    o.setChannel(channel.get().getName());
+                }
             });
         }
 
@@ -335,6 +334,11 @@ public class SaleOrderReturnController {
         SaleOrderReturn saleOrderReturn = saleOrderReturnService.getById(id);
         Customer customer = customerService.getById(saleOrderReturn.getCustomerId());
         saleOrderReturn.setCustomer(null != customer ? customer.getName() : null);
+        List<SaleOrderChannel> channellist = saleOrderChannelService.list();
+        Optional<SaleOrderChannel> channel = channellist.stream().filter(p-> StringUtils.equals(p.getId(), saleOrderReturn.getChannelId())).findFirst();
+        if (channel.isPresent()){
+            saleOrderReturn.setChannel(channel.get().getName());
+        }
         return Result.ok(saleOrderReturn);
     }
 

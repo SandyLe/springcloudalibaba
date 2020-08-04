@@ -30,6 +30,8 @@ public class SaleOrderReturn extends CBasicEntity {
     private String warehouse;
     @ApiModelProperty("渠道")
     private String channelId;
+    @TableField(exist=false)
+    private String channel;
     @ApiModelProperty("付款方式")
     private String payType;
     @ApiModelProperty("付款方式")
@@ -228,5 +230,14 @@ public class SaleOrderReturn extends CBasicEntity {
 
     public void setSalemanName(String salemanName) {
         this.salemanName = salemanName;
+    }
+
+
+    public String getChannel() {
+        return channel;
+    }
+
+    public void setChannel(String channel) {
+        this.channel = channel;
     }
 }

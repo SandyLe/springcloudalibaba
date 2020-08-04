@@ -26,7 +26,9 @@ import org.jeecg.modules.basic.service.CustomerService;
 import org.jeecg.modules.inventory.entity.InventoryOut;
 import org.jeecg.modules.inventory.service.InventoryOutService;
 import org.jeecg.modules.saleorder.entity.SaleOrder;
+import org.jeecg.modules.saleorder.entity.SaleOrderChannel;
 import org.jeecg.modules.saleorder.entity.SaleOrderMtl;
+import org.jeecg.modules.saleorder.service.SaleOrderChannelService;
 import org.jeecg.modules.saleorder.service.SaleOrderMtlService;
 import org.jeecg.modules.saleorder.service.SaleOrderService;
 import org.jeecg.modules.system.service.ISysDictService;
@@ -35,10 +37,7 @@ import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -59,6 +58,8 @@ public class SaleOrderController {
     private BillCodeBuilderService billCodeBuilderService;
     @Autowired
     private SaleOrderMtlService saleOrderMtlService;
+    @Autowired
+    private SaleOrderChannelService saleOrderChannelService;
 
     /**
      * 添加
@@ -123,14 +124,16 @@ public class SaleOrderController {
         if (CollectionUtils.isNotEmpty(saleOrderList)) {
             List<String> customerIds = saleOrderList.stream().map(SaleOrder::getCustomerId).collect(Collectors.toList());
             Collection<Customer> customers = customerService.listByIds(customerIds);
-            Collection<DictModel> channelDicts = iSysDictService.queryDictItemsByCode("channel");
+            List<SaleOrderChannel> channellist = saleOrderChannelService.list();
             Map<String, String> customerMap = customers.stream().collect(Collectors.toMap(Customer::getId, Customer::getName));
-            Map<String, String> channelMap = channelDicts.stream().collect(Collectors.toMap(DictModel::getValue, DictModel::getText));
             saleOrderList.stream().forEach(o->{
                 o.setReceiptStatusName(ReceiptStatus.getName(o.getReceiptStatus()));
                 o.setCustomer(customerMap.get(o.getCustomerId()));
                 o.setDeliveryTypeName(DeliveryType.getName(o.getDeliveryType()));
-                o.setChannel(channelMap.get(o.getChannelId()));
+                Optional<SaleOrderChannel> channel = channellist.stream().filter(p-> StringUtils.equals(p.getId(), o.getChannelId())).findFirst();
+                if (channel.isPresent()){
+                    o.setChannel(channel.get().getName());
+                }
                 o.setBillStatusName(BillStatus.getName(o.getBillStatus()));
                 o.setReceiptStatusName(ReceiptStatus.getName(o.getReceiptStatus()));
             });
@@ -216,6 +219,11 @@ public class SaleOrderController {
             }
             saleOrder.setReceiptStatusName(ReceiptStatus.getName(saleOrder.getReceiptStatus()));
             saleOrder.setDeliveryTypeName(DeliveryType.getName(saleOrder.getDeliveryType()));
+            List<SaleOrderChannel> channellist = saleOrderChannelService.list();
+            Optional<SaleOrderChannel> channel = channellist.stream().filter(p-> StringUtils.equals(p.getId(), saleOrder.getChannelId())).findFirst();
+            if (channel.isPresent()){
+                saleOrder.setChannel(channel.get().getName());
+            }
         }
         return Result.ok(saleOrder);
     }
