@@ -49,7 +49,15 @@
             :labelCol="{span: 5}"
             :wrapperCol="{span: 19}"
             label="渠道">
-            <j-dict-select-tag v-decorator="['channelId', {}]" placeholder="请选择销售渠道" :type="'select'" style="width: 60%" :triggerChange="true" dictCode="channel" :disabled="unEditable" :readOnly = "unEditable" />
+            <a-tree-select
+              style="width:100%"
+              :dropdownStyle="{ maxHeight: '200px', overflow: 'auto' }"
+              :treeData="treeData"
+              v-model="model.channelId"
+              placeholder="请选择销售渠道"              
+              @change="handleParentIdChange">
+            </a-tree-select>
+            <!-- <j-dict-select-tag v-decorator="['channelId', {}]" placeholder="请选择销售渠道" :type="'select'" style="width: 60%" :triggerChange="true" dictCode="channel" :disabled="unEditable" :readOnly = "unEditable" /> -->
           </a-form-item>
         </a-col>
       </a-row>
@@ -155,7 +163,8 @@
     searchCustomer,
     getReturnTypeList,
     getSaleOrderByCode,
-    getMaterialListByIds
+    getMaterialListByIds,
+    queryChannelTreeList
   } from '@/api/api'
   export default {
     name: 'PurchasesModal',
@@ -166,6 +175,7 @@
     },
     data() {
       return {
+        treeData:[],
         editType: 0,
         dateFormat:"YYYY-MM-DD HH:mm:ss",
         form: this.$form.createForm(this),
@@ -224,14 +234,14 @@
         dictOptions: {
         },
         columns: [{
-          title: '产品', //顺序不要调整，getMaterialList中有用
-          dataIndex: 'mtlId',
-          key: 'mtlId',
-          width: '20%',
-          scopedSlots: {
-            customRender: 'mtlId'
-          }
-        },
+            title: '产品', //顺序不要调整，getMaterialList中有用
+            dataIndex: 'mtlId',
+            key: 'mtlId',
+            width: '20%',
+            scopedSlots: {
+              customRender: 'mtlId'
+            }
+          },
           {
             title: '单位', //顺序不要调整，getMaterialUnitList中有用
             dataIndex: 'unitId',
@@ -325,6 +335,23 @@
       }
     },
     methods: {
+      
+      loadTree(){
+        var that = this;
+        queryChannelTreeList().then((res)=>{
+          if(res.success){
+            console.log('----queryChannelTreeList1---')
+            console.log(res)
+            that.treeData = [];
+            let treeList = res.result.treeList
+            for(let a=0;a<treeList.length;a++){
+              let temp = treeList[a];
+              temp.isLeaf = temp.leaf;
+              that.treeData.push(temp);
+            }
+          }
+        });
+      },
       initDictConfig() {
         //客户
         searchCustomer('').then((res) => {
@@ -430,6 +457,8 @@
             pick(this.model, 'id', 'code', 'customerId', 'content', 'sourceId', 'sourceCode', 'channelId')
           )
         })
+        
+        this.loadTree();
         this.form.setFieldsValue({billDate: this.model.billDate ? moment(this.model.billDate) : null})
       },
       close() {

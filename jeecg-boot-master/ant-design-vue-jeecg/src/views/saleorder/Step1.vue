@@ -76,9 +76,17 @@
             :labelCol="{span: 2}"
             :wrapperCol="{span: 22}"
             label="渠道">
+            <a-tree-select
+              style="width:100%"
+              :dropdownStyle="{ maxHeight: '200px', overflow: 'auto' }"
+              :treeData="treeData"
+              v-model="model.channelId"
+              placeholder="请选择销售渠道"              
+              @change="handleParentIdChange">
+            </a-tree-select>
+            <!-- <j-dict-select-tag style="width: 30%" v-decorator="['channelId', {}]" placeholder="请选择销售渠道" :type="'select'" :triggerChange="true" dictCode="channel" :disabled="unEditable" :readOnly = "unEditable" />
             <j-dict-select-tag style="width: 30%" v-decorator="['channelId', {}]" placeholder="请选择销售渠道" :type="'select'" :triggerChange="true" dictCode="channel" :disabled="unEditable" :readOnly = "unEditable" />
-            <j-dict-select-tag style="width: 30%" v-decorator="['channelId', {}]" placeholder="请选择销售渠道" :type="'select'" :triggerChange="true" dictCode="channel" :disabled="unEditable" :readOnly = "unEditable" />
-            <j-dict-select-tag style="width: 30%" v-decorator="['channelId', {}]" placeholder="请选择销售渠道" :type="'select'" :triggerChange="true" dictCode="channel" :disabled="unEditable" :readOnly = "unEditable" />
+            <j-dict-select-tag style="width: 30%" v-decorator="['channelId', {}]" placeholder="请选择销售渠道" :type="'select'" :triggerChange="true" dictCode="channel" :disabled="unEditable" :readOnly = "unEditable" /> -->
           </a-form-item>
         </a-col>
         <a-col :md="8" :sm="8">
@@ -195,7 +203,7 @@
   import pick from 'lodash.pick'
   import moment from 'moment'
   import JDictSelectTag from '@/components/dict/JDictSelectTag.vue'
-  import {addSaleOrder, editSaleOrder, getCustomerList, getSaleOrderOne, getSaleOrderMtlList, searchCustomer, getAllUser, createReceiptOrder } from '@/api/api'
+  import {addSaleOrder, editSaleOrder, getCustomerList, getSaleOrderOne, getSaleOrderMtlList, searchCustomer, getAllUser, createReceiptOrder,queryChannelTreeList } from '@/api/api'
   import {JeecgListMixin} from '@/mixins/JeecgListMixin'
   import ARow from "ant-design-vue/es/grid/Row";
   export default {
@@ -209,6 +217,7 @@
     },
     data () {
       return {
+        treeData:[],
         saleOrder: {},
         dateFormat:"YYYY-MM-DD HH:mm:ss",
         saleOrderForm: this.$form.createForm(this),
@@ -313,6 +322,22 @@
       }
     },
     methods: {
+      loadTree(){
+        var that = this;
+        queryChannelTreeList().then((res)=>{
+          if(res.success){
+            console.log('----queryChannelTreeList1---')
+            console.log(res)
+            that.treeData = [];
+            let treeList = res.result.treeList
+            for(let a=0;a<treeList.length;a++){
+              let temp = treeList[a];
+              temp.isLeaf = temp.leaf;
+              that.treeData.push(temp);
+            }
+          }
+        });
+      },
       getQueryParams(){
         let param = {};
         if(this.$route.query.id){
@@ -336,6 +361,8 @@
         }else{
           this.roleDisabled = false;
         }
+        
+        this.loadTree();
         this.$nextTick(() => {
           this.saleOrderForm.setFieldsValue(pick(this.model,'name', 'code','content','customerId','channelId','billDate','measuringTime','deliveryTime','installTime','salemanId'))
           //时间格式化
@@ -459,6 +486,13 @@
           })
         }
         this.$emit('nextStep')
+      },
+      handleParentIdChange(value){
+        if(!value){
+          this.validateStatus="error"
+        }else{
+          this.validateStatus="success"
+        }
       }
     },
     mounted() {
