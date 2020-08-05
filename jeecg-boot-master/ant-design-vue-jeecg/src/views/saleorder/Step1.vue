@@ -71,7 +71,7 @@
         </a-col>
       </a-row>
       <a-row>
-        <a-col :md="16" :sm="16">
+        <a-col :md="8" :sm="8">
           <a-form-item
             :labelCol="{span: 2}"
             :wrapperCol="{span: 22}"
@@ -81,7 +81,7 @@
               :dropdownStyle="{ maxHeight: '200px', overflow: 'auto' }"
               :treeData="treeData"
               v-model="model.channelId"
-              placeholder="请选择销售渠道"              
+              placeholder="请选择销售渠道"
               @change="handleParentIdChange">
             </a-tree-select>
             <!-- <j-dict-select-tag style="width: 30%" v-decorator="['channelId', {}]" placeholder="请选择销售渠道" :type="'select'" :triggerChange="true" dictCode="channel" :disabled="unEditable" :readOnly = "unEditable" />
@@ -289,7 +289,7 @@
             dataIndex: 'price'
           },
           {
-            title: '折扣',
+            title: '折扣%',
             align:"center",
             dataIndex: 'discount'
           },
@@ -361,7 +361,7 @@
         }else{
           this.roleDisabled = false;
         }
-        
+
         this.loadTree();
         this.$nextTick(() => {
           this.saleOrderForm.setFieldsValue(pick(this.model,'name', 'code','content','customerId','channelId','billDate','measuringTime','deliveryTime','installTime','salemanId'))
@@ -513,6 +513,8 @@
             this.edit(res.result);
           }
         })
+      } else {
+        this.add();
       }
       this.unEditable = this.$route.query.unEditable == 'true';
     }

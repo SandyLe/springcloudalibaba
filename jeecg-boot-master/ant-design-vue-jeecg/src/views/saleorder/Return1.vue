@@ -54,7 +54,7 @@
               :dropdownStyle="{ maxHeight: '200px', overflow: 'auto' }"
               :treeData="treeData"
               v-model="model.channelId"
-              placeholder="请选择销售渠道"              
+              placeholder="请选择销售渠道"
               @change="handleParentIdChange">
             </a-tree-select>
             <!-- <j-dict-select-tag v-decorator="['channelId', {}]" placeholder="请选择销售渠道" :type="'select'" style="width: 60%" :triggerChange="true" dictCode="channel" :disabled="unEditable" :readOnly = "unEditable" /> -->
@@ -270,7 +270,7 @@
             }
           },
           {
-            title: '折扣',
+            title: '折扣%',
             dataIndex: 'discount',
             key: 'discount',
             width: '10%',
@@ -323,8 +323,10 @@
         let datatotalamount = 0;
         this.tabledata.forEach(function(target){
           if (target.quantity && target.price) {
-            if (target.discount)
-              datatotalamount += parseFloat(target.quantity).toFixed(2) * parseFloat(target.price).toFixed(2) - parseFloat(target.discount).toFixed(2);
+            if (target.discount){
+              datatotalamount += parseFloat(target.quantity).toFixed(2) * parseFloat(target.price).toFixed(2);
+              datatotalamount = datatotalamount - datatotalamount * (1-(parseFloat(target.discount)/100).toFixed(2));
+            }
             else
               datatotalamount += parseFloat(target.quantity) * parseFloat(target.price).toFixed(2);
           }
@@ -335,7 +337,7 @@
       }
     },
     methods: {
-      
+
       loadTree(){
         var that = this;
         queryChannelTreeList().then((res)=>{
@@ -457,7 +459,7 @@
             pick(this.model, 'id', 'code', 'customerId', 'content', 'sourceId', 'sourceCode', 'channelId')
           )
         })
-        
+
         this.loadTree();
         this.form.setFieldsValue({billDate: this.model.billDate ? moment(this.model.billDate) : null})
       },
@@ -511,8 +513,11 @@
         if (target) {
           target[column] = value;
           if (target.quantity && target.price) {
-            if (target.discount)
-              target['amount'] = Math.round((parseFloat(target.quantity) * parseFloat(target.price) - parseFloat(target.discount)) * 100)/100;
+            if (target.discount){
+              let datatotalamount = parseFloat(target.quantity).toFixed(2) * parseFloat(target.price).toFixed(2);
+              datatotalamount = datatotalamount - datatotalamount * (1-(parseFloat(target.discount)/100).toFixed(2));
+              target['amount'] = Math.round(datatotalamount * 100)/100;
+            }
             else
               target['amount'] = Math.round( (parseFloat(target.quantity) * parseFloat(target.price)) * 100)/100;
           }
