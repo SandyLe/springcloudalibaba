@@ -1,5 +1,6 @@
 package org.jeecg.modules.workorder.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -47,43 +48,11 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
     @Transactional
     public String saveOrder(WorkOrderDto workOrderdto){
         // 工单主表
-        String code = billCodeBuilderService.getBillCode(BillType.WORKORDER.getId());
-        workOrderdto.setCode(code);
-        if (null == workOrderdto.getBillStatus()) {
-            if (StringUtils.isNotBlank(workOrderdto.getOperateUserId())) {
-                workOrderdto.setBillStatus(BillStatus.ARRANGED.getId());
-            } else {
-                workOrderdto.setBillStatus(BillStatus.NEW.getId());
-            }
+        String code = workOrderdto.getCode();
+        if (StringUtils.isBlank(code)) {
+            code = billCodeBuilderService.getBillCode(BillType.WORKORDER.getId());
+            workOrderdto.setCode(code);
         }
-        workOrderdto.setRowSts(RowSts.EFFECTIVE.getId());
-        super.save(workOrderdto);
-
-        //工单单子表
-        if (CollectionUtils.isNotEmpty(workOrderdto.getDetaillist())){
-            List<WorkOrderDtl> mtls = workOrderdto.getDetaillist().stream().filter(o-> StringUtils.isNotBlank(o.getMtlId())).collect(Collectors.toList());
-            mtls.stream().forEach(o->{
-                //工单商品详情
-                o.setCode(code);
-                o.setSourceId(workOrderdto.getId());
-            });
-            workOrderDtlService.saveBatch(mtls);
-        }
-
-        /*if (StringUtils.isNotBlank(workOrderdto.getWarehouseId())) {
-            // 配件出库
-            InventoryOut inventoryOut = new InventoryOut(workOrderdto.getId(), workOrderdto.getCode(), BillType.INVENTORYOUT.getId(), BillType.WORKORDER.getId(), BillStatus.TOSTOCKOUT.getId());
-            inventoryOut.setRowSts(RowSts.EFFECTIVE.getId());
-            inventoryOut.setCompanyId(workOrderdto.getCompanyId());
-            inventoryOutService.saveToInventoryOut(inventoryOut);
-        }*/
-        return workOrderdto.getId();
-    }
-
-    @Override
-    @Transactional
-    public String editOrder(WorkOrderDto workOrderdto){
-
         if (null == workOrderdto.getBillStatus() || BillStatus.NEW.getId() == workOrderdto.getBillStatus()) {
             if (StringUtils.isNotBlank(workOrderdto.getOperateUserId())) {
                 workOrderdto.setBillStatus(BillStatus.ARRANGED.getId());
@@ -91,28 +60,37 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                 workOrderdto.setBillStatus(BillStatus.NEW.getId());
             }
         }
-        // 工单主表
-        super.updateById(workOrderdto);
-        if (workOrderdto.getDetaillist().size() > 0){
-            for (WorkOrderDtl item: workOrderdto.getDetaillist()){
-                //工单配件详情
-                if (item.getId() != null && item.getId().length() > 0)
-                    workOrderDtlService.updateById(item);
-                else{
-                    item.setSourceId(workOrderdto.getId());
-                    workOrderDtlService.save(item);
-                }
-            }
-        }
+        workOrderdto.setRowSts(RowSts.EFFECTIVE.getId());
+        super.saveOrUpdate(workOrderdto);
 
-        /*if (StringUtils.isNotBlank(workOrderdto.getWarehouseId())) {
-            inventoryOutService.deleteBySourceId(workOrderdto.getBillType(), workOrderdto.getId());
+        inventoryOutService.deleteBySourceId(workOrderdto.getBillType(), workOrderdto.getId());
+
+        //工单单子表
+        if (CollectionUtils.isNotEmpty(workOrderdto.getDetaillist())){
+            List<WorkOrderDtl> mtls = workOrderdto.getDetaillist().stream().filter(o-> StringUtils.isNotBlank(o.getMtlId())).collect(Collectors.toList());
+            mtls.stream().forEach(o->{
+                //工单商品详情
+                o.setCode(workOrderdto.getCode());
+                o.setSourceId(workOrderdto.getId());
+                workOrderDtlService.saveOrUpdate(o);
+            });
+
             // 配件出库
             InventoryOut inventoryOut = new InventoryOut(workOrderdto.getId(), workOrderdto.getCode(), BillType.INVENTORYOUT.getId(), BillType.WORKORDER.getId(), BillStatus.TOSTOCKOUT.getId());
             inventoryOut.setRowSts(RowSts.EFFECTIVE.getId());
             inventoryOut.setCompanyId(workOrderdto.getCompanyId());
             inventoryOutService.saveToInventoryOut(inventoryOut);
-        }*/
+        }
+
         return workOrderdto.getId();
+    }
+
+    @Override
+    public List<WorkOrder> findBySourceId(String sourceId, Integer workType) {
+
+        LambdaQueryWrapper<WorkOrder> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(WorkOrder::getSourceId, sourceId);
+        queryWrapper.eq(WorkOrder::getWorkTypeId, workType);
+        return super.list(queryWrapper);
     }
 }

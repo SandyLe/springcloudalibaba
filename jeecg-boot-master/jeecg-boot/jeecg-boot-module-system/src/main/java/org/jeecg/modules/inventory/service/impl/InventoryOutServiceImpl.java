@@ -255,6 +255,9 @@ public class InventoryOutServiceImpl extends ServiceImpl<InventoryOutMapper, Inv
                 saleOrderMtls.forEach(o ->{
                     inventoryOutMtls.add(new InventoryOutMtl(inventoryOut.getId(), o.getSourceId(), inventoryOut.getSourceBillType(), o.getMtlId(), o.getQuantity(), o.getUnitId(), RowSts.EFFECTIVE.getId()));
                 });
+                SaleOrder saleOrder = saleOrderService.getById(inventoryOut.getSourceId());
+                saleOrder.setBillStatus(BillStatus.TOSEND.getId());
+                saleOrderService.saveOrUpdate(saleOrder);
             }
         } else if (inventoryOut.getSourceBillType() == BillType.PURCHASERETURNORDER.getId()) {
             LambdaQueryWrapper<PurchaseReturnMtl> queryWrapper = new LambdaQueryWrapper<PurchaseReturnMtl>().eq(PurchaseReturnMtl::getSourceId, inventoryOut.getSourceId());

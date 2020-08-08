@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.workorder.dto.WorkOrderDto;
 import org.jeecg.modules.workorder.entity.WorkOrder;
 
+import java.util.List;
+
 /**
  * @Description:
  * @Author: lixt
@@ -13,5 +15,6 @@ import org.jeecg.modules.workorder.entity.WorkOrder;
 public interface WorkOrderService extends IService<WorkOrder> {
 
     public String saveOrder(WorkOrderDto assembledto);
-    public String editOrder(WorkOrderDto assembledto);
+
+    public List<WorkOrder> findBySourceId(String sourceId, Integer workType);
 }

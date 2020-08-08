@@ -22,4 +22,11 @@ public interface SaleOrderReturnMtlService extends IService<SaleOrderReturnMtl> 
      * @return
      */
     public List<SaleOrderReturnMtl> getList(String souceId);
+
+    /**
+     * 汇总数量
+     * @param sourceId
+     * @return
+     */
+    BigDecimal sumBySourceId (List<String> sourceId);
 }

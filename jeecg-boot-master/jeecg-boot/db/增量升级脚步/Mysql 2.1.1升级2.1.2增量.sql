@@ -292,3 +292,40 @@ ALTER TABLE `sl_assemble`
 
 ALTER TABLE `sl_purchase_return`
   ADD CoLUMN `bill_type` int(2) DEFAULT NULL;
+
+DROP TABLE IF EXISTS `sl_work_address`;
+CREATE TABLE `sl_work_address` (
+  `id` varchar(30) NOT NULL,
+  `name` varchar(50) DEFAULT NULL,
+  `code` varchar(30) DEFAULT NULL,
+  `content` varchar(1000) DEFAULT NULL,
+  `create_time` datetime DEFAULT NULL,
+  `update_time` datetime DEFAULT NULL,
+  `create_by` varchar(30) DEFAULT NULL,
+  `update_by` varchar(30) DEFAULT NULL,
+  `row_sts` int(11) DEFAULT NULL,
+  `sort` int(11) DEFAULT NULL,
+	`company_id` varchar(50) DEFAULT NULL,
+	`source_id` varchar(50) DEFAULT NULL,
+	`source_add_id` varchar(50) DEFAULT NULL,
+  `type_id` int(2) DEFAULT NULL,
+	`province` varchar(50) DEFAULT NULL,
+	`city` varchar(50) DEFAULT NULL,
+	`district` varchar(50) DEFAULT NULL,
+	`tel` varchar(50) DEFAULT NULL,
+	`recipients` varchar(50) DEFAULT NULL,
+
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+ALTER TABLE `sl_work_order`
+	CHANGE COLUMN `id` `id` varchar (50) NOT NULL,
+
+ALTER TABLE `sl_work_order_dtl`
+	CHANGE COLUMN `source_id` `source_id` varchar (50) NOT NULL
+
+ALTER TABLE `sl_inventory_out`
+	CHANGE COLUMN `source_id` `source_id` varchar (50) NOT NULL
+
+ALTER TABLE `sl_inventory_out_mtl`
+	CHANGE COLUMN `source_bill_id` `source_bill_id` varchar (50) NOT NULL

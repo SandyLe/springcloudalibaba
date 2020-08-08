@@ -2,6 +2,7 @@ package org.jeecg.common.enums;
 
 public enum BillStatus implements AbstractEnum {
 
+    CLOSED(-2, "关闭"),
     INVALID(-1, "作废"),
     NEW(0, "草稿"),
     PARTICIALPAYMENT(1, "部分支付"),

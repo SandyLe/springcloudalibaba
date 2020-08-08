@@ -26,6 +26,9 @@ public class SaleOrderMtlServiceImpl extends ServiceImpl<SaleOrderMtlMapper, Sal
     @Autowired
     private SaleOrderService saleOrderService;
 
+    @Autowired
+    private SaleOrderMtlMapper saleOrderMtlMapper;
+
     @Override
     @Transactional
     public BigDecimal saveSaleOrderMtl(SaleOrderMtl saleOrderMtl){
@@ -70,5 +73,10 @@ public class SaleOrderMtlServiceImpl extends ServiceImpl<SaleOrderMtlMapper, Sal
         LambdaQueryWrapper<SaleOrderMtl> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(SaleOrderMtl::getSourceId, sourceId);
         return super.list(queryWrapper);
+    }
+
+    @Override
+    public BigDecimal sumBySourceId(String sourceId) {
+        return saleOrderMtlMapper.sumBySourceId(sourceId);
     }
 }

@@ -74,4 +74,9 @@ public class SaleOrderReturnMtlServiceImpl extends ServiceImpl<SaleOrderReturnMt
         lambdaQueryWrapper.eq(SaleOrderReturnMtl::getSourceId, souceId);
         return super.list(lambdaQueryWrapper);
     }
+
+    @Override
+    public BigDecimal sumBySourceId(List<String> sourceId) {
+        return saleOrderReturnMtlMapper.sumBySourceId(sourceId);
+    }
 }

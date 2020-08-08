@@ -147,6 +147,9 @@ public class InventoryInServiceImpl extends ServiceImpl<InventoryInMapper, Inven
                     inventoryInMtls.add(new InventoryInMtl(inventoryIn.getId(), o.getSourceId(), inventoryIn.getSourceBillType(), o.getMtlId(), o.getQuantity(), o.getUnitId(), RowSts.EFFECTIVE.getId()));
                 });
             }
+            SaleOrderReturn saleOrderReturn = saleOrderReturnService.getById(inventoryIn.getSourceId());
+            saleOrderReturn.setBillStatus(BillStatus.TOSTOCKIN.getId());
+            saleOrderReturnService.saveOrUpdate(saleOrderReturn);
         } else if (inventoryIn.getSourceBillType() == BillType.ALLOT.getId()) {
             LambdaQueryWrapper<AllotDtl> queryWrapper = new LambdaQueryWrapper<AllotDtl>().eq(AllotDtl::getSourceId, inventoryIn.getSourceId());
             List<AllotDtl> allotDtls = allotDtlService.list(queryWrapper);

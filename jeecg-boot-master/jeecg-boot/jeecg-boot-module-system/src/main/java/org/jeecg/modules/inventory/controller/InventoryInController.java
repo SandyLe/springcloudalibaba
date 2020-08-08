@@ -84,7 +84,7 @@ public class InventoryInController {
             inventoryIn.setCompanyId(LoginUtils.getLoginUser().getCompanyId());
         }
         if (null == inventoryIn.getBillType()) {
-            inventoryIn.setBillType(BillType.INVENTORYOUT.getId());
+            inventoryIn.setBillType(BillType.INVENTORYIN.getId());
         }
         if (null == inventoryIn.getBillStatus()) {
             inventoryIn.setBillStatus(BillStatus.TOSTOCKIN.getId());

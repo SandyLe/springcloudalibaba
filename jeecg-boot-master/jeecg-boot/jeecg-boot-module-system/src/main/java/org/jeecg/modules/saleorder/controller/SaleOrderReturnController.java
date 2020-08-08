@@ -371,7 +371,11 @@ public class SaleOrderReturnController {
             dto.setChannelId(saleOrder.getChannelId());
             dto.setSourceCode(saleOrder.getCode());
             dto.setSourceId(saleOrder.getId());
-
+            List<SaleOrderChannel> channellist = saleOrderChannelService.list();
+            Optional<SaleOrderChannel> channel = channellist.stream().filter(p-> StringUtils.equals(p.getId(), saleOrder.getChannelId())).findFirst();
+            if (channel.isPresent()){
+                dto.setChannel(channel.get().getName());
+            }
             List<SaleOrderReturnMtl> returnMtls = Lists.newArrayList();
             List<SaleOrderMtl> saleOrderMtls = saleOrderMtlService.findList(sourceId);
             saleOrderMtls.forEach(mtl -> {
