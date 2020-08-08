@@ -41,7 +41,7 @@
             <a-col :sm="4" :xs="4" class="titletd">渠道：</a-col><a-col :sm="8" :xs="8">{{this.saleOrder.channel}}</a-col>
             <a-col :sm="4" :xs="4" class="titletd">发货时间：</a-col><a-col :sm="8" :xs="8">{{this.saleOrder.deliveryTime}}</a-col>
             <a-col :sm="4" :xs="4" class="titletd">安装时间：</a-col><a-col :sm="8" :xs="8">{{this.saleOrder.installTime}}</a-col>
-            <a-col :sm="4" :xs="4" class="titletd">出货仓库：</a-col><a-col :sm="8" :xs="8">{{this.saleOrder.warehouse}}</a-col>
+            <a-col :sm="4" :xs="4" class="titletd">出库方式：</a-col><a-col :sm="8" :xs="8">{{this.saleOrder.deliveryTypeName}}</a-col>
           </a-row>
         </table>
         <div style="margin-top: 15px">
@@ -87,30 +87,26 @@
           </table>
         </div>
         <div style="margin-top: 15px">
-          <div class="title" style="border-bottom: solid 1px #888888; ">收货信息</div>
-          <div><label class="title">默认发货方式：</label>{{deliveryInfo.cdiDefaultTypeName}}</div>
-          <div v-if="'ZHIDINGDIAN' === deliveryInfo.cdiDefaultType">
-            <label class="title">说明：</label>{{deliveryInfo.cdiDescription}}<br/>
-            <label class="title">联系人：</label>{{deliveryInfo.cdiLinkman}}<br/>
-            <label class="title">联系电话：</label>{{deliveryInfo.cdiPhone}}<br/>
-          </div>
-          <div v-if="'SONGCHE' === deliveryInfo.cdiDefaultType">
-            <label class="title">车牌：</label>{{deliveryInfo.cdiCarLicense}}<br/>
-            <label class="title">司机姓名：</label>{{deliveryInfo.cdiLinkman}}<br/>
-            <label class="title">司机电话：</label>{{deliveryInfo.cdiPhone}}<br/>
-            <label class="title">发货地址：</label>{{deliveryInfo.cdiDeliveryAddress}}<br/>
-            <label class="title">收件人：</label>{{deliveryInfo.cdiRecipients}}<br/>
-            <label class="title">联系电话：</label>{{deliveryInfo.cdiRecipientsPhone}}<br/>>
-            <label class="title">地址：</label>{{deliveryInfo.cdiProvince + deliveryInfo.cdiCity + deliveryInfo.cdiDistrict + deliveryInfo.cdiAddress}}<br/>
-          </div>
-          <div v-if="'WULIU' === deliveryInfo.cdiDefaultType">
-            <label class="title">物流：</label>{{deliveryInfo.cdiLogistics}}<br/>
-            <label class="title">网点：</label>{{deliveryInfo.cdiBranch}}<br/>
-            <label class="title">电话：</label>{{deliveryInfo.cdiTel}}<br/>
-            <label class="title">收件人：</label>{{deliveryInfo.cdiRecipients}}<br/>
-            <label class="title">联系电话：</label>{{deliveryInfo.cdiRecipientsPhone}}<br/>
-            <label class="title">地址：</label>{{deliveryInfo.cdiProvince + deliveryInfo.cdiCity + deliveryInfo.cdiDistrict + deliveryInfo.cdiAddress}}<br/>
-          </div>
+          <div class="title">销售成本</div>
+          <table class="tableclass">
+            <thead style="border: solid 1px #888888; ">
+            <th>编号</th>
+            <th>收款方</th>
+            <th>费用名称</th>
+            <th>费用金额</th>
+            </thead>
+            <tr v-for="(item, index) in costsDatas" style="border: dotted 1px #888888; ">
+              <td>{{index +1 }}</td>
+              <td>{{item.payee}}</td>
+              <td>{{item.expense}}</td>
+              <td>{{item.amount}}</td>
+            </tr>
+          </table>
+        </div>
+        <div style="margin-top: 15px">
+          <div class="title" style="border-bottom: solid 1px #888888; ">地址信息</div>
+          <div><span style="font-weight: bold">收货地址：{{saleOrderAddress.recipients}} &nbsp;</span> <a>{{saleOrderAddress.tel}}</a> {{saleOrderAddress.fullAddress}}</div>
+          <div><span style="font-weight: bold">安装地址：{{workAddress.recipients}} &nbsp;</span> <a>{{workAddress.tel}}</a> {{workAddress.fullAddress}}</div>
         </div>
       </a-form>
     </div>
@@ -118,7 +114,7 @@
 </template>
 
 <script>
-  import {checkout, getSaleOrderOne, getlSaleMtlList, getSaleOrderExpenseList, getDeliveryInfoBySourceId } from '@/api/api'
+  import {checkout, getSaleOrderOne, getlSaleMtlList, getSaleOrderExpenseList, getDeliveryInfoBySourceId, getSaleOrderCostList, getOrderAddress, getInstallAddress } from '@/api/api'
   import JDictSelectTag from '@/components/dict/JDictSelectTag.vue'
   export default {
     name: "SaleOrderDetail",
@@ -129,6 +125,7 @@
       return {
         mtlDatas: [],
         expenseDatas: [],
+        costsDatas: [],
         deliveryInfo: {},
         title: "订单详情",
         visible: false,
@@ -153,7 +150,8 @@
         },
         confirmLoading: false,
         saleOrder: {},
-        cdiDefaultType: ''
+        saleOrderAddress: {},
+        workAddress: {}
       }
     },
     methods: {
@@ -173,6 +171,21 @@
         getDeliveryInfoBySourceId({sourceId:this.saleOrder.id}).then((res) => {
           if (res.success) {
             this.deliveryInfo = res.result;
+          }
+        })
+        getSaleOrderCostList({sourceId:this.saleOrder.id}).then((res) => {
+          if (res.success) {
+            this.costsDatas = res.result;
+          }
+        })
+        getOrderAddress({sourceId:this.saleOrder.id}).then((res) => {
+          if (res.success) {
+            this.saleOrderAddress = res.result;
+          }
+        })
+        getInstallAddress({saleId:this.saleOrder.id}).then((res) => {
+          if (res.success) {
+            this.workAddress = res.result;
           }
         })
       },

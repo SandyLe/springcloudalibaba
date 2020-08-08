@@ -68,6 +68,9 @@
               更多 <a-icon type="down" />
             </a>
             <a-menu slot="overlay">
+              <a-menu-item v-if="record.billStatus < 4 && record.billStatus > -1">
+                <a @click="finishStockIn(record)">通知入库</a>
+              </a-menu-item>
               <a-menu-item  v-if="record.billStatus < 4 && record.billStatus != -1">
                 <a-popconfirm title="确定作废吗?" @confirm="() => handleInvalid(record)">
                   <a>作废</a>
@@ -90,7 +93,7 @@
 <script>
   import JInput from '@/components/jeecg/JInput'
   import {JeecgListMixin} from '@/mixins/JeecgListMixin'
-  import {disableSaleOrder} from '@/api/api'
+  import {disableSaleOrderReturn,inventoryInSave} from '@/api/api'
   export default {
     name: "",
     mixins: [JeecgListMixin],
@@ -177,7 +180,7 @@
         this.$router.push({ name: "saleorder-saleOrderReturnEdit", query: {"id": id, "editType":1}})
       },
       handleInvalid (record) {
-        disableSaleOrder(record).then((res)=>{
+        disableSaleOrderReturn(record).then((res)=>{
           if(res.success){
             this.$message.success(res.message);
             this.$emit('ok');
@@ -186,6 +189,23 @@
           }
         }).finally(() => {
         })
+      },
+      finishStockIn (record) {
+        let formData = {
+          "sourceId": record.id,
+          "sourceCode": record.code,
+          "sourceBillType": record.billType
+        };
+        inventoryInSave(formData).then((res)=>{
+          if(res.success){
+            this.$message.success(res.message);
+          }else{
+            this.$message.warning(res.message);
+          }
+        }).finally(() => {
+          this.loadData();
+        })
+        this.$emit('finish')
       }
     }
   }

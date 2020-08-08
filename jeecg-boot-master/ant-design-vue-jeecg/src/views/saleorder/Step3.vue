@@ -22,8 +22,8 @@
               <a-col :sm="8" :xs="8">{{this.saleOrder.channel}}</a-col>
             </a-row>
             <a-row>
-              <a-col :sm="4" :xs="4">出货仓库：</a-col>
-              <a-col :sm="8" :xs="8">{{saleOrder.warehouse}}</a-col>
+              <a-col :sm="4" :xs="4">出货方式：</a-col>
+              <a-col :sm="8" :xs="8">{{saleOrder.deliveryTypeName}}</a-col>
               <a-col :sm="4" :xs="4">发货时间：</a-col>
               <a-col :sm="8" :xs="8">{{this.saleOrder.deliveryTime}}</a-col>
             </a-row>
@@ -95,30 +95,9 @@
             </table>
           </div>
           <div style="margin-top: 15px">
-            <div style="border-bottom: dotted 1px #888888; ">收货信息</div>
-            <div><label>默认发货方式：</label>{{deliveryInfo.cdiDefaultTypeName}}</div>
-            <div v-if="'ZHIDINGDIAN' === deliveryInfo.cdiDefaultType">
-              <label>说明：</label>{{deliveryInfo.cdiDescription}}<br/>
-              <label>联系人：</label>{{deliveryInfo.cdiLinkman}}<br/>
-              <label>联系电话：</label>{{deliveryInfo.cdiPhone}}<br/>
-            </div>
-            <div v-if="'SONGCHE' === deliveryInfo.cdiDefaultType">
-              <label>车牌：</label>{{deliveryInfo.cdiCarLicense}}<br/>
-              <label>司机姓名：</label>{{deliveryInfo.cdiLinkman}}<br/>
-              <label>司机电话：</label>{{deliveryInfo.cdiPhone}}<br/>
-              <label>发货地址：</label>{{deliveryInfo.cdiDeliveryAddress}}<br/>
-              <label>收件人：</label>{{deliveryInfo.cdiRecipients}}<br/>
-              <label>联系电话：</label>{{deliveryInfo.cdiRecipientsPhone}}<br/>>
-              <label>地址：</label>{{deliveryInfo.cdiProvince + deliveryInfo.cdiCity + deliveryInfo.cdiDistrict + deliveryInfo.cdiAddress}}<br/>
-            </div>
-            <div v-if="'WULIU' === deliveryInfo.cdiDefaultType">
-              <label>物流：</label>{{deliveryInfo.cdiLogisticsName}}<br/>
-              <label>网点：</label>{{deliveryInfo.cdiBranch}}<br/>
-              <label>电话：</label>{{deliveryInfo.cdiTel}}<br/>
-              <label>收件人：</label>{{deliveryInfo.cdiRecipients}}<br/>
-              <label>联系电话：</label>{{deliveryInfo.cdiRecipientsPhone}}<br/>
-              <label>地址：</label>{{deliveryInfo.cdiProvince + deliveryInfo.cdiCity + deliveryInfo.cdiDistrict + deliveryInfo.cdiAddress}}<br/>
-            </div>
+            <div style="border-bottom: solid 1px #888888; ">地址信息</div>
+            <div><span style="font-weight: bold">收货地址：{{saleOrderAddress.recipients}} &nbsp;</span> <a>{{saleOrderAddress.tel}}</a> {{saleOrderAddress.fullAddress}}</div>
+            <div><span style="font-weight: bold">安装地址：{{workAddress.recipients}} &nbsp;</span> <a>{{workAddress.tel}}</a> {{workAddress.fullAddress}}</div>
           </div>
         </div>
         <div slot="action">
@@ -134,7 +113,7 @@
 
 <script>
   import Result from '../result/Result'
-  import {getSaleOrderOne, getlSaleMtlList, getSaleOrderExpenseList, getSaleOrderCostList, getDeliveryInfoBySourceId, inventoryOutSave} from '@/api/api'
+  import {getSaleOrderOne, getlSaleMtlList, getSaleOrderExpenseList, getSaleOrderCostList, getDeliveryInfoBySourceId, inventoryOutSave, getOrderAddress, getInstallAddress} from '@/api/api'
 
   export default {
     name: "Step3",
@@ -148,7 +127,9 @@
         expenseDatas: [],
         costDatas: [],
         mtlDatas: [],
-        deliveryInfo: {}
+        deliveryInfo: {},
+        saleOrderAddress: {},
+        workAddress: {}
       }
     },
     methods: {
@@ -201,6 +182,16 @@
         getDeliveryInfoBySourceId({sourceId:this.$route.query.id}).then((res) => {
           if (res.success) {
             this.deliveryInfo = res.result;
+          }
+        })
+        getOrderAddress({sourceId:this.$route.query.id}).then((res) => {
+          if (res.success) {
+            this.saleOrderAddress = res.result;
+          }
+        })
+        getInstallAddress({saleId:this.$route.query.id}).then((res) => {
+          if (res.success) {
+            this.workAddress = res.result;
           }
         })
       }

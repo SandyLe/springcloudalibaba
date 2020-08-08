@@ -293,7 +293,6 @@ export default {
 
     },
     editAddressItem (record) {
-      debugger
       record.customerId = this.addressSourceId;
       record.sourceAddId = this.invoiceAddress.sourceAddId;
       this.$refs.saleAddressList.edit(record);
@@ -397,7 +396,6 @@ export default {
       this.unEditable = this.$route.query.unEditable;
     }
     if (this.$route.query.sourceId) {
-      debugger
       this.invoice.sourceId = this.$route.query.sourceId;
       this.invoice.sourceBillType = this.$route.query.sourceBillType;
       this.invoice.sourceCode = this.$route.query.sourceCode;

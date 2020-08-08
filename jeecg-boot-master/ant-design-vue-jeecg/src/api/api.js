@@ -218,6 +218,7 @@ const getSaleOrderReturnMtlList = (params)=>getAction("/saleOrderReturnMtl/getLi
 const addSaleOrderReturnExpense = (params)=>postAction("/saleOrderReturnExpense/add",params)
 const editSaleOrderReturnExpense = (params)=>postAction("/saleOrderReturnExpense/edit",params)
 const findSaleOrderReturnQueryDto = (params)=>getAction("/saleOrderReturn/queryDto",params)
+const disableSaleOrderReturn = (params)=>postAction("/saleOrderReturn/disable",params)
 
 
 // 采购批次
@@ -309,6 +310,10 @@ const queryChannelTreeList = (params)=>getAction("/saleOrderChannel/queryChannel
 const addSaleOrderChannel= (params)=>postAction("/saleOrderChannel/add",params);
 const editSaleOrderChannel= (params)=>putAction("/saleOrderChannel/edit",params);
 const getSaleOrderChannel = (params)=>getAction("/saleOrderChannel/list",params);
+
+const getWorkAddress = (params)=>getAction("/workAddress/getOneBySourceId", params);
+const saveWorkAddress = (params)=>postAction("/workAddress/save", params);
+const getInstallAddress = (params)=>getAction("/workAddress/getInstallAddress", params);
 
 
 export {
@@ -522,7 +527,11 @@ export {
   queryChannelTreeList,
   addSaleOrderChannel,
   editSaleOrderChannel,
-  getSaleOrderChannel
+  getSaleOrderChannel,
+  disableSaleOrderReturn,
+  getWorkAddress,
+  saveWorkAddress,
+  getInstallAddress
 }
 
 

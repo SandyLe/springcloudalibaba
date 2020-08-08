@@ -88,7 +88,7 @@
   import {filterObj} from '@/utils/util';
   import AddressModal from '../basic/AddressModal'
   import {JeecgListMixin} from '@/mixins/JeecgListMixin'
-  import {getAddressTypeList, saveOrderAddress, saveInvoiceAddress} from '@/api/api'
+  import {getAddressTypeList, saveOrderAddress, saveInvoiceAddress, saveWorkAddress} from '@/api/api'
 
   export default {
     name: "SaleAddressList",
@@ -238,6 +238,12 @@
           });
         } else if (this.entityOrder.billType == 35) {
           saveInvoiceAddress(data).then((res) => {
+            if (res.success) {
+              this.$emit("addressFlag", new Date().getTime());
+            }
+          });
+        } else if (this.entityOrder.billType == 16) {
+          saveWorkAddress(data).then((res) => {
             if (res.success) {
               this.$emit("addressFlag", new Date().getTime());
             }

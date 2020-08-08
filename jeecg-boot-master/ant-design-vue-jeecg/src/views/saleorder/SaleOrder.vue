@@ -67,7 +67,7 @@
           </a-tooltip>
         </span>
         <span slot="action" slot-scope="text, record">
-          <span v-if="record.billStatus < 1 && record.billStatus != -1">
+          <span v-if="record.billStatus == 0">
             <a @click="handleEditSaleOrder(record.id)">编辑</a>
             <a-divider type="vertical" />
           </span>
@@ -76,22 +76,22 @@
               更多 <a-icon type="down" />
             </a>
             <a-menu slot="overlay">
-              <a-menu-item  v-if="record.billStatus != -1">
+              <a-menu-item>
                 <a @click="popDetail(record)">详情打印</a>
               </a-menu-item>
-              <a-menu-item  v-if="record.billStatus != -1">
+              <a-menu-item  v-if="record.billStatus > -1">
                 <a @click="addWorkOrder(record)">安排工单</a>
               </a-menu-item>
-              <a-menu-item  v-if="record.billStatus != -1">
+              <a-menu-item v-if="record.billStatus < 3 && record.billStatus > -1">
                 <a @click="addStockOut(record)">通知出库</a>
               </a-menu-item>
-              <a-menu-item>
+              <a-menu-item v-if="record.billStatus > 0">
                 <a @click="addInvoice(record)">发票开具</a>
               </a-menu-item>
-              <a-menu-item>
+              <a-menu-item v-if="record.billStatus > 0">
                 <a @click="addSaleReturn(record)">退货</a>
               </a-menu-item>
-              <a-menu-item  v-if="record.billStatus < 4 && record.billStatus != -1">
+              <a-menu-item  v-if="record.billStatus < 4 && record.billStatus > -1">
                 <a-popconfirm title="确定作废吗?" @confirm="() => handleInvalid(record)">
                   <a>作废</a>
                 </a-popconfirm>
@@ -243,7 +243,7 @@
       },
       addWorkOrder (record) {
 
-        this.$router.replace({ path:'/workorder/workOrderDetail/',  query: {"sourceBillType": 0, "sourceId": record.id, "sourceCode": record.code} });
+        this.$router.replace({ path:'/workorder/workOrderDetail/',  query: {"sourceBillType": 0, "sourceId": record.id, "sourceCode": record.code, "editType":1} });
       },
       addStockOut (record) {
         let formData = {
@@ -258,6 +258,7 @@
             this.$message.warning(res.message);
           }
         }).finally(() => {
+          this.loadData();
         })
       },
       addInvoice (record) {

@@ -483,6 +483,7 @@
             httpAction(httpurl, formData, method)
               .then(res => {
                 if (res.success) {
+                  this.$route.query.id = res.result.id;
                   this.$emit('nextStep')
                 } else {
                   that.$message.warning(res.message)
@@ -611,6 +612,13 @@
           })
         } else {
           this.$message.warning('请输入原单编号！');
+        }
+      },
+      handleParentIdChange(value){
+        if(!value){
+          this.validateStatus="error"
+        }else{
+          this.validateStatus="success"
         }
       }
     },

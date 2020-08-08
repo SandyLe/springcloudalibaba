@@ -462,7 +462,6 @@
           if (!err) {
             that.confirmLoading = true;
             values.sourceId = this.$route.query.id;
-            values.billStatus = 13;//
             let formData = Object.assign(this.model, values);
             let obj;
             console.log(formData)
@@ -486,9 +485,9 @@
         })
       },
       finish () {
-        if (!this.unEditable) {
+        /*if (!this.unEditable) {
           this.handleOk();
-        }
+        }*/
         this.$emit('finish')
       },
       prevStep () {
@@ -538,6 +537,18 @@
           }
         });
         this.returnTypeSum = typesum;
+      },
+      '$route' (to, from) {
+        if (this.$route.query.id) {
+          getSaleOrderReturnOne({id:this.$route.query.id}).then((res) => {
+            if (res.success) {
+              this.saleOrderReturn = res.result;
+              this.model = Object.assign({}, this.saleOrderReturn);
+            }
+          })
+        }
+        this.loadData2();
+        this.unEditable = this.$route.query.unEditable;
       }
     }
   }

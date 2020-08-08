@@ -121,12 +121,20 @@
                     </a-card>
                 </a-col>
             </a-row>
+            <a-row>
+              <a-col :span="24">
+                <a-card class="card" title="工单地址" :bordered="true">
+                  工单地址：<span style="font-weight: bold">{{workAddress.recipients}} &nbsp;</span> <a>{{workAddress.tel}}</a> {{workAddress.fullAddress}}
+                  <a v-if = "editType == 1" @click="editAddressItem(workOrder)"><a-icon type="setting"/> 请选择收获地址</a>
+                </a-card>
+              </a-col>
+            </a-row>
         </a-form>
-
+      <sale-address-list ref="saleAddressList" v-on:addressFlag="addressOK"></sale-address-list>
 
     </a-card>
     <footer-tool-bar>
-        <a-button v-if="unEditable" type="primary" @click="handleOk">保存</a-button>
+        <a-button v-if="editType==1" type="primary" @click="handleOk">保存</a-button>
         <router-view :key="this.$route.path"></router-view>
         <a-button :style="{marginLeft:'20px'}" @click="backToList">返回</a-button>
     </footer-tool-bar>
@@ -145,6 +153,7 @@ import JDate from '@/components/jeecg/JDate'
 import moment from 'moment'
 import JDictSelectTag from '@/components/dict/JDictSelectTag'
 import FooterToolBar from '@/components/tools/FooterToolBar'
+import SaleAddressList from '../saleorder/SaleAddressList'
 import {
     getAllUser,
     searchMaterial,
@@ -152,21 +161,31 @@ import {
     getWorkOrderOne,
     workOrderDtlDelete,
     getBillTypeList,
-    getWorkTypeList
+    getSaleOrderOne,
+    getWorkTypeList,
+    getWorkAddress
 } from '@/api/api'
+import ARow from "ant-design-vue/es/grid/Row";
+import ACol from "ant-design-vue/es/grid/Col";
 export default {
     name: 'WorkOrderModal',
     components: {
-        JDate,
-        FooterToolBar,
-        JDictSelectTag
+      ACol,
+      ARow,
+      JDate,
+      FooterToolBar,
+      JDictSelectTag,
+      SaleAddressList
     },
     data() {
         return {
+            addressSourceId:null,
             userList:[],
             billTypeList:[],
             workTypeList:[],
             hasaddmain: false,
+            workOrder: {},
+            workAddress:{},
             dateFormat:"YYYY-MM-DD HH:mm:ss",
             form: this.$form.createForm(this),
             title: '操作',
@@ -211,8 +230,9 @@ export default {
               }
             },
             url: {
-                add: '/workOrder/add',
-                edit: '/workOrder/edit'
+              add: '/workOrder/add',
+              edit: '/workOrder/edit',
+              save: '/workOrder/save'
             },
             dictOptions: {
                 warehouse: [],
@@ -283,7 +303,7 @@ export default {
                 }
             ],
             tabledata: [],
-            unEditable: true
+            editType: 0
         }
     },
     created() {
@@ -345,21 +365,37 @@ export default {
             })
         },
         add() {
-            if(this.$route.params.id){
-                getWorkOrderOne({"id":this.$route.params.id}).then((res)=>{
-                    if (res.result) {
-                        if(res.result.detaillist){
-                            this.tabledata = res.result.detaillist;
-                            for(let i=0;i < this.tabledata.length ; i++){
-                                this.tabledata[i].key = i;
-                            }
-                        }
-                        this.edit(res.result);
-                    }
+          const that = this;
+          getWorkOrderOne({"id":this.$route.params.id}).then((res)=>{
+            if (res.result) {
+
+              this.workOrder = res.result;
+              if (this.$route.query.sourceId) {
+                this.workOrder.sourceId = this.$route.query.sourceId;
+              }
+              if (this.$route.query.sourceBillType) {
+                this.workOrder.sourceBillType = this.$route.query.sourceBillType;
+              }
+              if (this.$route.query.sourceCode) {
+                this.workOrder.sourceCode = this.$route.query.sourceCode;
+              }
+              if(res.result.detaillist){
+                this.tabledata = res.result.detaillist;
+                for(let i=0;i < this.tabledata.length ; i++){
+                  this.tabledata[i].key = i;
+                }
+              }
+
+              if (this.$route.params.id) {
+                getWorkAddress({"sourceId": this.$route.params.id}).then((res) => {
+                  if (res.success) {
+                    that.workAddress = res.result;
+                  }
                 });
+              }
+              this.edit(res.result);
             }
-            else
-                this.edit({})
+          });
         },
         edit(record) {
             this.form.resetFields()
@@ -400,15 +436,9 @@ export default {
                   }else{
                     values.finishedDate = values.finishedDate.format(this.dateFormat);
                   }
-                  let httpurl = ''
-                  let method = ''
-                  if (!this.model.id) {
-                      httpurl += this.url.add
-                      method = 'post'
-                  } else {
-                      httpurl += this.url.edit
-                      method = 'put'
-                  }
+                  let httpurl = this.url.save
+                  let method = 'post'
+
                   let formData = Object.assign(this.model, values)
                   formData.detaillist = that.tabledata;
                   console.log('表单提交数据', formData)
@@ -529,14 +559,69 @@ export default {
               }
             });
           }
-        }
+        },
+      editAddressItem (record) {
+        record.customerId = this.addressSourceId;
+        record.sourceAddId = this.workAddress.sourceAddId;
+        this.$refs.saleAddressList.edit(record);
+      },
+      addressOK (){
+          debugger
+        getWorkAddress({"sourceId": this.workOrder.id}).then((res) => {
+          if (res.success) {
+            this.workAddress = res.result;
+          }
+        });
+
+        const that = this
+        this.form.validateFields((err, values) => {
+          if (!err) {
+            let httpurl = this.url.save
+            let method = 'post'
+            let formData = Object.assign(this.model, values)
+            formData.billDate = values.billDate.format(this.dateFormat)
+            httpAction(httpurl, formData, method)
+              .then(res => {
+                console.log(res);
+                if (res.success) {
+                  that.$message.success(res.message)
+                  that.$emit('ok')
+                  that.model = res.result;
+                } else {
+                  that.$message.warning(res.message)
+                }
+              })
+              .finally(() => {/*
+              that.confirmLoading = false
+              that.close()
+              that.$parent.closeRouteViewTab(this.$route.path)
+              that.$router.push({ path:'/invoice/invoiceList' });*/
+              })
+          }
+        })
+
+      },
     },
     mounted() {
+      this.editType = this.$route.query.editType;
       if (this.$route.query.unEditable === false) {
         this.unEditable = this.$route.query.unEditable;
       }
       if (this.$route.query.sourceId) {
         this.form.setFieldsValue({sourceId:this.$route.query.sourceId, sourceBillType:this.$route.query.sourceBillType, sourceCode: this.$route.query.sourceCode, workTypeId: this.$route.query.workTypeId})
+        this.workOrder.sourceId = this.$route.query.sourceId;
+        this.workOrder.sourceBillType = this.$route.query.sourceBillType;
+        this.workOrder.sourceCode = this.$route.query.sourceCode;
+
+        if (this.$route.query.sourceBillType == 0) {
+          const that = this;
+          getSaleOrderOne({id:this.$route.query.sourceId}).then((res) => {
+            if (res.success) {
+              that.addressSourceId = res.result.customerId;
+              that.form.setFieldsValue({sourceId:that.$route.query.sourceId, sourceBillType:that.$route.query.sourceBillType, sourceCode: that.$route.query.sourceCode})
+            }
+          })
+        }
       }
     }
 }
