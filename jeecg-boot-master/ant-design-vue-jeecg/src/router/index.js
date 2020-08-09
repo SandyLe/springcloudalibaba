@@ -14,9 +14,22 @@ try {
 
 Vue.use(Router)
 
-export default new Router({
+const $router = new Router({
   mode: 'history',
   base: process.env.BASE_URL,
   scrollBehavior: () => ({ y: 0 }),
   routes: constantRouterMap
 })
+// 解决Loading chunk (\d)+ failed问题
+$router.onError((error) => {
+  console.error(error)
+  const pattern = /Loading chunk/g
+  // const pattern = /Loading chunk (\d)+ failed/g
+  const isChunkLoadFailed = error.message.match(pattern)
+  const targetPath = $router.history.pending.fullPath
+  if (isChunkLoadFailed && error.type === 'missing') {
+    // const targetPath = $router.history.pending.fullPath
+    $router.push(targetPath)
+  }
+})
+export default $router

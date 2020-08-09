@@ -30,7 +30,7 @@
     </div>
 
     <!-- 操作按钮区域 -->
-    <div class="table-operator" style="border-top: 5px">
+    <!--<div class="table-operator" style="border-top: 5px">
       <a-button @click="handleEdit" type="primary" icon="plus">添加发票</a-button>
 
       <a-dropdown v-if="selectedRowKeys.length > 0">
@@ -41,7 +41,7 @@
           批量操作 <a-icon type="down" />
         </a-button>
       </a-dropdown>
-    </div>
+    </div>-->
 
     <!-- table区域-begin -->
     <div>

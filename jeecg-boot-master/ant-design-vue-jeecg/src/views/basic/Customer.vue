@@ -206,7 +206,7 @@
     },
     methods: {
       goDetail(id) {
-        this.$router.push({ name: "customer-customerDetail", query: {"id": id}})
+        this.$router.replace({ path: "customer/customerDetail", query: {"id": id}})
       }
     }
   }
