@@ -220,14 +220,14 @@
         })
       },
       goDetail (id) {
-        this.$router.push({ name: "saleorder-saleOrderEdit", query: {"id": id, "unEditable": true}})
+        this.$router.push({ name: "saleorder-saleOrderEdit", query: {"id": id, "editType": 0}})
       },
       popDetail: function(record) {
         this.$refs.saleOrderDetail.title = '订单详情'
         this.$refs.saleOrderDetail.view(record)
       },
       handleEditSaleOrder (id) {
-        this.$router.push({ name: "saleorder-saleOrderEdit", query: {"id": id, "unEditable": false}})
+        this.$router.push({ name: "saleorder-saleOrderEdit", query: {"id": id, "editType": 1}})
       },
       handleInvalid (record) {
         disableSaleOrder(record).then((res)=>{

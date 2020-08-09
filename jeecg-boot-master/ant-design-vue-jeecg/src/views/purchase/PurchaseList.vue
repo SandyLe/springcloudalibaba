@@ -272,12 +272,12 @@ export default {
         },
         diyhandleEdit(e){
             if(e.target.dataset.id)
-                this.$router.replace({ path:'/purchase/PurchaseModal/' + e.target.dataset.id });
+                this.$router.replace({ path:'/purchase/PurchaseModal/' + e.target.dataset.id, query: {"editType": 1}});
             else
-                this.$router.replace({ path:'/purchase/PurchaseModal/' });
+                this.$router.replace({ path:'/purchase/PurchaseModal/', query: {"editType": 1}  });
         },
         goDetail(id) {
-          this.$router.replace({ path:'/purchase/PurchaseModal/' + id, query: {"unEditable": false} });
+          this.$router.replace({ path:'/purchase/PurchaseModal/' + id, query: {"editType": 0} });
         },
         handleinventoryin(data){
             var that = this;

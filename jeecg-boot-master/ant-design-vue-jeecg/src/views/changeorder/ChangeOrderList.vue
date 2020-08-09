@@ -200,12 +200,12 @@ export default {
         },
         diyhandleEdit(e){
             if(e.target.dataset.id)
-                this.$router.replace({ path:'/changeorder/ChangeOrderModal/' + e.target.dataset.id });
+                this.$router.replace({ path:'/changeorder/ChangeOrderModal/' + e.target.dataset.id , query: {"editType": 1}});
             else
-                this.$router.replace({ path:'/changeorder/ChangeOrderModal/' });
+                this.$router.replace({ path:'/changeorder/ChangeOrderModal/' , query: {"editType": 1}});
         },
         goDetail(id) {
-          this.$router.replace({ path:'/changeOrder/ChangeOrderModal/' + id, query: {"unEditable": false} });
+          this.$router.replace({ path:'/changeOrder/ChangeOrderModal/' + id, query: {"editType": 0} });
         }
     }
 }

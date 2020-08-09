@@ -82,7 +82,7 @@
       <div>
         <a-card class="card" title="收款" :bordered="true">
           <!-- 操作按钮区域 -->
-          <div class="table-operator" style="border-top: 5px" v-if = "!unEditable">
+          <div class="table-operator" style="border-top: 5px" v-if = "editType==1">
             <a-button @click="handleAddRefundDtl" type="primary" icon="plus">添加退款明细</a-button>
             <a-dropdown v-if="selectedRowKeys.length > 0">
               <a-menu slot="overlay">
@@ -109,7 +109,7 @@
             :loading="loading2"
             :rowSelection="{selectedRowKeys: selectedRowKeys2, onChange: onSelectChange2}"
             @change="handleTableChange2">
-           <span slot="action" slot-scope="text, record" v-if = "!unEditable">
+           <span slot="action" slot-scope="text, record" v-if = "editType==1">
             <a @click="handleEdit2(record)">编辑</a>
             <a-divider type="vertical"/>
             <a-dropdown>
@@ -132,7 +132,7 @@
         <!--<a-button :loading="loading" @click="finish">提交</a-button>-->
         <a-button style="margin-left: 8px" @click="prevStep">上一步</a-button>
         <a-button style="margin-left: 8px" type="primary" @click="finish">完成</a-button>
-        <a-button v-if="returnTypeSum > 0" style="margin-left: 8px" type="primary" @click="finishStockIn">完成并通知入库</a-button>
+        <a-button v-if="returnTypeSum > 0 && editType ==1" style="margin-left: 8px" type="primary" @click="finishStockIn">完成并通知入库</a-button>
       </a-form-item>
     </a-form>
 
@@ -299,8 +299,8 @@
           delete2: '/refundOrderDtl/delete',
           deleteBatch2: '/refundOrderDtl/deleteBatch',
         },
-        unEditable: true,
-        returnTypeSum: 0
+        returnTypeSum: 0,
+        editType: 0
       }
     },
     methods: {
@@ -511,6 +511,7 @@
       },
     },
     mounted() {
+      this.editType = this.$route.query.editType;
       if (this.$route.query.id) {
         getSaleOrderReturnOne({id:this.$route.query.id}).then((res) => {
           if (res.success) {
@@ -524,7 +525,6 @@
         })
       }
       this.loadData2();
-      this.unEditable = this.$route.query.unEditable;
     },
     watch: {
       // 如果 `data` 发生改变，这个函数就会运行
@@ -548,7 +548,7 @@
           })
         }
         this.loadData2();
-        this.unEditable = this.$route.query.unEditable;
+        this.editType = this.$route.query.editType;
       }
     }
   }

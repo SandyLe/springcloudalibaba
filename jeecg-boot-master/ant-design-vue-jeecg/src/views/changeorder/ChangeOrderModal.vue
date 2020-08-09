@@ -76,7 +76,7 @@
                                     <span v-else>
                                         <!-- <a @click="toggle(record.key)">编辑</a>
                                         <a-divider type="vertical" /> -->
-                                        <a-popconfirm title="是否要删除此行？" :data-id="record.id" @confirm="remove(record.key,record.id)">
+                                        <a-popconfirm v-if="editType==1" title="是否要删除此行？" :data-id="record.id" @confirm="remove(record.key,record.id)">
                                             <a>删除</a>
                                         </a-popconfirm>
                                         <div style="display:none;">
@@ -86,7 +86,7 @@
                                     </span>
                                 </template>
                             </a-table>
-                            <a-button style="width: 100%; margin-top: 16px; margin-bottom: 8px" type="dashed" icon="plus" @click="newMember">新增产品</a-button>
+                            <a-button v-if="editType==1" style="width: 100%; margin-top: 16px; margin-bottom: 8px" type="dashed" icon="plus" @click="newMember">新增产品</a-button>
                         </form>
                     </a-card>
                 </a-col>
@@ -101,7 +101,7 @@
 
     </a-card>
     <footer-tool-bar>
-        <a-button v-if="unEditable" type="primary" @click="handleOk">保存</a-button>
+        <a-button v-if="editType==1" type="primary" @click="handleOk">保存</a-button>
         <router-view :key="this.$route.path"></router-view>
         <a-button :style="{marginLeft:'20px'}" @click="backToList">返回</a-button>
     </footer-tool-bar>
@@ -276,7 +276,7 @@ export default {
                 }
             ],
             tabledata: [],
-            unEditable: true
+            editType: 0
         }
     },
     created() {
@@ -473,9 +473,7 @@ export default {
         }
     },
     mounted() {
-      if (this.$route.query.unEditable === false) {
-        this.unEditable = this.$route.query.unEditable;
-      }
+      this.editType = this.$route.query.editType;
       searchCustomer({}).then((res) => {
         if (res.success) {
           this.customerList = res.result;

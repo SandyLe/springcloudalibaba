@@ -55,7 +55,7 @@
             </a-menu>
           </a-dropdown>
         </span>
-       
+
       </a-table>
 
     </div>
@@ -126,9 +126,9 @@
         columns: columns,
         loading: false,
         url: {
-          list: '/saleOrder/getList',
-          delete: '/saleOrder/delete',
-          deleteBatch: '/saleOrder/deleteBatch'
+          list: '/saleOrderChannel/getList',
+          delete: '/saleOrderChannel/delete',
+          deleteBatch: '/saleOrderChannel/deleteBatch'
         }
       }
     },

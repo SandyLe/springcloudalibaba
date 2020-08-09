@@ -174,7 +174,7 @@
     },
     methods: {
       goDetail (id) {
-        this.$router.push({ name: "saleorder-saleOrderReturnEdit", query: {"id": id, "editType":1}})
+        this.$router.push({ name: "saleorder-saleOrderReturnEdit", query: {"id": id, "editType":0}})
       },
       handleEditSaleOrder (id) {
         this.$router.push({ name: "saleorder-saleOrderReturnEdit", query: {"id": id, "editType":1}})

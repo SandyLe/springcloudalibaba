@@ -10,7 +10,7 @@
             <a-select v-decorator="['customerId', validatorRules.customerId]" placeholder="请选择客户"  showSearch
                       optionFilterProp="children"
                       notFoundContent="无法找到，点右侧新增按钮增加客户" @keyup.enter.native="searchCustomer"
-                      :disabled="unEditable" style="width: 90%" >
+                      :disabled="editType==0" style="width: 90%" >
               <a-select-option value="">请选择</a-select-option>
               <a-select-option v-for="(item, key) in customerList" :key="key" :value="item.id">
                 {{ item.info }}
@@ -114,7 +114,7 @@
       <a-row>
         <a-col>
           <!-- 操作按钮区域 -->
-          <div class="table-operator" style="border-top: 5px" v-if = "!unEditable">
+          <div class="table-operator" style="border-top: 5px" v-if = "editType==1">
             <a-button @click="handleAddMtl" type="primary" icon="plus">添加产品</a-button>
             <a-dropdown v-if="selectedRowKeys.length > 0">
               <a-menu slot="overlay">
@@ -154,7 +154,7 @@
               <span slot="nameAction" slot-scope="text, record">
                 <a @click="goDetail(record.mtlId)">{{record.mtl}}</a>
               </span>
-              <span slot="action" slot-scope="text, record" v-if = "!unEditable">
+              <span slot="action" slot-scope="text, record" v-if = "editType==1">
                 <a @click="handleEditMtl(record)">编辑</a>
                 <a-divider type="vertical"/>
 
@@ -318,7 +318,7 @@
           delete: "/saleOrderMtl/delete",
           deleteBatch: "/saleOrderMtl/deleteBatch"
         },
-        unEditable: true
+        editType: 0
       }
     },
     methods: {
@@ -475,10 +475,10 @@
       nextStep () {
         this.mainId = this.$route.query.id;
         let validFlag = true;
-        if (!this.unEditable) {
+        if (this.editType==1) {
           validFlag =  this.saveSaleOrder(this.mainId);
         }
-        if (!this.unEditable && validFlag) {
+        if (this.editType==1 && validFlag) {
           createReceiptOrder({"sourceId":this.mainId, "sourceBillType":0}).then((res) => {
             if (!res.success) {
               this.$message.error(res.message)
@@ -496,6 +496,7 @@
       }
     },
     mounted() {
+      this.editType = this.$route.query.editType;
       searchCustomer({}).then((res) => {
         if (res.success) {
           this.customerList = res.result;

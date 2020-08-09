@@ -37,7 +37,7 @@
                   :wrapperCol="wrapperCol"
                   label="默认收货方式"
                   label-width="4">
-                  <j-dict-select-tag v-decorator="['cdiDefaultType', {}]" placeholder="请选择默认发货方式" :type="'select'" :triggerChange="true" dictCode="delivery_type"/>
+                  <j-dict-select-tag v-decorator="['defaultType', {}]" placeholder="请选择默认发货方式" :type="'select'" :triggerChange="true" dictCode="delivery_type"/>
                 </a-form-item>
               </a-col>
 
@@ -54,7 +54,7 @@
                     :wrapperCol="wrapperCol"
                     label="物流公司"
                     label-width="4">
-                    <a-select v-decorator="['cdiLogisticsId', {}]" placeholder="请选择物流公司">
+                    <a-select v-decorator="['logisticsId', {}]" placeholder="请选择物流公司">
                       <a-select-option value="">请选择</a-select-option>
                       <a-select-option v-for="(item, key) in cdiLogisticsCompanyList" :key="key" :value="item.id">
                     <span style="display: inline-block;width: 100%" :title=" item.name || item.code ">
@@ -72,7 +72,7 @@
                 :wrapperCol="wrapperCol"
                 label="收件人"
                 label-width="4">
-                <a-input placeholder="请输入收件人" v-decorator="[ 'cdiRecipients', validatorRules.cdiRecipients]" />
+                <a-input placeholder="请输入收件人" v-decorator="[ 'recipients', validatorRules.recipients]" />
               </a-form-item>
             </a-col>
             <a-col :span="12">
@@ -81,7 +81,7 @@
                 :wrapperCol="wrapperCol"
                 label="联系电话"
                 label-width="4">
-                <a-input placeholder="请输入联系电话" v-decorator="[ 'cdiRecipientsPhone', validatorRules.cdiRecipientsPhone]" />
+                <a-input placeholder="请输入联系电话" v-decorator="[ 'recipientsPhone', validatorRules.recipientsPhone]" />
               </a-form-item>
             </a-col>
           </a-row>
@@ -92,7 +92,7 @@
                 :wrapperCol="wrapperCol"
                 label="物流单号"
                 label-width="4">
-                <a-input placeholder="请输入物流单号" v-decorator="[ 'cdiLogisticsNo', validatorRules.cdiLogisticsNo]" />
+                <a-input placeholder="请输入物流单号" v-decorator="[ 'logisticsNo', validatorRules.logisticsNo]" />
               </a-form-item>
             </a-col>
             <a-col :span="12">
@@ -151,7 +151,7 @@
                 :labelCol="hlabelCol"
                 :wrapperCol="hwrapperCol"
                 label="收货地址">
-                <a-select v-decorator="['cdiProvince', {}]" placeholder="省" style="width: 15%" @change="areaChangeCdi" >
+                <a-select v-decorator="['province', {}]" placeholder="省" style="width: 15%" @change="areaChangeCdi" >
                   <a-select-option value="">请选择</a-select-option>
                   <a-select-option v-for="(item, key) in provinceList" :key="key" :value="item.id">
                     <span style="display: inline-block;width: 100%" :title=" item.name || item.code ">
@@ -159,7 +159,7 @@
                     </span>
                   </a-select-option>
                 </a-select>
-                <a-select v-decorator="['cdiCity', {}]" placeholder="市" style="width: 15%" @change="areaChangeCdi" >
+                <a-select v-decorator="['city', {}]" placeholder="市" style="width: 15%" @change="areaChangeCdi" >
                   <a-select-option value="">请选择</a-select-option>
                   <a-select-option v-for="(item, key) in cityList" :key="key" :value="item.id">
                     <span style="display: inline-block;width: 100%" :title=" item.name || item.code ">
@@ -167,7 +167,7 @@
                     </span>
                   </a-select-option>
                 </a-select>
-                <a-select v-decorator="['cdiDistrict', {}]" placeholder="区、县" style="width: 15%">
+                <a-select v-decorator="['district', {}]" placeholder="区、县" style="width: 15%">
                   <a-select-option value="">请选择</a-select-option>
                   <a-select-option v-for="(item, key) in districtList" :key="key" :value="item.id">
                     <span style="display: inline-block;width: 100%" :title=" item.name || item.code ">
@@ -175,14 +175,14 @@
                     </span>
                   </a-select-option>
                 </a-select>
-                <a-input placeholder="请输入详细地址" v-decorator="[ 'cdiAddress', validatorRules.cdiAddress]" style="width: 55%"  />
+                <a-input placeholder="请输入详细地址" v-decorator="[ 'address', validatorRules.address]" style="width: 55%"  />
               </a-form-item>
             </a-col>
           </a-row>
           <a-row>
             <a-col :span="24">
               <a-form-item label="发货地址" :labelCol="hlabelCol" :wrapperCol="hwrapperCol">
-                <a-input v-decorator="[ 'cdiDeliveryAddress', {}]" placeholder="请输入发货地址"></a-input>
+                <a-input v-decorator="[ 'deliveryAddress', {}]" placeholder="请输入发货地址"></a-input>
               </a-form-item>
             </a-col>
           </a-row>
@@ -229,7 +229,7 @@
                                     <span v-else>
                                         <!-- <a @click="toggle(record.key)">编辑</a>
                                         <a-divider type="vertical" /> -->
-                                        <a-popconfirm title="是否要删除此行？" :data-id="record.id" @confirm="remove(record.key,record.id)">
+                                        <a-popconfirm v-if="editType==1" title="是否要删除此行？" :data-id="record.id" @confirm="remove(record.key,record.id)">
                                             <a>删除</a>
                                         </a-popconfirm>
                                         <div style="display:none;">
@@ -239,7 +239,7 @@
                                     </span>
                                 </template>
                             </a-table>
-                            <a-button style="width: 100%; margin-top: 16px; margin-bottom: 8px" type="dashed" icon="plus" @click="newMember">新增产品</a-button>
+                            <a-button v-if="editType==1" style="width: 100%; margin-top: 16px; margin-bottom: 8px" type="dashed" icon="plus" @click="newMember">新增产品</a-button>
                         </form>
                     </a-card>
                 </a-col>
@@ -254,7 +254,7 @@
 
     </a-card>
     <footer-tool-bar>
-        <a-button v-if="unEditable" type="primary" @click="handleOk">保存</a-button>
+        <a-button v-if="editType==1" type="primary" @click="handleOk">保存</a-button>
         <router-view :key="this.$route.path"></router-view>
         <a-button :style="{marginLeft:'20px'}" @click="backToList">返回</a-button>
     </footer-tool-bar>
@@ -336,19 +336,19 @@ export default {
                         message: '请选择单据类型!'
                     }]
                 },
-              cdiRecipients: {
+              recipients: {
                 rules: [{
                   required: true,
                   message: '请输入收件人!'
                 }]
               },
-              cdiRecipientsPhone: {
+              recipientsPhone: {
                 rules: [{
                   required: true,
                   message: '请输入收件人电话!'
                 }]
               },
-              cdiAddress: {
+              address: {
                 rules: [{
                   required: true,
                   message: '请输入收件人地址!'
@@ -411,7 +411,7 @@ export default {
                 }
             ],
             tabledata: [],
-            unEditable: true
+            editType: 0
         }
     },
     created() {
@@ -445,8 +445,8 @@ export default {
             this.form.resetFields()
             this.model = Object.assign({}, record)
             this.visible = true
-            if (record.cdiProvince){
-              getAreaList({parentId:record.cdiProvince  }).then((res) => {
+            if (record.province){
+              getAreaList({parentId:record.province  }).then((res) => {
                 if (res.success) {
                   if(res.result && res.result.length>0){
                     if(res.result[0].levelType==2){
@@ -456,8 +456,8 @@ export default {
                 }
               })
             }
-            if (record.cdiCity){
-              getAreaList({parentId:record.cdiCity}).then((res) => {
+            if (record.city){
+              getAreaList({parentId:record.city}).then((res) => {
                 if (res.success) {
                   if(res.result && res.result.length>0){
                     if(res.result[0].levelType==3){
@@ -469,9 +469,9 @@ export default {
             }
             this.$nextTick(() => {
                 this.form.setFieldsValue(
-                    pick(this.model, 'id', 'code', 'sourceCode', 'content', 'sourceBillType', 'cdiDefaultType', 'sourceId', 'cdiLogisticsId',
-                    'cdiRecipients', 'cdiRecipientsPhone', 'cdiLogisticsNo', 'postCode', 'number', 'totalWeight', 'insurance', 'totalCharge',
-                    'cdiProvince', 'cdiCity', 'cdiDistrict', 'cdiAddress', 'cdiDeliveryAddress', 'content')
+                    pick(this.model, 'id', 'code', 'sourceCode', 'content', 'sourceId', 'sourceBillType', 'billType', 'billStatus',
+                    'deliveryTypeId', 'deliveryAddress', 'logisticsId', 'logisticsNo', 'recipientsPhone', 'recipients', 'province', 'city',
+                    'district', 'address', 'postCode', 'number', 'totalWeight', 'insurance', 'totalCharge', 'defaultType')
                 )
                 this.form.setFieldsValue({billDate: this.model.billDate ? moment(this.model.billDate) : null})
             })
@@ -527,14 +527,6 @@ export default {
         },
         handleCancel() {
             this.close()
-        },
-        popupCallback(row) {
-          this.form.setFieldsValue(
-            pick(this.model, 'id', 'code', 'sourceCode', 'content', 'sourceBillType', 'cdiDefaultType', 'sourceId', 'cdiLogisticsId',
-              'cdiRecipients', 'cdiRecipientsPhone', 'cdiLogisticsNo', 'postCode', 'number', 'totalWeight', 'insurance', 'totalCharge',
-              'cdiProvince', 'cdiCity', 'cdiDistrict', 'cdiAddress', 'cdiDeliveryAddress', 'content')
-          )
-          this.form.setFieldsValue({billDate: this.model.billDate ? moment(this.model.billDate) : null})
         },
         newMember() {
             this.tabledata.push({
@@ -612,16 +604,16 @@ export default {
               if(res.result && res.result.length>0){
                 if(res.result[0].levelType==2){
                   this.cityList = res.result;
-                  this.model.cdiCity = '';
-                  this.model.cdiDistrict = '';
+                  this.model.city = '';
+                  this.model.district = '';
                   this.$nextTick(() => {
-                    this.form.setFieldsValue(pick(this.model,'cdiCity', 'cdiDistrict'))
+                    this.form.setFieldsValue(pick(this.model,'city', 'district'))
                   });
                 }else if(res.result[0].levelType==3){
                   this.districtList = res.result;
-                  this.model.cdiDistrict = '';
+                  this.model.district = '';
                   this.$nextTick(() => {
-                    this.form.setFieldsValue(pick(this.model, 'cdiDistrict'))
+                    this.form.setFieldsValue(pick(this.model, 'district'))
                   });
                 }
               }
@@ -630,9 +622,7 @@ export default {
         }
     },
     mounted() {
-      if (this.$route.query.unEditable === false) {
-        this.unEditable = this.$route.query.unEditable;
-      }
+      this.editType = this.$route.query.editType;
       getBillTypeList().then((res) => {
         if (res.success) {
           this.billTypeList = res.result;
@@ -656,9 +646,7 @@ export default {
             })
           }
           this.columns[0].list = res.result;
-          this.columns[3].list = res.result;
           this.$set(this.dictOptions, 0, this.columns[0])
-          this.$set(this.dictOptions, 3, this.columns[3])
           // this.$set(this.dictOptions, 'materiallist', res.result)
         }
       });
@@ -672,9 +660,7 @@ export default {
             })
           }
           this.columns[2].list = res.result;
-          this.columns[5].list = res.result;
           this.$set(this.dictOptions, 2, this.columns[2])
-          this.$set(this.dictOptions, 5, this.columns[5])
           // this.$set(this.dictOptions, 'materialunitlist', res.result)
         }
       });

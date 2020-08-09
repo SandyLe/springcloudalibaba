@@ -200,10 +200,10 @@ export default {
     methods: {
       diyhandleEdit(e){
         if(e.id){
-          this.$router.replace({ path:'/purchase/PurchasereturnModal/' + e.id });
+          this.$router.replace({ path:'/purchase/PurchasereturnModal/' + e.id , query: {"editType":1}});
         }
         else{
-          this.$router.replace({ path:'/purchase/PurchasereturnModal/' });
+          this.$router.replace({ path:'/purchase/PurchasereturnModal/' , query: {"editType":1}});
         }
       }
     }

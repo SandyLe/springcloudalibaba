@@ -41,7 +41,7 @@
       <div style="margin-top: 15px">
         <a-card class="card" title="收货信息" :bordered="true">
         收货地址：<span style="font-weight: bold">{{saleOrderAddress.recipients}} &nbsp;</span> <a>{{saleOrderAddress.tel}}</a> {{saleOrderAddress.fullAddress}}
-          <a v-if = "!unEditable" @click="editAddressItem(saleOrder)"><a-icon type="setting"/> 请选择收获地址</a>
+          <a v-if = "editType==1" @click="editAddressItem(saleOrder)"><a-icon type="setting"/> 请选择收获地址</a>
         </a-card>
       </div>
       <div style="margin-top: 15px">
@@ -79,7 +79,7 @@
       <div>
         <a-card class="card" title="其他费用" :bordered="true">
           <!-- 操作按钮区域 -->
-          <div class="table-operator" style="border-top: 5px" v-if = "!unEditable">
+          <div class="table-operator" style="border-top: 5px" v-if = "editType==1">
             <a-button @click="handleAddExpense" type="primary" icon="plus">添加费用</a-button>
           </div>
           <a-table
@@ -92,7 +92,7 @@
             :pagination="ipagination2"
             :loading="loading2"
             @change="handleTableChange2">
-           <span slot="action" slot-scope="text, record" v-if = "!unEditable">
+           <span slot="action" slot-scope="text, record" v-if = "editType==1">
             <a @click="handleEdit2(record)">编辑</a>
             <a-divider type="vertical"/>
             <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete2(record.id)">
@@ -105,7 +105,7 @@
       <div>
         <a-card class="card" title="成本" :bordered="true">
           <!-- 操作按钮区域 -->
-          <div class="table-operator" style="border-top: 5px" v-if = "!unEditable">
+          <div class="table-operator" style="border-top: 5px" v-if = "editType==1">
             <a-button @click="handleAddCost" type="primary" icon="plus">添加成本</a-button>
           </div>
           <a-table
@@ -118,7 +118,7 @@
             :pagination="ipagination3"
             :loading="loading3"
             @change="handleTableChange3">
-           <span slot="action" slot-scope="text, record" v-if = "!unEditable">
+           <span slot="action" slot-scope="text, record" v-if = "editType==1">
             <a @click="handleEdit3(record)">编辑</a>
             <a-divider type="vertical"/>
             <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete3(record.id)">
@@ -130,7 +130,7 @@
       </div>
       <div>
         <a-card class="card" title="收款" :bordered="true">
-          <div class="table-operator" style="border-top: 5px" v-if = "!unEditable">
+          <div class="table-operator" style="border-top: 5px" v-if = "editType==1">
             <a-button @click="handleAddReceiptDtl" type="primary" icon="plus">添加收款明细</a-button>
           </div>
           <a-table
@@ -143,7 +143,7 @@
             :pagination="ipagination4"
             :loading="loading4"
             @change="handleTableChange4">
-           <span slot="action" slot-scope="text, record" v-if = "!unEditable">
+           <span slot="action" slot-scope="text, record" v-if = "editType==1">
               <a @click="handleEdit4(record)">编辑</a>
               <a-divider type="vertical"/>
               <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete4(record.id)">
@@ -418,8 +418,8 @@
           delete4: '/receiptOrderDtl/delete',
           deleteBatch4: '/receiptOrderDtl/deleteBatch',
         },
-        unEditable: true,
-        saleOrderAddress: {}
+        saleOrderAddress: {},
+        editType: 0
       }
     },
     methods: {
@@ -832,7 +832,7 @@
       this.loadData2();
       this.loadData3();
       this.loadData4();
-      this.unEditable = this.$route.query.unEditable;
+      this.editType = this.$route.query.editType;
     },
     watch: {
       '$route' (to, from) {

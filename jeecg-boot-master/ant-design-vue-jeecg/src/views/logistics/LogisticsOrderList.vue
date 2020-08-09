@@ -215,12 +215,12 @@ export default {
     methods: {
         diyhandleEdit(e){
             if(e.target.dataset.id)
-                this.$router.replace({ path:'/logistics/LogisticsOrderModal/' + e.target.dataset.id });
+                this.$router.replace({ path:'/logistics/LogisticsOrderModal/' + e.target.dataset.id, query: {"editType": 1} });
             else
-                this.$router.replace({ path:'/logistics/LogisticsOrderModal/' });
+                this.$router.replace({ path:'/logistics/LogisticsOrderModal/', query: {"editType": 1}  });
         },
         goDetail(id) {
-          this.$router.replace({ path:'/logisticsOrder/LogisticsOrderModal/' + id, query: {"unEditable": false} });
+          this.$router.replace({ path:'/logistics/LogisticsOrderModal/' + id, query: {"editType": 0} });
         }
     }
 }
