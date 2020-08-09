@@ -329,3 +329,6 @@ ALTER TABLE `sl_inventory_out`
 
 ALTER TABLE `sl_inventory_out_mtl`
 	CHANGE COLUMN `source_bill_id` `source_bill_id` varchar (50) NOT NULL
+
+ALTER TABLE `sl_inventory_log`
+	CHANGE COLUMN `source_bill_id` `source_bill_id` varchar (50) DEFAULT NULL
