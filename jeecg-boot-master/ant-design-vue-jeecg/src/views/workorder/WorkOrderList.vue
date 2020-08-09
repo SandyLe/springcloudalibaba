@@ -274,14 +274,14 @@ export default {
             if(e.target.dataset.id)
                 this.$router.replace({ path:'/workorder/workOrderDetail/' + e.target.dataset.id, query: {"editType": 1}});
             else
-                this.$router.replace({ path:'/workorder/workOrderDetail/' });
+                this.$router.replace({ path:'/workorder/workOrderDetail/', query: {"editType": 1} });
         },
         goDetail(id) {
-          this.$router.replace({ path:'/workorder/workOrderDetail/' + id, query: {"unEditable": false} });
+          this.$router.replace({ path:'/workorder/workOrderDetail/' + id, query: {"editType": 0} });
         },
         goSourceDetail(billType, id) {
           if (billType == 0 ){
-            this.$router.push({ name: "saleorder-saleOrderEdit", query: {"id": id, "unEditable": true}})
+            this.$router.push({ name: "saleorder-saleOrderEdit", query: {"id": id, "editType": 0}})
           }
         },
         handleinventoryin(data){
