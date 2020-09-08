@@ -48,8 +48,8 @@ public class ShiroConfig {
     private String redisPassword;
 
 	/**
-	 * Filter Chain定义说明 
-	 * 
+	 * Filter Chain定义说明
+	 *
 	 * 1、一个URL可以配置多个Filter，使用逗号分隔
 	 * 2、当设置多个过滤器时，全部验证通过，才视为通过
 	 * 3、部分过滤器可指定参数，如perms，roles
@@ -69,6 +69,7 @@ public class ShiroConfig {
 		//cas验证登录
 		filterChainDefinitionMap.put("/cas/client/validateLogin", "anon");
 		// 配置不会被拦截的链接 顺序判断
+		filterChainDefinitionMap.put("/slTrade/getList", "anon");
 		filterChainDefinitionMap.put("/sys/getCheckCode", "anon"); //登录验证码接口排除
 		filterChainDefinitionMap.put("/sys/autoLogin", "anon"); //自动登录接口排除
 		filterChainDefinitionMap.put("/sys/login", "anon"); //登录接口排除
@@ -76,7 +77,7 @@ public class ShiroConfig {
 		filterChainDefinitionMap.put("/sys/logout", "anon"); //登出接口排除
 		filterChainDefinitionMap.put("/sys/getEncryptedString", "anon"); //获取加密串
 		filterChainDefinitionMap.put("/sys/sms", "anon");//短信验证码
-		filterChainDefinitionMap.put("/sys/phoneLogin", "anon");//手机登录		
+		filterChainDefinitionMap.put("/sys/phoneLogin", "anon");//手机登录
 		filterChainDefinitionMap.put("/sys/user/checkOnlyUser", "anon");//校验用户是否存在
 		filterChainDefinitionMap.put("/sys/user/register", "anon");//用户注册
 		filterChainDefinitionMap.put("/sys/user/querySysUser", "anon");//根据手机号获取用户信息
@@ -110,7 +111,7 @@ public class ShiroConfig {
 		filterChainDefinitionMap.put("/swagger**/**", "anon");
 		filterChainDefinitionMap.put("/webjars/**", "anon");
 		filterChainDefinitionMap.put("/v2/**", "anon");
-		
+
 		//性能监控
 		filterChainDefinitionMap.put("/actuator/metrics/**", "anon");
 		filterChainDefinitionMap.put("/actuator/httptrace/**", "anon");
@@ -119,7 +120,7 @@ public class ShiroConfig {
 		//测试示例
 		filterChainDefinitionMap.put("/test/jeecgDemo/html", "anon"); //模板页面
 		filterChainDefinitionMap.put("/test/jeecgDemo/redis/**", "anon"); //redis测试
-		
+
 		//websocket排除
 		filterChainDefinitionMap.put("/websocket/**", "anon");
 

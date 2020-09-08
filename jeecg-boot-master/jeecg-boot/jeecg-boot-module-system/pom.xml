@@ -35,6 +35,13 @@
 			<groupId>org.jeecgframework.boot</groupId>
 			<artifactId>jeecg-boot-base-common</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.jeecgframework.taobao</groupId>
+			<artifactId>org-jeecgframework-taobao</artifactId>
+			<version>2.1.1</version>
+			<scope>system</scope>
+			<systemPath>/Users/sandylee/Documents/workspace/jeecg-boot-master/jeecg-boot/jar/taobao-sdk-java-auto.jar</systemPath>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -42,6 +49,10 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<executable>true</executable>
+					<includeSystemScope>true</includeSystemScope>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>

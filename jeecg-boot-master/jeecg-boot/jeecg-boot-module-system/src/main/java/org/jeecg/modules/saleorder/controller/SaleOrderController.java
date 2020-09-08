@@ -4,6 +4,11 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.taobao.api.DefaultTaobaoClient;
+import com.taobao.api.TaobaoClient;
+import com.taobao.api.internal.tmc.TmcClient;
+import com.taobao.api.request.TradesSoldGetRequest;
+import com.taobao.api.response.TradesSoldGetResponse;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -279,4 +284,37 @@ public class SaleOrderController {
 
         return Result.ok("修改成功！");
     }
+
+    /**
+     * 手动更新天猫订单
+     *
+     * @param id
+     * @return
+     */
+    @GetMapping(value = "/getTaobaoOrder")
+    @ApiOperation(value = "通过ID查询销售订单", notes = "通过ID查询销售订单")
+    public Result<?> getTaobaoOrder() throws Exception {
+
+        TaobaoClient client = new DefaultTaobaoClient("http://gw.api.taobao.com/router/rest", "31020098", "b05879570f97a1fbf84d35293c12500b");
+        TradesSoldGetRequest req = new TradesSoldGetRequest();
+        req.setFields("tid,type,status,payment,orders,rx_audit_status");
+        req.setStartCreated(com.taobao.api.internal.util.StringUtils.parseDateTime("2020-08-12 00:00:00"));
+        req.setEndCreated(com.taobao.api.internal.util.StringUtils.parseDateTime("2020-08-13 23:59:59"));
+        /*req.setStatus("ALL_WAIT_PAY");
+        req.setBuyerNick("zhangsan");
+        req.setType("game_equipment");
+        req.setExtType("service");
+        req.setRateStatus("RATE_UNBUYER");
+        req.setTag("time_card");*/
+        req.setPageNo(1L);
+        req.setPageSize(40L);
+        req.setUseHasNext(true);
+//        req.setBuyerOpenId("AAHm5d-EAAeGwJedwSHpg8bT");
+        TradesSoldGetResponse rsp = client.execute(req, "6101107c9971e731a27e8bf4179f36b10341f340637e9c62204151847931");
+        System.out.println(rsp.getBody());
+
+
+        return Result.ok(rsp.getBody());
+    }
+
 }
