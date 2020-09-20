@@ -42,6 +42,7 @@
               <th>编号</th>
               <th>产品名称</th>
               <th>产品编码</th>
+              <th>辅助属性</th>
               <th>数量</th>
               <th>单位</th>
               <th>单价</th>
@@ -53,6 +54,7 @@
                 <td>{{index +1 }}</td>
                 <td>{{item.mtl}}</td>
                 <td>{{item.mtlCode}}</td>
+                <td>{{item.suppValueMap}}</td>
                 <td>{{item.quantity}}</td>
                 <td>{{item.unit}}</td>
                 <td>{{item.price}}</td>

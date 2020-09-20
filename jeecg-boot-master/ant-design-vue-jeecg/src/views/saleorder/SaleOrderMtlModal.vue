@@ -43,6 +43,21 @@
             <a-form-item
               :labelCol="labelCol"
               :wrapperCol="wrapperCol"
+              label="辅助属性">
+              <a-select v-decorator="['auxiliaryId', {}]" placeholder="辅助属性" >
+                <a-select-option value="">请选择</a-select-option>
+                <a-select-option v-for="(item, key) in auxiliaryList" :key="key" :value="item.id">
+                    <span style="display: inline-block;width: 100%" :title=" item.suppValueMap">
+                      {{ item.suppValueMap }}
+                    </span>
+                </a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
+          <a-col :md="6" :sm="6">
+            <a-form-item
+              :labelCol="labelCol"
+              :wrapperCol="wrapperCol"
               label="规格">
               <a-input placeholder="请输入规格" v-decorator="[ 'specification', {}]" />
             </a-form-item>
@@ -53,14 +68,6 @@
               :wrapperCol="wrapperCol"
               label="编码">
               <a-input placeholder="请输入代码" v-decorator="[ 'mtlCode', {}]" />
-            </a-form-item>
-          </a-col>
-          <a-col :md="6" :sm="6">
-            <a-form-item
-              :labelCol="labelCol"
-              :wrapperCol="wrapperCol"
-              label="指导价">
-              <a-input placeholder="请输入销售指导价" ref="priceInput" :disabled="true" v-decorator="[ 'price', {}]" />
             </a-form-item>
           </a-col>
         </a-row>
@@ -92,8 +99,8 @@
             <a-form-item
               :labelCol="labelCol"
               :wrapperCol="wrapperCol"
-              label="折扣%">
-              <a-input placeholder="请输入折扣%" ref="discountInput" @blur.native.capture="handleDiscountBlur" v-decorator="[ 'discount', {}]" />
+              label="指导价">
+              <a-input placeholder="请输入销售指导价" ref="priceInput" :disabled="true" v-decorator="[ 'price', {}]" />
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="6">
@@ -121,6 +128,16 @@
             </a-form-item>
           </a-col>
         </a-row>
+        <a-row>
+          <a-col :md="6" :sm="6">
+            <a-form-item
+              :labelCol="labelCol"
+              :wrapperCol="wrapperCol"
+              label="折扣%">
+              <a-input placeholder="请输入折扣%" ref="discountInput" @blur.native.capture="handleDiscountBlur" v-decorator="[ 'discount', {}]" />
+            </a-form-item>
+          </a-col>
+        </a-row>
       </a-form>
     </a-spin>
   </a-modal>
@@ -130,7 +147,8 @@
 
   import pick from 'lodash.pick'
   import AFormItem from "ant-design-vue/es/form/FormItem";
-  import {addSaleMtlOrder,editSaleMtlOrder,searchMaterial,duplicateCheck,getDiscountTypeList,getMaterialSelfUnitList,getMtlPrice } from '@/api/api'
+  import {addSaleMtlOrder,editSaleMtlOrder,searchMaterial,duplicateCheck,getDiscountTypeList,
+    getMaterialSelfUnitList,getMtlPrice,getMaterialAuxiliaryList } from '@/api/api'
 
   export default {
     name: "SaleOrderMtlModal",
@@ -175,7 +193,8 @@
         unitId: '',
         mtlList:[],
         unitList: [],
-        discountTypeList: []
+        discountTypeList: [],
+        auxiliaryList: []
       }
     },
     components: {AFormItem},
@@ -233,11 +252,16 @@
               this.unitList = res.result;
             }
           })
+          getMaterialAuxiliaryList({sourceId:record.mtlId}).then((res) => {
+            if (res.success) {
+              this.auxiliaryList = res.result;
+            }
+          })
         } else {
           this.unitList = [];
         }
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'mtlId', 'mtlCode','specification','unitId','price','transactionPrice','discount','quantity','discountType'))
+          this.form.setFieldsValue(pick(this.model,'mtlId', 'mtlCode','specification','unitId','price','transactionPrice','discount','quantity','discountType','auxiliaryId'))
         });
 
       },
@@ -260,6 +284,11 @@
             this.$nextTick(() => {
               this.form.setFieldsValue(pick(this.model,'mtlCode','specification','unitId','price','discount','transactionPrice'))
             });
+          }
+        })
+        getMaterialAuxiliaryList({sourceId:val}).then((res) => {
+          if (res.success) {
+            this.auxiliaryList = res.result;
           }
         })
       },

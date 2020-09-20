@@ -102,6 +102,11 @@
             scopedSlots: { customRender: 'nameAction' }
           },
           {
+            title: '辅助属性',
+            align:"center",
+            dataIndex: 'suppValueMap'
+          },
+          {
             title: '操作前数量',
             align:"center",
             dataIndex: 'beforeAmount'

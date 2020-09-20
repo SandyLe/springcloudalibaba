@@ -123,6 +123,11 @@
             scopedSlots: { customRender: 'nameAction' }
           },
           {
+            title: '辅助属性',
+            align:"center",
+            dataIndex: 'suppValueMap'
+          },
+          {
             title: '库存',
             align:"center",
             dataIndex: 'stockAmount'

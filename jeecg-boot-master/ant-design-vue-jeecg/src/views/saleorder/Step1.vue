@@ -274,6 +274,11 @@
             dataIndex: 'mtlCode'
           },
           {
+            title: '辅助属性',
+            align:"center",
+            dataIndex: 'suppValueMap'
+          },
+          {
             title: '数量',
             align:"center",
             dataIndex: 'quantity'
@@ -326,8 +331,6 @@
         var that = this;
         queryChannelTreeList().then((res)=>{
           if(res.success){
-            console.log('----queryChannelTreeList1---')
-            console.log(res)
             that.treeData = [];
             let treeList = res.result.treeList
             for(let a=0;a<treeList.length;a++){

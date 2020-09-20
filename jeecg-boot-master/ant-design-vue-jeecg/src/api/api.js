@@ -199,6 +199,8 @@ const editMaterialAuxiliary = (params)=>postAction("/materialAuxiliary/edit",par
 const addMaterialAuxiliaryItem = (params)=>postAction("/materialAuxiliaryItem/add",params)  // 新增产品辅助属性
 const editMaterialAuxiliaryItem = (params)=>postAction("/materialAuxiliaryItem/edit",params)  // 编辑产品辅助属性
 const getSupplementaryValListBySourceCode = (params)=>getAction("/supplementaryValue/getListBySourceCode",params)  // 获取辅助属性值
+const getMaterialAuxiliaryList = (params)=>getAction("/materialAuxiliary/getList",params)  // 获取产品辅助属性列表
+const getMaterialAuxiliaryListBySourceIds = (params)=>getAction("/materialAuxiliary/getListBySourceIds",params)  // 获取产品辅助属性列表
 
 //采购
 const purchasequeryById = (params)=>getAction("/purchase/queryById",params)
@@ -565,7 +567,9 @@ export {
   editMaterialAuxiliaryItem,
   getSupplementaryOne,
   getSupplementaryList,
-  getSupplementaryValListBySourceCode
+  getSupplementaryValListBySourceCode,
+  getMaterialAuxiliaryList,
+  getMaterialAuxiliaryListBySourceIds
 }
 
 

@@ -38,8 +38,11 @@
           <span slot="nameAction" slot-scope="text, record, index">
                 <a-input type="hidden" :defaultValue="record.mtlId"/>
                 <a @click="goDetail(record.mtlId)">{{record.mtl}}</a>
-
           </span>
+          <span slot="specificationAction" slot-scope="text, record, index">
+                {{record.mtl + ";" + record.suppValueMap}}
+          </span>
+
           <span slot="amountAction" slot-scope="text, record, index">
             <a-input placeholder="请输入入库数量" :defaultValue="record.quantity" name="quantity"
                      @change="e => handleChange(e.target.value, record.mtlId, index, 'quantity')"/>
@@ -111,9 +114,10 @@
             scopedSlots: { customRender: 'nameAction' }
           },
           {
-            title: '规格',
+            title: '规格属性',
             align:"center",
-            dataIndex: 'specification'
+            dataIndex: '',
+            scopedSlots: { customRender: 'specificationAction' }
           },
           {
             title: '入货仓库',
