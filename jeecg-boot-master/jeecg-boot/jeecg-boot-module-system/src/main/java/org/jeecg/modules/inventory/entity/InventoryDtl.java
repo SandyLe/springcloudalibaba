@@ -35,6 +35,8 @@ public class InventoryDtl extends CBasicEntity {
     @ApiModelProperty("仓库")
     @TableField(exist=false)
     private String warehouse;
+    @ApiModelProperty("辅助属性ID")
+    private String auxiliaryId;
 
     public String getMtlId() {
         return mtlId;
@@ -114,5 +116,13 @@ public class InventoryDtl extends CBasicEntity {
 
     public void setWarehouse(String warehouse) {
         this.warehouse = warehouse;
+    }
+
+    public String getAuxiliaryId() {
+        return auxiliaryId;
+    }
+
+    public void setAuxiliaryId(String auxiliaryId) {
+        this.auxiliaryId = auxiliaryId;
     }
 }

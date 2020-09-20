@@ -33,6 +33,11 @@ public class Inventory extends CBasicEntity {
     @TableField(exist=false)
     @ApiModelProperty("单位")
     private String unit;
+    @ApiModelProperty("辅助属性ID")
+    private String auxiliaryId;
+    @ApiModelProperty("辅助属性中文值")
+    @TableField(exist=false)
+    private String suppValueMap;
 
     public String getMtlId() {
         return mtlId;
@@ -104,5 +109,21 @@ public class Inventory extends CBasicEntity {
 
     public void setUnit(String unit) {
         this.unit = unit;
+    }
+
+    public String getAuxiliaryId() {
+        return auxiliaryId;
+    }
+
+    public void setAuxiliaryId(String auxiliaryId) {
+        this.auxiliaryId = auxiliaryId;
+    }
+
+    public String getSuppValueMap() {
+        return suppValueMap;
+    }
+
+    public void setSuppValueMap(String suppValueMap) {
+        this.suppValueMap = suppValueMap;
     }
 }

@@ -34,6 +34,8 @@ public class PurchaseMtl extends CBasicEntity {
     @ApiModelProperty("规格")
     @TableField(exist=false)
     private String specification;
+    @ApiModelProperty("辅助属性ID")
+    private String auxiliaryId;
 
     /*单位*/
     @ApiModelProperty("单位")
@@ -136,6 +138,14 @@ public class PurchaseMtl extends CBasicEntity {
 
     public void setSpecification(String specification) {
         this.specification = specification;
+    }
+
+    public String getAuxiliaryId() {
+        return auxiliaryId;
+    }
+
+    public void setAuxiliaryId(String auxiliaryId) {
+        this.auxiliaryId = auxiliaryId;
     }
 
     public String getInfo() {

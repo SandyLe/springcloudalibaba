@@ -128,4 +128,5 @@ public class InventoryOut extends CBasicEntity {
     public void setWarehouse(String warehouse) {
         this.warehouse = warehouse;
     }
+
 }

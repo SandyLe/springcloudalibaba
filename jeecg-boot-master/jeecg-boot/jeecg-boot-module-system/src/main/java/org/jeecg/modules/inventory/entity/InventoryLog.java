@@ -56,11 +56,18 @@ public class InventoryLog extends CBasicEntity {
     @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private java.util.Date operateTime;
+    @ApiModelProperty("辅助属性ID")
+    private String auxiliaryId;
+    @ApiModelProperty("辅助属性中文值")
+    @TableField(exist=false)
+    private String suppValueMap;
 
     public InventoryLog() {
     }
 
-    public InventoryLog(String sourceId, String sourceBillId, Integer sourceBillType, String mtlId, String warehouseId, BigDecimal stockAmount, BigDecimal optAmount, BigDecimal beforeAmount, String unitId, Integer operationId, String batchNo, String companyId) {
+    public InventoryLog(String sourceId, String sourceBillId, Integer sourceBillType, String mtlId,
+                        String warehouseId, BigDecimal stockAmount, BigDecimal optAmount, BigDecimal beforeAmount,
+                        String unitId, Integer operationId, String batchNo, String companyId, String auxiliaryId) {
         this.mtlId = mtlId;
         this.sourceId = sourceId;
         this.sourceBillId = sourceBillId;
@@ -73,6 +80,7 @@ public class InventoryLog extends CBasicEntity {
         this.operationId = operationId;
         this.batchNo = batchNo;
         this.setCompanyId(companyId);
+        this.auxiliaryId = auxiliaryId;
     }
 
     public String getMtlId() {
@@ -201,5 +209,21 @@ public class InventoryLog extends CBasicEntity {
 
     public void setOperateTime(Date operateTime) {
         this.operateTime = operateTime;
+    }
+
+    public String getAuxiliaryId() {
+        return auxiliaryId;
+    }
+
+    public void setAuxiliaryId(String auxiliaryId) {
+        this.auxiliaryId = auxiliaryId;
+    }
+
+    public String getSuppValueMap() {
+        return suppValueMap;
+    }
+
+    public void setSuppValueMap(String suppValueMap) {
+        this.suppValueMap = suppValueMap;
     }
 }

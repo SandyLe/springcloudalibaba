@@ -44,11 +44,14 @@ public class InventoryOutMtl extends CBasicEntity {
     @ApiModelProperty("条形码")
     @TableField(exist=false)
     private String barCode;
+    @ApiModelProperty("辅助属性ID")
+    private String auxiliaryId;
 
     public InventoryOutMtl() {
     }
 
-    public InventoryOutMtl(String sourceId, String sourceBillId, Integer sourceBillType, String mtlId, BigDecimal quantity, String unitId, Integer rowSts) {
+    public InventoryOutMtl(String sourceId, String sourceBillId, Integer sourceBillType, String mtlId,
+                           BigDecimal quantity, String unitId, Integer rowSts, String auxiliaryId) {
         this.sourceId = sourceId;
         this.sourceBillId = sourceBillId;
         this.sourceBillType = sourceBillType;
@@ -56,6 +59,7 @@ public class InventoryOutMtl extends CBasicEntity {
         this.quantity = quantity;
         this.unitId = unitId;
         this.setRowSts(rowSts);
+        this.auxiliaryId = auxiliaryId;
     }
 
     public String getSourceId() {
@@ -136,5 +140,29 @@ public class InventoryOutMtl extends CBasicEntity {
 
     public void setSourceBillId(String sourceBillId) {
         this.sourceBillId = sourceBillId;
+    }
+
+    public Integer getSourceBillType() {
+        return sourceBillType;
+    }
+
+    public void setSourceBillType(Integer sourceBillType) {
+        this.sourceBillType = sourceBillType;
+    }
+
+    public String getSourceBillTypeName() {
+        return sourceBillTypeName;
+    }
+
+    public void setSourceBillTypeName(String sourceBillTypeName) {
+        this.sourceBillTypeName = sourceBillTypeName;
+    }
+
+    public String getAuxiliaryId() {
+        return auxiliaryId;
+    }
+
+    public void setAuxiliaryId(String auxiliaryId) {
+        this.auxiliaryId = auxiliaryId;
     }
 }

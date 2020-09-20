@@ -18,14 +18,12 @@ import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.LoginUtils;
 import org.jeecg.modules.basic.entity.Material;
+import org.jeecg.modules.basic.entity.MaterialAuxiliary;
 import org.jeecg.modules.basic.entity.MaterialUnit;
 import org.jeecg.modules.basic.entity.Warehouse;
 import org.jeecg.common.enums.BillType;
 import org.jeecg.common.enums.RowSts;
-import org.jeecg.modules.basic.service.BillCodeBuilderService;
-import org.jeecg.modules.basic.service.MaterialService;
-import org.jeecg.modules.basic.service.MaterialUnitService;
-import org.jeecg.modules.basic.service.WarehouseService;
+import org.jeecg.modules.basic.service.*;
 import org.jeecg.modules.inventory.dto.PreInventoryOutMtl;
 import org.jeecg.modules.inventory.entity.InventoryIn;
 import org.jeecg.modules.inventory.service.InventoryInMtlService;
@@ -62,6 +60,8 @@ public class InventoryInController {
     private MaterialService materialService;
     @Autowired
     private MaterialUnitService materialUnitService;
+    @Autowired
+    private MaterialAuxiliaryService materialAuxiliaryService;
 
 
     /**
@@ -154,12 +154,14 @@ public class InventoryInController {
         queryWrapper.eq("row_sts", RowSts.EFFECTIVE.getId());
         IPage<InventoryIn> pageList = inventoryInService.page(page, queryWrapper);
         List<InventoryIn> inventoryInList = pageList.getRecords();
-        List<String> warehouseIds = inventoryInList.stream().map(InventoryIn::getWarehouseId).collect(Collectors.toList());
-        Collection<Warehouse> warehouses = warehouseService.listByIds(warehouseIds);
-        Map<String, String> warehouseMap = warehouses.stream().collect(Collectors.toMap(Warehouse:: getId, Warehouse:: getName));
-        inventoryInList.stream().forEach(o->{
-            o.setWarehouse(warehouseMap.get(o.getWarehouseId()));
-        });
+        if (CollectionUtils.isNotEmpty(inventoryInList)) {
+            List<String> warehouseIds = inventoryInList.stream().map(InventoryIn::getWarehouseId).collect(Collectors.toList());
+            Collection<Warehouse> warehouses = warehouseService.listByIds(warehouseIds);
+            Map<String, String> warehouseMap = warehouses.stream().collect(Collectors.toMap(Warehouse:: getId, Warehouse:: getName));
+            inventoryInList.stream().forEach(o->{
+                o.setWarehouse(warehouseMap.get(o.getWarehouseId()));
+            });
+        }
 
         log.info("查询当前页：" + pageList.getCurrent());
         log.info("查询当前页数量：" + pageList.getSize());
@@ -243,17 +245,21 @@ public class InventoryInController {
         if (CollectionUtils.isNotEmpty(list)) {
             List<String> mtlIds = list.stream().map(PreInventoryOutMtl::getMtlId).collect(Collectors.toList());
             List<String> unitIds = list.stream().map(PreInventoryOutMtl::getUnitId).collect(Collectors.toList());
+            List<String> auxiliaryIds = list.stream().map(PreInventoryOutMtl::getAuxiliaryId).collect(Collectors.toList());
             Collection<Material> materials = materialService.listByIds(mtlIds);
             Collection<MaterialUnit> units = materialUnitService.listByIds(unitIds);
+            Collection<MaterialAuxiliary> auxiliaries = materialAuxiliaryService.listByIds(auxiliaryIds);
             Map<String, String> mtlNameMap = materials.stream().collect(Collectors.toMap(Material::getId, Material::getName));
             Map<String, String> mtlCodeMap = materials.stream().collect(Collectors.toMap(Material::getId, Material::getCode));
             Map<String, String> mtlSpectxMap = materials.stream().filter(o->StringUtils.isNotBlank(o.getSpecification())).collect(Collectors.toMap(Material::getId, Material::getSpecification));
             Map<String, String> unitMap = units.stream().collect(Collectors.toMap(MaterialUnit::getId, MaterialUnit::getName));
+            Map<String, String> auxiliaryMap = auxiliaries.stream().collect(Collectors.toMap(MaterialAuxiliary::getId, MaterialAuxiliary::getSuppValueMap));
             list.stream().forEach(o->{
                 o.setUnit(unitMap.get(o.getUnitId()));
                 o.setMtl(mtlNameMap.get(o.getMtlId()));
                 o.setMtlCode(mtlCodeMap.get(o.getMtlId()));
                 o.setSpecification(mtlSpectxMap.get(o.getMtlId()));
+                o.setSuppValueMap(auxiliaryMap.get(o.getAuxiliaryId()));
             });
         }
         return Result.ok(list);

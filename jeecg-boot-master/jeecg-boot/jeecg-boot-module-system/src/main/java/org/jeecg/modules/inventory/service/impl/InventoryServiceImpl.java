@@ -70,13 +70,15 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
                 inventory.setWarehouseId(inventoryLog.getWarehouseId());
                 inventory.setUnitId(inventoryLog.getUnitId());
                 inventory.setStockAmount(BigDecimal.ZERO);
+                inventory.setAuxiliaryId(inventoryLog.getAuxiliaryId());
             }
             InventoryDtl inventoryDtl = null;
             InventoryOptDtl inventoryOptDtl = new InventoryOptDtl();
             inventoryOptDtl.setSourceId(inventoryLog.getSourceId());
             inventoryOptDtl.setSourceBillType(inventoryLog.getSourceBillType());
             if (StringUtils.isNotBlank(inventoryLog.getBatchNo())) {
-                inventoryDtl = inventoryDtlService.findInventoryDtl(inventoryLog.getWarehouseId(), inventoryLog.getBatchNo(), inventory.getMtlId(), inventory.getUnitId());
+                inventoryDtl = inventoryDtlService.findInventoryDtl(inventoryLog.getWarehouseId(), inventoryLog.getBatchNo(), inventory.getMtlId(),
+                        inventory.getUnitId(), inventoryLog.getAuxiliaryId());
             }
             if (inventoryLog.getOperationId() == InventoryOperation.STOCKING.getId()) {
                 if (null != inventory && inventory.getStockAmount().compareTo(inventoryLog.getBeforeAmount()) !=0 ) {
@@ -86,6 +88,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
                     if (null == inventoryDtl) { // 新增明细 没有批次号
                         inventoryDtl = new InventoryDtl();
                         inventoryDtl.setMtlId(inventoryLog.getMtlId());
+                        inventoryDtl.setAuxiliaryId(inventoryLog.getAuxiliaryId());
                         inventoryDtl.setBatchNo(inventoryLog.getBatchNo());
                         inventoryDtl.setUnitId(inventoryLog.getUnitId());
                         inventoryDtl.setWarehouseId(inventoryLog.getWarehouseId());
@@ -106,7 +109,8 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
                         inventoryOptDtl.setOptAmount(inventoryLog.getStockAmount());
                     } else {
                         BigDecimal change = inventoryLog.getBeforeAmount().subtract(inventoryLog.getStockAmount());
-                        List<InventoryDtl> inventoryDtls = inventoryDtlService.findAvailableIntoryDtlList(inventoryLog.getWarehouseId(), inventoryLog.getMtlId(), inventoryLog.getUnitId());
+                        List<InventoryDtl> inventoryDtls = inventoryDtlService.findAvailableIntoryDtlList(inventoryLog.getWarehouseId(), inventoryLog.getMtlId(),
+                                inventoryLog.getUnitId(), inventoryLog.getAuxiliaryId());
                         for (InventoryDtl dtl : inventoryDtls) {
                             inventoryOptDtl = new InventoryOptDtl();
                             inventoryOptDtl.setSourceId(inventoryLog.getSourceId());
@@ -138,6 +142,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
                     inventoryDtl = new InventoryDtl();
                     inventoryDtl.setWarehouseId(inventoryLog.getWarehouseId());
                     inventoryDtl.setMtlId(inventoryLog.getMtlId());
+                    inventoryDtl.setAuxiliaryId(inventoryLog.getAuxiliaryId());
                     inventoryDtl.setBatchNo(inventoryLog.getBatchNo());
                     inventoryDtl.setUnitId(inventoryLog.getUnitId());
                     inventoryDtl.setStockAmount(BigDecimal.ZERO);
@@ -172,7 +177,8 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
             }
 
             BigDecimal change = inventoryLog.getOptAmount();
-            List<InventoryDtl> inventoryDtls = inventoryDtlService.findAvailableIntoryDtlList(inventoryLog.getWarehouseId(), inventoryLog.getMtlId(), inventoryLog.getUnitId());
+            List<InventoryDtl> inventoryDtls = inventoryDtlService.findAvailableIntoryDtlList(inventoryLog.getWarehouseId(), inventoryLog.getMtlId(),
+                    inventoryLog.getUnitId(), inventoryLog.getAuxiliaryId());
             for (InventoryDtl dtl : inventoryDtls) {
                 InventoryOptDtl inventoryOptDtl = new InventoryOptDtl();
                 inventoryOptDtl.setSourceId(inventoryLog.getSourceId());

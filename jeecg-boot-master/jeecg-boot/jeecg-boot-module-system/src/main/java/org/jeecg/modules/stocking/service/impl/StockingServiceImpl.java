@@ -28,7 +28,8 @@ public class StockingServiceImpl extends ServiceImpl<StockingMapper, Stocking>  
     @Override
     public String handleStocking(String id) {
         Stocking stocking = getById(id);
-        InventoryLog inventoryLog = new InventoryLog(id, id, BillType.STOCKING.getId(), stocking.getMtlId(), stocking.getWarehouseId(), stocking.getStockAmount(), BigDecimal.ZERO, stocking.getBeforeAmount(), stocking.getUnitId(), InventoryOperation.STOCKING.getId(),null, stocking.getCompanyId());
+        InventoryLog inventoryLog = new InventoryLog(id, id, BillType.STOCKING.getId(), stocking.getMtlId(), stocking.getWarehouseId(), stocking.getStockAmount(), BigDecimal.ZERO, stocking.getBeforeAmount(), stocking.getUnitId(),
+                InventoryOperation.STOCKING.getId(),null, stocking.getCompanyId(), stocking.getAuxiliaryId());
         inventoryLog.setOperateTime(new Date());
         inventoryService.updateInventory(inventoryLog);
         stocking.setRowSts(EnumRowStatus.destroy);

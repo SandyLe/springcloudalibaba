@@ -7,8 +7,8 @@ import java.util.List;
 
 public interface InventoryDtlService extends IService<InventoryDtl> {
 
-    public InventoryDtl findInventoryDtl(String warehouseId, String batchNo, String mtlId, String unitId);
+    public InventoryDtl findInventoryDtl(String warehouseId, String batchNo, String mtlId, String unitId, String auxiliaryId);
 
-    public List<InventoryDtl> findAvailableIntoryDtlList(String warehouseId, String mtlId, String unitId);
+    public List<InventoryDtl> findAvailableIntoryDtlList(String warehouseId, String mtlId, String unitId, String auxiliaryId);
 
 }

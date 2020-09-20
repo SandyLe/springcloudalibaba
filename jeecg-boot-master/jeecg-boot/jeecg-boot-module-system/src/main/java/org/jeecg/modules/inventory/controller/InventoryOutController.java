@@ -15,16 +15,14 @@ import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.util.LoginUtils;
 import org.jeecg.modules.basic.entity.Material;
+import org.jeecg.modules.basic.entity.MaterialAuxiliary;
 import org.jeecg.modules.basic.entity.MaterialUnit;
 import org.jeecg.modules.basic.entity.Warehouse;
 import org.jeecg.common.enums.BillStatus;
 import org.jeecg.common.enums.BillType;
 import org.jeecg.common.enums.EnumConvertUtils;
 import org.jeecg.common.enums.RowSts;
-import org.jeecg.modules.basic.service.BillCodeBuilderService;
-import org.jeecg.modules.basic.service.MaterialService;
-import org.jeecg.modules.basic.service.MaterialUnitService;
-import org.jeecg.modules.basic.service.WarehouseService;
+import org.jeecg.modules.basic.service.*;
 //import org.jeecg.modules.inventory.entity.InventoryOut;
 import org.jeecg.modules.inventory.dto.PreInventoryDto;
 import org.jeecg.modules.inventory.entity.InventoryOut;
@@ -50,13 +48,11 @@ public class InventoryOutController {
     @Autowired
     private InventoryOutService inventoryOutService;
     @Autowired
-    private WarehouseService warehouseService;
-    @Autowired
-    private BillCodeBuilderService billCodeBuilderService;
-    @Autowired
     private MaterialUnitService materialUnitService;
     @Autowired
     private MaterialService materialService;
+    @Autowired
+    private MaterialAuxiliaryService materialAuxiliaryService;
 
     /**
      * 出库
@@ -207,17 +203,21 @@ public class InventoryOutController {
         if (CollectionUtils.isNotEmpty(list)) {
             List<String> mtlIds = list.stream().map(PreInventoryOutMtl::getMtlId).collect(Collectors.toList());
             List<String> unitIds = list.stream().map(PreInventoryOutMtl::getUnitId).collect(Collectors.toList());
+            List<String> auxiliaryIds = list.stream().map(PreInventoryOutMtl::getAuxiliaryId).collect(Collectors.toList());
             Collection<Material> materials = materialService.listByIds(mtlIds);
             Collection<MaterialUnit> units = materialUnitService.listByIds(unitIds);
+            Collection<MaterialAuxiliary> auxiliaries = materialAuxiliaryService.listByIds(auxiliaryIds);
             Map<String, String> mtlNameMap = materials.stream().collect(Collectors.toMap(Material::getId, Material::getName));
             Map<String, String> mtlCodeMap = materials.stream().collect(Collectors.toMap(Material::getId, Material::getCode));
             Map<String, String> mtlSpectxMap = materials.stream().filter(o->StringUtils.isNotBlank(o.getSpecification())).collect(Collectors.toMap(Material::getId, Material::getSpecification));
             Map<String, String> unitMap = units.stream().collect(Collectors.toMap(MaterialUnit::getId, MaterialUnit::getName));
+            Map<String, String> auxiliaryMap = auxiliaries.stream().collect(Collectors.toMap(MaterialAuxiliary::getId, MaterialAuxiliary::getSuppValueMap));
             list.stream().forEach(o->{
                 o.setUnit(unitMap.get(o.getUnitId()));
                 o.setMtl(mtlNameMap.get(o.getMtlId()));
                 o.setMtlCode(mtlCodeMap.get(o.getMtlId()));
                 o.setSpecification(mtlSpectxMap.get(o.getMtlId()));
+                o.setSuppValueMap(auxiliaryMap.get(o.getAuxiliaryId()));
             });
         }
         return Result.ok(list);

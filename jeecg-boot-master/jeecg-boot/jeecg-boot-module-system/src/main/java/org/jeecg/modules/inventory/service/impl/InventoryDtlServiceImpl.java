@@ -19,7 +19,7 @@ public class InventoryDtlServiceImpl extends ServiceImpl<InventoryDtlMapper, Inv
     private InventoryDtlMapper inventoryDtlMapper;
 
     @Override
-    public InventoryDtl findInventoryDtl(String warehouseId, String batchNo, String mtlId, String unitId) {
+    public InventoryDtl findInventoryDtl(String warehouseId, String batchNo, String mtlId, String unitId, String auxiliaryId) {
 
         LambdaQueryWrapper<InventoryDtl> queryWrapper = new LambdaQueryWrapper<InventoryDtl>();
         queryWrapper.eq(InventoryDtl::getWarehouseId, warehouseId);
@@ -28,16 +28,22 @@ public class InventoryDtlServiceImpl extends ServiceImpl<InventoryDtlMapper, Inv
         if (StringUtils.isNotBlank(unitId)) {
             queryWrapper.eq(InventoryDtl::getUnitId, unitId);
         }
+        if (StringUtils.isNotBlank(auxiliaryId)) {
+            queryWrapper.eq(InventoryDtl::getAuxiliaryId, auxiliaryId);
+        }
         return inventoryDtlMapper.selectOne(queryWrapper);
     }
 
     @Override
-    public List<InventoryDtl> findAvailableIntoryDtlList(String warehouseId, String mtlId, String unitId) {
+    public List<InventoryDtl> findAvailableIntoryDtlList(String warehouseId, String mtlId, String unitId, String auxiliaryId) {
         LambdaQueryWrapper<InventoryDtl> lambdaQueryWrapper = new LambdaQueryWrapper<InventoryDtl>();
         lambdaQueryWrapper.eq(InventoryDtl::getWarehouseId, warehouseId);
         lambdaQueryWrapper.eq(InventoryDtl::getMtlId, mtlId);
         lambdaQueryWrapper.eq(InventoryDtl::getUnitId, unitId);
         lambdaQueryWrapper.lt(InventoryDtl::getAvailableAmount, BigDecimal.ZERO);
+        if (StringUtils.isNotBlank(auxiliaryId)) {
+            lambdaQueryWrapper.eq(InventoryDtl::getAuxiliaryId, auxiliaryId);
+        }
         lambdaQueryWrapper.orderByAsc(InventoryDtl::getCreateTime);
         return inventoryDtlMapper.selectList(lambdaQueryWrapper);
     }

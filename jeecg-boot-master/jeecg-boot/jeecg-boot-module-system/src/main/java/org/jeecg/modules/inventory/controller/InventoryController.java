@@ -15,13 +15,11 @@ import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.modules.basic.entity.Material;
+import org.jeecg.modules.basic.entity.MaterialAuxiliary;
 import org.jeecg.modules.basic.entity.MaterialUnit;
 import org.jeecg.modules.basic.entity.Warehouse;
 import org.jeecg.common.enums.BillType;
-import org.jeecg.modules.basic.service.BillCodeBuilderService;
-import org.jeecg.modules.basic.service.MaterialService;
-import org.jeecg.modules.basic.service.MaterialUnitService;
-import org.jeecg.modules.basic.service.WarehouseService;
+import org.jeecg.modules.basic.service.*;
 import org.jeecg.modules.inventory.entity.Inventory;
 import org.jeecg.modules.inventory.service.InventoryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,6 +50,8 @@ public class InventoryController {
     private MaterialUnitService materialUnitService;
     @Autowired
     private BillCodeBuilderService billCodeBuilderService;
+    @Autowired
+    private MaterialAuxiliaryService materialAuxiliaryService;
     /**
      * 添加
      *
@@ -113,16 +113,20 @@ public class InventoryController {
             List<String> mtlIds = inventoryList.stream().map(Inventory::getMtlId).collect(Collectors.toList());
             List<String> warehouseIds = inventoryList.stream().map(Inventory::getWarehouseId).collect(Collectors.toList());
             List<String> unitIds = inventoryList.stream().map(Inventory::getUnitId).collect(Collectors.toList());
+            List<String> auxiliaryIds = inventoryList.stream().map(Inventory::getAuxiliaryId).collect(Collectors.toList());
             Collection<Material> materials = materialService.listByIds(mtlIds);
             Collection<Warehouse> warehouses = warehouseService.listByIds(warehouseIds);
             Collection<MaterialUnit> units = materialUnitService.listByIds(unitIds);
+            Collection<MaterialAuxiliary> auxiliaries = materialAuxiliaryService.listByIds(auxiliaryIds);
             Map<String, String> materialMap = materials.stream().collect(Collectors.toMap(Material::getId, Material::getName));
             Map<String, String> warehouseMap = warehouses.stream().collect(Collectors.toMap(Warehouse:: getId, Warehouse:: getName));
             Map<String, String> unitMap = units.stream().collect(Collectors.toMap(MaterialUnit::getId, MaterialUnit::getName));
+            Map<String, String> auxiliaryMap = auxiliaries.stream().collect(Collectors.toMap(MaterialAuxiliary::getId, MaterialAuxiliary::getSuppValueMap));
             inventoryList.stream().forEach(o->{
                 o.setWarehouse(warehouseMap.get(o.getWarehouseId()));
                 o.setMaterial(materialMap.get(o.getMtlId()));
                 o.setUnit(unitMap.get(o.getUnitId()));
+                o.setSuppValueMap(auxiliaryMap.get(o.getAuxiliaryId()));
             });
         }
 

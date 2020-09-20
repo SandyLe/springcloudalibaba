@@ -48,6 +48,8 @@ public class PurchaseReturnMtl extends CBasicEntity {
     /*金额*/
     @ApiModelProperty("金额")
     private String amount;
+    @ApiModelProperty("辅助属性ID")
+    private String auxiliaryId;
 
 
     public String getSourceId() {
@@ -112,5 +114,13 @@ public class PurchaseReturnMtl extends CBasicEntity {
 
     public void setMtl(String mtl) {
         this.mtl = mtl;
+    }
+
+    public String getAuxiliaryId() {
+        return auxiliaryId;
+    }
+
+    public void setAuxiliaryId(String auxiliaryId) {
+        this.auxiliaryId = auxiliaryId;
     }
 }

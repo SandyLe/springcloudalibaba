@@ -50,6 +50,11 @@ public class SaleOrderMtl extends CBasicEntity {
     private Integer billStatus;
     @TableField(exist=false)
     private String info;
+    @ApiModelProperty("辅助属性ID")
+    private String auxiliaryId;
+    @ApiModelProperty("辅助属性中文值")
+    @TableField(exist=false)
+    private String suppValueMap;
 
     public String getMtlId() {
         return mtlId;
@@ -171,6 +176,14 @@ public class SaleOrderMtl extends CBasicEntity {
         this.transactionPrice = transactionPrice;
     }
 
+    public String getAuxiliaryId() {
+        return auxiliaryId;
+    }
+
+    public void setAuxiliaryId(String auxiliaryId) {
+        this.auxiliaryId = auxiliaryId;
+    }
+
     public String getInfo() {
         StringBuilder sb = new StringBuilder();
         if (StringUtils.isNotBlank(this.getMtl())) {
@@ -187,5 +200,13 @@ public class SaleOrderMtl extends CBasicEntity {
 
     public void setInfo(String info) {
         this.info = info;
+    }
+
+    public String getSuppValueMap() {
+        return suppValueMap;
+    }
+
+    public void setSuppValueMap(String suppValueMap) {
+        this.suppValueMap = suppValueMap;
     }
 }

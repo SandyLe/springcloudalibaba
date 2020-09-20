@@ -36,6 +36,12 @@ public class PreInventoryOutMtl {
     private Integer operationId;
     @ApiModelProperty("仓库")
     private String warehouseId;
+    @ApiModelProperty("辅助属性ID")
+    private String auxiliaryId;
+    @ApiModelProperty("辅助属性中文值")
+    @TableField(exist=false)
+    private String suppValueMap;
+
 
     public String getBillId() {
         return billId;
@@ -139,5 +145,21 @@ public class PreInventoryOutMtl {
 
     public void setOperationId(Integer operationId) {
         this.operationId = operationId;
+    }
+
+    public String getAuxiliaryId() {
+        return auxiliaryId;
+    }
+
+    public void setAuxiliaryId(String auxiliaryId) {
+        this.auxiliaryId = auxiliaryId;
+    }
+
+    public String getSuppValueMap() {
+        return suppValueMap;
+    }
+
+    public void setSuppValueMap(String suppValueMap) {
+        this.suppValueMap = suppValueMap;
     }
 }

@@ -52,10 +52,13 @@ public class InventoryInMtl extends CBasicEntity {
     @TableField(exist=false)
     private String barCode;
 
+    @ApiModelProperty("辅助属性ID")
+    private String auxiliaryId;
+
     public InventoryInMtl() {
     }
 
-    public InventoryInMtl(String sourceId, String sourceBillId, Integer sourceBillType, String mtlId, BigDecimal quantity, String unitId, Integer rowSts) {
+    public InventoryInMtl(String sourceId, String sourceBillId, Integer sourceBillType, String mtlId, BigDecimal quantity, String unitId, Integer rowSts, String auxiliaryId) {
         this.sourceId = sourceId;
         this.sourceBillId = sourceBillId;
         this.sourceBillType = sourceBillType;
@@ -63,6 +66,7 @@ public class InventoryInMtl extends CBasicEntity {
         this.quantity = quantity;
         this.unitId = unitId;
         this.setRowSts(rowSts);
+        this.auxiliaryId = auxiliaryId;
     }
 
     public String getSourceId() {
@@ -159,5 +163,13 @@ public class InventoryInMtl extends CBasicEntity {
 
     public void setSourceBillTypeName(String sourceBillTypeName) {
         this.sourceBillTypeName = sourceBillTypeName;
+    }
+
+    public String getAuxiliaryId() {
+        return auxiliaryId;
+    }
+
+    public void setAuxiliaryId(String auxiliaryId) {
+        this.auxiliaryId = auxiliaryId;
     }
 }

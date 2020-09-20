@@ -32,6 +32,8 @@ public class WorkOrderDtl extends CBasicEntity {
     private BigDecimal price;
     @ApiModelProperty("总额")
     private BigDecimal amount;
+    @ApiModelProperty("辅助属性ID")
+    private String auxiliaryId;
 
     public String getMtlId() {
         return mtlId;
@@ -95,5 +97,13 @@ public class WorkOrderDtl extends CBasicEntity {
 
     public void setAmount(BigDecimal amount) {
         this.amount = amount;
+    }
+
+    public String getAuxiliaryId() {
+        return auxiliaryId;
+    }
+
+    public void setAuxiliaryId(String auxiliaryId) {
+        this.auxiliaryId = auxiliaryId;
     }
 }

@@ -46,6 +46,8 @@ public class Teardown extends CBasicEntity {
     @TableField(exist=false)
     @ApiModelProperty("单据类型名称")
     private String billTypeName;
+    @ApiModelProperty("辅助属性ID")
+    private String auxiliaryId;
 
     public String getMtlId() {
         return mtlId;
@@ -144,5 +146,13 @@ public class Teardown extends CBasicEntity {
 
     public void setBillTypeName(String billTypeName) {
         this.billTypeName = billTypeName;
+    }
+
+    public String getAuxiliaryId() {
+        return auxiliaryId;
+    }
+
+    public void setAuxiliaryId(String auxiliaryId) {
+        this.auxiliaryId = auxiliaryId;
     }
 }

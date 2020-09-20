@@ -44,6 +44,8 @@ public class StockingDtl extends CBasicEntity {
     private String barCode;
     @ApiModelProperty("批次号")
     private String batchNo;
+    @ApiModelProperty("辅助属性ID")
+    private String auxiliaryId;
 
     public String getMtlId() {
         return mtlId;
@@ -131,5 +133,21 @@ public class StockingDtl extends CBasicEntity {
 
     public void setBarCode(String barCode) {
         this.barCode = barCode;
+    }
+
+    public String getBatchNo() {
+        return batchNo;
+    }
+
+    public void setBatchNo(String batchNo) {
+        this.batchNo = batchNo;
+    }
+
+    public String getAuxiliaryId() {
+        return auxiliaryId;
+    }
+
+    public void setAuxiliaryId(String auxiliaryId) {
+        this.auxiliaryId = auxiliaryId;
     }
 }

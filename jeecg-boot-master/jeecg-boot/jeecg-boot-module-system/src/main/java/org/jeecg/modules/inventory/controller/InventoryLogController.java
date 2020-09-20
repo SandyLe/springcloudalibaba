@@ -7,12 +7,15 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.modules.basic.entity.Material;
+import org.jeecg.modules.basic.entity.MaterialAuxiliary;
 import org.jeecg.modules.basic.entity.MaterialUnit;
 import org.jeecg.modules.basic.entity.Warehouse;
+import org.jeecg.modules.basic.service.MaterialAuxiliaryService;
 import org.jeecg.modules.basic.service.MaterialService;
 import org.jeecg.modules.basic.service.MaterialUnitService;
 import org.jeecg.modules.basic.service.WarehouseService;
@@ -42,6 +45,8 @@ public class InventoryLogController {
     private WarehouseService warehouseService;
     @Autowired
     private MaterialUnitService materialUnitService;
+    @Autowired
+    private MaterialAuxiliaryService materialAuxiliaryService;
     /**
      * 添加
      *
@@ -70,20 +75,26 @@ public class InventoryLogController {
     public Result<?> getList(InventoryLog inventoryLog, HttpServletRequest req) {
         QueryWrapper<InventoryLog> queryWrapper = QueryGenerator.initQueryWrapper(inventoryLog, req.getParameterMap());
         List<InventoryLog> list = inventoryLogService.list(queryWrapper);
-        List<String> mtlIds = list.stream().map(InventoryLog::getMtlId).collect(Collectors.toList());
-        List<String> warehouseIds = list.stream().map(InventoryLog::getWarehouseId).collect(Collectors.toList());
-        List<String> unitIds = list.stream().map(InventoryLog::getUnitId).collect(Collectors.toList());
-        Collection<Material> materials = materialService.listByIds(mtlIds);
-        Collection<Warehouse> warehouses = warehouseService.listByIds(warehouseIds);
-        Collection<MaterialUnit> units = materialUnitService.listByIds(unitIds);
-        Map<String, String> materialMap = materials.stream().collect(Collectors.toMap(Material::getId, Material::getName));
-        Map<String, String> warehouseMap = warehouses.stream().collect(Collectors.toMap(Warehouse:: getId, Warehouse:: getName));
-        Map<String, String> unitMap = units.stream().collect(Collectors.toMap(MaterialUnit::getId, MaterialUnit::getName));
-        list.stream().forEach(o->{
-            o.setWarehouse(warehouseMap.get(o.getWarehouseId()));
-            o.setMaterial(materialMap.get(o.getMtlId()));
-            o.setUnit(unitMap.get(o.getUnitId()));
-        });
+        if (CollectionUtils.isNotEmpty(list)) {
+            List<String> mtlIds = list.stream().map(InventoryLog::getMtlId).collect(Collectors.toList());
+            List<String> warehouseIds = list.stream().map(InventoryLog::getWarehouseId).collect(Collectors.toList());
+            List<String> unitIds = list.stream().map(InventoryLog::getUnitId).collect(Collectors.toList());
+            List<String> auxiliaryIds = list.stream().map(InventoryLog::getAuxiliaryId).collect(Collectors.toList());
+            Collection<Material> materials = materialService.listByIds(mtlIds);
+            Collection<Warehouse> warehouses = warehouseService.listByIds(warehouseIds);
+            Collection<MaterialUnit> units = materialUnitService.listByIds(unitIds);
+            Collection<MaterialAuxiliary> auxiliaries = materialAuxiliaryService.listByIds(auxiliaryIds);
+            Map<String, String> materialMap = materials.stream().collect(Collectors.toMap(Material::getId, Material::getName));
+            Map<String, String> warehouseMap = warehouses.stream().collect(Collectors.toMap(Warehouse:: getId, Warehouse:: getName));
+            Map<String, String> unitMap = units.stream().collect(Collectors.toMap(MaterialUnit::getId, MaterialUnit::getName));
+            Map<String, String> auxiliaryMap = auxiliaries.stream().collect(Collectors.toMap(MaterialAuxiliary::getId, MaterialAuxiliary::getSuppValueMap));
+            list.stream().forEach(o->{
+                o.setWarehouse(warehouseMap.get(o.getWarehouseId()));
+                o.setMaterial(materialMap.get(o.getMtlId()));
+                o.setUnit(unitMap.get(o.getUnitId()));
+                o.setSuppValueMap(auxiliaryMap.get(o.getAuxiliaryId()));
+            });
+        }
         return Result.ok(list);
     }
     /**

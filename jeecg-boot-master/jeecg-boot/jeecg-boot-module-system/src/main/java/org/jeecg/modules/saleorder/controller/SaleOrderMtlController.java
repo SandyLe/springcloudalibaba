@@ -16,10 +16,12 @@ import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.modules.basic.entity.Material;
+import org.jeecg.modules.basic.entity.MaterialAuxiliary;
 import org.jeecg.modules.basic.entity.MaterialUnit;
 import org.jeecg.common.enums.DiscountType;
 import org.jeecg.common.enums.EnumConvertUtils;
 import org.jeecg.common.enums.RowSts;
+import org.jeecg.modules.basic.service.MaterialAuxiliaryService;
 import org.jeecg.modules.basic.service.MaterialService;
 import org.jeecg.modules.basic.service.MaterialUnitService;
 import org.jeecg.modules.saleorder.entity.SaleOrderMtl;
@@ -46,6 +48,8 @@ public class SaleOrderMtlController {
     private MaterialService materialService;
     @Autowired
     private MaterialUnitService materialUnitService;
+    @Autowired
+    private MaterialAuxiliaryService materialAuxiliaryService;
     /**
      * 添加
      *
@@ -79,14 +83,18 @@ public class SaleOrderMtlController {
         QueryWrapper<SaleOrderMtl> queryWrapper = QueryGenerator.initQueryWrapper(saleOrderMtl, req.getParameterMap());
         List<SaleOrderMtl> saleOrderMtlList = saleOrderMtlService.list(queryWrapper);
         List<String> mtlIds = saleOrderMtlList.stream().map(SaleOrderMtl::getMtlId).collect(Collectors.toList());
+        List<String> auxiliaryIds = saleOrderMtlList.stream().map(SaleOrderMtl::getAuxiliaryId).collect(Collectors.toList());
         Collection<Material> materials = materialService.listByIds(mtlIds);
+        Collection<MaterialAuxiliary> auxiliaries = materialAuxiliaryService.listByIds(auxiliaryIds);
         Map<String, String> mtlMap = materials.stream().collect(Collectors.toMap(Material::getId, Material::getName));
         Map<String, String> mtlCodeMap = materials.stream().collect(Collectors.toMap(Material::getId, Material::getCode));
         Map<String, String> mtlSpecMap = materials.stream().filter(o-> StringUtils.isNotBlank(o.getSpecification())).collect(Collectors.toMap(Material::getId, Material::getSpecification));
+        Map<String, String> auxiliaryMap = auxiliaries.stream().collect(Collectors.toMap(MaterialAuxiliary::getId, MaterialAuxiliary::getSuppValueMap));
         saleOrderMtlList.stream().forEach(o->{
             o.setMtl(mtlMap.get(o.getMtlId()));
             o.setMtlCode(mtlCodeMap.get(o.getMtlId()));
             o.setSpecification(mtlSpecMap.get(o.getMtlId()));
+            o.setSuppValueMap(auxiliaryMap.get(o.getAuxiliaryId()));
         });
         return Result.ok(saleOrderMtlList);
     }
@@ -112,18 +120,22 @@ public class SaleOrderMtlController {
         if (CollectionUtils.isNotEmpty(saleOrderList)) {
             List<String> mtlIds = saleOrderList.stream().map(SaleOrderMtl::getMtlId).collect(Collectors.toList());
             List<String> unitIds = saleOrderList.stream().map(SaleOrderMtl::getUnitId).collect(Collectors.toList());
+            List<String> auxiliaryIds = saleOrderList.stream().map(SaleOrderMtl::getAuxiliaryId).collect(Collectors.toList());
             Collection<Material> materials = materialService.listByIds(mtlIds);
             Collection<MaterialUnit> warehouses = materialUnitService.listByIds(unitIds);
+            Collection<MaterialAuxiliary> auxiliaries = materialAuxiliaryService.listByIds(auxiliaryIds);
             Map<String, String> mtlMap = materials.stream().collect(Collectors.toMap(Material::getId, Material::getName));
             Map<String, String> mtlCodeMap = materials.stream().collect(Collectors.toMap(Material::getId, Material::getCode));
             Map<String, String> mtlSpecMap = materials.stream().filter(o->StringUtils.isNotBlank(o.getSpecification())).collect(Collectors.toMap(Material::getId, Material::getSpecification));
             Map<String, String> unitMap = warehouses.stream().collect(Collectors.toMap(MaterialUnit:: getId, MaterialUnit:: getName));
+            Map<String, String> auxiliaryMap = auxiliaries.stream().collect(Collectors.toMap(MaterialAuxiliary::getId, MaterialAuxiliary::getSuppValueMap));
             saleOrderList.stream().forEach(o->{
                 o.setUnit(unitMap.get(o.getUnitId()));
                 o.setMtl(mtlMap.get(o.getMtlId()));
                 o.setMtlCode(mtlCodeMap.get(o.getMtlId()));
                 o.setSpecification(mtlSpecMap.get(o.getMtlId()));
                 o.setDiscountTypeName(EnumConvertUtils.getName(DiscountType.class, o.getDiscountType()));
+                o.setSuppValueMap(auxiliaryMap.get(o.getAuxiliaryId()));
             });
         }
 

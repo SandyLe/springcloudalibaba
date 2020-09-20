@@ -127,7 +127,8 @@ public class InventoryOutServiceImpl extends ServiceImpl<InventoryOutMapper, Inv
 
             for (PreInventoryOutMtl mtl : mtls) {
                 InventoryLog inventoryLog = new InventoryLog(info.getId(), mtl.getSourceId(), info.getSourceBillType(), mtl.getMtlId(),
-                        mtl.getWarehouseId(), null, mtl.getQuantity(), null, mtl.getUnitId(), mtl.getOperationId(), null, info.getCompanyId());
+                        mtl.getWarehouseId(), null, mtl.getQuantity(), null, mtl.getUnitId(), mtl.getOperationId(), null, info.getCompanyId(),
+                        mtl.getAuxiliaryId());
                 if (null != preInventoryDto.getDeliveryDate()) {
                     inventoryLog.setOperateTime(preInventoryDto.getDeliveryDate());
                 } else {
@@ -253,7 +254,8 @@ public class InventoryOutServiceImpl extends ServiceImpl<InventoryOutMapper, Inv
             List<SaleOrderMtl> saleOrderMtls = saleOrderMtlService.list(queryWrapper);
             if (CollectionUtils.isNotEmpty(saleOrderMtls)) {
                 saleOrderMtls.forEach(o ->{
-                    inventoryOutMtls.add(new InventoryOutMtl(inventoryOut.getId(), o.getSourceId(), inventoryOut.getSourceBillType(), o.getMtlId(), o.getQuantity(), o.getUnitId(), RowSts.EFFECTIVE.getId()));
+                    inventoryOutMtls.add(new InventoryOutMtl(inventoryOut.getId(), o.getSourceId(), inventoryOut.getSourceBillType(), o.getMtlId(), o.getQuantity(), o.getUnitId(),
+                            RowSts.EFFECTIVE.getId(), o.getAuxiliaryId()));
                 });
                 SaleOrder saleOrder = saleOrderService.getById(inventoryOut.getSourceId());
                 saleOrder.setBillStatus(BillStatus.TOSEND.getId());
@@ -264,7 +266,8 @@ public class InventoryOutServiceImpl extends ServiceImpl<InventoryOutMapper, Inv
             List<PurchaseReturnMtl> purchaseReturnMtls = iPurchaseReturnMtlService.list(queryWrapper);
             if (CollectionUtils.isNotEmpty(purchaseReturnMtls)) {
                 purchaseReturnMtls.forEach(o ->{
-                    inventoryOutMtls.add(new InventoryOutMtl(inventoryOut.getId(), o.getSourceId(), inventoryOut.getSourceBillType(), o.getMtlId(), o.getQuantity(), o.getUnitId(), RowSts.EFFECTIVE.getId()));
+                    inventoryOutMtls.add(new InventoryOutMtl(inventoryOut.getId(), o.getSourceId(), inventoryOut.getSourceBillType(), o.getMtlId(), o.getQuantity(), o.getUnitId(),
+                            RowSts.EFFECTIVE.getId(), o.getAuxiliaryId()));
                 });
             }
         } else if (inventoryOut.getSourceBillType() == BillType.ALLOT.getId()) {
@@ -272,7 +275,8 @@ public class InventoryOutServiceImpl extends ServiceImpl<InventoryOutMapper, Inv
             List<AllotDtl> allotDtls = allotDtlService.list(queryWrapper);
             if (CollectionUtils.isNotEmpty(allotDtls)) {
                 allotDtls.forEach(o ->{
-                    inventoryOutMtls.add(new InventoryOutMtl(inventoryOut.getId(), o.getSourceId(), inventoryOut.getSourceBillType(), o.getMtlId(), o.getAllotAmount(), o.getUnitId(), RowSts.EFFECTIVE.getId()));
+                    inventoryOutMtls.add(new InventoryOutMtl(inventoryOut.getId(), o.getSourceId(), inventoryOut.getSourceBillType(), o.getMtlId(), o.getAllotAmount(), o.getUnitId(),
+                            RowSts.EFFECTIVE.getId(), o.getAuxiliaryId()));
                 });
             }
         } else if (inventoryOut.getSourceBillType() == BillType.ASSEMBLE.getId()) {
@@ -280,18 +284,21 @@ public class InventoryOutServiceImpl extends ServiceImpl<InventoryOutMapper, Inv
             List<AssembleDtl> assembleDtls = assembleDtlService.list(queryWrapper);
             if (CollectionUtils.isNotEmpty(assembleDtls)) {
                 assembleDtls.forEach(o ->{
-                    inventoryOutMtls.add(new InventoryOutMtl(inventoryOut.getId(), o.getSourceId(), inventoryOut.getSourceBillType(), o.getMtlId(), o.getQuantity(), o.getUnitId(), RowSts.EFFECTIVE.getId()));
+                    inventoryOutMtls.add(new InventoryOutMtl(inventoryOut.getId(), o.getSourceId(), inventoryOut.getSourceBillType(), o.getMtlId(), o.getQuantity(), o.getUnitId(),
+                            RowSts.EFFECTIVE.getId(), o.getAuxiliaryId()));
                 });
             }
         } else if (inventoryOut.getSourceBillType() == BillType.TEARDOWN.getId()) {
             Teardown teardown = teardownService.getById(inventoryOut.getSourceId());
-            inventoryOutMtls.add(new InventoryOutMtl(inventoryOut.getId(), teardown.getId(), inventoryOut.getSourceBillType(), teardown.getMtlId(), teardown.getQuantity(), teardown.getUnitId(), RowSts.EFFECTIVE.getId()));
+            inventoryOutMtls.add(new InventoryOutMtl(inventoryOut.getId(), teardown.getId(), inventoryOut.getSourceBillType(), teardown.getMtlId(), teardown.getQuantity(), teardown.getUnitId(),
+                    RowSts.EFFECTIVE.getId(), teardown.getAuxiliaryId()));
         } else if (inventoryOut.getSourceBillType() == BillType.CHANGEORDER.getId()) {
             LambdaQueryWrapper<ChangeOrderDtl> queryWrapper = new LambdaQueryWrapper<ChangeOrderDtl>().eq(ChangeOrderDtl::getSourceId, inventoryOut.getSourceId());
             List<ChangeOrderDtl> allotDtls = changeOrderDtlService.list(queryWrapper);
             if (CollectionUtils.isNotEmpty(allotDtls)) {
                 allotDtls.forEach(o ->{
-                    inventoryOutMtls.add(new InventoryOutMtl(inventoryOut.getId(), o.getSourceId(), inventoryOut.getSourceBillType(), o.getNewMtlId(), o.getNewQuantity(), o.getNewUnitId(), RowSts.EFFECTIVE.getId()));
+                    inventoryOutMtls.add(new InventoryOutMtl(inventoryOut.getId(), o.getSourceId(), inventoryOut.getSourceBillType(), o.getNewMtlId(), o.getNewQuantity(), o.getNewUnitId(),
+                            RowSts.EFFECTIVE.getId(), o.getAuxiliaryId()));
                 });
             }
         } else if (inventoryOut.getSourceBillType() == BillType.WORKORDER.getId()) {
@@ -299,7 +306,8 @@ public class InventoryOutServiceImpl extends ServiceImpl<InventoryOutMapper, Inv
             List<WorkOrderDtl> workOrderDtls = workOrderDtlService.list(queryWrapper);
             if (CollectionUtils.isNotEmpty(workOrderDtls)) {
                 workOrderDtls.forEach(o ->{
-                    inventoryOutMtls.add(new InventoryOutMtl(inventoryOut.getId(), o.getSourceId(), inventoryOut.getSourceBillType(), o.getMtlId(), o.getQuantity(), o.getUnitId(), RowSts.EFFECTIVE.getId()));
+                    inventoryOutMtls.add(new InventoryOutMtl(inventoryOut.getId(), o.getSourceId(), inventoryOut.getSourceBillType(), o.getMtlId(), o.getQuantity(), o.getUnitId(),
+                            RowSts.EFFECTIVE.getId(), o.getAuxiliaryId()));
                 });
             }
         }
@@ -336,6 +344,7 @@ public class InventoryOutServiceImpl extends ServiceImpl<InventoryOutMapper, Inv
                 preInventoryOutMtl.setUnitId(o.getUnitId());
                 preInventoryOutMtl.setOperationId(operationId);
                 preInventoryOutMtl.setWarehouseId(inventoryOut.getWarehouseId());
+                preInventoryOutMtl.setAuxiliaryId(o.getAuxiliaryId());
                 preInventoryOutMtls.add(preInventoryOutMtl);
             }
         });

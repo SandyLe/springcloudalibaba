@@ -29,6 +29,8 @@ public class AssembleDtl extends CBasicEntity {
     private String unit;
     @ApiModelProperty("数量")
     private BigDecimal quantity;
+    @ApiModelProperty("辅助属性ID")
+    private String auxiliaryId;
 
     public String getMtlId() {
         return mtlId;
@@ -76,5 +78,13 @@ public class AssembleDtl extends CBasicEntity {
 
     public void setSourceId(String sourceId) {
         this.sourceId = sourceId;
+    }
+
+    public String getAuxiliaryId() {
+        return auxiliaryId;
+    }
+
+    public void setAuxiliaryId(String auxiliaryId) {
+        this.auxiliaryId = auxiliaryId;
     }
 }

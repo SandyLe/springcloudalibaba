@@ -42,6 +42,8 @@ public class Stocking extends CBasicEntity {
     @ApiModelProperty("条形码")
     @TableField(exist=false)
     private String barCode;
+    @ApiModelProperty("辅助属性ID")
+    private String auxiliaryId;
 
     public String getMtlId() {
         return mtlId;

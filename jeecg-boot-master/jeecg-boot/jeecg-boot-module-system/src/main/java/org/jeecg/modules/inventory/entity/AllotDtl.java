@@ -34,6 +34,8 @@ public class AllotDtl extends CBasicEntity {
     @TableField(exist=false)
     @ApiModelProperty("单位")
     private String unit;
+    @ApiModelProperty("辅助属性ID")
+    private String auxiliaryId;
 
     public String getMtlId() {
         return mtlId;
@@ -97,5 +99,13 @@ public class AllotDtl extends CBasicEntity {
 
     public void setToAmount(BigDecimal toAmount) {
         this.toAmount = toAmount;
+    }
+
+    public String getAuxiliaryId() {
+        return auxiliaryId;
+    }
+
+    public void setAuxiliaryId(String auxiliaryId) {
+        this.auxiliaryId = auxiliaryId;
     }
 }

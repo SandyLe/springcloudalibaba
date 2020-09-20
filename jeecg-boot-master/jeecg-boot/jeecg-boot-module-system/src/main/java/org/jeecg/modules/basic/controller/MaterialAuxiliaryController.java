@@ -1,5 +1,6 @@
 package org.jeecg.modules.basic.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -135,4 +136,18 @@ public class MaterialAuxiliaryController {
         return Result.ok(materialAuxiliary);
     }
 
+    /**
+     * 根据SourceIds获取
+     *
+     * @param sourceIds
+     * @return
+     */
+    @ApiOperation(value = "根据IDS获取", notes = "根据IDS获取")
+    @GetMapping(value = "/getListBySourceIds")
+    public Result<?> getListBySourceIds(@RequestParam(name = "sourceIds") List<String> sourceIds) {
+        LambdaQueryWrapper<MaterialAuxiliary> queryWrapper = new LambdaQueryWrapper<MaterialAuxiliary>();
+        queryWrapper.in(MaterialAuxiliary::getSourceId, sourceIds);
+        List<MaterialAuxiliary> list = materialAuxiliaryService.list(queryWrapper);
+        return Result.ok(list);
+    }
 }

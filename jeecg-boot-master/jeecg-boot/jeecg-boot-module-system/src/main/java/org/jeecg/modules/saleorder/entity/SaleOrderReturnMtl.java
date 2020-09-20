@@ -48,6 +48,8 @@ public class SaleOrderReturnMtl extends CBasicEntity {
     @ApiModelProperty("退货方式")
     @TableField(exist=false)
     private String returnTypeName;
+    @ApiModelProperty("辅助属性ID")
+    private String auxiliaryId;
 
     public String getMtlId() {
         return mtlId;
@@ -167,5 +169,13 @@ public class SaleOrderReturnMtl extends CBasicEntity {
 
     public void setReturnTypeName(String returnTypeName) {
         this.returnTypeName = returnTypeName;
+    }
+
+    public String getAuxiliaryId() {
+        return auxiliaryId;
+    }
+
+    public void setAuxiliaryId(String auxiliaryId) {
+        this.auxiliaryId = auxiliaryId;
     }
 }
