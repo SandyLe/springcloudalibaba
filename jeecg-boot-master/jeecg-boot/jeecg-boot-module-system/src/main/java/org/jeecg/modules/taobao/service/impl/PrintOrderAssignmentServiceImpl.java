@@ -1,5 +1,6 @@
 package org.jeecg.modules.taobao.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.jeecg.modules.taobao.entity.PrintOrderAssignment;
 import org.jeecg.modules.taobao.mapper.PrintOrderAssignmentMapper;
@@ -19,5 +20,11 @@ public class PrintOrderAssignmentServiceImpl extends ServiceImpl<PrintOrderAssig
     @Override
     public boolean savePrintOrderAssignmentBatch(List<PrintOrderAssignment> printOrderAssignmentList) {
         return super.saveOrUpdateBatch(printOrderAssignmentList);
+    }
+
+    @Override
+    public PrintOrderAssignment findByTid(String tid) {
+
+        return getOne(new LambdaQueryWrapper<PrintOrderAssignment>().eq(PrintOrderAssignment::getTid, tid));
     }
 }

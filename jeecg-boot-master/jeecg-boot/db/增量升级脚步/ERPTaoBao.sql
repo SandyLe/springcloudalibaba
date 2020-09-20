@@ -45,6 +45,7 @@ CREATE TABLE `sl_trade` (
   `shipping_type` varchar(30) DEFAULT NULL,
   `mark_desc` varchar(30) DEFAULT NULL,
   `credit_card_fee` varchar(30) DEFAULT NULL,
+  `topic` varchar(30) DEFAULT NULL,
   `has_buyer_message` int(1) DEFAULT 0,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8,
@@ -113,10 +114,81 @@ CREATE TABLE `sl_print_order_assignment` (
 	`receiver_city` varchar(30) DEFAULT NULL,
 	`receiver_district` varchar(30) DEFAULT NULL,
 	`receiver_town` varchar(30) DEFAULT NULL,
-	`receiver_address` varchar(30) DEFAULT NULL,
+	`receiver_address` varchar(100) DEFAULT NULL,
 	`receiver_zip` varchar(30) DEFAULT NULL,
 	`receiver_mobile` varchar(30) DEFAULT NULL,
 	`receiver_phone` varchar(30) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+-------产品辅助属性-------
+
+DROP TABLE IF EXISTS `sl_supplementary`;
+CREATE TABLE `sl_supplementary`  (
+  `id` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `code` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `content` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `create_time` datetime(0) NULL DEFAULT NULL,
+  `update_time` datetime(0) NULL DEFAULT NULL,
+  `create_by` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `update_by` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `row_sts` int(11) NULL DEFAULT NULL,
+  `sort` int(11) NULL DEFAULT NULL,
+  `company_id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '公司ID'
+)
+
+DROP TABLE IF EXISTS `sl_supplementary_value`;
+CREATE TABLE `sl_supplementary_value`  (
+  `id` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `code` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `content` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `create_time` datetime(0) NULL DEFAULT NULL,
+  `update_time` datetime(0) NULL DEFAULT NULL,
+  `create_by` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `update_by` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `row_sts` int(11) NULL DEFAULT NULL,
+  `sort` int(11) NULL DEFAULT NULL,
+  `company_id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '公司ID',
+	`source_id` varchar(50) DEFAULT NULL
+)
+
+DROP TABLE IF EXISTS `sl_material_auxiliary`;
+CREATE TABLE `sl_material_auxiliary`  (
+  `id` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `code` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `content` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `create_time` datetime(0) NULL DEFAULT NULL,
+  `update_time` datetime(0) NULL DEFAULT NULL,
+  `create_by` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `update_by` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `row_sts` int(11) NULL DEFAULT NULL,
+  `sort` int(11) NULL DEFAULT NULL,
+  `company_id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '公司ID',
+	`source_id` varchar(50) DEFAULT NULL,
+	`supp_code_map` varchar(100) DEFAULT NULL,
+	`supp_value_map` varchar(100) DEFAULT NULL
+)
+
+DROP TABLE IF EXISTS `sl_material_auxiliary_item`;
+CREATE TABLE `sl_material_auxiliary_item`  (
+  `id` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `code` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `content` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `create_time` datetime(0) NULL DEFAULT NULL,
+  `update_time` datetime(0) NULL DEFAULT NULL,
+  `create_by` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `update_by` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `row_sts` int(11) NULL DEFAULT NULL,
+  `sort` int(11) NULL DEFAULT NULL,
+  `company_id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '公司ID',
+	`source_id` varchar(50) DEFAULT NULL,
+  `supp_name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `supp_code` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `supp_value_name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `supp_value_code` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `mtl_id` varchar(50) DEFAULT NULL
+)

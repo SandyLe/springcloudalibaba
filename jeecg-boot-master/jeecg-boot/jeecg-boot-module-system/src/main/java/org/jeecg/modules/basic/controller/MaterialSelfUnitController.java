@@ -64,12 +64,14 @@ public class MaterialSelfUnitController {
         Page<MaterialSelfUnit> page = new Page<MaterialSelfUnit>(pageNo, pageSize);
         IPage<MaterialSelfUnit> pageList = materialSelfUnitService.page(page, queryWrapper);
         List<MaterialSelfUnit> records = page.getRecords();
-        List<String> unitIds = records.stream().map(MaterialSelfUnit::getUnitId).collect(Collectors.toList());
-        Collection<MaterialUnit> units = materialUnitService.listByIds(unitIds);
-        Map<String, String> unitMap = units.stream().collect(Collectors.toMap(MaterialUnit::getId, MaterialUnit::getName));
-        records.stream().forEach(o->{
-            o.setUnit(unitMap.get(o.getUnitId()));
-        });
+        if (CollectionUtils.isNotEmpty(records)) {
+            List<String> unitIds = records.stream().map(MaterialSelfUnit::getUnitId).collect(Collectors.toList());
+            Collection<MaterialUnit> units = materialUnitService.listByIds(unitIds);
+            Map<String, String> unitMap = units.stream().collect(Collectors.toMap(MaterialUnit::getId, MaterialUnit::getName));
+            records.stream().forEach(o->{
+                o.setUnit(unitMap.get(o.getUnitId()));
+            });
+        }
         pageList.setRecords(records);
         log.info("查询当前页：" + pageList.getCurrent());
         log.info("查询当前页数量：" + pageList.getSize());

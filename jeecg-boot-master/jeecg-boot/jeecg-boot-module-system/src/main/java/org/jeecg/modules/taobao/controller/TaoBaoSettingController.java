@@ -20,6 +20,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
+import org.jeecg.common.constant.TaobaoMessageConstant;
 import org.jeecg.common.enums.BillStatus;
 import org.jeecg.common.enums.BillType;
 import org.jeecg.common.enums.DeliveryType;
@@ -65,7 +66,7 @@ public class TaoBaoSettingController {
         TaobaoClient client = new DefaultTaobaoClient("http://gw.api.taobao.com/router/rest", "31020098", "b05879570f97a1fbf84d35293c12500b");
 
         TmcUserPermitRequest req = new TmcUserPermitRequest();
-        req.setTopics("taobao_trade_TradeCreate");
+        req.setTopics(String.join(",", TaobaoMessageConstant.TAOBAO_MESSAGE_LIST));
         TmcUserPermitResponse rsp = client.execute(req, "6101107c9971e731a27e8bf4179f36b10341f340637e9c62204151847931");
         System.out.println(rsp.getBody());
 

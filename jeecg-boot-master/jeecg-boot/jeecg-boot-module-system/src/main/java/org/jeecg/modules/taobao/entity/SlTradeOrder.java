@@ -1,6 +1,7 @@
 package org.jeecg.modules.taobao.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -34,6 +35,7 @@ public class SlTradeOrder extends BaseBill {
     @ApiModelProperty("商品数字编号")
     private Long numIid;
     @ApiModelProperty("子订单编号")
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Long oid;
     @ApiModelProperty("oidStr")
     private String oidStr;

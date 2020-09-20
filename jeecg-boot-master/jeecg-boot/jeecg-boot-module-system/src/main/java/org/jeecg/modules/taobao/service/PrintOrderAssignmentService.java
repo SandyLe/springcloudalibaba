@@ -15,4 +15,11 @@ public interface PrintOrderAssignmentService {
      * @param printOrderAssignmentList
      */
     public boolean savePrintOrderAssignmentBatch(List<PrintOrderAssignment> printOrderAssignmentList);
+
+    /**
+     * 根据交易ID查询
+     * @param tid
+     * @return
+     */
+    public PrintOrderAssignment findByTid(String tid);
 }

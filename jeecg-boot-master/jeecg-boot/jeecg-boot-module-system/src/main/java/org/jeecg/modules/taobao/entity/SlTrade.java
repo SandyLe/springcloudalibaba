@@ -1,12 +1,15 @@
 package org.jeecg.modules.taobao.entity;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.jeecg.modules.basic.entity.BaseBill;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 @TableName("sl_trade")
@@ -14,6 +17,7 @@ import java.util.Date;
 public class SlTrade extends BaseBill {
 
     @ApiModelProperty("交易编号 (父订单的交易编号)")
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Long tid;
     @ApiModelProperty("卖家昵称")
     private String sellerNick;
@@ -89,6 +93,10 @@ public class SlTrade extends BaseBill {
     private String creditCardFee;
     @ApiModelProperty("判断订单是否有买家留言，有买家留言返回true，否则返回false")
     private Boolean hasBuyerMessage;
+    @ApiModelProperty("主题")
+    private String topic;
+    @TableField(exist=false)
+    private List<SlTradeOrder> children;
 
     public String getSignTime() {
         return signTime;
@@ -393,4 +401,21 @@ public class SlTrade extends BaseBill {
     public void setReceivedPayment(String receivedPayment) {
         this.receivedPayment = receivedPayment;
     }
+
+    public String getTopic() {
+        return topic;
+    }
+
+    public void setTopic(String topic) {
+        this.topic = topic;
+    }
+
+    public List<SlTradeOrder> getChildren() {
+        return children;
+    }
+
+    public void setChildren(List<SlTradeOrder> children) {
+        this.children = children;
+    }
+
 }
