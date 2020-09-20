@@ -187,6 +187,19 @@ const getPriceSpaceModeList = (params)=>getAction("/basic/fc/enum/priceSpaceMode
 const loadShopData = (params)=>getAction("/sys/sysDepart/getSysDepartList",params)
 const getAllUser = (params)=>getAction("/sys/user/getAll",params)
 
+// 辅助属性
+const addSupplementary = (params)=>postAction("/supplementary/add",params)  // 新增辅助属性
+const editSupplementary = (params)=>postAction("/supplementary/edit",params)  // 编辑辅助属性
+const getSupplementaryOne = (params)=>getAction("/supplementary/getOne",params)  // 获取辅助属性
+const getSupplementaryList = (params)=>getAction("/supplementary/getList",params)  // 获取辅助属性
+const addSupplementaryValue = (params)=>postAction("/supplementaryValue/add",params)  // 新增辅助属性值
+const editSupplementaryValue = (params)=>postAction("/supplementaryValue/edit",params)  // 编辑辅助属性值
+const addMaterialAuxiliary = (params)=>postAction("/materialAuxiliary/add",params)  // 新增产品辅助属性
+const editMaterialAuxiliary = (params)=>postAction("/materialAuxiliary/edit",params)  // 编辑产品辅助属性
+const addMaterialAuxiliaryItem = (params)=>postAction("/materialAuxiliaryItem/add",params)  // 新增产品辅助属性
+const editMaterialAuxiliaryItem = (params)=>postAction("/materialAuxiliaryItem/edit",params)  // 编辑产品辅助属性
+const getSupplementaryValListBySourceCode = (params)=>getAction("/supplementaryValue/getListBySourceCode",params)  // 获取辅助属性值
+
 //采购
 const purchasequeryById = (params)=>getAction("/purchase/queryById",params)
 const purchasedetailDelete = (params)=>deleteAction("/purchaseMtl/delete",params)
@@ -315,8 +328,15 @@ const getWorkAddress = (params)=>getAction("/workAddress/getOneBySourceId", para
 const saveWorkAddress = (params)=>postAction("/workAddress/save", params);
 const getInstallAddress = (params)=>getAction("/workAddress/getInstallAddress", params);
 
+const getTaobaoOrder = (params)=>getAction("/saleOrder/getTaobaoOrder", params);
+
+const subscribe = (params)=>getAction("/taoBaoSetting/subscribe", params);
+const getOneTrade = (params)=>getAction("/slTrade/queryFromTaoBao", params);
+const getSlTradeOrderList = (params)=>getAction("/slTradeOrder/list", params);
 
 export {
+  getOneTrade,
+
   // imgView,
   // doMian,
   addRole,
@@ -531,7 +551,21 @@ export {
   disableSaleOrderReturn,
   getWorkAddress,
   saveWorkAddress,
-  getInstallAddress
+  getInstallAddress,
+  getTaobaoOrder,
+  subscribe,
+  getSlTradeOrderList,
+  addSupplementary,
+  editSupplementary,
+  addSupplementaryValue,
+  editSupplementaryValue,
+  addMaterialAuxiliary,
+  editMaterialAuxiliary,
+  addMaterialAuxiliaryItem,
+  editMaterialAuxiliaryItem,
+  getSupplementaryOne,
+  getSupplementaryList,
+  getSupplementaryValListBySourceCode
 }
 
 
