@@ -43,6 +43,10 @@
             <a-col :sm="4" :xs="4" class="titletd">安装时间：</a-col><a-col :sm="8" :xs="8">{{this.saleOrder.installTime}}</a-col>
             <a-col :sm="4" :xs="4" class="titletd">出库方式：</a-col><a-col :sm="8" :xs="8">{{this.saleOrder.deliveryTypeName}}</a-col>
           </a-row>
+          <a-row>
+            <a-col :sm="4" :xs="4" class="titletd">备注：</a-col>
+            <a-col :sm="20" :xs="20">{{this.saleOrder.content}}</a-col>
+          </a-row>
         </table>
         <div style="margin-top: 15px">
           <div class="title">订单产品</div>

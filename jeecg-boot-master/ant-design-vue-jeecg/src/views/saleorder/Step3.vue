@@ -33,6 +33,10 @@
               <a-col :sm="4" :xs="4">订单金额：</a-col>
               <a-col :sm="8" :xs="8"><span class="money">{{saleOrder.totalamount}}</span> 元</a-col>
             </a-row>
+            <a-row>
+              <a-col :sm="4" :xs="4">备注：</a-col>
+              <a-col :sm="20" :xs="20">{{this.saleOrder.content}}</a-col>
+            </a-row>
           </table>
 
           <div style="margin-top: 15px">

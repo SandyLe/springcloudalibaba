@@ -116,6 +116,11 @@
             dataIndex: 'billTypeName'
           },
           {
+            title: '收款状态',
+            align:"center",
+            dataIndex: 'receiptStatus'
+          },
+          {
             title: '状态',
             align:"center",
             dataIndex: 'billStatusName'

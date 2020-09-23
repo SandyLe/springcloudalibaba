@@ -44,35 +44,6 @@
       <a-row>
         <a-col :md="8" :sm="8">
           <a-form-item
-            label="送货时间"
-            :labelCol="{span: 4}"
-            :wrapperCol="{span: 18}"
-            class="stepFormText">
-            <a-date-picker showTime format='YYYY-MM-DD HH:mm:ss' v-decorator="[ 'deliveryTime', {}]" :disabled="unEditable"/>
-          </a-form-item>
-        </a-col>
-        <a-col :md="8" :sm="8">
-          <a-form-item
-            label="测量时间"
-            :labelCol="{span: 5}"
-            :wrapperCol="{span: 19}"
-            class="stepFormText">
-            <a-date-picker showTime format='YYYY-MM-DD HH:mm:ss' v-decorator="[ 'measuringTime', {}]" :disabled="unEditable"/>
-          </a-form-item>
-        </a-col>
-        <a-col :md="8" :sm="8">
-          <a-form-item
-            label="安装时间"
-            :labelCol="{span: 6}"
-            :wrapperCol="{span: 18}"
-            class="stepFormText">
-            <a-date-picker showTime format='YYYY-MM-DD HH:mm:ss' v-decorator="[ 'installTime', {}]" :disabled="unEditable"/>
-          </a-form-item>
-        </a-col>
-      </a-row>
-      <a-row>
-        <a-col :md="8" :sm="8">
-          <a-form-item
             :labelCol="{span: 2}"
             :wrapperCol="{span: 22}"
             label="渠道">
@@ -95,6 +66,35 @@
             :wrapperCol="{span: 18}"
             label="订单日期">
             <a-date-picker showTime format='YYYY-MM-DD HH:mm:ss' v-decorator="[ 'billDate', validatorRules.billDate]" :readOnly = "unEditable" :disabled="unEditable" />
+          </a-form-item>
+        </a-col>
+        <a-col :md="8" :sm="8">
+          <a-form-item
+            label="送货时间"
+            :labelCol="{span: 4}"
+            :wrapperCol="{span: 18}"
+            class="stepFormText">
+            <a-date-picker showTime format='YYYY-MM-DD HH:mm:ss' v-decorator="[ 'deliveryTime', {}]" :disabled="unEditable"/>
+          </a-form-item>
+        </a-col>
+      </a-row>
+      <a-row>
+        <a-col :md="8" :sm="8">
+          <a-form-item
+            label="测量时间"
+            :labelCol="{span: 5}"
+            :wrapperCol="{span: 19}"
+            class="stepFormText">
+            <a-date-picker showTime format='YYYY-MM-DD HH:mm:ss' v-decorator="[ 'measuringTime', {}]" :disabled="unEditable"/>
+          </a-form-item>
+        </a-col>
+        <a-col :md="8" :sm="8">
+          <a-form-item
+            label="安装时间"
+            :labelCol="{span: 6}"
+            :wrapperCol="{span: 18}"
+            class="stepFormText">
+            <a-date-picker showTime format='YYYY-MM-DD HH:mm:ss' v-decorator="[ 'installTime', {}]" :disabled="unEditable"/>
           </a-form-item>
         </a-col>
       </a-row>
