@@ -37,6 +37,9 @@ public class InventoryOut extends CBasicEntity {
     @ApiModelProperty("仓库")
     @TableField(exist=false)
     private String warehouse;
+    @ApiModelProperty("收款状态")
+    @TableField(exist=false)
+    private String receiptStatus;
 
     public InventoryOut() {
     }
@@ -129,4 +132,11 @@ public class InventoryOut extends CBasicEntity {
         this.warehouse = warehouse;
     }
 
+    public String getReceiptStatus() {
+        return receiptStatus;
+    }
+
+    public void setReceiptStatus(String receiptStatus) {
+        this.receiptStatus = receiptStatus;
+    }
 }

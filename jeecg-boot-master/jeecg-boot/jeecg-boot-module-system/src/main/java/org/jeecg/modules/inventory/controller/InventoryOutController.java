@@ -24,6 +24,8 @@ import org.jeecg.common.enums.EnumConvertUtils;
 import org.jeecg.common.enums.RowSts;
 import org.jeecg.modules.basic.service.*;
 //import org.jeecg.modules.inventory.entity.InventoryOut;
+import org.jeecg.modules.financial.entity.ReceiptOrder;
+import org.jeecg.modules.financial.service.ReceiptOrderService;
 import org.jeecg.modules.inventory.dto.PreInventoryDto;
 import org.jeecg.modules.inventory.entity.InventoryOut;
 import org.jeecg.modules.inventory.service.InventoryOutService;
@@ -53,6 +55,8 @@ public class InventoryOutController {
     private MaterialService materialService;
     @Autowired
     private MaterialAuxiliaryService materialAuxiliaryService;
+    @Autowired
+    private ReceiptOrderService receiptOrderService;
 
     /**
      * 出库
@@ -119,11 +123,21 @@ public class InventoryOutController {
         queryWrapper.eq("row_sts", RowSts.EFFECTIVE.getId());
         IPage<InventoryOut> pageList = inventoryOutService.page(page, queryWrapper);
         List<InventoryOut> inventoryOutList = pageList.getRecords();
-        inventoryOutList.stream().forEach(o->{
-            o.setBillTypeName(EnumConvertUtils.getName(BillType.class, o.getBillType()));
-            o.setSourceBillTypeName(EnumConvertUtils.getName(BillType.class, o.getSourceBillType()));
-            o.setBillStatusName(EnumConvertUtils.getName(BillStatus.class, o.getBillStatus()));
-        });
+        if (CollectionUtils.isNotEmpty(inventoryOutList)) {
+            List<String> sourceCodes = inventoryOutList.stream().map(InventoryOut::getSourceCode).collect(Collectors.toList());
+            LambdaQueryWrapper<ReceiptOrder> receiptOrderLambdaQueryWrapper = new LambdaQueryWrapper<>();
+            receiptOrderLambdaQueryWrapper.in(ReceiptOrder::getSourceBillCode, sourceCodes);
+            receiptOrderLambdaQueryWrapper.eq(ReceiptOrder::getCompanyId, LoginUtils.getLoginUser().getCompanyId());
+            List<ReceiptOrder> receiptOrders = receiptOrderService.list(receiptOrderLambdaQueryWrapper);
+            Map<String, Integer> receiptMap = receiptOrders.stream().collect(Collectors.toMap(ReceiptOrder::getSourceBillCode, ReceiptOrder::getBillStatusId));
+            inventoryOutList.stream().forEach(o->{
+                o.setBillTypeName(EnumConvertUtils.getName(BillType.class, o.getBillType()));
+                o.setSourceBillTypeName(EnumConvertUtils.getName(BillType.class, o.getSourceBillType()));
+                o.setBillStatusName(EnumConvertUtils.getName(BillStatus.class, o.getBillStatus()));
+                o.setReceiptStatus(EnumConvertUtils.getName(BillStatus.class, receiptMap.get(o.getSourceCode())));
+            });
+            pageList.setRecords(inventoryOutList);
+        }
 
         log.info("查询当前页：" + pageList.getCurrent());
         log.info("查询当前页数量：" + pageList.getSize());

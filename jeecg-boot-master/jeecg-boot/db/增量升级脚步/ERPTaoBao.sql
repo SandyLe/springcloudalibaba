@@ -79,7 +79,7 @@ CREATE TABLE `sl_trade_order` (
   `payment` varchar(30) DEFAULT NULL,
   `pic_path` varchar(60) DEFAULT NULL,
   `price` varchar(30) DEFAULT NULL,
-  `promise_service` varchar(30) DEFAULT NULL,
+  `promise_service` varchar(60) DEFAULT NULL,
   `propoint` varchar(30) DEFAULT NULL,
   `refund_status` varchar(30) DEFAULT NULL,
   `seller_rate` int(1) NULL DEFAULT 0,
@@ -192,3 +192,44 @@ CREATE TABLE `sl_material_auxiliary_item`  (
   `supp_value_code` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `mtl_id` varchar(50) DEFAULT NULL
 )
+
+ALTER TABLE `sl_inventory_out_mtl`
+  ADD COLUMN `auxiliary_id` varchar(30) NULL COMMENT '辅助属性ID' AFTER `mtl_id`;
+ALTER TABLE `sl_sale_order_mtl`
+  ADD COLUMN `auxiliary_id` varchar(30) NULL COMMENT '辅助属性ID' AFTER `mtl_id`;
+ALTER TABLE `sl_change_order_dtl`
+  ADD COLUMN `auxiliary_id` varchar(30) NULL COMMENT '辅助属性ID' AFTER `mtl_id`;
+ALTER TABLE `sl_purchase_mtl`
+  ADD COLUMN `auxiliary_id` varchar(30) NULL COMMENT '辅助属性ID' AFTER `mtl_id`;
+ALTER TABLE `sl_assemble`
+  ADD COLUMN `auxiliary_id` varchar(30) NULL COMMENT '辅助属性ID' AFTER `mtl_id`;
+ALTER TABLE `sl_assemble_dtl`
+  ADD COLUMN `auxiliary_id` varchar(30) NULL COMMENT '辅助属性ID' AFTER `mtl_id`;
+ALTER TABLE `sl_teardown`
+  ADD COLUMN `auxiliary_id` varchar(30) NULL COMMENT '辅助属性ID' AFTER `mtl_id`;
+ALTER TABLE `sl_teardown_dtl`
+  ADD COLUMN `auxiliary_id` varchar(30) NULL COMMENT '辅助属性ID' AFTER `mtl_id`;
+ALTER TABLE `sl_allot_dtl`
+  ADD COLUMN `auxiliary_id` varchar(30) NULL COMMENT '辅助属性ID' AFTER `mtl_id`;
+ALTER TABLE `sl_inventory`
+  ADD COLUMN `auxiliary_id` varchar(30) NULL COMMENT '辅助属性ID' AFTER `mtl_id`;
+ALTER TABLE `sl_inventory_dtl`
+  ADD COLUMN `auxiliary_id` varchar(30) NULL COMMENT '辅助属性ID' AFTER `mtl_id`;
+ALTER TABLE `sl_inventory_in_mtl`
+  ADD COLUMN `auxiliary_id` varchar(30) NULL COMMENT '辅助属性ID' AFTER `mtl_id`;
+ALTER TABLE `sl_inventory_log`
+  ADD COLUMN `auxiliary_id` varchar(30) NULL COMMENT '辅助属性ID' AFTER `mtl_id`;
+ALTER TABLE `sl_inventory_out`
+  ADD COLUMN `auxiliary_id` varchar(30) NULL COMMENT '辅助属性ID' AFTER `mtl_id`;
+ALTER TABLE `sl_inventory_out_mtl`
+  ADD COLUMN `auxiliary_id` varchar(30) NULL COMMENT '辅助属性ID' AFTER `mtl_id`;
+ALTER TABLE `sl_purchase_mtl`
+  ADD COLUMN `auxiliary_id` varchar(30) NULL COMMENT '辅助属性ID' AFTER `mtl_id`;
+ALTER TABLE `sl_purchase_return_mtl`
+  ADD COLUMN `auxiliary_id` varchar(30) NULL COMMENT '辅助属性ID' AFTER `mtl_id`;
+ALTER TABLE `sl_sale_order_mtl`
+  ADD COLUMN `auxiliary_id` varchar(30) NULL COMMENT '辅助属性ID' AFTER `mtl_id`;
+ALTER TABLE `sl_sale_order_return_mtl`
+  ADD COLUMN `auxiliary_id` varchar(30) NULL COMMENT '辅助属性ID' AFTER `mtl_id`;
+ALTER TABLE `sl_work_order_dtl`
+  ADD COLUMN `auxiliary_id` varchar(30) NULL COMMENT '辅助属性ID' AFTER `mtl_id`;
