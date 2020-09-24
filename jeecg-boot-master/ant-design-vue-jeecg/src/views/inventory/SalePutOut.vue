@@ -48,7 +48,7 @@
         @change="handleTableChange">
 
         <span slot="nameAction" slot-scope="text, record">
-          <a @click="goDetail(record.sourceId)">{{record.sourceCode}}</a>
+          <a @click="goSourceDetail(record.sourceBillType, record.sourceId)">{{record.sourceCode}}</a>
         </span>
         <span slot="action" v-if="record.billStatus !== -1" slot-scope="text, record">
           <a v-if="record.billStatus !== 8" @click="handleStocking(record)">出库</a>
@@ -170,6 +170,19 @@
         }
         this.$refs.inventoryLogModal.edit(record);
         this.$refs.inventoryLogModal.title = "出库记录";
+      },
+      goSourceDetail(billType, id) {
+        if (billType == 0 ){
+          this.$router.push({ name: "saleorder-saleOrderEdit", query: {"id": id, "unEditable": true}})
+        } else if (billType == 18) {
+          this.$router.replace({ path:'/changeorder/ChangeOrderModal/' + id , query: {"editType": 0}});
+        } else if (billType == 13) {
+          this.$router.replace({ path:'/inventory/AllotModal/' + id , query: {"editType": 0}});
+        } else if (billType == 5) {
+          this.$router.replace({ path:'/purchase/PurchasereturnModal/' + id , query: {"editType": 0}});
+        } else if (billType == 16) {
+          this.$router.replace({ path:'/workorder/workOrderDetail/' + id , query: {"editType": 0}});
+        }
       }
     }
   }

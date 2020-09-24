@@ -172,6 +172,11 @@
             sorter: true
           },
           {
+            title: '出库单状态',
+            align: "center",
+            dataIndex: 'inventOutStatus'
+          },
+          {
             title: '状态',
             align: "center",
             dataIndex: 'billStatusName'
@@ -220,6 +225,13 @@
       },
       modalFormOk4 () {
         this.loadData()
+      },
+      goSourceDetail(billType, id) {
+        if (billType == 0 ){
+          this.$router.push({ name: "saleorder-saleOrderEdit", query: {"id": id, "unEditable": true}})
+        } else if (billType == 18) {
+          this.$router.replace({ path:'/changeorder/ChangeOrderModal/' + id , query: {"editType": 1}});
+        }
       }
     },
     mounted() {
