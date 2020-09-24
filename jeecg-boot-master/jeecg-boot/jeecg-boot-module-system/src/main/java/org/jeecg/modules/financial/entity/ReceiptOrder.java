@@ -43,6 +43,9 @@ public class ReceiptOrder extends CBasicEntity {
     private String salemanName;
     @ApiModelProperty("单据时间")
     private Date billDate;
+    @ApiModelProperty("出库单状态")
+    @TableField(exist=false)
+    private String inventOutStatus;
 
     public Integer getSourceBillType() {
         return sourceBillType;
@@ -138,5 +141,13 @@ public class ReceiptOrder extends CBasicEntity {
 
     public void setSourceBillCode(String sourceBillCode) {
         this.sourceBillCode = sourceBillCode;
+    }
+
+    public String getInventOutStatus() {
+        return inventOutStatus;
+    }
+
+    public void setInventOutStatus(String inventOutStatus) {
+        this.inventOutStatus = inventOutStatus;
     }
 }
