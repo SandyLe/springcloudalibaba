@@ -1,8 +1,10 @@
 package org.jeecg.modules.saleorder.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.google.common.collect.Lists;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -22,8 +24,10 @@ import org.jeecg.common.enums.EnumConvertUtils;
 import org.jeecg.common.enums.RowSts;
 import org.jeecg.modules.basic.service.MaterialService;
 import org.jeecg.modules.basic.service.MaterialUnitService;
+import org.jeecg.modules.saleorder.entity.SaleOrderReturn;
 import org.jeecg.modules.saleorder.entity.SaleOrderReturnMtl;
 import org.jeecg.modules.saleorder.service.SaleOrderReturnMtlService;
+import org.jeecg.modules.saleorder.service.SaleOrderReturnService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -46,6 +50,8 @@ public class SaleOrderReturnMtlController {
     private MaterialService materialService;
     @Autowired
     private MaterialUnitService materialUnitService;
+    @Autowired
+    private SaleOrderReturnService saleOrderReturnService;
     /**
      * 添加
      *
@@ -96,6 +102,17 @@ public class SaleOrderReturnMtlController {
 
         QueryWrapper<SaleOrderReturnMtl> queryWrapper = QueryGenerator.initQueryWrapper(saleOrderReturnMtl, req.getParameterMap());
         Page<SaleOrderReturnMtl> page = new Page<SaleOrderReturnMtl>(pageNo, pageSize);
+        String sourceBillId = req.getParameter("sourceBillId");
+        if (StringUtils.isNotBlank(sourceBillId)) {
+            LambdaQueryWrapper<SaleOrderReturn> returnLambdaQueryWrapper = new LambdaQueryWrapper<>();
+            returnLambdaQueryWrapper.eq(SaleOrderReturn::getSourceId, sourceBillId);
+            List<SaleOrderReturn> returnList = saleOrderReturnService.list(returnLambdaQueryWrapper);
+            List<String> returnIs = Lists.newArrayList("-1");
+            if (CollectionUtils.isNotEmpty(returnList)) {
+                returnIs = returnList.stream().map(SaleOrderReturn::getId).collect(Collectors.toList());
+            }
+            queryWrapper.in("source_id", returnIs);
+        }
 
         IPage<SaleOrderReturnMtl> pageList = saleOrderReturnMtlService.page(page, queryWrapper);
         List<SaleOrderReturnMtl> saleOrderList = pageList.getRecords();

@@ -87,6 +87,8 @@ public class AllotServiceImpl extends ServiceImpl<AllotMapper, Allot>  implement
             inventoryOut.setWarehouseId(allotdto.getFromWarehouseId());
             inventoryOutService.saveToInventoryOut(inventoryOut);
         }
+        allotdto.setBillStatus(BillStatus.TOSTOCKOUT.getId());
+        super.updateById(allotdto);
         return allotdto.getId();
     }
 
@@ -94,7 +96,6 @@ public class AllotServiceImpl extends ServiceImpl<AllotMapper, Allot>  implement
     @Transactional
     public String editOrder(AllotDto allotdto) {
         // 调拨主表
-        super.updateById(allotdto);
         if (allotdto.getDetaillist().size() > 0) {
             for (AllotDtl item : allotdto.getDetaillist()) {
                 item.setCompanyId(allotdto.getCompanyId());
@@ -114,7 +115,7 @@ public class AllotServiceImpl extends ServiceImpl<AllotMapper, Allot>  implement
             InventoryIn inventoryIn = new InventoryIn();
             inventoryIn.setCompanyId(allotdto.getCompanyId());
             inventoryIn.setBillStatus(BillStatus.TOSTOCKIN.getId());
-            inventoryIn.setWarehouseId(allotdto.getFromWarehouseId());
+            inventoryIn.setWarehouseId(allotdto.getToWarehouseId());
             inventoryIn.setSourceCode(allotdto.getCode());
             inventoryIn.setSourceId(allotdto.getId());
             inventoryIn.setBillType(BillType.INVENTORYIN.getId());
@@ -130,8 +131,11 @@ public class AllotServiceImpl extends ServiceImpl<AllotMapper, Allot>  implement
             InventoryOut inventoryOut = new InventoryOut(allotdto.getId(), allotdto.getCode(), BillType.INVENTORYOUT.getId(), BillType.ALLOT.getId(), BillStatus.TOSTOCKOUT.getId());
             inventoryOut.setRowSts(RowSts.EFFECTIVE.getId());
             inventoryOut.setCompanyId(allotdto.getCompanyId());
+            inventoryOut.setWarehouseId(allotdto.getFromWarehouseId());
             inventoryOutService.saveToInventoryOut(inventoryOut);
         }
+        allotdto.setBillStatus(BillStatus.TOSTOCKOUT.getId());
+        super.updateById(allotdto);
         return allotdto.getId();
     }
 }
