@@ -24,7 +24,7 @@
             :labelCol="{span: 5}"
             :wrapperCol="{span: 19}"
             label="单号">
-            <a-input placeholder="自动生成单号" :readOnly="true" v-decorator="[ 'code', {}]" :disabled="unEditable" />
+            <a-input placeholder="自动生成单号" :readOnly="true" v-decorator="[ 'code', {}]" :disabled="editType" />
           </a-form-item>
         </a-col>
         <a-col :md="8" :sm="8">
@@ -55,9 +55,9 @@
               placeholder="请选择销售渠道"
               @change="handleParentIdChange">
             </a-tree-select>
-            <!-- <j-dict-select-tag style="width: 30%" v-decorator="['channelId', {}]" placeholder="请选择销售渠道" :type="'select'" :triggerChange="true" dictCode="channel" :disabled="unEditable" :readOnly = "unEditable" />
-            <j-dict-select-tag style="width: 30%" v-decorator="['channelId', {}]" placeholder="请选择销售渠道" :type="'select'" :triggerChange="true" dictCode="channel" :disabled="unEditable" :readOnly = "unEditable" />
-            <j-dict-select-tag style="width: 30%" v-decorator="['channelId', {}]" placeholder="请选择销售渠道" :type="'select'" :triggerChange="true" dictCode="channel" :disabled="unEditable" :readOnly = "unEditable" /> -->
+            <!-- <j-dict-select-tag style="width: 30%" v-decorator="['channelId', {}]" placeholder="请选择销售渠道" :type="'select'" :triggerChange="true" dictCode="channel" :disabled="editType" :readOnly = "editType" />
+            <j-dict-select-tag style="width: 30%" v-decorator="['channelId', {}]" placeholder="请选择销售渠道" :type="'select'" :triggerChange="true" dictCode="channel" :disabled="editType" :readOnly = "editType" />
+            <j-dict-select-tag style="width: 30%" v-decorator="['channelId', {}]" placeholder="请选择销售渠道" :type="'select'" :triggerChange="true" dictCode="channel" :disabled="editType" :readOnly = "editType" /> -->
           </a-form-item>
         </a-col>
         <a-col :md="8" :sm="8">
@@ -65,7 +65,7 @@
             :labelCol="{span: 6}"
             :wrapperCol="{span: 18}"
             label="订单日期">
-            <a-date-picker showTime format='YYYY-MM-DD HH:mm:ss' v-decorator="[ 'billDate', validatorRules.billDate]" :readOnly = "unEditable" :disabled="unEditable" />
+            <a-date-picker showTime format='YYYY-MM-DD HH:mm:ss' v-decorator="[ 'billDate', validatorRules.billDate]" :readOnly = "editType" :disabled="editType" />
           </a-form-item>
         </a-col>
         <a-col :md="8" :sm="8">
@@ -74,7 +74,7 @@
             :labelCol="{span: 4}"
             :wrapperCol="{span: 18}"
             class="stepFormText">
-            <a-date-picker showTime format='YYYY-MM-DD HH:mm:ss' v-decorator="[ 'deliveryTime', {}]" :disabled="unEditable"/>
+            <a-date-picker showTime format='YYYY-MM-DD HH:mm:ss' v-decorator="[ 'deliveryTime', {}]" :disabled="editType"/>
           </a-form-item>
         </a-col>
       </a-row>
@@ -85,7 +85,7 @@
             :labelCol="{span: 5}"
             :wrapperCol="{span: 19}"
             class="stepFormText">
-            <a-date-picker showTime format='YYYY-MM-DD HH:mm:ss' v-decorator="[ 'measuringTime', {}]" :disabled="unEditable"/>
+            <a-date-picker showTime format='YYYY-MM-DD HH:mm:ss' v-decorator="[ 'measuringTime', {}]" :disabled="editType"/>
           </a-form-item>
         </a-col>
         <a-col :md="8" :sm="8">
@@ -94,7 +94,7 @@
             :labelCol="{span: 6}"
             :wrapperCol="{span: 18}"
             class="stepFormText">
-            <a-date-picker showTime format='YYYY-MM-DD HH:mm:ss' v-decorator="[ 'installTime', {}]" :disabled="unEditable"/>
+            <a-date-picker showTime format='YYYY-MM-DD HH:mm:ss' v-decorator="[ 'installTime', {}]" :disabled="editType"/>
           </a-form-item>
         </a-col>
       </a-row>
@@ -105,7 +105,7 @@
             :labelCol="{span: 1}"
             :wrapperCol="{span: 21}"
           >
-            <a-input placeholder="请输入备注" v-decorator="[ 'content', {}]" :readOnly = "unEditable" />
+            <a-input placeholder="请输入备注" v-decorator="[ 'content', {}]" :readOnly = "editType" />
           </a-form-item>
         </a-col>
       </a-row>
@@ -323,7 +323,8 @@
           delete: "/saleOrderMtl/delete",
           deleteBatch: "/saleOrderMtl/deleteBatch"
         },
-        editType: 0
+        editType: 0,
+        reloadFlag:true
       }
     },
     methods: {
@@ -520,7 +521,7 @@
       } else {
         this.add();
       }
-      this.unEditable = this.$route.query.unEditable == 'true';
+      this.editType = this.$route.query.editType == 'true';
     }
   }
 </script>

@@ -50,6 +50,7 @@
       return {
         pageList: [],
         linkList: [],
+        pageNameList: [],
         activePage: '',
         menuVisible: false,
         menuItemList: [
@@ -90,9 +91,11 @@
           }
         })
         this.linkList.push(indexKey)
+        this.pageNameList.push('dashboard-analysis');
       }
       this.pageList.push(this.$route)
       this.linkList.push(this.$route.fullPath)
+      this.pageNameList.push(this.$route.name)
       this.activePage = this.$route.fullPath
     },
     watch: {
@@ -101,13 +104,19 @@
         if (!this.multipage) {
           this.linkList = [newRoute.fullPath]
           this.pageList = [Object.assign({},newRoute)]
-        } else if (this.linkList.indexOf(newRoute.fullPath) < 0) {
+          this.pageNameList.push(this.$route.name)
+        // } else if (this.linkList.indexOf(newRoute.fullPath) < 0) {
+        } else if (this.pageNameList.indexOf(newRoute.name) < 0) {
           this.linkList.push(newRoute.fullPath)
           this.pageList.push(Object.assign({},newRoute))
-        } else if (this.linkList.indexOf(newRoute.fullPath) >= 0) {
-          let oldIndex = this.linkList.indexOf(newRoute.fullPath)
-          let oldPositionRoute = this.pageList[oldIndex]
-          this.pageList.splice(oldIndex, 1, Object.assign({},newRoute,{meta:oldPositionRoute.meta}))
+          this.pageNameList.push(newRoute.name)
+        // } else if (this.linkList.indexOf(newRoute.fullPath) >= 0) {
+        } else if (this.pageNameList.indexOf(newRoute.name) >= 0) {
+          let oldIndex = this.pageNameList.indexOf(newRoute.name)
+          // let oldIndex = this.linkList.indexOf(newRoute.fullPath)
+          // let oldPositionRoute = this.pageList[oldIndex]
+          this.linkList.splice(oldIndex, 1, newRoute.fullPath)
+          this.pageList.splice(oldIndex, 1, Object.assign({},newRoute))
         }
       },
       'activePage': function(key) {
@@ -120,6 +129,7 @@
           if (!newVal) {
             this.linkList = [this.$route.fullPath]
             this.pageList = [this.$route]
+            this.pageNameList = [this.$route.name]
           }
         }
       }
@@ -140,6 +150,7 @@
         this[action](key)
       },
       remove(key) {
+        debugger
         if (key == indexKey) {
           this.$message.warning('首页不能关闭!')
           return
@@ -153,6 +164,7 @@
         this.linkList = this.linkList.filter(item => item !== key)
         index = index >= this.linkList.length ? this.linkList.length - 1 : index
         this.activePage = this.linkList[index]
+        this.pageNameList.splice(index,1)
       },
       onContextmenu(e) {
         const pagekey = this.getPageKey(e.target)
@@ -199,13 +211,16 @@
         if (pageKey == indexKey || pageKey.indexOf('?ticke=')>=0) {
           this.linkList = this.linkList.slice(index, index + 1)
           this.pageList = this.pageList.slice(index, index + 1)
+          this.pageNameList = this.pageNameList.splice(index, index + 1)
           this.activePage = this.linkList[0]
         } else {
           let indexContent = this.pageList.slice(0, 1)[0]
           this.linkList = this.linkList.slice(index, index + 1)
           this.pageList = this.pageList.slice(index, index + 1)
+          this.pageNameList = this.pageNameList.splice(index, index + 1)
           this.linkList.unshift(indexContent.fullPath)
           this.pageList.unshift(indexContent)
+          this.pageNameList.unshift(indexContent.name)
           this.activePage = this.linkList[1]
         }
       },
@@ -218,8 +233,10 @@
         let index = this.linkList.indexOf(pageKey)
         this.linkList = this.linkList.slice(index)
         this.pageList = this.pageList.slice(index)
+        this.pageNameList = this.pageNameList.splice(index)
         this.linkList.unshift(indexContent.fullPath)
         this.pageList.unshift(indexContent)
+        this.pageNameList.unshift(indexContent.name)
         if (this.linkList.indexOf(this.activePage) < 0) {
           this.activePage = this.linkList[0]
         }
@@ -228,6 +245,7 @@
         let index = this.linkList.indexOf(pageKey)
         this.linkList = this.linkList.slice(0, index + 1)
         this.pageList = this.pageList.slice(0, index + 1)
+        this.pageNameList = this.pageNameList.splice(0, index + 1)
         if (this.linkList.indexOf(this.activePage < 0)) {
           this.activePage = this.linkList[this.linkList.length - 1]
         }
@@ -239,6 +257,7 @@
           let currRouter = this.pageList[keyIndex]
           let meta = Object.assign({},currRouter.meta,{title:title})
           this.pageList.splice(keyIndex, 1, Object.assign({},currRouter,{meta:meta}))
+          this.pageNameList.splice(keyIndex, 1, currRouter.name)
         }
       },
       //update-end-author:taoyan date:20190430 for:动态路由title显示配置的菜单title而不是其对应路由的title

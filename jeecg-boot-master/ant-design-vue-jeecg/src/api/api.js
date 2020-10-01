@@ -234,6 +234,7 @@ const addSaleOrderReturnExpense = (params)=>postAction("/saleOrderReturnExpense/
 const editSaleOrderReturnExpense = (params)=>postAction("/saleOrderReturnExpense/edit",params)
 const findSaleOrderReturnQueryDto = (params)=>getAction("/saleOrderReturn/queryDto",params)
 const disableSaleOrderReturn = (params)=>postAction("/saleOrderReturn/disable",params)
+const getSaleOrderReturnList = (params)=>getAction("/saleOrderReturn/getList",params)
 
 
 // 采购批次
@@ -551,6 +552,7 @@ export {
   editSaleOrderChannel,
   getSaleOrderChannel,
   disableSaleOrderReturn,
+  getSaleOrderReturnList,
   getWorkAddress,
   saveWorkAddress,
   getInstallAddress,

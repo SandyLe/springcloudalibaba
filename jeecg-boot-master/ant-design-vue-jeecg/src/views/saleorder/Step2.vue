@@ -58,22 +58,6 @@
           <span slot="nameAction" slot-scope="text, record">
             <a @click="goDetail(record.mtlId)">{{record.mtl}}</a>
           </span>
-          <span slot="action" slot-scope="text, record">
-          <a @click="handleOpen(record)">用户</a>
-          <a-divider type="vertical"/>
-          <a-dropdown>
-            <a class="ant-dropdown-link">
-              更多 <a-icon type="down"/>
-            </a>
-            <a-menu slot="overlay">
-              <a-menu-item>
-                <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete1(record.id)">
-                  <a>删除</a>
-                </a-popconfirm>
-              </a-menu-item>
-            </a-menu>
-          </a-dropdown>
-        </span>
         </a-table>
       </div>
       <div>
@@ -153,6 +137,25 @@
           </a-table>
         </a-card>
       </div>
+
+      <div>
+        <a-card class="card" title="退货记录" :bordered="true">
+          <a-table
+            ref="table"
+            size="middle"
+            bordered
+            rowKey="id"
+            :columns="columns5"
+            :dataSource="dataSource5"
+            :pagination="ipagination5"
+            :loading="loading5"
+            @change="handleTableChange">
+            <span slot="nameAction" slot-scope="text, record">
+              <a @click="goDetail(record.mtlId)">{{record.mtl}}</a>
+            </span>
+          </a-table>
+        </a-card>
+      </div>
       <a-form-item :wrapperCol="{span: 19, offset: 5}">
         <!--<a-button :loading="loading" @click="nextStep">提交</a-button>-->
         <a-button style="margin-left: 8px" @click="prevStep">上一步</a-button>
@@ -194,15 +197,18 @@
         model2: {},
         model3: {},
         model4: {},
+        model5: {},
         currentRoleId: '',
         queryParam1: {},
         queryParam2: {},
         queryParam3: {},
         queryParam4: {},
+        queryParam5: {},
         dataSource1: [],
         dataSource2: [],
         dataSource3: [],
         dataSource4: [],
+        dataSource5: [],
         ipagination1: {
           current: 1,
           pageSize: 10,
@@ -247,6 +253,17 @@
           showSizeChanger: true,
           total: 0
         },
+        ipagination5: {
+          current: 1,
+          pageSize: 10,
+          pageSizeOptions: ['10', '20', '30'],
+          showTotal: (total, range) => {
+            return range[0] + '-' + range[1] + ' 共' + total + '条'
+          },
+          showQuickJumper: true,
+          showSizeChanger: true,
+          total: 0
+        },
         isorter1: {
           column: 'createTime',
           order: 'desc'
@@ -263,14 +280,20 @@
           column: 'createTime',
           order: 'desc'
         },
+        isorter5: {
+          column: 'createTime',
+          order: 'desc'
+        },
         filters1: {},
         filters2: {},
         filters3: {},
         filters4: {},
+        filters5: {},
         loading1: false,
         loading2: false,
         loading3: false,
         loading4: false,
+        loading5: false,
         columns:
           [
             {
@@ -410,6 +433,78 @@
             align: 'center',
             width: 120
           }],
+        columns5: [{
+          title: '产品', //顺序不要调整，getMaterialList中有用
+          dataIndex: 'mtl',
+          key: 'mtl',
+          width: '20%',
+          scopedSlots: {
+            customRender: 'mtl'
+          }
+        },{
+          title: '辅助属性', //顺序不要调整，getMaterialList中有用
+          dataIndex: 'auxiliary',
+          key: 'auxiliary',
+          width: '20%',
+          scopedSlots: {
+            customRender: 'auxiliary'
+          }
+        },
+          {
+            title: '单位', //顺序不要调整，getMaterialUnitList中有用
+            dataIndex: 'unit',
+            key: 'unit',
+            width: '10%',
+            scopedSlots: {
+              customRender: 'unit'
+            }
+          },
+          {
+            title: '数量',
+            dataIndex: 'quantity',
+            key: 'quantity',
+            width: '10%',
+            scopedSlots: {
+              customRender: 'quantity'
+            }
+          },
+          {
+            title: '单价',
+            dataIndex: 'price',
+            key: 'price',
+            width: '10%',
+            scopedSlots: {
+              customRender: 'price'
+            }
+          },
+          {
+            title: '折扣%',
+            dataIndex: 'discount',
+            key: 'discount',
+            width: '10%',
+            scopedSlots: {
+              customRender: 'discount'
+            }
+          },
+          {
+            title: '金额',
+            dataIndex: 'amount',
+            key: 'amount',
+            width: '10%',
+            scopedSlots: {
+              customRender: 'amount'
+            }
+          },
+          {
+            title: '退货方式', //
+            dataIndex: 'returnTypeName',
+            key: 'returnTypeName',
+            width: '15%',
+            scopedSlots: {
+              customRender: 'returnTypeName'
+            }
+          }
+        ],
         form: this.$form.createForm(this),
         url: {
           list: "/saleOrderMtl/getPage",
@@ -422,6 +517,9 @@
           list4: '/receiptOrderDtl/getPage',
           delete4: '/receiptOrderDtl/delete',
           deleteBatch4: '/receiptOrderDtl/deleteBatch',
+          list5: '/saleOrderReturnMtl/getPage',
+          delete5: '/saleOrderReturnMtl/delete',
+          deleteBatch5: '/saleOrderReturnMtl/deleteBatch',
         },
         saleOrderAddress: {},
         editType: 0
@@ -480,6 +578,19 @@
         param4.pageSize = this.ipagination4.pageSize
         return param4;
       },
+      getQueryParams5() {
+        //获取查询条件
+        let param5 = {};
+        if(this.$route.query.id){
+          param5.sourceBillId = this.$route.query.id
+        }else{
+          param5.sourceBillId = -1;
+        }
+        param5.field = this.getQueryField5()
+        param5.pageNo = this.ipagination5.current
+        param5.pageSize = this.ipagination5.pageSize
+        return param5;
+      },
       getQueryField2() {
         var str = 'id,'
         this.columns2.forEach(function(value) {
@@ -497,6 +608,13 @@
       getQueryField4() {
         var str = 'id,'
         this.columns4.forEach(function(value) {
+          str += ',' + value.dataIndex
+        })
+        return str
+      },
+      getQueryField5() {
+        var str = 'id,'
+        this.columns5.forEach(function(value) {
           str += ',' + value.dataIndex
         })
         return str
@@ -591,6 +709,28 @@
 
           }
           this.loading4 = false
+        })
+
+      },
+      loadData5(arg) {
+        if (!this.url.list5) {
+          this.$message.error('请设置url.list3属性!')
+          return
+        }
+        //加载数据 若传入参数1则加载第一页的内容
+        if (arg === 1) {
+          this.ipagination5.current = 1
+        }
+        let params = this.getQueryParams5()//查询条件
+        params.roleId = this.currentRoleId
+        this.loading5 = true
+        getAction(this.url.list5, params).then((res) => {
+          if (res.success) {
+            this.dataSource5 = res.result.records
+            this.ipagination5.total = res.result.total
+
+          }
+          this.loading5 = false
         })
 
       },
@@ -837,11 +977,8 @@
       this.loadData2();
       this.loadData3();
       this.loadData4();
+      this.loadData5();
       this.editType = this.$route.query.editType;
-    },
-    watch: {
-      '$route' (to, from) {
-      }
     }
   }
 </script>
