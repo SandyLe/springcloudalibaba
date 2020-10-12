@@ -10,7 +10,7 @@
             <a-select v-decorator="['customerId', validatorRules.customerId]" placeholder="请选择客户"  showSearch
                       optionFilterProp="children"
                       notFoundContent="无法找到，点右侧新增按钮增加客户" @keyup.enter.native="searchCustomer"
-                      :disabled="editType==0" style="width: 90%" >
+                      :disabled="!editType" style="width: 90%" >
               <a-select-option value="">请选择</a-select-option>
               <a-select-option v-for="(item, key) in customerList" :key="key" :value="item.id">
                 {{ item.info }}
@@ -24,7 +24,7 @@
             :labelCol="{span: 5}"
             :wrapperCol="{span: 19}"
             label="单号">
-            <a-input placeholder="自动生成单号" :readOnly="true" v-decorator="[ 'code', {}]" :disabled="editType" />
+            <a-input placeholder="自动生成单号" :readOnly="true" v-decorator="[ 'code', {}]" :disabled="!editType" />
           </a-form-item>
         </a-col>
         <a-col :md="8" :sm="8">
@@ -65,7 +65,7 @@
             :labelCol="{span: 6}"
             :wrapperCol="{span: 18}"
             label="订单日期">
-            <a-date-picker showTime format='YYYY-MM-DD HH:mm:ss' v-decorator="[ 'billDate', validatorRules.billDate]" :readOnly = "editType" :disabled="editType" />
+            <a-date-picker showTime format='YYYY-MM-DD HH:mm:ss' v-decorator="[ 'billDate', validatorRules.billDate]" :readOnly = "!editType" :disabled="!editType" />
           </a-form-item>
         </a-col>
         <a-col :md="8" :sm="8">
@@ -74,7 +74,7 @@
             :labelCol="{span: 4}"
             :wrapperCol="{span: 18}"
             class="stepFormText">
-            <a-date-picker showTime format='YYYY-MM-DD HH:mm:ss' v-decorator="[ 'deliveryTime', {}]" :disabled="editType"/>
+            <a-date-picker showTime format='YYYY-MM-DD HH:mm:ss' v-decorator="[ 'deliveryTime', {}]" :disabled="!editType"/>
           </a-form-item>
         </a-col>
       </a-row>
@@ -85,7 +85,7 @@
             :labelCol="{span: 5}"
             :wrapperCol="{span: 19}"
             class="stepFormText">
-            <a-date-picker showTime format='YYYY-MM-DD HH:mm:ss' v-decorator="[ 'measuringTime', {}]" :disabled="editType"/>
+            <a-date-picker showTime format='YYYY-MM-DD HH:mm:ss' v-decorator="[ 'measuringTime', {}]" :disabled="!editType"/>
           </a-form-item>
         </a-col>
         <a-col :md="8" :sm="8">
@@ -94,7 +94,7 @@
             :labelCol="{span: 6}"
             :wrapperCol="{span: 18}"
             class="stepFormText">
-            <a-date-picker showTime format='YYYY-MM-DD HH:mm:ss' v-decorator="[ 'installTime', {}]" :disabled="editType"/>
+            <a-date-picker showTime format='YYYY-MM-DD HH:mm:ss' v-decorator="[ 'installTime', {}]" :disabled="!editType"/>
           </a-form-item>
         </a-col>
       </a-row>
@@ -105,7 +105,7 @@
             :labelCol="{span: 1}"
             :wrapperCol="{span: 21}"
           >
-            <a-input placeholder="请输入备注" v-decorator="[ 'content', {}]" :readOnly = "editType" />
+            <a-input placeholder="请输入备注" v-decorator="[ 'content', {}]" :readOnly = "!editType" />
           </a-form-item>
         </a-col>
       </a-row>
@@ -114,7 +114,7 @@
       <a-row>
         <a-col>
           <!-- 操作按钮区域 -->
-          <div class="table-operator" style="border-top: 5px" v-if = "editType==1">
+          <div class="table-operator" style="border-top: 5px" v-if = "editType">
             <a-button @click="handleAddMtl" type="primary" icon="plus">添加产品</a-button>
             <a-dropdown v-if="selectedRowKeys.length > 0">
               <a-menu slot="overlay">
@@ -154,7 +154,7 @@
               <span slot="nameAction" slot-scope="text, record">
                 <a @click="goDetail(record.mtlId)">{{record.mtl}}</a>
               </span>
-              <span slot="action" slot-scope="text, record" v-if = "editType==1">
+              <span slot="action" slot-scope="text, record" v-if = "editType">
                 <a @click="handleEditMtl(record)">编辑</a>
                 <a-divider type="vertical"/>
 
@@ -323,7 +323,7 @@
           delete: "/saleOrderMtl/delete",
           deleteBatch: "/saleOrderMtl/deleteBatch"
         },
-        editType: 0,
+        editType: false,
         reloadFlag:true
       }
     },
@@ -479,10 +479,10 @@
       nextStep () {
         this.mainId = this.$route.query.id;
         let validFlag = true;
-        if (this.editType==1) {
+        if (this.editType) {
           validFlag =  this.saveSaleOrder(this.mainId);
         }
-        if (this.editType==1 && validFlag) {
+        if (this.editType && validFlag) {
           createReceiptOrder({"sourceId":this.mainId, "sourceBillType":0}).then((res) => {
             if (!res.success) {
               this.$message.error(res.message)
@@ -500,7 +500,7 @@
       }
     },
     mounted() {
-      this.editType = this.$route.query.editType;
+      this.editType = this.$route.query.editType=='1';
       searchCustomer({}).then((res) => {
         if (res.success) {
           this.customerList = res.result;
@@ -521,7 +521,7 @@
       } else {
         this.add();
       }
-      this.editType = this.$route.query.editType == 'true';
+      // this.editType = this.$route.query.editType == 'true';
     }
   }
 </script>
