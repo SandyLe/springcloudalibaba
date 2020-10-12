@@ -6,7 +6,7 @@ import org.jeecg.modules.inventory.entity.InventoryLog;
 
 public interface InventoryService extends IService<Inventory> {
 
-    public Inventory findInventory(String warehouseId, String mtlId, String unitId);
+    public Inventory findInventory(String warehouseId, String mtlId, String unitId, String auxiliaryId);
 
     public String updateInventory (InventoryLog inventoryLog);
 }

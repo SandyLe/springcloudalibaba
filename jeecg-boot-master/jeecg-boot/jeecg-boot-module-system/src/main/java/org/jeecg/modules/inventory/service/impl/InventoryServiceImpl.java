@@ -3,6 +3,7 @@ package org.jeecg.modules.inventory.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Lists;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.modules.basic.entity.Material;
@@ -39,7 +40,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
     private InventoryOptDtlService inventoryOptDtlService;
 
     @Override
-    public Inventory findInventory(String warehouseId, String mtlId, String unitId) {
+    public Inventory findInventory(String warehouseId, String mtlId, String unitId, String auxiliaryId) {
 
         LambdaQueryWrapper<Inventory> lambdaQueryWrapper = new LambdaQueryWrapper<Inventory>();
         lambdaQueryWrapper.eq(Inventory::getMtlId, mtlId);
@@ -47,13 +48,21 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
         if (StringUtils.isNotBlank(unitId)) {
             lambdaQueryWrapper.eq(Inventory::getUnitId, unitId);
         }
-        return inventoryMapper.selectOne(lambdaQueryWrapper);
+        if (StringUtils.isNotBlank(auxiliaryId)) {
+            lambdaQueryWrapper.eq(Inventory::getAuxiliaryId, auxiliaryId);
+        }
+        lambdaQueryWrapper.gt(Inventory::getStockAmount, BigDecimal.ZERO);
+        List<Inventory> inventories = inventoryMapper.selectList(lambdaQueryWrapper);
+        if (CollectionUtils.isNotEmpty(inventories)) {
+            return inventories.get(0);
+        }
+        return null;
     }
 
     @Override
     @Transactional
     public String updateInventory(InventoryLog inventoryLog) {
-        Inventory inventory = findInventory(inventoryLog.getWarehouseId(), inventoryLog.getMtlId(), inventoryLog.getUnitId());
+        Inventory inventory = findInventory(inventoryLog.getWarehouseId(), inventoryLog.getMtlId(), inventoryLog.getUnitId(), inventoryLog.getAuxiliaryId());
         if (inventoryLog.getOperationId() == InventoryOperation.STOCKING.getId()
                 || inventoryLog.getOperationId() == InventoryOperation.PURCHASEIN.getId()
                 || inventoryLog.getOperationId() == InventoryOperation.SALERETURNIN.getId()

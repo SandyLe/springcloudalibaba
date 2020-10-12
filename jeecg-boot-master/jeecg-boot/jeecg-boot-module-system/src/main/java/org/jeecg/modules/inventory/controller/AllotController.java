@@ -135,11 +135,11 @@ public class AllotController extends JeecgController<Allot, AllotService> {
         allotdto.setCompanyId(allot.getCompanyId());
         List<AllotDtl> allotDtls = allotDtlService.findBySourceId(allot.getId());
         allotDtls.stream().forEach(o->{
-            Inventory fromInventory = inventoryService.findInventory(allotdto.getFromWarehouseId(), o.getMtlId(), o.getUnitId());
+            Inventory fromInventory = inventoryService.findInventory(allotdto.getFromWarehouseId(), o.getMtlId(), o.getUnitId(), o.getAuxiliaryId());
             if (null != fromInventory){
                 o.setFromAmount(fromInventory.getStockAmount());
             }
-            Inventory toInventory = inventoryService.findInventory(allotdto.getToWarehouseId(), o.getMtlId(), o.getUnitId());
+            Inventory toInventory = inventoryService.findInventory(allotdto.getToWarehouseId(), o.getMtlId(), o.getUnitId(), o.getAuxiliaryId());
             if (null != toInventory){
                 o.setToAmount(toInventory.getStockAmount());
             }
