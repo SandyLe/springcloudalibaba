@@ -90,7 +90,7 @@
                             @change="e => handleChange(e, record.key, col)" :placeholder="'请选择'+columns[i].title" :value="record[columns[i].dataIndex]" ref="sel">
                     <a-select-option value="">请选择</a-select-option>
                     <a-select-option v-for="(item, key) in columns[i].list" :key="key" :value="item.id" :title="item.info">
-                      {{ ['auxiliaryId'].indexOf(columns[i].dataIndex) > -1 ? item.suppValueMap : (item.info || item.name) }}
+                      {{ ['auxiliaryId'].indexOf(columns[i].dataIndex) > -1 ? item.suppValueMap : (item.info || item.text) }}
                     </a-select-option>
                   </a-select>
                   <a-input :key="col" v-else style="margin: -5px 0" :value="text" :placeholder="columns[i].title" @change="e => handleChange(e.target.value, record.key, col)" />
@@ -166,6 +166,7 @@
     getReturnTypeList,
     getSaleOrderByCode,
     getMaterialListByIds,
+    getMaterialSelfUnitList,
     queryChannelTreeList
   } from '@/api/api'
   export default {
@@ -329,21 +330,21 @@
     watch: {
       // 如果 `data` 发生改变，这个函数就会运行
       tabledata: function () {
-        // console.log(newdata);
-        let datatotalamount = 0;
-        this.tabledata.forEach(function(target){
-          if (target.quantity && target.price) {
-            if (target.discount){
-              datatotalamount += parseFloat(target.quantity).toFixed(2) * parseFloat(target.price).toFixed(2);
-              datatotalamount = datatotalamount - datatotalamount * (1-(parseFloat(target.discount)/100).toFixed(2));
-            }
-            else
-              datatotalamount += parseFloat(target.quantity) * parseFloat(target.price).toFixed(2);
-          }
-        });
-        datatotalamount = Math.round(datatotalamount*100)/100;
-        this.model.totalamount = datatotalamount;
-        this.form.setFieldsValue({ 'totalamount' :datatotalamount })
+        // // console.log(newdata);
+        // let datatotalamount = 0;
+        // this.tabledata.forEach(function(target){
+        //   if (target.quantity && target.price) {
+        //     if (target.discount){
+        //       datatotalamount += parseFloat(target.quantity).toFixed(2) * parseFloat(target.price).toFixed(2);
+        //       datatotalamount = datatotalamount - datatotalamount * (1-(parseFloat(target.discount)/100).toFixed(2));
+        //     }
+        //     else
+        //       datatotalamount += parseFloat(target.quantity) * parseFloat(target.price).toFixed(2);
+        //   }
+        // });
+        // datatotalamount = Math.round(datatotalamount*100)/100;
+        // this.model.totalamount = datatotalamount;
+        // this.form.setFieldsValue({ 'totalamount' :datatotalamount })
       }
     },
     methods: {
@@ -386,8 +387,8 @@
                 option.text = option.name;
               })
             }
-            this.columns[6].list = res.result;
-            this.$set(this.dictOptions, 6, this.columns[6])
+            this.columns[7].list = res.result;
+            this.$set(this.dictOptions, 7, this.columns[7])
           }
         });
         //单位
@@ -446,7 +447,6 @@
                 });
                 getMaterialAuxiliaryListBySourceIds({"sourceIds": this.mtlIds.join(",")}).then((res) => {
                   if (res.success) {
-                    debugger
                     if (res.result && res.result.length > 0) {
                       res.result.forEach(function (option) {
                         option.value = option.id;
@@ -547,17 +547,40 @@
             else
               target['amount'] = Math.round( (parseFloat(target.quantity) * parseFloat(target.price)) * 100)/100;
           }
+          const that = this;
           if ('mtlId' === column) {
             getMaterialAuxiliaryList({"sourceId" : value}).then((res) => {
               if (res.success) {
-                this.columns[1].list = res.result;
-                this.$set(this.dictOptions, 1, this.columns[1])
-                this.tabledata = newData
+                if (res.result.length>0){
+                  res.result.forEach(function (option) {
+                    option.value = option.id;
+                    option.text = option.suppValueMap;
+                  })
+                  that.columns[1].list = res.result;
+                  // this.$set(this.dictOptions, 1, this.columns[1])
+                  const newData = [...this.tabledata]
+                  const target = newData.filter(item => key === item.key)[0]
+                  that.tabledata = newData
+                }
               }
             });
-            this.tabledata = newData
+
+            getMaterialSelfUnitList({addSelf:true,sourceId:value}).then((res) => {
+              if (res.success) {
+                if (res.result && res.result.length > 0) {
+                  res.result.forEach(function (option) {
+                    option.value = option.unitId;
+                    option.text = option.unit;
+                  })
+                  that.columns[2].list = res.result;
+                  // this.$set(this.dictOptions, 2, this.columns[2])
+                  const newData = [...this.tabledata]
+                  const target = newData.filter(item => key === item.key)[0]
+                  that.tabledata = newData
+                }
+              }
+            })
           }
-          debugger
           this.tabledata = newData
         }
       },

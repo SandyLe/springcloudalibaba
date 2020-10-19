@@ -270,7 +270,7 @@
     },
     methods: {
       addMaterialAuxiliaryItem () {
-        this.editMaterialAuxiliaryLItem({});
+        this.editMaterialAuxiliaryLItem({id:-1,sourceId:this.$route.query.id});
       },
       editMaterialAuxiliaryLItem (record) {
         // record.sourceAddId = this.saleOrderAddress.sourceAddId;
