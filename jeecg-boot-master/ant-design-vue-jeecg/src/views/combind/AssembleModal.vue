@@ -9,7 +9,7 @@
                     :wrapperCol="wrapperCol"
                     label="产品">
                     <a-select v-decorator="['mtlId', validatorRules.mtlId]" placeholder="请选择产品"  showSearch
-                              optionFilterProp="children"
+                              optionFilterProp="children" @change="mtlChange"
                               notFoundContent="无法找到，输入关键词Enter搜索" @keyup.enter.native="searchMtl" >
                       <a-select-option value="">请选择</a-select-option>
                       <a-select-option v-for="(item, key) in mtlList" :key="key" :value="item.id">
@@ -26,8 +26,12 @@
             </a-row>
             <a-row>
               <a-col :span="12">
-                <a-form-item label="数量" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <a-input v-decorator="[ 'quantity', {}]" placeholder="组装数量"></a-input>
+                <a-form-item label="辅助属性" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                  <a-select v-decorator="['auxiliaryId', {}]" placeholder="请选择辅助属性">
+                    <a-select-option v-for="(item, key) in dictOptions.auxiliaryList" :key="key" :value="item.id">
+                      {{ item.suppValueMap }}
+                    </a-select-option>
+                  </a-select>
                 </a-form-item>
               </a-col>
               <a-col :span="12">
@@ -64,11 +68,14 @@
             </a-row>
             <a-row>
                 <a-col :span="12">
-                    <a-form-item label="新单价" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                        <a-input-number v-decorator="[ 'price', {}]" placeholder="新单价" style="width:100%" />
-                    </a-form-item>
+                  <a-form-item label="数量" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                    <a-input v-decorator="[ 'quantity', {}]" placeholder="组装数量"></a-input>
+                  </a-form-item>
                 </a-col>
                 <a-col :span="12">
+                  <a-form-item label="新单价" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                    <a-input-number v-decorator="[ 'price', {}]" placeholder="新单价" style="width:100%" />
+                  </a-form-item>
                   <div style="display:none;">
                     <a-input v-decorator="[ 'id', {}]" placeholder="实体主键" type="hidden" />
                     <a-input v-decorator="[ 'code', {}]" placeholder="代码" type="hidden"/>
@@ -87,13 +94,13 @@
                     <a-card>
                         <form :autoFormCreate="(form) => this.form = form">
                             <a-table :columns="columns" :dataSource="tabledata" :pagination="false" rowKey="id" ref="mtltable">
-                                <template v-for="(col, i) in ['mtlId', 'unitId','quantity', 'content', 'action']" :slot="col" clearable slot-scope="text, record, index">
-                                    <a-select :style="['mtlId'].indexOf(columns[i].dataIndex) > -1 ? 'width: 250px;' : ''" v-if="['mtlId','unitId'].indexOf(columns[i].dataIndex) > -1" v-decorator="[record[columns[i].dataIndex], {}]" showSearch
+                                <template v-for="(col, i) in ['mtlId','auxiliaryId', 'unitId','quantity', 'content', 'action']" :slot="col" clearable slot-scope="text, record, index">
+                                    <a-select :style="['auxiliaryId','mtlId'].indexOf(columns[i].dataIndex) > -1 ? 'width: 250px;' : ''" v-if="['mtlId','auxiliaryId','unitId'].indexOf(columns[i].dataIndex) > -1" v-decorator="[record[columns[i].dataIndex], {}]" showSearch
                                               optionFilterProp="children" notFoundContent="无法找到，输入关键词回车[Enter]搜索试试" @keyup.enter.native="e => searchData(e, col, record.key)"
                                               @change="e => handleChange(e, record.key, col)" :placeholder="'请选择'+columns[i].title" :value="record[columns[i].dataIndex]" ref="sel">
                                         <a-select-option value="">请选择</a-select-option>
                                         <a-select-option v-for="(item, key) in columns[i].list" :key="key" :value="item.id" :title="item.info">
-                                            {{ item.info || item.name }}
+                                          {{ ['auxiliaryId'].indexOf(columns[i].dataIndex) > -1 ? item.suppValueMap : (item.info || item.text) }}
                                         </a-select-option>
                                     </a-select>
                                     <a-input :key="col" v-else style="margin: -5px 0" :value="text" :placeholder="columns[i].title" @change="e => handleChange(e.target.value, record.key, col)" />
@@ -163,7 +170,9 @@ import {
     searchMaterial,
     getMaterialUnitList,
     getAssembleOne,
-    assembleDtlDelete
+    assembleDtlDelete,
+    getMaterialAuxiliaryList,
+    getMaterialAuxiliaryListBySourceIds
 } from '@/api/api'
 export default {
     name: 'AssembleModal',
@@ -235,6 +244,14 @@ export default {
                     scopedSlots: {
                         customRender: 'mtlId'
                     }
+                },{
+                  title: '辅助属性', //顺序不要调整，getMaterialList中有用
+                  dataIndex: 'auxiliaryId',
+                  key: 'auxiliaryId',
+                  width: '20%',
+                  scopedSlots: {
+                    customRender: 'auxiliaryId'
+                  }
                 },
                 {
                     title: '单位', //顺序不要调整，getMaterialUnitList中有用
@@ -273,6 +290,7 @@ export default {
                 }
             ],
             tabledata: [],
+            mtlIds:[],
             unEditable: true
         }
     },
@@ -327,9 +345,9 @@ export default {
                             option.text = option.name;
                         })
                     }
-                    this.columns[1].list = res.result;
+                    this.columns[2].list = res.result;
                     this.unitList = res.result;
-                    this.$set(this.dictOptions, 1, this.columns[1])
+                    this.$set(this.dictOptions, 2, this.columns[2])
                     // this.$set(this.dictOptions, 'materialunitlist', res.result)
                 }
             });
@@ -342,8 +360,35 @@ export default {
                             this.tabledata = res.result.detaillist;
                             for(let i=0;i < this.tabledata.length ; i++){
                                 this.tabledata[i].key = i;
+                                this.mtlIds[i] = this.tabledata[i].mtlId;
                             }
                         }
+                        getMaterialAuxiliaryList({sourceId:res.result.mtlId}).then((res) => {
+                          if (res.success) {
+                            if (res.result.length>0){
+                              res.result.forEach(function (option) {
+                                option.value = option.id;
+                                option.text = option.suppValueMap;
+                              })
+                              this.$set(this.dictOptions, 'auxiliaryList', res.result);
+                            }
+                          }
+                        })
+                        getMaterialAuxiliaryListBySourceIds({"sourceIds": this.mtlIds.join(",")}).then((res) => {
+                          if (res.success) {
+                            if (res.result && res.result.length > 0) {
+                              res.result.forEach(function (option) {
+                                option.value = option.id;
+                                option.text = option.suppValueMap;
+                              })
+                            }
+                            this.columns[1].list = res.result;
+                            this.$set(this.dictOptions, 1, this.columns[1])
+                            // this.$set(this.dictOptions, 'materiallist', res.result)
+                            const newData = [...this.tabledata]
+                            this.tabledata = newData
+                          }
+                        });
                         this.edit(res.result);
                     }
                 });
@@ -357,7 +402,7 @@ export default {
             this.visible = true
             this.$nextTick(() => {
                 this.form.setFieldsValue(
-                    pick(this.model, 'id', 'code', 'mtlId', 'content', 'warehouseId', 'unitId', 'quantity', 'price')
+                    pick(this.model, 'id', 'code', 'mtlId', 'content', 'warehouseId', 'unitId', 'quantity', 'auxiliaryId','price')
                 )
                 this.form.setFieldsValue({billDate: this.model.billDate ? moment(this.model.billDate) : null})
             })
@@ -454,6 +499,22 @@ export default {
                     else
                         target['amount'] = Math.round( (parseFloat(target.quantity) * parseFloat(target.price)) * 100)/100;
                 }
+                if (column === 'mtlId'){
+                  getMaterialAuxiliaryList({"sourceId" : value}).then((res) => {
+                    if (res.success) {
+                      if (res.result.length>0){
+                        res.result.forEach(function (option) {
+                          option.value = option.id;
+                          option.text = option.suppValueMap;
+                        })
+                        this.columns[1].list = res.result;
+                        this.$set(this.dictOptions, 1, this.columns[1])
+                        const newData = [...this.tabledata]
+                        this.tabledata = newData
+                      }
+                    }
+                  });
+                }
                 this.tabledata = newData
             }
         },
@@ -515,6 +576,19 @@ export default {
               }
             });
           }
+        },
+        mtlChange (val) {
+          getMaterialAuxiliaryList({sourceId:val}).then((res) => {
+            if (res.success) {
+              if (res.result.length>0){
+                res.result.forEach(function (option) {
+                  option.value = option.id;
+                  option.text = option.suppValueMap;
+                })
+                this.$set(this.dictOptions, 'auxiliaryList', res.result);
+              }
+            }
+          })
         }
     },
     mounted() {

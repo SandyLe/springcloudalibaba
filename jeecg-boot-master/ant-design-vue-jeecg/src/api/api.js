@@ -128,6 +128,7 @@ const getMaterialTypeList = (params)=>getAction("/materialType/getList",params)
 const addMaterialUnit = (params)=>postAction("/materialUnit/add",params)
 const editMaterialUnit = (params)=>postAction("/materialUnit/edit",params)
 const getMaterialUnitList = (params)=>getAction("/materialUnit/getList",params)
+const getMaterialUnitListByIds = (params)=>getAction("/materialUnit/getListByIds",params)
 const addWarehouse = (params)=>postAction("/warehouse/add",params)
 const editWarehouse = (params)=>postAction("/warehouse/edit",params)
 const getWarehouseList = (params)=>getAction("/warehouse/getList",params)
@@ -423,6 +424,7 @@ export {
   getMaterialTypeList,
   getMaterialBrandList,
   getMaterialUnitList,
+  getMaterialUnitListByIds,
   getMaterialOne,
   getMaterialSelfUnitList,
   addMaterialSelfUnit,

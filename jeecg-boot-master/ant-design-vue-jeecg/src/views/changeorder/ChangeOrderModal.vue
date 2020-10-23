@@ -44,14 +44,15 @@
                 <a-col :span="24">
                     <a-card>
                         <form :autoFormCreate="(form) => this.form = form">
-                            <a-table :columns="columns" :dataSource="tabledata" :pagination="false" rowKey="id" ref="mtltable">
-                                <template v-for="(col, i) in ['mtlId', 'quantity', 'unitId','newMtlId', 'newQuantity', 'newUnitId','priceSpaceModeId','priceSpace', 'action']" :slot="col" clearable slot-scope="text, record, index">
-                                    <a-select :style="['mtlId', 'newMtlId'].indexOf(columns[i].dataIndex) > -1 ? 'width: 250px;' : ''" v-if="['mtlId',, 'newMtlId', 'unitId', 'newUnitId','priceSpaceModeId'].indexOf(columns[i].dataIndex) > -1" v-decorator="[record[columns[i].dataIndex], {}]" showSearch
+                            <a-table :columns="columns" :dataSource="tabledata" :pagination="false" rowKey="id" ref="mtltable"
+                                     :rowClassName="getRowClassname">
+                                <template v-for="(col, i) in ['mtlId','auxiliaryId', 'quantity', 'unitId','newMtlId', 'newAuxiliaryId','newQuantity', 'newUnitId','priceSpaceModeId','priceSpace', 'action']" :slot="col" clearable slot-scope="text, record, index">
+                                    <a-select :style="['mtlId', 'newMtlId','auxiliaryId','newAuxiliaryId'].indexOf(columns[i].dataIndex) > -1 ? 'width: 180px;' : ''" v-if="['mtlId',, 'newMtlId', 'unitId', 'auxiliaryId', 'newAuxiliaryId', 'newUnitId','priceSpaceModeId'].indexOf(columns[i].dataIndex) > -1" v-decorator="[record[columns[i].dataIndex], {}]" showSearch
                                               optionFilterProp="children" notFoundContent="无法找到，输入关键词回车[Enter]搜索试试" @keyup.enter.native="e => searchData(e, col, record.key)"
                                               @change="e => handleChange(e, record.key, col)" :placeholder="'请选择'+columns[i].title" :value="record[columns[i].dataIndex]" ref="sel">
                                         <a-select-option value="">请选择</a-select-option>
                                         <a-select-option v-for="(item, key) in columns[i].list" :key="key" :value="item.id" :title="item.info">
-                                            {{ item.info || item.name }}
+                                          {{ ['auxiliaryId','newAuxiliaryId'].indexOf(columns[i].dataIndex) > -1 ? item.suppValueMap : (item.info || item.text) }}
                                         </a-select-option>
                                     </a-select>
                                     <a-input :key="col" v-else style="margin: -5px 0" :value="text" :placeholder="columns[i].title" @change="e => handleChange(e.target.value, record.key, col)" />
@@ -128,7 +129,9 @@ import {
     getMaterialUnitList,
     getChangeOrderOne,
     changeOrderDtlDelete,
-    getPriceSpaceModeList
+    getPriceSpaceModeList,
+    getMaterialAuxiliaryList,
+    getMaterialAuxiliaryListBySourceIds
 } from '@/api/api'
 export default {
     name: 'ChangeOrderModal',
@@ -198,16 +201,24 @@ export default {
                     title: '产品', //顺序不要调整，getMaterialList中有用
                     dataIndex: 'mtlId',
                     key: 'mtlId',
-                    width: '20%',
+                    width: '15%',
                     scopedSlots: {
                         customRender: 'mtlId'
                     }
+                },{
+                  title: '辅助属性', //顺序不要调整，getMaterialList中有用
+                  dataIndex: 'auxiliaryId',
+                  key: 'auxiliaryId',
+                  width: '10%',
+                  scopedSlots: {
+                    customRender: 'auxiliaryId'
+                  }
                 },
                 {
                   title: '数量',
                   dataIndex: 'quantity',
                   key: 'quantity',
-                  width: '10%',
+                  width: '7%',
                   scopedSlots: {
                     customRender: 'quantity'
                   }
@@ -216,7 +227,7 @@ export default {
                   title: '单位', //顺序不要调整，getMaterialUnitList中有用
                   dataIndex: 'unitId',
                   key: 'unitId',
-                  width: '10%',
+                  width: '8%',
                   scopedSlots: {
                     customRender: 'unitId'
                   }
@@ -225,16 +236,24 @@ export default {
                   title: '新产品', //顺序不要调整，getMaterialList中有用
                   dataIndex: 'newMtlId',
                   key: 'newMtlId',
-                  width: '20%',
+                  width: '15%',
                   scopedSlots: {
                     customRender: 'newMtlId'
+                  }
+                },{
+                  title: '辅助属性', //顺序不要调整，getMaterialList中有用
+                  dataIndex: 'newAuxiliaryId',
+                  key: 'newAuxiliaryId',
+                  width: '10%',
+                  scopedSlots: {
+                    customRender: 'newAuxiliaryId'
                   }
                 },
                 {
                   title: '数量',
                   dataIndex: 'newQuantity',
                   key: 'newQuantity',
-                  width: '10%',
+                  width: '7%',
                   scopedSlots: {
                     customRender: 'newQuantity'
                   }
@@ -243,7 +262,7 @@ export default {
                     title: '单位', //顺序不要调整，getMaterialUnitList中有用
                     dataIndex: 'newUnitId',
                     key: 'newUnitId',
-                    width: '10%',
+                    width: '8%',
                     scopedSlots: {
                         customRender: 'newUnitId'
                     }
@@ -275,6 +294,8 @@ export default {
                     }
                 }
             ],
+            mtlIds:[],
+            newMtlIds:[],
             tabledata: [],
             editType: 0
         }
@@ -304,7 +325,39 @@ export default {
                             this.tabledata = res.result.detaillist;
                             for(let i=0;i < this.tabledata.length ; i++){
                                 this.tabledata[i].key = i;
+                                this.mtlIds[i] = this.tabledata[i].mtlId;
+                                this.newMtlIds[i] = this.tabledata[i].newMtlId;
                             }
+                            getMaterialAuxiliaryListBySourceIds({"sourceIds": this.mtlIds.join(",")}).then((res) => {
+                              if (res.success) {
+                                if (res.result && res.result.length > 0) {
+                                  res.result.forEach(function (option) {
+                                    option.value = option.id;
+                                    option.text = option.suppValueMap;
+                                  })
+                                }
+                                this.columns[1].list = res.result;
+                                this.$set(this.dictOptions, 1, this.columns[1])
+                                // this.$set(this.dictOptions, 'materiallist', res.result)
+                                const newData = [...this.tabledata]
+                                this.tabledata = newData
+                              }
+                            });
+                            getMaterialAuxiliaryListBySourceIds({"sourceIds": this.newMtlIds.join(",")}).then((res) => {
+                              if (res.success) {
+                                if (res.result && res.result.length > 0) {
+                                  res.result.forEach(function (option) {
+                                    option.value = option.id;
+                                    option.text = option.suppValueMap;
+                                  })
+                                }
+                                this.columns[5].list = res.result;
+                                this.$set(this.dictOptions, 5, this.columns[5])
+                                // this.$set(this.dictOptions, 'materiallist', res.result)
+                                const newData = [...this.tabledata]
+                                this.tabledata = newData
+                              }
+                            });
                         }
                         this.edit(res.result);
                     }
@@ -397,6 +450,38 @@ export default {
           if (target) {
             target[column] = value;
             this.tabledata = newData
+            if (column === 'mtlId'){
+              getMaterialAuxiliaryList({"sourceId" : value}).then((res) => {
+                if (res.success) {
+                  if (res.result.length>0){
+                    res.result.forEach(function (option) {
+                      option.value = option.id;
+                      option.text = option.suppValueMap;
+                    })
+                    this.columns[1].list = res.result;
+                    this.$set(this.dictOptions, 1, this.columns[1])
+                    const newData = [...this.tabledata]
+                    this.tabledata = newData
+                  }
+                }
+              });
+            }
+            if (column === 'newMtlId'){
+              getMaterialAuxiliaryList({"sourceId" : value}).then((res) => {
+                if (res.success) {
+                  if (res.result.length>0){
+                    res.result.forEach(function (option) {
+                      option.value = option.id;
+                      option.text = option.suppValueMap;
+                    })
+                    this.columns[5].list = res.result;
+                    this.$set(this.dictOptions, 5, this.columns[5])
+                    const newData = [...this.tabledata]
+                    this.tabledata = newData
+                  }
+                }
+              });
+            }
           }
         },
         toggle(key) {
@@ -459,17 +544,23 @@ export default {
                     option.text = option.name;
                   })
                 }
-                that.columns[3].list = res.result;
-                that.$set(that.dictOptions, 3, that.columns[3])
+                that.columns[4].list = res.result;
+                that.$set(that.dictOptions, 4, that.columns[4])
 
                 const newData = [...this.tabledata]
                 const target = newData.filter(item => key === item.key)[0]
-                target.editable = true
+                target.isNew = true
                 that.tabledata = newData;
                 // this.$set(this.dictOptions, 'materiallist', res.result)
               }
             });
           }
+        },
+        getRowClassname(record){
+          /*if(record.status!=1){
+            return "data-rule-invalid"
+          }*/
+          return "newRowClass"
         }
     },
     mounted() {
@@ -501,9 +592,9 @@ export default {
             })
           }
           this.columns[0].list = res.result;
-          this.columns[3].list = res.result;
+          this.columns[4].list = res.result;
           this.$set(this.dictOptions, 0, this.columns[0])
-          this.$set(this.dictOptions, 3, this.columns[3])
+          this.$set(this.dictOptions, 4, this.columns[4])
           // this.$set(this.dictOptions, 'materiallist', res.result)
         }
       });
@@ -516,10 +607,10 @@ export default {
               option.text = option.name;
             })
           }
-          this.columns[2].list = res.result;
-          this.columns[5].list = res.result;
-          this.$set(this.dictOptions, 2, this.columns[2])
-          this.$set(this.dictOptions, 5, this.columns[5])
+          this.columns[3].list = res.result;
+          this.columns[7].list = res.result;
+          this.$set(this.dictOptions, 3, this.columns[3])
+          this.$set(this.dictOptions, 7, this.columns[7])
           // this.$set(this.dictOptions, 'materialunitlist', res.result)
         }
       });
@@ -532,16 +623,23 @@ export default {
               option.text = option.name;
             })
           }
-          this.columns[6].list = res.result;
-          this.$set(this.dictOptions, 6, this.columns[6])
+          this.columns[8].list = res.result;
+          this.$set(this.dictOptions, 8, this.columns[8])
           // this.$set(this.dictOptions, 'materialunitlist', res.result)
         }
       });
     }
 }
 </script>
-<style scoped>
+<style scoped type="text/css">
 .hide{
     display: none;
 }
+/deep/ .ant-table-thead > tr > th, /deep/ .ant-table-tbody > tr > td {
+  padding: 1px 1px;
+}
+.newRowClass td{
+  padding: 1px 1px;
+}
+
 </style>

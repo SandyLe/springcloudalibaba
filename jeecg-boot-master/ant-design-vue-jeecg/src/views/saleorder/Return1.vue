@@ -167,7 +167,8 @@
     getSaleOrderByCode,
     getMaterialListByIds,
     getMaterialSelfUnitList,
-    queryChannelTreeList
+    queryChannelTreeList,
+    getMaterialUnitListByIds
   } from '@/api/api'
   export default {
     name: 'PurchasesModal',
@@ -318,6 +319,7 @@
         ],
         tabledata: [],
         mtlIds: [],
+        unitIds: [],
         editType: 0
       }
     },
@@ -431,6 +433,7 @@
                 for(let i=0;i < this.tabledata.length ; i++){
                   this.tabledata[i].key = i;
                   this.mtlIds[i] = this.tabledata[i].mtlId;
+                  this.unitIds[i] = this.tabledata[i].unitId;
                 }
                 //产品
                 getMaterialListByIds({"ids": this.mtlIds.join(",")}).then((res) => {
@@ -443,6 +446,8 @@
                     }
                     this.columns[0].list = res.result;
                     this.$set(this.dictOptions, 0, this.columns[0])
+                    const newData = [...this.tabledata]
+                    this.tabledata = newData
                   }
                 });
                 getMaterialAuxiliaryListBySourceIds({"sourceIds": this.mtlIds.join(",")}).then((res) => {
@@ -455,7 +460,23 @@
                     }
                     this.columns[1].list = res.result;
                     this.$set(this.dictOptions, 1, this.columns[1])
-                    // this.$set(this.dictOptions, 'materiallist', res.result)
+                    const newData = [...this.tabledata]
+                    this.tabledata = newData
+                  }
+                });
+                //产品
+                getMaterialUnitListByIds({"ids": this.unitIds.join(",")}).then((res) => {
+                  if (res.success) {
+                    if (res.result && res.result.length > 0) {
+                      res.result.forEach(function (option) {
+                        option.value = option.id;
+                        option.text = option.name;
+                      })
+                    }
+                    this.columns[0].list = res.result;
+                    this.$set(this.dictOptions, 0, this.columns[0])
+                    const newData = [...this.tabledata]
+                    this.tabledata = newData
                   }
                 });
                 const newData = [...this.tabledata]
@@ -571,7 +592,9 @@
                   res.result.forEach(function (option) {
                     option.value = option.unitId;
                     option.text = option.unit;
+                    option.id = option.unitId;
                   })
+                  debugger
                   that.columns[2].list = res.result;
                   // this.$set(this.dictOptions, 2, this.columns[2])
                   const newData = [...this.tabledata]
@@ -684,6 +707,9 @@
     mounted() {
       this.editType = this.$route.query.editType;
       this.form.setFieldsValue({sourceId:this.$route.query.sourceId, sourceCode: this.$route.query.sourceCode});
+      if (this.$route.query.id) {
+        this.add();
+      }
     }
   }
 </script>

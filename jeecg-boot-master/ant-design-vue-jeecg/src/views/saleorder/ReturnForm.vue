@@ -48,6 +48,18 @@
         this.currentTab = 0
         this.$parent.closeRouteViewTab(this.$route.fullPath)
       }
+    },
+    beforeRouteLeave(to, from, next) {
+      if (to.name === 'Form03') {
+        if (!from.meta.keepAlive) {
+          from.meta.keepAlive = true; //当我们进入到C时开启B的缓存
+        }
+        next()
+      } else {
+        from.meta.keepAlive = false;
+        this.$destroy(); //销毁B的实例
+        next(); //当我们前进的不是C时我们让B页面刷新
+      }
     }
   }
 </script>

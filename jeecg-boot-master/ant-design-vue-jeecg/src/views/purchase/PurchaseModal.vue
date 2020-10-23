@@ -153,7 +153,8 @@ import {
     getPurchaseBatchList,
     getMaterialListByIds,
     getMaterialAuxiliaryList,
-    getMaterialAuxiliaryListBySourceIds
+    getMaterialAuxiliaryListBySourceIds,
+    getMaterialUnitListByIds
 } from '@/api/api'
 export default {
     name: 'PurchasesModal',
@@ -307,6 +308,7 @@ export default {
             ],
             tabledata: [],
             mtlIds: [],
+            unitIds:[],
             editType: 0
         }
     },
@@ -382,6 +384,7 @@ export default {
                             for(let i=0;i < this.tabledata.length ; i++){
                                 this.tabledata[i].key = i;
                                 this.mtlIds[i] = this.tabledata[i].mtlId;
+                                this.unitIds[i] = this.tabledata[i].unitId;
                             }
                             //产品
                             getMaterialListByIds({"ids": this.mtlIds.join(",")}).then((res) => {
@@ -408,6 +411,20 @@ export default {
                               this.columns[1].list = res.result;
                               this.$set(this.dictOptions, 1, this.columns[1])
                               // this.$set(this.dictOptions, 'materiallist', res.result)
+                            }
+                          });
+                          //产品
+                          getMaterialUnitListByIds({"ids": this.unitIds.join(",")}).then((res) => {
+                            if (res.success) {
+                              if (res.result && res.result.length > 0) {
+                                res.result.forEach(function (option) {
+                                  option.value = option.id;
+                                  option.text = option.name;
+                                })
+                              }
+                              this.columns[2].list = res.result;
+                              const newData = [...this.tabledata]
+                              this.tabledata = newData
                             }
                           });
                         }

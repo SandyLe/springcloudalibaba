@@ -54,7 +54,6 @@
       }
     },
     beforeRouteLeave(to, from, next) {
-      debugger
       if (to.name === 'Form03') {
         if (!from.meta.keepAlive) {
           from.meta.keepAlive = true; //当我们进入到C时开启B的缓存

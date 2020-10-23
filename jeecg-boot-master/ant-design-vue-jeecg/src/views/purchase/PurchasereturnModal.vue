@@ -85,11 +85,11 @@
             <a-card>
               <form :autoFormCreate="(form) => this.form = form" ref="returnMts">
                 <a-table :columns="columns" :dataSource="tabledata" :pagination="false" rowKey="id">
-                  <template v-for="(col, i) in ['mtlId','quantity', 'unitId', 'price', 'discount', 'amount', 'content', 'action']" :slot="col" slot-scope="text, record, index">
-                    <a-select v-if="['mtlId','unitId'].indexOf(columns[i].dataIndex) > -1" :readOnly="columns[i].dataIndex==='unitId'" v-decorator="[record[columns[i].dataIndex], {}]"
+                  <template v-for="(col, i) in ['mtlId', 'auxiliaryId','quantity', 'unitId', 'price', 'discount', 'amount', 'content', 'action']" :slot="col" slot-scope="text, record, index">
+                    <a-select v-if="['mtlId','unitId','auxiliaryId'].indexOf(columns[i].dataIndex) > -1" :readOnly="columns[i].dataIndex==='unitId'" v-decorator="[record[columns[i].dataIndex], {}]"
                               @change="e => handleChange(e, record.key, col)" :placeholder="'请选择'+columns[i].title" :value="record[columns[i].dataIndex]">
                       <a-select-option v-for="(item, key) in columns[i].list" :key="key" :value="item.id">
-                        {{ item.info || item.name }}
+                        {{ ['auxiliaryId'].indexOf(columns[i].dataIndex) > -1 ? item.suppValueMap : (item.info || item.text) }}
                       </a-select-option>
                     </a-select>
                     <a-input :key="col" v-else style="margin: -5px 0" :value="text" :placeholder="columns[i].title" @change="e => handleChange(e.target.value, record.key, col)" />
@@ -163,7 +163,9 @@
     purchaseReturnQueryById,
     purchaseReturnDetailDelete,
     getPurchaseByCode,
-    getPurchaseMtlOne
+    getPurchaseMtlOne,
+    getMaterialAuxiliaryList,
+    getMaterialAuxiliaryListBySourceIds
   } from '@/api/api'
   export default {
     name: 'PurchaseReturnModal',
@@ -242,6 +244,14 @@
           scopedSlots: {
             customRender: 'mtlId'
           }
+        },{
+          title: '辅助属性', //顺序不要调整，getMaterialList中有用
+          dataIndex: 'auxiliaryId',
+          key: 'auxiliaryId',
+          width: '20%',
+          scopedSlots: {
+            customRender: 'auxiliaryId'
+          }
         },
           {
             title: '数量',
@@ -307,6 +317,7 @@
           }
         ],
         tabledata: [],
+        mtlIds:[],
         editType: 0,
         sourceId: ''
       }
@@ -383,8 +394,8 @@
                 option.text = option.name;
               })
             }
-            this.columns[2].list = res.result;
-            this.$set(this.dictOptions, 2, this.columns[2])
+            this.columns[3].list = res.result;
+            this.$set(this.dictOptions, 3, this.columns[3])
             // this.$set(this.dictOptions, 'materialunitlist', res.result)
           }
         });
@@ -397,7 +408,22 @@
                 this.tabledata = res.result.detaillist;
                 for(let i=0;i < this.tabledata.length ; i++){
                   this.tabledata[i].key = i;
+                  this.mtlIds[i] = this.tabledata[i].mtlId;
                 }
+
+                getMaterialAuxiliaryListBySourceIds({"sourceIds": this.mtlIds.join(",")}).then((res) => {
+                  if (res.success) {
+                    if (res.result && res.result.length > 0) {
+                      res.result.forEach(function (option) {
+                        option.value = option.id;
+                        option.text = option.suppValueMap;
+                      })
+                    }
+                    this.columns[1].list = res.result;
+                    this.$set(this.dictOptions, 1, this.columns[1])
+                    // this.$set(this.dictOptions, 'materiallist', res.result)
+                  }
+                });
               }
               this.edit(res.result);
             }
@@ -568,6 +594,19 @@
                 newData = res.result;
               }
             });
+            getMaterialAuxiliaryList({"sourceId" : value}).then((res) => {
+              if (res.success) {
+                if (res.result.length>0){
+                  res.result.forEach(function (option) {
+                    option.value = option.id;
+                    option.text = option.suppValueMap;
+                  })
+                  this.columns[1].list = res.result;
+                  this.$set(this.dictOptions, 1, this.columns[1])
+                  this.tabledata = newData
+                }
+              }
+            });
           }
           this.tabledata = newData
         }
@@ -604,6 +643,18 @@
     },
     mounted() {
       this.editType = this.$route.query.editType;
+    },
+    beforeRouteLeave(to, from, next) {
+      if (to.name === 'Form03') {
+        if (!from.meta.keepAlive) {
+          from.meta.keepAlive = true; //当我们进入到C时开启B的缓存
+        }
+        next()
+      } else {
+        from.meta.keepAlive = false;
+        this.$destroy(); //销毁B的实例
+        next(); //当我们前进的不是C时我们让B页面刷新
+      }
     }
   }
 </script>
