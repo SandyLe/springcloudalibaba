@@ -198,7 +198,8 @@ ALTER TABLE `sl_inventory_out_mtl`
 ALTER TABLE `sl_sale_order_mtl`
   ADD COLUMN `auxiliary_id` varchar(30) NULL COMMENT '辅助属性ID' AFTER `mtl_id`;
 ALTER TABLE `sl_change_order_dtl`
-  ADD COLUMN `auxiliary_id` varchar(30) NULL COMMENT '辅助属性ID' AFTER `mtl_id`;
+  ADD COLUMN `auxiliary_id` varchar(30) NULL COMMENT '辅助属性ID' AFTER `mtl_id`,
+  ADD COLUMN `new_auxiliary_id` varchar(30) NULL COMMENT '辅助属性ID' AFTER `new_mtl_id`;
 ALTER TABLE `sl_purchase_mtl`
   ADD COLUMN `auxiliary_id` varchar(30) NULL COMMENT '辅助属性ID' AFTER `mtl_id`;
 ALTER TABLE `sl_assemble`
@@ -234,4 +235,6 @@ ALTER TABLE `sl_sale_order_return_mtl`
 ALTER TABLE `sl_work_order_dtl`
   ADD COLUMN `auxiliary_id` varchar(30) NULL COMMENT '辅助属性ID' AFTER `mtl_id`;
 ALTER TABLE `sl_sale_order_return_mtl`
+  ADD COLUMN `auxiliary_id` varchar(30) NULL COMMENT '辅助属性ID' AFTER `mtl_id`;
+ALTER TABLE `sl_logistics_order_dtl`
   ADD COLUMN `auxiliary_id` varchar(30) NULL COMMENT '辅助属性ID' AFTER `mtl_id`;

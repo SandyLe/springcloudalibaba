@@ -298,7 +298,7 @@ public class InventoryOutServiceImpl extends ServiceImpl<InventoryOutMapper, Inv
             if (CollectionUtils.isNotEmpty(allotDtls)) {
                 allotDtls.forEach(o ->{
                     inventoryOutMtls.add(new InventoryOutMtl(inventoryOut.getId(), o.getSourceId(), inventoryOut.getSourceBillType(), o.getNewMtlId(), o.getNewQuantity(), o.getNewUnitId(),
-                            RowSts.EFFECTIVE.getId(), o.getAuxiliaryId()));
+                            RowSts.EFFECTIVE.getId(), o.getNewAuxiliaryId()));
                 });
             }
         } else if (inventoryOut.getSourceBillType() == BillType.WORKORDER.getId()) {

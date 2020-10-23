@@ -144,6 +144,10 @@ public class MaterialAuxiliaryItemController {
     @ApiOperation(value = "修改辅助属性条目", notes = "修改辅助属性条目")
     public Result<?> edit(@RequestBody MaterialAuxiliaryItem materialAuxiliaryItem){
 
+        Supplementary supplementary = supplementaryService.findByCcIdCode(LoginUtils.getLoginUser().getCompanyId(), materialAuxiliaryItem.getSuppCode());
+        SupplementaryValue supplementaryValue = supplementaryValueService.findBySourceIdCode(supplementary.getId(), materialAuxiliaryItem.getSuppValueCode());
+        materialAuxiliaryItem.setSuppName(supplementary.getName());
+        materialAuxiliaryItem.setSuppValueName(supplementaryValue.getName());
         MaterialAuxiliary materialAuxiliary = materialAuxiliaryService.getById(materialAuxiliaryItem.getSourceId());
         materialAuxiliaryItem.setSourceId(materialAuxiliary.getId());
         materialAuxiliaryItemService.updateById(materialAuxiliaryItem);

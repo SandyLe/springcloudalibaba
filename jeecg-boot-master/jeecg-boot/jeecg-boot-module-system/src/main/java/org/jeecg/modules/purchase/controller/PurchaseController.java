@@ -93,21 +93,19 @@ public class PurchaseController extends JeecgController<Purchase, PurchaseServic
             });
             purchaseMtlService.saveBatch(mtls);
         }
-        if (StringUtils.isNotBlank(purchasedtldto.getWarehouseId())) {
 
-            // 入库单主表
-            InventoryIn inventoryIn = new InventoryIn();
-            inventoryIn.setCompanyId(purchasedtldto.getCompanyId());
-            inventoryIn.setBillStatus(BillStatus.TOSTOCKIN.getId());
-            inventoryIn.setWarehouseId(purchasedtldto.getWarehouseId());
-            inventoryIn.setSourceCode(code);
-            inventoryIn.setSourceId(purchasedtldto.getId());
-            inventoryIn.setBillType(BillType.INVENTORYIN.getId());
-            inventoryIn.setRowSts(RowSts.EFFECTIVE.getId());
-            inventoryIn.setSourceBillType(BillType.PURCHASEORDER.getId());
-            inventoryIn.setCode(billCodeBuilderService.getBillCode(BillType.INVENTORYIN.getId()));
-            inventoryInService.saveToInventoryIn(inventoryIn);
-        }
+        // 入库单主表
+        InventoryIn inventoryIn = new InventoryIn();
+        inventoryIn.setCompanyId(purchasedtldto.getCompanyId());
+        inventoryIn.setBillStatus(BillStatus.TOSTOCKIN.getId());
+        inventoryIn.setWarehouseId(purchasedtldto.getWarehouseId());
+        inventoryIn.setSourceCode(code);
+        inventoryIn.setSourceId(purchasedtldto.getId());
+        inventoryIn.setBillType(BillType.INVENTORYIN.getId());
+        inventoryIn.setRowSts(RowSts.EFFECTIVE.getId());
+        inventoryIn.setSourceBillType(BillType.PURCHASEORDER.getId());
+        inventoryIn.setCode(billCodeBuilderService.getBillCode(BillType.INVENTORYIN.getId()));
+        inventoryInService.saveToInventoryIn(inventoryIn);
 
         dto.setMsg("添加成功");
         return Result.ok(dto);

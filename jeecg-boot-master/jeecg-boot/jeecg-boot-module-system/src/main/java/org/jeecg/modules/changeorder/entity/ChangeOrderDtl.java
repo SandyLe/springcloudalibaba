@@ -49,6 +49,8 @@ public class ChangeOrderDtl extends CBasicEntity {
     private BigDecimal priceSpace;
     @ApiModelProperty("辅助属性ID")
     private String auxiliaryId;
+    @ApiModelProperty("新辅助属性ID")
+    private String newAuxiliaryId;
 
     public String getMtlId() {
         return mtlId;
@@ -168,5 +170,13 @@ public class ChangeOrderDtl extends CBasicEntity {
 
     public void setAuxiliaryId(String auxiliaryId) {
         this.auxiliaryId = auxiliaryId;
+    }
+
+    public String getNewAuxiliaryId() {
+        return newAuxiliaryId;
+    }
+
+    public void setNewAuxiliaryId(String newAuxiliaryId) {
+        this.newAuxiliaryId = newAuxiliaryId;
     }
 }
