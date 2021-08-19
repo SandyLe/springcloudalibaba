@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wonders.log.dao.AdminLogDao">
+
+    <resultMap type="com.wonders.log.entity.AdminLog" id="AdminLogMap">
+        <result property="logId" column="LOG_ID" />
+        <result property="ipAddress" column="IP_ADDRESS" />
+        <result property="appId" column="APP_ID" />
+        <result property="action" column="ACTION" />
+        <result property="targetType" column="TARGET_TYPE" />
+        <result property="remake" column="REMAKE" />
+        <result property="methodName" column="METHOD_NAME" />
+        <result property="methodType" column="METHOD_TYPE" />
+        <result property="methodParams" column="METHOD_PARAMS" />
+        <result property="beginTime" column="BEGIN_TIME" />
+        <result property="finishTime" column="FINISH_TIME" />
+        <result property="timeInterval" column="TIME_INTERVAL" />
+        <result property="state" column="STATE" />
+        <result property="errorMsg" column="ERROR_MSG" />
+        <result property="operator" column="OPERATOR" />
+        <result property="ctTime" column="CT_TIME" />
+        <result property="spareOne" column="SPARE_ONE" />
+        <result property="spareTwo" column="SPARE_TWO" />
+    </resultMap>
+
+
+    <!--通用筛选条件-->
+    <sql id="commonParams">
+        <where>
+            <if test="ipAddress != null and ipAddress != ''">
+                and IP_ADDRESS = #{ipAddress}
+            </if>
+            <if test="appId != null and appId != ''">
+                and APP_ID = #{appId}
+            </if>
+        </where>
+    </sql>
+
+    <!--排序-->
+    <sql id="commonOrder">
+        <choose>
+            <when test="null != sortField and '' != sortingOrder">
+                ORDER BY ${sortField} ${sortingOrder}
+            </when>
+            <otherwise>
+                ORDER BY CT_TIME desc
+            </otherwise>
+        </choose>
+    </sql>
+
+    <!--分页-->
+    <sql id="commonLimit">
+        <if test="null != offset and null != limit">
+            limit  #{limit} offset #{offset}
+        </if>
+    </sql>
+
+
+    <select id="getList" resultMap="AdminLogMap">
+        select LOG_ID,
+        IP_ADDRESS,
+        APP_ID,
+        ACTION,
+        TARGET_TYPE,
+        REMAKE,
+        METHOD_NAME,
+        METHOD_TYPE,
+        METHOD_PARAMS,
+        BEGIN_TIME,
+        FINISH_TIME,
+        TIME_INTERVAL,
+        STATE,
+        ERROR_MSG,
+        OPERATOR,
+        CT_TIME,
+        SPARE_ONE,
+        SPARE_TWO
+        from wda_log_info
+        <include refid="commonParams"/>
+        <include refid="commonOrder"/>
+        <include refid="commonLimit"/>
+    </select>
+    <!--通用列表分页统计查询-->
+    <select id="getPageTotal" resultType="java.lang.Integer">
+        select COUNT(LOG_ID) from wda_log_info
+        <include refid="commonParams"/>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="save" >
+        insert into wda_log_info(LOG_ID,IP_ADDRESS, APP_ID, ACTION, TARGET_TYPE, REMAKE, METHOD_NAME,
+                                                METHOD_TYPE, METHOD_PARAMS, BEGIN_TIME, FINISH_TIME, TIME_INTERVAL,
+                                                STATE, ERROR_MSG, OPERATOR, CT_TIME, SPARE_ONE, SPARE_TWO)
+        values (#{logId}, #{ipAddress}, #{appId}, #{action}, #{targetType}, #{remake}, #{methodName}, #{methodType},
+                #{methodParams}, #{beginTime}, #{finishTime}, #{timeInterval}, #{state}, #{errorMsg}, #{operator},
+                #{ctTime}, #{spareOne}, #{spareTwo})
+    </insert>
+
+    <!--查询单个-->
+    <select id="getInfoById" resultMap="AdminLogMap">
+        select LOG_ID,
+               IP_ADDRESS,
+               APP_ID,
+               ACTION,
+               TARGET_TYPE,
+               REMAKE,
+               METHOD_NAME,
+               METHOD_TYPE,
+               METHOD_PARAMS,
+               BEGIN_TIME,
+               FINISH_TIME,
+               TIME_INTERVAL,
+               STATE,
+               ERROR_MSG,
+               OPERATOR,
+               CT_TIME,
+               SPARE_ONE,
+               SPARE_TWO
+        from wda_log_info
+        where LOG_ID = #{logId}
+    </select>
+
+
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update wda_log_info
+        <set>
+            <if test="ipAddress != null and ipAddress != ''">
+                IP_ADDRESS = #{ipAddress},
+            </if>
+            <if test="appId != null and appId != ''">
+                APP_ID = #{appId},
+            </if>
+            <if test="action != null and action != ''">
+                ACTION = #{action},
+            </if>
+            <if test="targetType != null and targetType != ''">
+                TARGET_TYPE = #{targetType},
+            </if>
+            <if test="remake != null and remake != ''">
+                REMAKE = #{remake},
+            </if>
+            <if test="methodName != null and methodName != ''">
+                METHOD_NAME = #{methodName},
+            </if>
+            <if test="methodType != null and methodType != ''">
+                METHOD_TYPE = #{methodType},
+            </if>
+            <if test="methodParams != null and methodParams != ''">
+                METHOD_PARAMS = #{methodParams},
+            </if>
+            <if test="beginTime != null">
+                BEGIN_TIME = #{beginTime},
+            </if>
+            <if test="finishTime != null">
+                FINISH_TIME = #{finishTime},
+            </if>
+            <if test="timeInterval != null">
+                TIME_INTERVAL = #{timeInterval},
+            </if>
+            <if test="state != null">
+                STATE = #{state},
+            </if>
+            <if test="errorMsg != null and errorMsg != ''">
+                ERROR_MSG = #{errorMsg},
+            </if>
+            <if test="operator != null and operator != ''">
+                OPERATOR = #{operator},
+            </if>
+            <if test="ctTime != null">
+                CT_TIME = #{ctTime},
+            </if>
+            <if test="spareOne != null and spareOne != ''">
+                SPARE_ONE = #{spareOne},
+            </if>
+            <if test="spareTwo != null and spareTwo != ''">
+                SPARE_TWO = #{spareTwo},
+            </if>
+        </set>
+        where LOG_ID = #{logId}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete
+        from wda_log_info
+        where LOG_ID = #{logId}
+    </delete>
+
+    <!--通用数组删除-->
+    <delete id="deleteByIds">
+        delete from wda_log_info where LOG_ID in
+        <foreach collection="array"  open="(" close=")" item="id" separator=",">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>

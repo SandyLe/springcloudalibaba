@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="cert-lib-core" />
+        <module name="cert-lib-mongodb" />
+        <module name="cert-lib-pdf-api" />
+        <module name="cert-lib-push-api" />
+        <module name="cert-lib-seal-api" />
+        <module name="cert-lib-usage-api" />
+        <module name="wonders-common" />
+        <module name="wonders-log" />
+        <module name="wonders-mybatis" />
+        <module name="wonders-web" />
+      </profile>
+    </annotationProcessing>
+  </component>
+</project>

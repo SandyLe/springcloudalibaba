@@ -1,0 +1,33 @@
+server:
+  port: 81
+  servlet:
+    context-path: /
+  tomcat:
+    max-connections: 20000
+    accept-count: 1000
+    uri-encoding: UTF-8
+
+spring:
+  jackson:
+    date-format: yyyy-MM-dd HH24:mm:ss
+    time-zone: GMT+8
+  servlet:
+    multipart:
+      max-file-size: 30MB
+      max-request-size: 30MB
+  application:
+    name: cert-lib-seal-api
+eureka: ## spring cloud 配置
+  instance:
+    appname: ${spring.application.name}
+    hostname: ${spring.cloud.client.ip-address}
+    prefer-ip-address: true
+    instance-id: ${spring.cloud.client.ip-address}:${server.port}
+    status-page-url-path: ${server.servlet.context-path}
+    lease-expiration-duration-in-seconds: 5
+    lease-renewal-interval-in-seconds: 10
+  client:
+    fetch-registry: true
+    register-with-eureka: true
+    service-url:
+      defaultZone: http://eur1-sc-co.shgt.int:8761/eureka,http://eur2-sc-co.shgt.int:8762/eureka/,http://eur3-sc-co.shgt.int:8763/eureka/
