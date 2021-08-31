@@ -1,0 +1,19 @@
+spring:
+  application:
+    name: demoB
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+      config:
+        server-addr: localhost:8848
+    #向sentinel控制台注册服务
+    sentinel:
+      transport:
+        dashboard: localhost:8080
+      #取消控制台懒加载
+      eager: true
+
+
+  profiles:
+    active: dev

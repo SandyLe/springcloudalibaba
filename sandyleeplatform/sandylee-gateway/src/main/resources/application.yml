@@ -1,0 +1,18 @@
+server :
+  port : 9000
+# 热刷新
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+spring:
+  cloud:
+    gateway:
+      routes:
+      - id: demoB
+        uri: lb://demoB # demoA模块服务名称
+        predicates:
+        - Path=/demo-b/**  #所有匹配到demo-a目录的请求，都转发值demoA模块
+        filters:
+        - StripPrefix=1
